@@ -1,6 +1,7 @@
 package vip.yazilim.play2gether.web.service.old;
 
 import vip.yazilim.play2gether.web.entity.old.Manager;
+import vip.yazilim.play2gether.web.service.CrudService;
 
 import java.util.Optional;
 

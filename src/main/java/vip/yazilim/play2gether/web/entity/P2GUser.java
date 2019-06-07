@@ -23,7 +23,7 @@ public class P2GUser {
     @JoinColumn(name = "listen_session_uuid")
     private ListenSession listenSession;
 
-    @OneToMany(mappedBy = "p2gToken")
-    private List<P2GToken> p2gToken;
+    @OneToMany(mappedBy = "p2gUser")
+    private List<P2GToken> p2gTokenList;
 
 }

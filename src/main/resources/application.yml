@@ -8,9 +8,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/p2g-db
+    url: jdbc:postgresql://localhost:5432/p2g_db
     username: postgres
-    password: 16181618
+    password: pos
     initialization-mode: never
 
   jpa:
