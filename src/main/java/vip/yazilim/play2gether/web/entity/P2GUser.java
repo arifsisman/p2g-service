@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import vip.yazilim.play2gether.web.entity.old.SystemUser;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,16 +15,15 @@ public class P2GUser {
     private boolean online;
 
 
-
     @OneToOne
     @JoinColumn(name = "system_user_uuid")
     private SystemUser systemUser;
 
+    @ManyToOne
+    @JoinColumn(name = "listen_session_uuid")
+    private ListenSession listenSession;
 
-    @OneToMany(mappedBy = "student")
-    @JsonIgnore
-    private List<Enrollment> enrollmentList;
+    @OneToMany(mappedBy = "p2gToken")
+    private List<P2GToken> p2gToken;
 
-    @OneToMany(mappedBy = "student")
-    private List<FaceEncoding> faceEncodingList;
 }
