@@ -1,0 +1,23 @@
+server:
+
+  # configures the port that Eureka Server will be running
+  port: 8080
+
+  # Data source configuration
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/p2g-db
+    username: postgres
+    password: 16181618
+    initialization-mode: never
+
+  jpa:
+    hibernate.ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        jdbc.lob.non_contextual_creation: true
+

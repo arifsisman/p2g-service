@@ -1,0 +1,48 @@
+<!doctype html>
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/all.css}">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/lib/MDB-Free_4.8.1/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/lib/MDB-Free_4.8.1/css/mdb.min.css}">
+    <!-- Datatables -->
+    <link rel="stylesheet" th:href="@{/lib/datatables/jquery.dataTables.css}">
+
+    <!-- Required meta tags -->
+    <title th:text="${title}"></title>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript" th:src="@{/lib/MDB-Free_4.8.1/js/jquery-3.4.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/lib/MDB-Free_4.8.1/js/popper.min.js}"></script>
+    <script type="text/javascript" th:src="@{/lib/MDB-Free_4.8.1/js/bootstrap.min.js}"></script>
+
+    <!-- Datatables -->
+    <script type="text/javascript" th:src="@{/lib/datatables/jquery.dataTables.js}"></script>
+</head>
+<body>
+
+
+<!--header.html  that's here  -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container py-4">
+    <div layout:fragment="content"></div>
+</div>
+
+<!--footer.html  that's here  -->
+<div th:replace="fragments/footer :: footer"></div>
+
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='page_course_enrollments'">
+
+<div layout:fragment="content">
+
+    <h2>
+        <b>Course: </b><span th:text="${courseInfo}"></span>
+    </h2>
+    <h2>
+        <a th:href="@{/course/}+${courseUuid}+'/lecture/all'">Go Back to Lectures</a>
+    </h2>
+
+
+    <a class="btn btn-primary" th:href="@{/course/}+${courseUuid}+'/enrollment/enroll'">
+        Enroll Student
+    </a>
+
+    <div class="form-info alert alert-success" role="alert" th:if="${operation == 'enroll'}">
+        Student Enrolled to Course
+    </div>
+    <div class="form-info alert alert-danger" role="alert" th:if="${operation == 'leave'}">
+        Student Leaved from Course
+    </div>
+
+    <script type="text/javascript">
+        $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".alert").slideUp(500);
+        });
+    </script>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="enrollment : ${enrollmentList}">
+            <span th:text="${enrollment.student.studentId}"></span>
+            <span th:text="${enrollment.student.systemUser.firstName}"></span>
+            <span th:text="${enrollment.student.systemUser.lastName}"></span>
+
+            <form th:action="@{/course/enrollment/leave}" method="POST">
+                <input type="hidden" name="courseUuid" th:value="${courseUuid}">
+                <input type="hidden" name="enrollmentUuid" th:value="${enrollment.uuid}">
+                <input type="submit" class="btn btn-danger btn-sm" value="Leave"/>
+                </input>
+            </form>
+        </li>
+    </ul>
+</div>
+
+</html>

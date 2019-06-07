@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='courses'">
+
+<div layout:fragment="content">
+
+    <h2>
+        <b>Course: </b><span th:text="${courseInfo}"></span>
+    </h2>
+
+
+    <form class="border border-light p-5" method="POST" th:action="@{/course/enrollment/enroll}"
+          th:object="${enrollmentForm}">
+
+        <select th:field="*{studentUuid}" class="browser-default custom-select">
+            <option th:each="student : ${studentList}"
+                    th:value="${student.uuid}"
+                    th:text="${student.systemUser.firstName + ' ' + student.systemUser.lastName}"/>
+        </select>
+
+        <button class="btn btn-info my-4" type="submit">Save</button>
+
+        <input type="hidden" th:field="*{courseUuid}" th:value="${courseUuid}" class="form-control mb-4">
+    </form>
+
+</div>
+
+</html>

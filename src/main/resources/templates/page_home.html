@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='home'">
+
+<div layout:fragment="content">
+    <h2>
+        Hello, <span th:text="${systemUser.firstName + ' ' + systemUser.lastName}"></span>
+    </h2>
+</div>
+
+</html>
