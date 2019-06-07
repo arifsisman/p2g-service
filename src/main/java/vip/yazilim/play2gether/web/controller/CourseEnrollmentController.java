@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vip.yazilim.play2gether.web.Constants;
-import vip.yazilim.play2gether.web.entity.Enrollment;
+import vip.yazilim.play2gether.web.entity.old.Enrollment;
 import vip.yazilim.play2gether.web.model.form.EnrollmentForm;
-import vip.yazilim.play2gether.web.service.ICourseService;
-import vip.yazilim.play2gether.web.service.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.IStudentService;
+import vip.yazilim.play2gether.web.service.old.ICourseService;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentService;
+import vip.yazilim.play2gether.web.service.old.IStudentService;
 
 import java.util.ArrayList;
 import java.util.List;

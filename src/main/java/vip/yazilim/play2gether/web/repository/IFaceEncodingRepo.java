@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
-import vip.yazilim.play2gether.web.entity.FaceEncoding;
+import vip.yazilim.play2gether.web.entity.old.FaceEncoding;
 import org.springframework.data.repository.CrudRepository;
 
 /**

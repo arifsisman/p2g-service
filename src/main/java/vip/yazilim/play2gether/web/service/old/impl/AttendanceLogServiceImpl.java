@@ -1,16 +1,16 @@
-package vip.yazilim.play2gether.web.service.impl;
+package vip.yazilim.play2gether.web.service.old.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.play2gether.web.entity.AttendanceLog;
-import vip.yazilim.play2gether.web.entity.Enrollment;
-import vip.yazilim.play2gether.web.entity.Lecture;
+import vip.yazilim.play2gether.web.entity.old.AttendanceLog;
+import vip.yazilim.play2gether.web.entity.old.Enrollment;
+import vip.yazilim.play2gether.web.entity.old.Lecture;
 import vip.yazilim.play2gether.web.repository.IAttendanceLogRepo;
-import vip.yazilim.play2gether.web.service.IAttendanceLogService;
-import vip.yazilim.play2gether.web.service.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.ILectureService;
+import vip.yazilim.play2gether.web.service.old.IAttendanceLogService;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentService;
+import vip.yazilim.play2gether.web.service.old.ILectureService;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
 import java.util.Date;

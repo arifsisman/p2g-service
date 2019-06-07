@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vip.yazilim.play2gether.web.Constants;
-import vip.yazilim.play2gether.web.entity.*;
+import vip.yazilim.play2gether.web.entity.old.*;
 import vip.yazilim.play2gether.web.model.form.CourseForm;
-import vip.yazilim.play2gether.web.service.*;
+import vip.yazilim.play2gether.web.service.old.*;
 import vip.yazilim.play2gether.web.util.DBHelper;
 import vip.yazilim.play2gether.web.util.SecurityHelper;
 

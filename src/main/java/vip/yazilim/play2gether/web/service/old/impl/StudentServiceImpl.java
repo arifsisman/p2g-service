@@ -1,9 +1,9 @@
-package vip.yazilim.play2gether.web.service.impl;
+package vip.yazilim.play2gether.web.service.old.impl;
 
-import vip.yazilim.play2gether.web.entity.Student;
+import vip.yazilim.play2gether.web.entity.old.Student;
 import vip.yazilim.play2gether.web.repository.IStudentRepo;
-import vip.yazilim.play2gether.web.service.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.IStudentService;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentService;
+import vip.yazilim.play2gether.web.service.old.IStudentService;
 import vip.yazilim.play2gether.web.util.CollectionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
-package vip.yazilim.play2gether.web.service.impl;
+package vip.yazilim.play2gether.web.service.old.impl;
 
-import vip.yazilim.play2gether.web.entity.FaceEncoding;
-import vip.yazilim.play2gether.web.entity.Student;
+import vip.yazilim.play2gether.web.entity.old.FaceEncoding;
+import vip.yazilim.play2gether.web.entity.old.Student;
 import vip.yazilim.play2gether.web.repository.IFaceEncodingRepo;
-import vip.yazilim.play2gether.web.service.IFaceEncodingService;
-import vip.yazilim.play2gether.web.service.IStudentService;
+import vip.yazilim.play2gether.web.service.old.IFaceEncodingService;
+import vip.yazilim.play2gether.web.service.old.IStudentService;
 import vip.yazilim.play2gether.web.util.DBHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

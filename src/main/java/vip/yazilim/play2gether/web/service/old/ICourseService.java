@@ -1,6 +1,6 @@
-package vip.yazilim.play2gether.web.service;
+package vip.yazilim.play2gether.web.service.old;
 
-import vip.yazilim.play2gether.web.entity.Course;
+import vip.yazilim.play2gether.web.entity.old.Course;
 
 import java.util.List;
 

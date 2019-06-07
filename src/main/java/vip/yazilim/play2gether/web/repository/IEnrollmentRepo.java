@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
-import vip.yazilim.play2gether.web.entity.Enrollment;
+import vip.yazilim.play2gether.web.entity.old.Enrollment;
 import org.springframework.data.repository.CrudRepository;
 
 /**

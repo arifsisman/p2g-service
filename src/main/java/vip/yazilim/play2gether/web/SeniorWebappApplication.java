@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import vip.yazilim.play2gether.web.entity.*;
-import vip.yazilim.play2gether.web.service.*;
+import vip.yazilim.play2gether.web.entity.old.*;
+import vip.yazilim.play2gether.web.service.old.*;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
 import java.util.Date;

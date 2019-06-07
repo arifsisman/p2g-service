@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.entity;
+package vip.yazilim.play2gether.web.entity.old;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.config.security;
 
-import vip.yazilim.play2gether.web.entity.SystemUser;
+import vip.yazilim.play2gether.web.entity.old.SystemUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

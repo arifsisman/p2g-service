@@ -1,6 +1,6 @@
-package vip.yazilim.play2gether.web.service;
+package vip.yazilim.play2gether.web.service.old;
 
-import vip.yazilim.play2gether.web.entity.FaceEncoding;
+import vip.yazilim.play2gether.web.entity.old.FaceEncoding;
 
 /**
  * @author Emre Sen - 24.05.2019

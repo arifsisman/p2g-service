@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
-import vip.yazilim.play2gether.web.entity.SystemRole;
+import vip.yazilim.play2gether.web.entity.old.SystemRole;
 import org.springframework.data.repository.CrudRepository;
 
 /**

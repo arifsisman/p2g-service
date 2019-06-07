@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
-import vip.yazilim.play2gether.web.entity.SystemUser;
+import vip.yazilim.play2gether.web.entity.old.SystemUser;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

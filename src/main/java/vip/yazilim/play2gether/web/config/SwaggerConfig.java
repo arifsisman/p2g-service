@@ -27,7 +27,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(getApiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.maemresen.senior.webapp.rest"))
+                .apis(RequestHandlerSelectors.basePackage("vip.yazilim.play2gether.web"))
                 .paths(PathSelectors.any())
                 .build();
     }

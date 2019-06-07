@@ -1,7 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
-import vip.yazilim.play2gether.web.entity.AttendanceLog;
-import jdk.nashorn.internal.runtime.options.Option;
+import vip.yazilim.play2gether.web.entity.old.AttendanceLog;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

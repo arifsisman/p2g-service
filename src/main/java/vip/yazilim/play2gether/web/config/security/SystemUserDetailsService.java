@@ -1,7 +1,7 @@
 package vip.yazilim.play2gether.web.config.security;
 
-import vip.yazilim.play2gether.web.entity.SystemUser;
-import vip.yazilim.play2gether.web.service.ISystemUserService;
+import vip.yazilim.play2gether.web.entity.old.SystemUser;
+import vip.yazilim.play2gether.web.service.old.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +19,8 @@ public class SystemUserDetailsService implements UserDetailsService {
 
     @Autowired
     private ISystemUserService systemUserService;
+
+
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
