@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='page_course_enrollments'">
+
+<div layout:fragment="content">
+
+    <h2>
+        <b>Course: </b><span th:text="${courseInfo}"></span>
+    </h2>
+
+    <a sec:authorize="hasRole('MANAGER')" class="btn btn-primary" th:href="@{/course/}+${courseUuid}+'/lecture'">
+        Add Lecture
+    </a>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="lecture : ${lectureList}">
+
+            <!-- Card -->
+            <div class="card">
+
+                <!-- Card content -->
+                <div class="card-body">
+
+                    <!-- Title -->
+                    <h4 class="card-title">
+                        <span th:text="${lecture.name}"></span>
+                    </h4>
+                    <!-- Text -->
+                    <p class="card-text">
+                        <span th:text="${lecture.description}"></span>
+                    </p>
+                    <!-- Button -->
+                    <a sec:authorize="hasRole('MANAGER')"
+                       th:href="@{/course/}+${courseUuid}+'/lecture/'+${lecture.uuid}" class="btn btn-primary">
+                        Edit Lecture
+                    </a>
+                    <a th:href="@{/course/}+${courseUuid}+'/lecture/'+${lecture.uuid}+'/attendances'"
+                       class="btn btn-primary">
+                        Attendance Logs
+                    </a>
+
+                </div>
+
+            </div>
+            <!-- Card -->
+        </li>
+    </ul>
+</div>
+
+</html>

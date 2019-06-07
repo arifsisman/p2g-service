@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='form_course'">
+
+<div layout:fragment="content">
+
+    <h2>
+        <a th:href="@{/course/all}">Go Back to Courses</a>
+    </h2>
+
+    <div class="form-info alert alert-success" role="alert" th:if="${operation == 'insert'}">
+        Course Successfully Created
+    </div>
+    <div class="form-info alert alert-info" role="alert" th:if="${operation == 'update'}">
+        Course Successfully Updated
+    </div>
+
+    <script type="text/javascript">
+        $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".alert").slideUp(500);
+        });
+    </script>
+
+    <form class="border border-light p-5" method="POST" th:action="@{/course/save}" th:object="${courseForm}">
+
+        <input type="text" th:field="*{name}" class="form-control mb-4" placeholder="Course Name">
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+
+        <input type="text" th:field="*{description}" class="form-control mb-4" placeholder="Course Description">
+        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+
+        <button class="btn btn-info my-4" type="submit">Save</button>
+
+        <input type="hidden" th:field="*{uuid}" class="form-control mb-4">
+        <input type="hidden" th:field="*{operation}" class="form-control mb-4">
+    </form>
+
+</div>
+
+</html>

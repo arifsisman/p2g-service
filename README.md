@@ -1,3 +1,3 @@
-# p2g-web
+# senior-webapp
 
-Web Application Module of Play2Gether project
+The web application for senior design project.

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}"
+      th:with="title='Another',current_page='page_course_enrollments'">
+
+<div layout:fragment="content">
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "order": [
+                    [2, 'desc']
+                ]
+            });
+        });
+    </script>
+
+    <h2>
+        <b>Course: </b><span th:text="${courseInfo}"></span>
+    </h2>
+    <h4 class="pb-5">
+        Attendance Logs
+    </h4>
+
+    <table id="example" class="display" style="width:100%">
+
+        <thead>
+        <tr>
+            <th scope="col">Student Id</th>
+            <th scope="col">Student Name</th>
+            <th scope="col">Date</th>
+            <th scope="col">Lecture</th>
+            <th scope="col">Attendance</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="attendanceLog : ${attendanceLogList}">
+            <td th:text="${attendanceLog.enrollment.student.studentId}"/>
+            <td th:text="${attendanceLog.enrollment.student.systemUser.firstName + ' ' + attendanceLog.enrollment.student.systemUser.lastName}"/>
+            <td th:text="${attendanceLog.attendanceDate}"/>
+            <td th:text="${attendanceLog.lecture.name}"/>
+            <td th:text="${attendanceLog.joined}"/>
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+</html>
