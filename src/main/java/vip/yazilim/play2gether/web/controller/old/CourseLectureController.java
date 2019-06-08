@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.controller;
+package vip.yazilim.play2gether.web.controller.old;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -12,7 +12,7 @@ import vip.yazilim.play2gether.web.Constants;
 import vip.yazilim.play2gether.web.entity.old.AttendanceLog;
 import vip.yazilim.play2gether.web.entity.old.Course;
 import vip.yazilim.play2gether.web.entity.old.Lecture;
-import vip.yazilim.play2gether.web.model.form.LectureForm;
+import vip.yazilim.play2gether.web.model.old.form.LectureForm;
 import vip.yazilim.play2gether.web.service.old.ICourseServiceI;
 import vip.yazilim.play2gether.web.service.old.ILectureServiceI;
 import vip.yazilim.play2gether.web.util.DBHelper;

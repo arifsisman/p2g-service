@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.model.form;
+package vip.yazilim.play2gether.web.model.old.form;
 
 import lombok.Data;
 
@@ -8,11 +8,7 @@ import lombok.Data;
  */
 
 @Data
-public class LectureForm {
-
-    private String courseUuid;
-    private String courseName;
-    private String courseDescription;
+public class CourseForm {
 
     private String uuid;
     private String name;

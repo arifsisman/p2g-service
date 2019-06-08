@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.model;
+package vip.yazilim.play2gether.web.model.old;
 
 import lombok.Data;
 import lombok.ToString;

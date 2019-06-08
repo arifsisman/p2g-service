@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.model.form;
+package vip.yazilim.play2gether.web.model.old.form;
 
 import lombok.Data;
 

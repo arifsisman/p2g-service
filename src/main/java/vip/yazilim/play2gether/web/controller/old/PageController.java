@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.controller;
+package vip.yazilim.play2gether.web.controller.old;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
