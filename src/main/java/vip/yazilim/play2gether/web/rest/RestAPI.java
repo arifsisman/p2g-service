@@ -5,15 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.play2gether.web.entity.Course;
-import vip.yazilim.play2gether.web.entity.Enrollment;
-import vip.yazilim.play2gether.web.entity.Manager;
+import vip.yazilim.play2gether.web.entity.old.Course;
+import vip.yazilim.play2gether.web.entity.old.Enrollment;
+import vip.yazilim.play2gether.web.entity.old.Manager;
 import vip.yazilim.play2gether.web.entity.SystemUser;
-import vip.yazilim.play2gether.web.model.AttendanceLogModel;
-import vip.yazilim.play2gether.web.model.AttendanceLogModelListModel;
-import vip.yazilim.play2gether.web.service.IAttendanceLogService;
-import vip.yazilim.play2gether.web.service.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.IManagerService;
+import vip.yazilim.play2gether.web.model.old.AttendanceLogModel;
+import vip.yazilim.play2gether.web.model.old.AttendanceLogModelListModel;
+import vip.yazilim.play2gether.web.service.old.IAttendanceLogServiceI;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentServiceI;
+import vip.yazilim.play2gether.web.service.old.IManagerServiceI;
 import vip.yazilim.play2gether.web.util.SecurityHelper;
 
 import java.util.List;
@@ -29,13 +29,13 @@ public class RestAPI {
     private Logger LOGGER = LoggerFactory.getLogger(RestAPI.class);
 
     @Autowired
-    private IEnrollmentService enrollmentService;
+    private IEnrollmentServiceI enrollmentService;
 
     @Autowired
-    private IManagerService managerService;
+    private IManagerServiceI managerService;
 
     @Autowired
-    private IAttendanceLogService attendanceLogService;
+    private IAttendanceLogServiceI attendanceLogService;
 
 
     @GetMapping("/course/list")
