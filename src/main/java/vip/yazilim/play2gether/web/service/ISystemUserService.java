@@ -1,5 +1,6 @@
 package vip.yazilim.play2gether.web.service;
 
+import org.springframework.stereotype.Service;
 import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.service.ICrudService;
 

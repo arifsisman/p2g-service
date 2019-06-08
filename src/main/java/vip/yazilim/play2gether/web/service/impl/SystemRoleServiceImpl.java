@@ -2,6 +2,7 @@ package vip.yazilim.play2gether.web.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import vip.yazilim.play2gether.web.entity.Song;
 import vip.yazilim.play2gether.web.entity.SystemRole;
 import vip.yazilim.play2gether.web.repository.ISongRepo;
@@ -11,7 +12,7 @@ import vip.yazilim.play2gether.web.service.ISystemRoleService;
 
 import java.util.Optional;
 
-@Controller
+@Service
 public class SystemRoleServiceImpl implements ISystemRoleService {
 
     @Autowired

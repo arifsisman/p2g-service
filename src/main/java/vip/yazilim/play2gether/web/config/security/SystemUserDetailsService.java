@@ -20,8 +20,6 @@ public class SystemUserDetailsService implements UserDetailsService {
     @Autowired
     private ISystemUserService systemUserService;
 
-
-
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Optional<SystemUser> systemUserOptional = systemUserService.getUserByEmail(s);
