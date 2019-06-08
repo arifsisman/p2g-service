@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vip.yazilim.play2gether.web.Constants;
+import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.entity.old.*;
 import vip.yazilim.play2gether.web.model.form.CourseForm;
 import vip.yazilim.play2gether.web.service.old.*;
@@ -27,24 +28,24 @@ import java.util.stream.Collectors;
 public class CourseController {
 
     @Autowired
-    private IStudentService studentService;
+    private IStudentServiceI studentService;
 
     @Autowired
-    private IManagerService managerService;
+    private IManagerServiceI managerService;
 
     @Autowired
-    private ICourseService courseService;
+    private ICourseServiceI courseService;
 
     @Autowired
-    private IEnrollmentService enrollmentService;
-
-
-    @Autowired
-    private ILectureService lectureService;
+    private IEnrollmentServiceI enrollmentService;
 
 
     @Autowired
-    private IAttendanceLogService attendanceLogService;
+    private ILectureServiceI lectureService;
+
+
+    @Autowired
+    private IAttendanceLogServiceI attendanceLogService;
 
 
     @GetMapping("/course/all")

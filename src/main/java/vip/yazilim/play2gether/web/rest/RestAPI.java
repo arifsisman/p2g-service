@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.play2gether.web.entity.old.Course;
 import vip.yazilim.play2gether.web.entity.old.Enrollment;
 import vip.yazilim.play2gether.web.entity.old.Manager;
-import vip.yazilim.play2gether.web.entity.old.SystemUser;
+import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.model.AttendanceLogModel;
 import vip.yazilim.play2gether.web.model.AttendanceLogModelListModel;
-import vip.yazilim.play2gether.web.service.old.IAttendanceLogService;
-import vip.yazilim.play2gether.web.service.old.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.old.IManagerService;
+import vip.yazilim.play2gether.web.service.old.IAttendanceLogServiceI;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentServiceI;
+import vip.yazilim.play2gether.web.service.old.IManagerServiceI;
 import vip.yazilim.play2gether.web.util.SecurityHelper;
 
 import java.util.List;
@@ -29,13 +29,13 @@ public class RestAPI {
     private Logger LOGGER = LoggerFactory.getLogger(RestAPI.class);
 
     @Autowired
-    private IEnrollmentService enrollmentService;
+    private IEnrollmentServiceI enrollmentService;
 
     @Autowired
-    private IManagerService managerService;
+    private IManagerServiceI managerService;
 
     @Autowired
-    private IAttendanceLogService attendanceLogService;
+    private IAttendanceLogServiceI attendanceLogService;
 
 
     @GetMapping("/course/list")

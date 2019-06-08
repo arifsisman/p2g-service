@@ -1,6 +1,6 @@
 package vip.yazilim.play2gether.web.controller;
 
-import vip.yazilim.play2gether.web.entity.old.SystemUser;
+import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.util.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

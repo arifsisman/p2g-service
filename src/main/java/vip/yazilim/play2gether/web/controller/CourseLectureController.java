@@ -13,8 +13,8 @@ import vip.yazilim.play2gether.web.entity.old.AttendanceLog;
 import vip.yazilim.play2gether.web.entity.old.Course;
 import vip.yazilim.play2gether.web.entity.old.Lecture;
 import vip.yazilim.play2gether.web.model.form.LectureForm;
-import vip.yazilim.play2gether.web.service.old.ICourseService;
-import vip.yazilim.play2gether.web.service.old.ILectureService;
+import vip.yazilim.play2gether.web.service.old.ICourseServiceI;
+import vip.yazilim.play2gether.web.service.old.ILectureServiceI;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
 import java.util.List;
@@ -27,10 +27,10 @@ import java.util.List;
 public class CourseLectureController {
 
     @Autowired
-    private ICourseService courseService;
+    private ICourseServiceI courseService;
 
     @Autowired
-    private ILectureService lectureService;
+    private ILectureServiceI lectureService;
 
 
     @GetMapping("/course/{courseUuid}/lecture/all")

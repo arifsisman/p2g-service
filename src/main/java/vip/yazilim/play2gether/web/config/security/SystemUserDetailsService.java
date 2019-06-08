@@ -1,7 +1,7 @@
 package vip.yazilim.play2gether.web.config.security;
 
-import vip.yazilim.play2gether.web.entity.old.SystemUser;
-import vip.yazilim.play2gether.web.service.old.ISystemUserService;
+import vip.yazilim.play2gether.web.entity.SystemUser;
+import vip.yazilim.play2gether.web.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

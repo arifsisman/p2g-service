@@ -1,7 +1,5 @@
 package vip.yazilim.play2gether.web.entity;
 
-import vip.yazilim.play2gether.web.entity.old.SystemUser;
-
 import javax.persistence.*;
 import java.util.List;
 

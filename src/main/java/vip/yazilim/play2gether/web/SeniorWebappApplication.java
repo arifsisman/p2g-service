@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import vip.yazilim.play2gether.web.entity.SystemRole;
+import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.entity.old.*;
+import vip.yazilim.play2gether.web.service.ISystemRoleService;
+import vip.yazilim.play2gether.web.service.ISystemUserService;
 import vip.yazilim.play2gether.web.service.old.*;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
@@ -28,22 +32,22 @@ public class SeniorWebappApplication implements CommandLineRunner {
     private ISystemRoleService roleService;
 
     @Autowired
-    private IManagerService managerService;
+    private IManagerServiceI managerService;
 
     @Autowired
-    private IStudentService studentService;
+    private IStudentServiceI studentService;
 
     @Autowired
-    private ICourseService courseService;
+    private ICourseServiceI courseService;
 
     @Autowired
-    private IEnrollmentService enrollmentService;
+    private IEnrollmentServiceI enrollmentService;
 
     @Autowired
-    private IAttendanceLogService attendanceLogService;
+    private IAttendanceLogServiceI attendanceLogService;
 
     @Autowired
-    private ILectureService lectureService;
+    private ILectureServiceI lectureService;
 
     private SystemRole createRole(String roleName) throws Exception {
         SystemRole systemRole = new SystemRole();

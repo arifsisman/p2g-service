@@ -2,6 +2,7 @@ package vip.yazilim.play2gether.web.entity.old;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import vip.yazilim.play2gether.web.entity.SystemUser;
 
 import javax.persistence.*;
 import java.io.Serializable;

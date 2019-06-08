@@ -12,9 +12,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vip.yazilim.play2gether.web.Constants;
 import vip.yazilim.play2gether.web.entity.old.Enrollment;
 import vip.yazilim.play2gether.web.model.form.EnrollmentForm;
-import vip.yazilim.play2gether.web.service.old.ICourseService;
-import vip.yazilim.play2gether.web.service.old.IEnrollmentService;
-import vip.yazilim.play2gether.web.service.old.IStudentService;
+import vip.yazilim.play2gether.web.service.old.ICourseServiceI;
+import vip.yazilim.play2gether.web.service.old.IEnrollmentServiceI;
+import vip.yazilim.play2gether.web.service.old.IStudentServiceI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,13 @@ import java.util.List;
 public class CourseEnrollmentController {
 
     @Autowired
-    private IEnrollmentService enrollmentService;
+    private IEnrollmentServiceI enrollmentService;
 
     @Autowired
-    private ICourseService courseService;
+    private ICourseServiceI courseService;
 
     @Autowired
-    private IStudentService studentService;
+    private IStudentServiceI studentService;
 
 
     @GetMapping("/course/{courseUuid}/enrollments")
