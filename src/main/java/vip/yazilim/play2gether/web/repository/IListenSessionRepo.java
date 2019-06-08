@@ -1,7 +1,6 @@
 package vip.yazilim.play2gether.web.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import vip.yazilim.play2gether.web.entity.ListenQueue;
 import vip.yazilim.play2gether.web.entity.ListenSession;
 
 /**

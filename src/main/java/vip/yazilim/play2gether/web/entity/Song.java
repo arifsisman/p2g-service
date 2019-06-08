@@ -17,9 +17,7 @@ public class Song {
     private String name;
     private String artist;
 
-
     @ManyToOne
-    @JoinColumn(name = "listen_queue_uuid")
-    private ListenQueue listenQueue;
-
+    @JoinColumn(name = "listen_session_uuid")
+    private ListenSession listenSession;
 }

@@ -1,10 +1,14 @@
 package vip.yazilim.play2gether.web.entity;
 
 import javax.persistence.*;
+
+import lombok.Data;
+
 import java.util.List;
 
 @Entity
 @Table(name = "p2g_user")
+@Data
 public class P2GUser {
 
     @Id

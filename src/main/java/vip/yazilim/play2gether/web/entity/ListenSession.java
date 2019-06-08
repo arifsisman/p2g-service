@@ -13,6 +13,9 @@ public class ListenSession {
     @Id
     private String uuid;
 
+    private String name;
+    private String description;
+
     private boolean active;
 
     @OneToOne
@@ -20,10 +23,8 @@ public class ListenSession {
     private P2GUser owner;
 
     @OneToMany(mappedBy = "listenSession")
-    private List<ListenQueue> listenQueueList;
+    private List<Song> songList;
 
     @OneToMany(mappedBy = "listenSession")
     private List<P2GUser>  p2GUserList;
-
-
 }

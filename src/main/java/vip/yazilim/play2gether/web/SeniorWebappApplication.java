@@ -17,7 +17,7 @@ import vip.yazilim.play2gether.web.util.DBHelper;
 import java.util.Date;
 
 @SpringBootApplication
-public class SeniorWebappApplication implements CommandLineRunner {
+public class SeniorWebappApplication {
 
     private Logger LOGGER = LoggerFactory.getLogger(SeniorWebappApplication.class);
 
@@ -64,6 +64,7 @@ public class SeniorWebappApplication implements CommandLineRunner {
         systemUser.setFirstName(firstName);
         systemUser.setLastName(lastName);
         systemUser.setEmail(email);
+
         systemUser.setPassword(password);
         systemUser.setSystemRole(systemRole);
         return systemUserService.save(systemUser)
@@ -129,7 +130,6 @@ public class SeniorWebappApplication implements CommandLineRunner {
                 .orElseThrow(() -> new Exception("Attendance Log Not Saved"));
     }
 
-    @Override
     public void run(String... args) throws Exception {
 
         /* Initialize Users */
