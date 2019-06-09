@@ -1,4 +1,4 @@
-package vip.yazilim.play2gether.web.controller.old;
+package vip.yazilim.play2gether.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,11 @@ public class PageController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/course/all";
+        return "page_home";
     }
 
+    @GetMapping("/profile")
+    public String profile() {
+        return "page_profile";
+    }
 }

@@ -1,11 +1,106 @@
 <!-- Footer -->
-<footer class="page-footer font-small primary-color fixed-bottom" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="footer">
+<footer class="footer border-top" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="footer">
 
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2019 Copyright:
-        <a href="https://mdbootstrap.com/education/bootstrap/"> maemresen.com</a>
-    </div>
-    <!-- Copyright -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="footer-div" style="font-size: 22px">
+                    <span class="footer-label">
+                        Play together with
+                    </span>
+
+                    <style>
+                        .footer-div>.footer-label {
+                            -webkit-transition: opacity 400ms ease-in-out;
+                            -moz-transition: opacity 400ms ease-in-out;
+                            -ms-transition: opacity 400ms ease-in-out;
+                            -o-transition: opacity 400ms ease-in-out;
+                            transition: opacity 400ms ease-in-out;
+
+                            margin-right: 0.2em;
+                            opacity: 0.6;
+                            cursor: default;
+                        }
+
+                        .footer-div:hover>.footer-label {
+                            opacity: 1;
+                        }
+
+                        .app-link {
+                            text-decoration: none;
+
+                            -webkit-transition: opacity 400ms ease-in-out;
+                            -moz-transition: opacity 400ms ease-in-out;
+                            -ms-transition: opacity 400ms ease-in-out;
+                            -o-transition: opacity 400ms ease-in-out;
+                            transition: opacity 400ms ease-in-out;
+
+                            -webkit-transition: transform 250ms ease-in-out;
+                            -moz-transition: transform 250ms ease-in-out;
+                            -ms-transition: transform 250ms ease-in-out;
+                            -o-transition: transform 250ms ease-in-out;
+                            transition: transform 250ms ease-in-out;
+
+                            display: inline-block;
+
+                            opacity: 0.6;
+                        }
+
+                        .app-link>img {
+                            width: 42px;
+                            z-index: -999;
+                            margin-right: 0.2em;
+                        }
+
+
+                        .app-link:hover {
+                            /* filter: alpha(opacity=50); */
+                            transform: scale(1.2);
+                            opacity: 1;
+                        }
+                    </style>
+
+                    <script>
+                        $(document).ready(function () {
+                            $(".app-link").hover(function () {
+                                link = $(this);
+                                app = $(link).attr('id');
+                                color = "black";
+                                if (app === 'spotify') {
+                                    color = "green";
+                                }
+                                if (app === 'youtube') {
+                                    color = "red";
+                                }
+                                if (app === 'soundcloud') {
+                                    color = "orange";
+                                }
+                                $(".footer-div > .footer-label").css('color', color);
+                            }, function () {
+                                $(".footer-div > .footer-label").css('color', 'black');
+                            });
+                        });
+                    </script>
+                    <a id="spotify" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect spotify account')">
+                        <img th:src="@{/images/spotify.png}" class="img-fluid" />
+                    </a>
+                    <a id="youtube" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect youtube account')">
+                        <img th:src="@{/images/youtube.png}" class="img-fluid" />
+                    </a>
+                    <a id="soundcloud" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect soundcloud account')">
+                        <img th:src="@{/images/soundcloud.png}" class="img-fluid" />
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-right">
+                Copyright Text 2019 ©
+            </div>
+            <!-- <span class="text-muted">Place sticky footer content here.</span> -->
+        </div>
 
 </footer>
 <!-- Footer -->
