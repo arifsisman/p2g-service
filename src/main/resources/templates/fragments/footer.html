@@ -1,86 +1,16 @@
 <!-- Footer -->
 <footer class="footer border-top" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="footer">
-
+    
     <div class="container">
         <div class="row">
             <div class="col-md-8">
+
+                <!-- Footer DIV -->
                 <div class="footer-div" style="font-size: 22px">
                     <span class="footer-label">
                         Play together with
                     </span>
 
-                    <style>
-                        .footer-div>.footer-label {
-                            -webkit-transition: opacity 400ms ease-in-out;
-                            -moz-transition: opacity 400ms ease-in-out;
-                            -ms-transition: opacity 400ms ease-in-out;
-                            -o-transition: opacity 400ms ease-in-out;
-                            transition: opacity 400ms ease-in-out;
-
-                            margin-right: 0.2em;
-                            opacity: 0.6;
-                            cursor: default;
-                        }
-
-                        .footer-div:hover>.footer-label {
-                            opacity: 1;
-                        }
-
-                        .app-link {
-                            text-decoration: none;
-
-                            -webkit-transition: opacity 400ms ease-in-out;
-                            -moz-transition: opacity 400ms ease-in-out;
-                            -ms-transition: opacity 400ms ease-in-out;
-                            -o-transition: opacity 400ms ease-in-out;
-                            transition: opacity 400ms ease-in-out;
-
-                            -webkit-transition: transform 250ms ease-in-out;
-                            -moz-transition: transform 250ms ease-in-out;
-                            -ms-transition: transform 250ms ease-in-out;
-                            -o-transition: transform 250ms ease-in-out;
-                            transition: transform 250ms ease-in-out;
-
-                            display: inline-block;
-
-                            opacity: 0.6;
-                        }
-
-                        .app-link>img {
-                            width: 42px;
-                            z-index: -999;
-                            margin-right: 0.2em;
-                        }
-
-
-                        .app-link:hover {
-                            /* filter: alpha(opacity=50); */
-                            transform: scale(1.2);
-                            opacity: 1;
-                        }
-                    </style>
-
-                    <script>
-                        $(document).ready(function () {
-                            $(".app-link").hover(function () {
-                                link = $(this);
-                                app = $(link).attr('id');
-                                color = "black";
-                                if (app === 'spotify') {
-                                    color = "green";
-                                }
-                                if (app === 'youtube') {
-                                    color = "red";
-                                }
-                                if (app === 'soundcloud') {
-                                    color = "orange";
-                                }
-                                $(".footer-div > .footer-label").css('color', color);
-                            }, function () {
-                                $(".footer-div > .footer-label").css('color', 'black');
-                            });
-                        });
-                    </script>
                     <a id="spotify" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
                         href="#" onclick="alert('connect spotify account')">
                         <img th:src="@{/images/spotify.png}" class="img-fluid" />
@@ -94,6 +24,8 @@
                         <img th:src="@{/images/soundcloud.png}" class="img-fluid" />
                     </a>
                 </div>
+                <!--# End Footer DIV #-->
+                
             </div>
 
             <div class="col-md-4 text-right">

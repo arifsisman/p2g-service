@@ -8,11 +8,16 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" th:href="@{/lib/fontawesome/all.css}">
+
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" th:href="@{/lib/bootstrap-4.3.1-dist/css/bootstrap.min.css}">
 
     <!-- Datatables -->
     <link rel="stylesheet" th:href="@{/lib/datatables/jquery.dataTables.css}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
 
     <!-- Required meta tags -->
     <title th:text="${title}"></title>
@@ -26,83 +31,11 @@
     <!-- Datatables -->
     <script type="text/javascript" th:src="@{/lib/datatables/jquery.dataTables.js}"></script>
 
-    <style>
-        /* Sticky footer styles
-        -------------------------------------------------- */
-        html {
-            position: relative;
-            min-height: 100%;
-        }
-
-        body {
-            /* Margin bottom by footer height */
-            margin-bottom: 72px;
-        }
-
-        nav {
-            background-color: #f5f5f5;
-        }
-
-        .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            /* Set the fixed height of the footer here */
-            height: 80px;
-            line-height: 72px;
-            /* Vertically center the text there */
-            background-color: #f5f5f5;
-        }
-
-
-        /* Custom page CSS
-        -------------------------------------------------- */
-        /* Not required for template or sticky footer method. */
-
-        body>.container {
-            padding: 60px 15px 0;
-        }
-
-        .footer>.container {
-            padding-right: 15px;
-            padding-left: 15px;
-        }
-
-        code {
-            font-size: 80%;
-        }
-
-        input {
-            /* background-color:transparent!important; */
-            border: 0 !important;
-            /* border-bottom:1px solid grey!important; */
-            outline: 0px !important;
-            border-bottom: 1px solid #bababa !important;
-
-            -webkit-transition: border 400ms ease-in-out;
-            -moz-transition: border 400ms ease-in-out;
-            -ms-transition: border 400ms ease-in-out;
-            -o-transition: border 400ms ease-in-out;
-            transition: border 400ms ease-in-out;
-        }
-
-        input:hover,
-        input:active,
-        input:focus {
-            outline: 0px !important;
-            box-shadow: none !important;
-            -webkit-appearance: none;
-        }
-
-        input:active,
-        input:focus {
-            border-bottom: 1px solid #1DB954 !important;
-        }
-    </style>
+    <!-- Custom JS -->
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
 </head>
 
 <body class="bg-light">
-
 
     <!--header.html  that's here  -->
     <div th:replace="fragments/header :: header"></div>
@@ -113,7 +46,6 @@
 
     <!--footer.html  that's here  -->
     <div th:replace="fragments/footer :: footer"></div>
-
 
 </body>
 
