@@ -5,7 +5,7 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
 
 @Data
-public class SystemUserModel {
+public class UserModel {
     User user;
     Role role;
 }

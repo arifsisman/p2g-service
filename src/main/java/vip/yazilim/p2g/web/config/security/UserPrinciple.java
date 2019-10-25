@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.ISystemRoleService;
+import vip.yazilim.p2g.web.service.IRoleService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +18,8 @@ import java.util.List;
 public class UserPrinciple implements UserDetails {
 
     @Autowired
-    private ISystemRoleService systemRoleService;
-
-//    public SystemRole getSystemRoleByUuid(String userUuid){
-//        return systemRoleService.getSystemRoleByUuid(userUuid).get();
-//    }
-
+    private IRoleService roleService;
+    
     private final User user;
 
     public UserPrinciple(User user) {
@@ -37,7 +33,7 @@ public class UserPrinciple implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(systemRoleService.getSystemRoleByUuid(user.getUuid()).toString()));
+        authorityList.add(new SimpleGrantedAuthority(roleService.getSystemRoleByUuid(user.getUuid()).toString()));
         return authorityList;
     }
 

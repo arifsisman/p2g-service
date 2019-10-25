@@ -8,13 +8,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author Emre Sen - 25.05.2019
  * @contact maemresen07@gmail.com
  */
-
 @Configuration
 @EnableGlobalMethodSecurity(
         prePostEnabled = true,
@@ -23,9 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Order(2)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
-    private SystemUserDetailsService systemUserDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
@@ -35,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(systemUserDetailsService);
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

@@ -8,8 +8,9 @@ import java.util.Optional;
  * @author Emre Sen - 24.05.2019
  * @contact maemresen07@gmail.com
  */
-public interface ISystemRoleService{
+public interface IRoleService {
 
     Optional<Role> getSystemRoleByUuid(String systemUserUuid);
     Role getDefaultRole();
+
 }

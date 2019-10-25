@@ -3,21 +3,21 @@ package vip.yazilim.p2g.web.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.ISystemRoleService;
+import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.ISystemUserService;
-import vip.yazilim.p2g.web.model.SystemUserModel;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.ISystemUserRepo;
 
 import java.util.Optional;
 
-public class SystemUserServiceImpl implements ISystemUserService {
+public class UserServiceImpl implements ISystemUserService {
 
 
     @Autowired
     private ISystemUserRepo systemUserRepo;
 
     @Autowired
-    private ISystemRoleService systemRoleService;
+    private IRoleService systemRoleService;
 
     @Override
     public Optional<User> getUserByEmail(String email) {
@@ -26,7 +26,7 @@ public class SystemUserServiceImpl implements ISystemUserService {
     }
 
     @Override
-    public Optional<SystemUserModel> getSystemUserModelByUuid(String systemUserUuid) throws Exception {
+    public Optional<UserModel> getSystemUserModelByUuid(String systemUserUuid) throws Exception {
         Optional<User> systemUser;
 
         try {
@@ -39,19 +39,19 @@ public class SystemUserServiceImpl implements ISystemUserService {
             return Optional.empty();
         }
 
-        SystemUserModel systemUserModel = new SystemUserModel();
-        systemUserModel.setUser(systemUser.get());
+        UserModel userModel = new UserModel();
+        userModel.setUser(systemUser.get());
 
         // User Role
         Optional<Role> systemRole = systemRoleService.getSystemRoleByUuid(systemUserUuid);
         if (systemRole.isPresent()) {
-            systemUserModel.setRole(systemRole.get());
+            userModel.setRole(systemRole.get());
         } else {
             Role defaultRole = systemRoleService.getDefaultRole();
-            systemUserModel.setRole(defaultRole);
+            userModel.setRole(defaultRole);
         }
 
-        return Optional.of(systemUserModel);
+        return Optional.of(userModel);
     }
 
 }

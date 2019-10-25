@@ -1,12 +1,12 @@
 package vip.yazilim.p2g.web.config.security;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.service.IUserService;
 
 import java.util.Optional;
 
@@ -15,14 +15,15 @@ import java.util.Optional;
  * @contact maemresen07@gmail.com
  */
 @Service
-public class SystemUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private ISystemUserService systemUserService;
+    private IUserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Optional<User> systemUserOptional = systemUserService.getUserByEmail(s);
+        Optional<User> systemUserOptional = userService.getUserByEmail(s);
+        //TODO: or else throw ?
         User user = systemUserOptional
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         return new UserPrinciple(user);
