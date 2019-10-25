@@ -19,5 +19,5 @@ public class Song {
 
     @ManyToOne
     @JoinColumn(name = "listen_session_uuid")
-    private ListenSession listenSession;
+    private String listenSession;
 }

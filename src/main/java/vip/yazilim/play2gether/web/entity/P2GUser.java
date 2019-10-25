@@ -16,14 +16,13 @@ public class P2GUser {
 
     private boolean online;
 
-
     @OneToOne
     @JoinColumn(name = "system_user_uuid")
     private SystemUser systemUser;
 
     @ManyToOne
     @JoinColumn(name = "listen_session_uuid")
-    private ListenSession listenSession;
+    private String listenSession;
 
     @OneToMany(mappedBy = "p2gUser")
     private List<P2GToken> p2gTokenList;

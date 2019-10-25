@@ -16,6 +16,8 @@ public class ListenSession {
     private String name;
     private String description;
 
+    private String password;
+
     private boolean active;
 
     @OneToOne

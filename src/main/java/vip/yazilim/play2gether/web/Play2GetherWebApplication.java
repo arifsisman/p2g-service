@@ -3,175 +3,135 @@ package vip.yazilim.play2gether.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import vip.yazilim.play2gether.web.entity.SystemRole;
-import vip.yazilim.play2gether.web.entity.SystemUser;
+import vip.yazilim.play2gether.web.entity.*;
 import vip.yazilim.play2gether.web.entity.old.*;
-import vip.yazilim.play2gether.web.service.ISystemRoleService;
-import vip.yazilim.play2gether.web.service.ISystemUserService;
+import vip.yazilim.play2gether.web.service.*;
 import vip.yazilim.play2gether.web.service.old.*;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
-public class SeniorWebappApplication {
+public class Play2GetherWebApplication {
 
-    private Logger LOGGER = LoggerFactory.getLogger(SeniorWebappApplication.class);
+    private Logger LOGGER = LoggerFactory.getLogger(Play2GetherWebApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(SeniorWebappApplication.class, args);
+        SpringApplication.run(Play2GetherWebApplication.class, args);
     }
 
-    @Autowired
-    private ISystemUserService systemUserService;
+//    @Autowired
+//    private ISystemUserService systemUserService;
+//
+//    @Autowired
+//    private ISystemRoleService roleService;
+//
+//    @Autowired
+//    private IP2GUserService p2GUserService;
+//
+//    @Autowired
+//    private IListenSessionService listenSessionService;
+//
+//    @Autowired
+//    private ISongService songService;
+//
+//
+//    private SystemRole createRole(String roleName) throws Exception {
+//        SystemRole systemRole = new SystemRole();
+//        systemRole.setUuid(DBHelper.getRandomUuid());
+//        systemRole.setName(roleName);
+//        return roleService.save(systemRole)
+//                .orElseThrow(() -> new Exception("Role Not Saved"));
+//    }
+//
+//    private SystemUser createSystemUser(String email, String password, String firstName, String lastName, SystemRole systemRole) throws Exception {
+//        SystemUser systemUser = new SystemUser();
+//        systemUser.setUuid(DBHelper.getRandomUuid());
+//        systemUser.setFirstName(firstName);
+//        systemUser.setLastName(lastName);
+//        systemUser.setEmail(email);
+//
+//        systemUser.setPassword(password);
+//        systemUser.setSystemRole(systemRole);
+//        return systemUserService.save(systemUser)
+//                .orElseThrow(() -> new Exception("User not Saved"));
+//    }
+//
+//    private P2GUser createP2GUser(String email, String password, String firstName, String lastName, SystemRole systemRole, boolean online, ListenSession listenSession, List<P2GToken> p2gTokenList) throws Exception {
+//        SystemUser sysUser = createSystemUser(email, password, firstName, lastName, systemRole);
+//        P2GUser user = new P2GUser();
+//        user.setUuid(DBHelper.getRandomUuid());
+//        user.setSystemUser(sysUser);
+//        user.setOnline(online);
+//        user.setP2gTokenList(p2gTokenList);
+//        user.setListenSession(listenSession);
+//        return p2GUserService.save(user)
+//                .orElseThrow(() -> new Exception("P2G User Not Saved"));
+//    }
+//
+//    private Song createSong(String songId, String name, String artist, ListenSession listenSession) throws Exception {
+//        Song song = new Song();
+//        song.setUuid(DBHelper.getRandomUuid());
+//        song.setSongId(songId);
+//        song.setName(name);
+//        song.setArtist(artist);
+//        song.setListenSession(listenSession);
+//        return songService.save(song)
+//                .orElseThrow(() -> new Exception("Song Not Saved"));
+//    }
+//
+//    private ListenSession createListenSession(String name, String description, String password, boolean active, P2GUser owner, List<P2GUser> p2GUserList, List<Song> songList) throws Exception {
+//        ListenSession listenSession = new ListenSession();
+//        listenSession.setName(name);
+//        listenSession.setDescription(description);
+//        listenSession.setPassword(password);
+//        listenSession.setActive(active);
+//        listenSession.setOwner(owner);
+//        listenSession.setP2GUserList(p2GUserList);
+//        listenSession.setSongList(songList);
+//
+//        for (Song s: songList) {
+//            s.setListenSession(listenSession);
+//        }
+//
+//        for (P2GUser u: p2GUserList) {
+//            u.setListenSession(listenSession);
+//        }
+//
+//        return listenSessionService.save(listenSession)
+//                .orElseThrow(() -> new Exception("Listen Session Not Saved"));
+//    }
 
-    @Autowired
-    private ISystemRoleService roleService;
-
-    @Autowired
-    private IManagerServiceI managerService;
-
-    @Autowired
-    private IStudentServiceI studentService;
-
-    @Autowired
-    private ICourseServiceI courseService;
-
-    @Autowired
-    private IEnrollmentServiceI enrollmentService;
-
-    @Autowired
-    private IAttendanceLogServiceI attendanceLogService;
-
-    @Autowired
-    private ILectureServiceI lectureService;
-
-    private SystemRole createRole(String roleName) throws Exception {
-        SystemRole systemRole = new SystemRole();
-        systemRole.setUuid(DBHelper.getRandomUuid());
-        systemRole.setName(roleName);
-        return roleService.save(systemRole)
-                .orElseThrow(() -> new Exception("Role Not Saved"));
-    }
-
-    private SystemUser createSystemUser(String email, String password, String firstName, String lastName, SystemRole systemRole) throws Exception {
-
-        SystemUser systemUser = new SystemUser();
-        systemUser.setUuid(DBHelper.getRandomUuid());
-        systemUser.setFirstName(firstName);
-        systemUser.setLastName(lastName);
-        systemUser.setEmail(email);
-
-        systemUser.setPassword(password);
-        systemUser.setSystemRole(systemRole);
-        return systemUserService.save(systemUser)
-                .orElseThrow(() -> new Exception("User not Saved"));
-
-    }
-
-    private Manager createManager(String email, String password, String firstName, String lastName, SystemRole systemRole) throws Exception {
-        SystemUser managerUser = createSystemUser(email, password, firstName, lastName, systemRole);
-        Manager manager = new Manager();
-        manager.setUuid(DBHelper.getRandomUuid());
-        manager.setSystemUser(managerUser);
-        return managerService.save(manager)
-                .orElseThrow(() -> new Exception("Manager not Saved"));
-    }
-
-    private Student createStudent(String email, String password, String firstName, String lastName, String studentId, SystemRole systemRole) throws Exception {
-        SystemUser studentUser = createSystemUser(email, password, firstName, lastName, systemRole);
-        Student student = new Student();
-        student.setUuid(DBHelper.getRandomUuid());
-        student.setStudentId(studentId);
-        student.setSystemUser(studentUser);
-        return studentService.save(student)
-                .orElseThrow(() -> new Exception("Student Not Saved"));
-    }
-
-    private Course createCourse(String name, String description, Manager manager) throws Exception {
-
-        Course courseParallel = new Course();
-        courseParallel.setUuid(DBHelper.getRandomUuid());
-        courseParallel.setName(name);
-        courseParallel.setDescription(description);
-        courseParallel.setManager(manager);
-        return courseService.save(courseParallel)
-                .orElseThrow(() -> new Exception("Course Not Saved"));
-    }
-
-    private Enrollment createEnrollment(Course course, Student student) throws Exception {
-        Enrollment enrollment = new Enrollment();
-        enrollment.setUuid(DBHelper.getRandomUuid());
-        enrollment.setStudent(student);
-        enrollment.setCourse(course);
-        return enrollmentService.save(enrollment)
-                .orElseThrow(() -> new Exception("Enrollment Not Saved"));
-    }
-
-    private Lecture createLecture(String name, String description, Course course) throws Exception {
-        Lecture lecture = new Lecture();
-        lecture.setUuid(DBHelper.getRandomUuid());
-        lecture.setName(name);
-        lecture.setCourse(course);
-        return lectureService.save(lecture)
-                .orElseThrow(() -> new Exception("Lecture Not Saved"));
-    }
-
-    private AttendanceLog createAttendanceLog(Lecture lecture, Enrollment enrollment) throws Exception {
-        AttendanceLog attendanceLog = new AttendanceLog();
-        attendanceLog.setUuid(DBHelper.getRandomUuid());
-        attendanceLog.setAttendanceDate(new Date());
-        attendanceLog.setLecture(lecture);
-        attendanceLog.setEnrollment(enrollment);
-        return attendanceLogService.save(attendanceLog)
-                .orElseThrow(() -> new Exception("Attendance Log Not Saved"));
-    }
 
     public void run(String... args) throws Exception {
 
-        /* Initialize Users */
-        SystemRole managerRole = createRole("ROLE_MANAGER");
-        SystemRole studentRole = createRole("ROLE_STUDENT");
-
-        Manager managerTaner = createManager("admin", "0", "All The One", "Above", managerRole);
-
-
-        Student studentEmre = createStudent("emre", "0", "Emre", "Sen", "emreid", studentRole);
-
-        // Professors:
-        Student profTaner = createStudent("taner", "0", "Taner", "Danisman", "tanerid", studentRole);
-        Student profMelih = createStudent("melih", "0", "Melih", "Günay", "melihid", studentRole);
-        Student profUmit = createStudent("umit", "0", "Ümit Deniz", "Uluşar", "umitid", studentRole);
-        Student profEvgin = createStudent("evgin", "0", "Evgin", "Göçeri", "evginid", studentRole);
-        Student profMurat = createStudent("murat", "0", "Murat", "Ak", "muratid", studentRole);
-        Student profBerkay = createStudent("berkay", "0", "Mustafa Berkay", "Yılmaz", "berkayid", studentRole);
-        Student profGokhan = createStudent("gokhan", "0", "Hüseyin Gökhan", "Akçay", "gokhanid", studentRole);
-        Student profJoseph = createStudent("joseph", "0", "Joseph William", "Ledet", "josphid", studentRole);
-
-        /* Parallel Computing Course */
-        Course parallel = createCourse("Parallel Computing", "Parallel Computing Course", managerTaner);
-        Course os = createCourse("Operating Systems", "Operating Systems Course", managerTaner);
-
-        /* Senior Design */
-        Course senior = createCourse("Senior Design Project", "Senior Design Project Sample Course", managerTaner);
-
-        // enrollments
-        createEnrollment(senior, studentEmre);
-        createEnrollment(senior, profTaner);
-        createEnrollment(senior, profMelih);
-        createEnrollment(senior, profUmit);
-        createEnrollment(senior, profEvgin);
-        createEnrollment(senior, profMurat);
-        createEnrollment(senior, profBerkay);
-        createEnrollment(senior, profGokhan);
-        createEnrollment(senior, profJoseph);
-
-        // lectures
-        createLecture("Parallel - Week 1", "desc", os);
-        createLecture("Parallel - Week 2", "desc", os);
-        createLecture("Senior Demo", "Demo class for Senior Design Project", senior);
+//        /* Initialize Roles */
+//        SystemRole adminRole = createRole("ROLE_ADMIN");
+//        SystemRole userRole = createRole("ROLE_USER");
+//
+//        /* Initialize P2G User */
+//        P2GUser user1 = createP2GUser("user1", "0", "Test", "User 1", userRole, true, null, null);
+//        P2GUser user2 = createP2GUser("user2", "0", "Test", "User 2", userRole, true, null, null);
+//
+//        /* Initialize P2G User List */
+//        List<P2GUser> p2GUserList = new ArrayList<>();
+//        p2GUserList.add(user1);
+//        p2GUserList.add(user2);
+//
+//        /* Initialize Songs */
+//        Song song1 = createSong("1234", "Everybody's Fool", "Evanescence", null);
+//        Song song2 = createSong("5678", "bury a friend", "Billie Ellish", null);
+//
+//        /* Initialize Song List */
+//        List<Song> songList = new ArrayList<>();
+//        songList.add(song1);
+//        songList.add(song2);
+//
+//        /* Initialize Listen Session */
+//        ListenSession listenSession = createListenSession("Test Room", "Test Description", "0", true, user1, p2GUserList, songList);
     }
 }

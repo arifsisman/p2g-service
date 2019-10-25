@@ -14,6 +14,7 @@ import vip.yazilim.play2gether.web.entity.SystemUser;
 import vip.yazilim.play2gether.web.service.*;
 import vip.yazilim.play2gether.web.util.DBHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -83,49 +84,65 @@ public class DataInitializer implements CommandLineRunner {
         return songService.save(song).orElseThrow(() -> new Exception("Song not Saved"));
     }
 
-    private ListenSession createListenSession(String name, String description, boolean active, P2GUser owner,
-            List<Song> songList, List<P2GUser> p2GUserList) throws Exception {
-
+    private ListenSession createListenSession(String name, String description, String password, boolean active, P2GUser owner, List<P2GUser> p2GUserList, List<Song> songList) throws Exception {
         ListenSession listenSession = new ListenSession();
-        listenSession.setUuid(DBHelper.getRandomUuid());
+        String uuid = DBHelper.getRandomUuid();
+        listenSession.setUuid(uuid);
         listenSession.setName(name);
         listenSession.setDescription(description);
+        listenSession.setPassword(password);
         listenSession.setActive(active);
         listenSession.setOwner(owner);
-        listenSession.setSongList(songList);
         listenSession.setP2GUserList(p2GUserList);
+        listenSession.setSongList(songList);
 
-        return listenSessionService.save(listenSession).orElseThrow(() -> new Exception("Listen Session not Saved"));
+        for (Song s: songList) {
+            s.setListenSession(uuid);
+        }
+
+        for (P2GUser u: p2GUserList) {
+            u.setListenSession(uuid);
+        }
+
+        return listenSessionService.save(listenSession)
+                .orElseThrow(() -> new Exception("Listen Session Not Saved"));
     }
 
     @Override
     public void run(String... args) throws Exception {
 
-        /* Initialize Users */
+        /* Initialize Roles */
         LOGGER.info("Initialize Roles");
-        SystemRole roleUser = createRole("ROLE_USER");
+        SystemRole adminRole = createRole("ROLE_ADMIN");
+        SystemRole userRole = createRole("ROLE_USER");
 
-        // Users:
+        /* Initialize Users */
         LOGGER.info("Initialize Users");
-        P2GUser emre = createP2GUser("emre", "0", "Emre", "Sen", roleUser, true);
-        P2GUser mustafa = createP2GUser("mustafa", "0", "Mustafa", "Sisman", roleUser, true);
+        P2GUser emre = createP2GUser("emre", "0", "Emre", "Sen", userRole, true);
+        P2GUser mustafa = createP2GUser("mustafa", "0", "Mustafa", "Sisman", adminRole, true);
 
-        P2GUser profTaner = createP2GUser("taner", "0", "Taner", "Danisman", roleUser, false);
-        P2GUser profMelih = createP2GUser("melih", "0", "Melih", "Günay", roleUser, false);
-        P2GUser profUmit = createP2GUser("umit", "0", "Ümit Deniz", "Uluşar", roleUser, false);
-        P2GUser profEvgin = createP2GUser("evgin", "0", "Evgin", "Göçeri", roleUser, false);
-        P2GUser profMurat = createP2GUser("murat", "0", "Murat", "Ak", roleUser, false);
-        P2GUser profBerkay = createP2GUser("berkay", "0", "Mustafa Berkay", "Yılmaz", roleUser, false);
-        P2GUser profGokhan = createP2GUser("gokhan", "0", "Hüseyin Gökhan", "Akçay", roleUser, false);
-        P2GUser profJoseph = createP2GUser("joseph", "0", "Joseph William", "Ledet", roleUser, false);
+        /* Initialize User List */
+        LOGGER.info("Initialize User List");
+        List<P2GUser> p2GUserList = new ArrayList<>();
+        p2GUserList.add(emre);
+        p2GUserList.add(mustafa);
 
+        /* Initialize Songs */
         LOGGER.info("Initialize Songs");
         Song song1 = createSong("1", "Biraz Ayrilik", "Gokhan Turkmen");
         Song song2 = createSong("2", "Kandırdım", "Kenan Doğulu");
         Song song3 = createSong("3", "Fırtınalar", "Pamela Spence");
+        Song song4 = createSong("4", "Everybody's Fool", "Evanescence");
+        Song song5 = createSong("5", "bury a friend", "Billie Ellish");
 
-        LOGGER.info("Initialize ListenSessions");
-        ListenSession listenSession = createListenSession("Session 1", "Desc", true, emre,
-                Arrays.asList(song1, song2, song3), Arrays.asList(emre, mustafa));
+        /* Initialize Songs List */
+        LOGGER.info("Initialize Song List");
+        List<Song> songList = new ArrayList<>();
+        songList.add(song1);
+        songList.add(song2);
+
+        /* Initialize Listen Sessions */
+        LOGGER.info("Initialize Listen Sessions");
+        ListenSession listenSession = createListenSession("Test Room", "Test Description", "0", true, mustafa, p2GUserList, songList);
     }
 }
