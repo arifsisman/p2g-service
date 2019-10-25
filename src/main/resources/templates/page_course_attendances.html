@@ -41,7 +41,7 @@
 
         <tr th:each="attendanceLog : ${attendanceLogList}">
             <td th:text="${attendanceLog.enrollment.student.studentId}"/>
-            <td th:text="${attendanceLog.enrollment.student.systemUser.firstName + ' ' + attendanceLog.enrollment.student.systemUser.lastName}"/>
+            <td th:text="${attendanceLog.enrollment.student.user.firstName + ' ' + attendanceLog.enrollment.student.user.lastName}"/>
             <td th:text="${attendanceLog.attendanceDate}"/>
             <td th:text="${attendanceLog.lecture.name}"/>
             <td th:text="${attendanceLog.joined}"/>

@@ -34,8 +34,8 @@
     <ul class="list-group list-group-flush">
         <li class="list-group-item" th:each="enrollment : ${enrollmentList}">
             <span th:text="${enrollment.student.studentId}"></span>
-            <span th:text="${enrollment.student.systemUser.firstName}"></span>
-            <span th:text="${enrollment.student.systemUser.lastName}"></span>
+            <span th:text="${enrollment.student.user.firstName}"></span>
+            <span th:text="${enrollment.student.user.lastName}"></span>
 
             <form th:action="@{/course/enrollment/leave}" method="POST">
                 <input type="hidden" name="courseUuid" th:value="${courseUuid}">
