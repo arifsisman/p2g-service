@@ -1,16 +1,13 @@
+# configures the port that Eureka Server will be running
 server:
-
-  # configures the port that Eureka Server will be running
   port: 8080
 
-  # Data source configuration
-
-
+# Data source configuration
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/p2g_db
     username: postgres
-    password: pos
+    password: 16181618
     initialization-mode: never
 
   jpa:

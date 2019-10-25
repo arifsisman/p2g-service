@@ -17,7 +17,7 @@
         <select th:field="*{studentUuid}" class="browser-default custom-select">
             <option th:each="student : ${studentList}"
                     th:value="${student.uuid}"
-                    th:text="${student.systemUser.firstName + ' ' + student.systemUser.lastName}"/>
+                    th:text="${student.user.firstName + ' ' + student.user.lastName}"/>
         </select>
 
         <button class="btn btn-info my-4" type="submit">Save</button>
