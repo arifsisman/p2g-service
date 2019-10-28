@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface IRoleService {
 
-    Optional<Role> getSystemRoleByUuid(String systemUserUuid);
+    Optional<Role> getRoleByUuid(String userUuid);
     Role getDefaultRole();
 
 }

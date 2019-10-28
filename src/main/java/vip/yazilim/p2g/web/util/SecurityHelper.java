@@ -16,7 +16,7 @@ public class SecurityHelper {
                 .getAuthentication().getPrincipal();
     }
 
-    public static User getSystemUser() {
+    public static User getUser() {
         return getUserPrinciple().getUser();
     }
 

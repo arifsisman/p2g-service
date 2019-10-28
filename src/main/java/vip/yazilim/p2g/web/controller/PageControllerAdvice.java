@@ -22,14 +22,14 @@ public class PageControllerAdvice {
     @ModelAttribute
     public void handleRequest(HttpServletRequest request, Model model) {
         String requestURI = request.getRequestURI();
-        User user = SecurityHelper.getSystemUser();
+        User user = SecurityHelper.getUser();
 
-        LOGGER.info("Adding systemUser to model."
+        LOGGER.info("Adding user to model."
                         + "\n\t User Name: {} {}"
                 , user.getFirstName()
                 , user.getLastName());
 
-        model.addAttribute("systemUser", user);
+        model.addAttribute("user", user);
 
     }
 

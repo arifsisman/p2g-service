@@ -17,8 +17,8 @@ public class RoomUser implements Serializable {
     @Id
     private String uuid;
 
-    @Column(name = "system_user_uuid")
-    private String systemUserUuid;
+    @Column(name = "user_uuid")
+    private String userUuid;
 
     @Column(name = "room_uuid")
     private String roomUuid;

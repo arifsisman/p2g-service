@@ -21,8 +21,8 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
-    @Column(name = "system_role_uuid")
-    private String systemRoleUuid;
+    @Column(name = "role_uuid")
+    private String roleUuid;
 
     @Column(name = "first_name")
     private String firstName;

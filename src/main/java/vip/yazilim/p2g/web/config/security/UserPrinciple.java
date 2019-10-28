@@ -33,7 +33,7 @@ public class UserPrinciple implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(roleService.getSystemRoleByUuid(user.getUuid()).toString()));
+        authorityList.add(new SimpleGrantedAuthority(roleService.getRoleByUuid(user.getUuid()).toString()));
         return authorityList;
     }
 

@@ -3,21 +3,21 @@ package vip.yazilim.p2g.web.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
-import vip.yazilim.p2g.web.service.ISystemUserService;
 import vip.yazilim.p2g.web.model.UserModel;
-import vip.yazilim.p2g.web.repository.ISystemUserRepo;
+import vip.yazilim.p2g.web.service.IUserService;
 
 import java.util.Optional;
 
-public class UserServiceImpl implements ISystemUserService {
+public class UserServiceImpl implements IUserService {
 
 
     @Autowired
-    private ISystemUserRepo systemUserRepo;
+    private IUserRepo userRepo;
 
     @Autowired
-    private IRoleService systemRoleService;
+    private IRoleService roleService;
 
     @Override
     public Optional<User> getUserByEmail(String email) {
@@ -26,28 +26,28 @@ public class UserServiceImpl implements ISystemUserService {
     }
 
     @Override
-    public Optional<UserModel> getSystemUserModelByUuid(String systemUserUuid) throws Exception {
-        Optional<User> systemUser;
+    public Optional<UserModel> getUserModelByUuid(String userUuid) throws Exception {
+        Optional<User> user;
 
         try {
-            systemUser = systemUserRepo.findByUuid(systemUserUuid);
+            user = userRepo.findByUuid(userUuid);
         } catch (Exception e) {
             throw new Exception("my exception");
         }
 
-        if (!systemUser.isPresent()) {
+        if (!user.isPresent()) {
             return Optional.empty();
         }
 
         UserModel userModel = new UserModel();
-        userModel.setUser(systemUser.get());
+        userModel.setUser(user.get());
 
         // User Role
-        Optional<Role> systemRole = systemRoleService.getSystemRoleByUuid(systemUserUuid);
-        if (systemRole.isPresent()) {
-            userModel.setRole(systemRole.get());
+        Optional<Role> role = roleService.getRoleByUuid(userUuid);
+        if (role.isPresent()) {
+            userModel.setRole(role.get());
         } else {
-            Role defaultRole = systemRoleService.getDefaultRole();
+            Role defaultRole = roleService.getDefaultRole();
             userModel.setRole(defaultRole);
         }
 

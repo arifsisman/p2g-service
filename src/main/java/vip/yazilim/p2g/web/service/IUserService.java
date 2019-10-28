@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IUserService {
 
     Optional<User> getUserByEmail(String email);
-    Optional<UserModel> getSystemUserModelByUuid(String systemUserUuid) throws Exception;
+    Optional<UserModel> getUserModelByUuid(String userUuid) throws Exception;
 
 }
