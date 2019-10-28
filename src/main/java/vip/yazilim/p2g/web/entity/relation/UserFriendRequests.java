@@ -10,19 +10,20 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "room_user")
+@Table(name = Constants.TABLE_PREFIX + "friend_requests")
 @Data
-public class RoomUser implements Serializable {
+public class UserFriendRequests implements Serializable {
 
     @Id
     private String uuid;
 
-    @Column(name = "room_uuid")
-    private String roomUuid;
-
     @Column(name = "user_uuid")
     private String userUuid;
 
-    private String role;
+    @Column(name = "friend_uuid")
+    private String friendUuid;
+
+    @Column(name = "request_status")
+    private String requestStatus;
 
 }

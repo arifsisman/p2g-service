@@ -10,9 +10,9 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "room_user")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "room_invite")
 @Data
-public class RoomUser implements Serializable {
+public class RoomInvite implements Serializable {
 
     @Id
     private String uuid;
@@ -23,6 +23,7 @@ public class RoomUser implements Serializable {
     @Column(name = "user_uuid")
     private String userUuid;
 
-    private String role;
+    @Column(name = "is_accepted")
+    private boolean isAccepted;
 
 }

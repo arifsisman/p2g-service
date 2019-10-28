@@ -21,24 +21,32 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
-    @Column(name = "role_uuid")
-    private String roleUuid;
+//    odadaki userin rolu olarak degistirildi (RoomUser)
+//    @Column(name = "role_uuid")
+//    private String roleUuid;
 
-    @Column(name = "first_name")
-    private String firstName;
+    @Column(name = "display_name")
+    private String displayName;
 
-    @Column(name = "middle_name")
-    private String middleName;
+    @Column(name = "spotify_account_id")
+    private String spotifyAccountId;
 
-    @Column(name = "last_name")
-    private String lastName;
-
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
+//     sifre yerine OAuth dan gelen tokenlar kullaniliyor
+//    @Column(nullable = false)
+//    private String password;
 
-    @Column(nullable = false)
-    private Boolean online;
+    @Column(name = "online_status")
+    private String onlineStatus;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    private String anthem;
+
+    @Column(name = "now_playing")
+    private String nowPlaying;
+
 }
