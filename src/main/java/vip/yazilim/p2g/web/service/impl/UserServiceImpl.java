@@ -1,6 +1,9 @@
 package vip.yazilim.p2g.web.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
@@ -16,13 +19,27 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl extends ACrudServiceImpl<User, String> implements IUserService {
 
+    // static fields
+    private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    // injected dependencies
     @Autowired
     private IUserRepo userRepo;
 
     @Autowired
     private IRoleService roleService;
+
+    @Override
+    protected JpaRepository<User, String> getRepository() {
+        return userRepo;
+    }
+
+    @Override
+    protected String getId(User entity) {
+        return entity.getUuid();
+    }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
@@ -56,62 +73,5 @@ public class UserServiceImpl implements IUserService {
         }
 
         return Optional.of(userModel);
-    }
-
-    @Override
-    public Optional<User> create(User item) throws Exception {
-        Optional<User> user;
-
-        try {
-            user = Optional.of(userRepo.save(item));
-        } catch (Exception e) {
-            throw new Exception("Cannot create user.");
-        }
-
-        return user;
-    }
-
-    @Override
-    public Optional<User> getByUuid(String uuid) throws Exception {
-        Optional<User> user;
-
-        try {
-            user = userRepo.findByUuid(uuid);
-        } catch (Exception e) {
-            throw new Exception("Cannot read user.");
-        }
-
-        return user;
-    }
-
-    @Override
-    public Optional<User> update(User item) throws Exception {
-        Optional<User> user;
-
-        try {
-            user = Optional.of(userRepo.save(item));
-        } catch (Exception e) {
-            throw new Exception("Cannot update user.");
-        }
-
-        return user;
-    }
-
-    @Override
-    public void delete(User item) throws Exception {
-        try {
-            userRepo.delete(item);
-        } catch (Exception e) {
-            throw new Exception("Cannot delete user.");
-        }
-    }
-
-    @Override
-    public void delete(String uuid) throws Exception {
-        try {
-            userRepo.deleteById(uuid);
-        } catch (Exception e) {
-            throw new Exception("Cannot delete user.");
-        }
     }
 }
