@@ -5,10 +5,10 @@ import vip.yazilim.p2g.web.entity.Role;
 import java.util.Optional;
 
 /**
- * @author Emre Sen - 24.05.2019
- * @contact maemresen07@gmail.com
+ * @author mustafaarifsisman - 29.10.2019
+ * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoleService {
+public interface IRoleService extends CrudService<Role, String> {
 
     Optional<Role> getRoleByUuid(String userUuid);
     Role getDefaultRole();
