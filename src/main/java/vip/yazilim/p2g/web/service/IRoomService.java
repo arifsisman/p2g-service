@@ -15,4 +15,5 @@ public interface IRoomService extends ICrudService<Room, String> {
     Optional<Room> getRoomByUuid(String roomUuid);
     Optional<Room> getRoomByOwnerUuid(String ownerUuid);
     Optional<List<User>> getUsersByUuid(String roomUuid);
+
 }

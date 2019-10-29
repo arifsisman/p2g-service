@@ -1,50 +1,57 @@
 package vip.yazilim.p2g.web.service;
 
+import vip.yazilim.p2g.web.exception.DatabaseException;
+
 import java.io.Serializable;
-import java.util.Optional;
+import java.util.List;
+
 
 /**
- * @author mustafaarifsisman - 29.10.2019
- * @contact mustafaarifsisman@gmail.com
+ * Business method definitions for CRUD operations for Entity
+ *
+ * @author Emre Sen, 27.06.2019
+ * @contact maemresen07@gmail.com
  */
-public interface ICrudService<T, ID extends Serializable> {
+public interface ICrudService<E extends Serializable, ID> {
 
-    /**
-     * Create new resource.
-     *
-     * @param item Resource to create
-     * @return new resource
-     */
-    Optional<T> create(T item) throws Exception;
+	// (C) create Operations
+	/**
+	 * Insert Entity to the Data source.
+	 *
+	 * @param entity data to insert
+	 * @return inserted entity
+	 */
+	 E create(E entity) throws DatabaseException;
 
-    /**
-     * Read existing resource.
-     *
-     * @param uuid Resource id
-     * @return resource read
-     */
-    Optional<T> getByUuid(ID uuid) throws Exception;
+	 // (R) read Operations
 
-    /**
-     * Update existing resource.
-     *
-     * @param item Resource to update
-     * @return resource updated
-     */
-    Optional<T> update(T item) throws Exception;
+	 /**
+	 * Get all entities on the table
+	 *
+	 * @return list of entities
+	 */
+	List<E> getAll() throws DatabaseException;
 
-    /**
-     * Delete existing resource.
-     *
-     * @param item Resource to delete
-     */
-    void delete(T item) throws Exception;
+	/**
+	 * Get an entity from table by id.
+	 *
+	 * @param id id field of entity
+	 * @return entity with id
+	 */
+	E getById(ID id) throws DatabaseException;
 
-    /**
-     * Delete existing resource.
-     *
-     * @param uuid Resource id
-     */
-    void delete(ID uuid) throws Exception;
+	// (U) update Operations
 
+	/**
+	 * Update table with given model
+	 *
+	 * @param newEntity new updated values to save into data source
+	 * @return saved entity to database
+	 */
+	E update(E newEntity) throws DatabaseException;
+
+	// (D) delete Operations
+	boolean delete(E entity) throws DatabaseException;
+
+	boolean deleteAll() throws DatabaseException;
 }
