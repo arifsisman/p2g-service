@@ -1,11 +1,38 @@
 <!-- Footer -->
-<footer class="page-footer font-small primary-color fixed-bottom" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="footer">
+<footer class="footer border-top" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="footer">
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
 
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2019 Copyright:
-        <a href="https://mdbootstrap.com/education/bootstrap/"> maemresen.com</a>
-    </div>
-    <!-- Copyright -->
+                <!-- Footer DIV -->
+                <div class="footer-div" style="font-size: 22px">
+                    <span class="footer-label">
+                        Play together with
+                    </span>
+
+                    <a id="spotify" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect spotify account')">
+                        <img th:src="@{/images/spotify.png}" class="img-fluid" />
+                    </a>
+                    <a id="youtube" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect youtube account')">
+                        <img th:src="@{/images/youtube.png}" class="img-fluid" />
+                    </a>
+                    <a id="soundcloud" class="app-link" style="text-decoration:none" name="spotify" value="spotify"
+                        href="#" onclick="alert('connect soundcloud account')">
+                        <img th:src="@{/images/soundcloud.png}" class="img-fluid" />
+                    </a>
+                </div>
+                <!--# End Footer DIV #-->
+                
+            </div>
+
+            <div class="col-md-4 text-right">
+                Copyright Text 2019 ©
+            </div>
+            <!-- <span class="text-muted">Place sticky footer content here.</span> -->
+        </div>
 
 </footer>
 <!-- Footer -->
