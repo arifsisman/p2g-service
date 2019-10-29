@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "user_token")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "user_token")
 @Data
 public class UserToken implements Serializable {
 

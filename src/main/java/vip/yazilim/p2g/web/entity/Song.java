@@ -16,9 +16,15 @@ public class Song implements Serializable {
 
     @Column(name = "song_id")
     private String songId;
-    private String name;
-    private String artist;
 
-    @Column(name = "room_uuid")
-    private String roomUuid;
+    private String uri;
+
+    @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
+    private String artists;
+
+    @Column(name = "duration_ms")
+    private String durationMs;
+
 }
