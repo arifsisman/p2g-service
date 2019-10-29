@@ -10,7 +10,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IQueueService extends CrudService<Queue, String> {
+public interface IQueueService extends ICrudService<Queue, String> {
 
     Optional<List<Song>> getSongsByRoomUuid(String roomUuid);
 

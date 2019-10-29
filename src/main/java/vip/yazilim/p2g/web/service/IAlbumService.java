@@ -10,7 +10,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IAlbumService extends CrudService<Album, String> {
+public interface IAlbumService extends ICrudService<Album, String> {
 
     Optional<List<Song>> getSongsByAlbumUuid(String albumUuid);
     Optional<String> getImageUrlByAlbumUuid(String albumUuid);

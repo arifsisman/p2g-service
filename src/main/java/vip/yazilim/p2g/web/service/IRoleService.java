@@ -8,7 +8,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoleService extends CrudService<Role, String> {
+public interface IRoleService extends ICrudService<Role, String> {
 
     Optional<Role> getRoleByUuid(String userUuid);
     Role getDefaultRole();

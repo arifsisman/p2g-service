@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ITokenService extends CrudService<Token, String> {
+public interface ITokenService extends ICrudService<Token, String> {
 
     Optional<List<Token>> getTokensByUserUuid(String userUuid);
 

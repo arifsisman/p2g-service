@@ -7,7 +7,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface CrudService<T, ID extends Serializable> {
+public interface ICrudService<T, ID extends Serializable> {
 
     /**
      * Create new resource.

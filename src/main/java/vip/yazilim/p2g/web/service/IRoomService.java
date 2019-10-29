@@ -10,7 +10,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoomService extends CrudService<Room, String> {
+public interface IRoomService extends ICrudService<Room, String> {
 
     Optional<Room> getRoomByUuid(String roomUuid);
     Optional<Room> getRoomByOwnerUuid(String ownerUuid);

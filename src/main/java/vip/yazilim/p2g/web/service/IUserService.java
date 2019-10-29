@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IUserService extends CrudService<User, String> {
+public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByEmail(String email);
     Optional<UserModel> getUserModelByUuid(String userUuid) throws Exception;
