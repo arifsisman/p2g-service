@@ -20,7 +20,6 @@ import vip.yazilim.p2g.web.service.ICrudService;
  * @contact maemresen07@gmail.com
  */
 public abstract class ACrudServiceImpl<E extends Serializable, ID> implements ICrudService<E, ID> {
-
 	/**
 	 * Repository of the entity that will be used with this implementation
 	 */
