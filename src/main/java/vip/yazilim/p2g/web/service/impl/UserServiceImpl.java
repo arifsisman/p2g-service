@@ -1,18 +1,30 @@
 package vip.yazilim.p2g.web.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
-import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.IUserService;
 
 import java.util.Optional;
 
-public class UserServiceImpl implements IUserService {
+/**
+ * @author mustafaarifsisman - 29.10.2019
+ * @contact mustafaarifsisman@gmail.com
+ */
+@Service
+public class UserServiceImpl extends ACrudServiceImpl<User, String> implements IUserService {
 
+    // static fields
+    private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    // injected dependencies
     @Autowired
     private IUserRepo userRepo;
 
@@ -20,9 +32,18 @@ public class UserServiceImpl implements IUserService {
     private IRoleService roleService;
 
     @Override
+    protected JpaRepository<User, String> getRepository() {
+        return userRepo;
+    }
+
+    @Override
+    protected String getId(User entity) {
+        return entity.getUuid();
+    }
+
+    @Override
     public Optional<User> getUserByEmail(String email) {
-        //TODO: impl unutma
-        return null;
+        return userRepo.findByEmail(email);
     }
 
     @Override
@@ -32,7 +53,7 @@ public class UserServiceImpl implements IUserService {
         try {
             user = userRepo.findByUuid(userUuid);
         } catch (Exception e) {
-            throw new Exception("my exception");
+            throw new Exception("Cannot get user.");
         }
 
         if (!user.isPresent()) {
@@ -53,5 +74,4 @@ public class UserServiceImpl implements IUserService {
 
         return Optional.of(userModel);
     }
-
 }

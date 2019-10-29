@@ -4,6 +4,5 @@ public enum OnlineStatus {
     ONLINE,
     OFFLINE,
     AWAY,
-    WAITING,
-    AFK
+    WAITING
 }

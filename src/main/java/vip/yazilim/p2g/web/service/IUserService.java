@@ -6,10 +6,10 @@ import vip.yazilim.p2g.web.model.UserModel;
 import java.util.Optional;
 
 /**
- * @author Emre Sen - 24.05.2019
- * @contact maemresen07@gmail.com
+ * @author mustafaarifsisman - 29.10.2019
+ * @contact mustafaarifsisman@gmail.com
  */
-public interface IUserService {
+public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByEmail(String email);
     Optional<UserModel> getUserModelByUuid(String userUuid) throws Exception;
