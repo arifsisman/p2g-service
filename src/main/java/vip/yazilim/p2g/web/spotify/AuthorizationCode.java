@@ -1,30 +1,30 @@
 package vip.yazilim.p2g.web.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URI;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class AuthorizationCode {
-    private String clientId = "zyuxhfo1c51b5hxjk09x2uhv5n0svgd6g";
-    private String clientSecret = "zudknyqbh3wunbhcvg9uyvo7uwzeu6nne";
-    private URI redirectUri = SpotifyHttpManager.makeUri("https://example.com/spotify-redirect");
     private String code = "";
 
-    private SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setClientId(clientId)
-            .setClientSecret(clientSecret)
-            .setRedirectUri(redirectUri)
-            .build();
-    private AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code)
-            .build();
+    @Autowired
+    private SpotifyApi spotifyApi;
+
+    AuthorizationCodeRequest authorizationCodeRequest;
+
+    @PostConstruct
+    public void init(){
+        authorizationCodeRequest = spotifyApi.authorizationCode(code)
+                .build();
+    }
 
     public void authorizationCode_Sync() {
         try {

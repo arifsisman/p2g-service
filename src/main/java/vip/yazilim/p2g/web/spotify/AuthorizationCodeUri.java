@@ -8,8 +8,8 @@ package vip.yazilim.p2g.web.spotify;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +24,7 @@ import java.util.concurrent.CompletionException;
 public class AuthorizationCodeUri {
 
     @Autowired
+    @Qualifier("redirectUri")
     private SpotifyApi spotifyApi;
 
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;

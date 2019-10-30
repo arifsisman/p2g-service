@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.config;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
-import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,10 @@ public class SpotifyConfig {
     @Value("${spotify.redirectUri}")
     private String redirectUrl;
 
-    @Bean
+    @Value("${spotify.refreshToken}")
+    private String refreshToken;
+
+    @Bean("redirectUri")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public SpotifyApi spotifyApi() {
 
@@ -37,6 +39,17 @@ public class SpotifyConfig {
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
                 .setRedirectUri(redirectUri)
+                .build();
+    }
+
+    @Bean("refresh")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public SpotifyApi spotifyApiRefresh() {
+
+        return new SpotifyApi.Builder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .setRefreshToken(refreshToken)
                 .build();
     }
 
