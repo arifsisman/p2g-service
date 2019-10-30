@@ -9,9 +9,11 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -24,8 +26,16 @@ public class AuthorizationCodeUri {
     @Autowired
     private SpotifyApi spotifyApi;
 
-    @Autowired
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;
+
+    @PostConstruct
+    public void init(){
+        authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
+//          .state("x4xkmn9pu3j6ukrs8n")
+//          .scope("user-read-birthdate,user-read-email")
+//          .show_dialog(true)
+                .build();
+    }
 
     public void authorizationCodeUri_Sync() {
         URI uri = authorizationCodeUriRequest.execute();
