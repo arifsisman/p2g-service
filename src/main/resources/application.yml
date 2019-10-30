@@ -18,3 +18,9 @@ spring:
         format_sql: true
         jdbc.lob.non_contextual_creation: true
 
+
+# Spotify configuration
+spotify:
+  clientId: zyuxhfo1c51b5hxjk09x2uhv5n0svgd6g
+  clientSecret: zudknyqbh3wunbhcvg9uyvo7uwzeu6nne
+  recirectUrl: https://example.com/spotify-redirect

@@ -11,21 +11,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class AuthorizationCodeRefresh {
-    private static final String clientId = "zyuxhfo1c51b5hxjk09x2uhv5n0svgd6g";
-    private static final String clientSecret = "zudknyqbh3wunbhcvg9uyvo7uwzeu6nne";
-    private static final String refreshToken = "b0KuPuLw77Z0hQhCsK-GTHoEx_kethtn357V7iqwEpCTIsLgqbBC_vQBTGC6M5rINl0FrqHK-D3cbOsMOlfyVKuQPvpyGcLcxAoLOTpYXc28nVwB7iBq2oKj9G9lHkFOUKn";
+    private String clientId = "zyuxhfo1c51b5hxjk09x2uhv5n0svgd6g";
+    private String clientSecret = "zudknyqbh3wunbhcvg9uyvo7uwzeu6nne";
+    private String refreshToken = "b0KuPuLw77Z0hQhCsK-GTHoEx_kethtn357V7iqwEpCTIsLgqbBC_vQBTGC6M5rINl0FrqHK-D3cbOsMOlfyVKuQPvpyGcLcxAoLOTpYXc28nVwB7iBq2oKj9G9lHkFOUKn";
 
-    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
+    private SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(clientId)
             .setClientSecret(clientSecret)
             .setRefreshToken(refreshToken)
             .build();
-    private static final AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh()
+    private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh()
             .build();
 
-    public static void authorizationCodeRefresh_Sync() {
+    public void authorizationCodeRefresh_Sync() {
         try {
-            final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
+            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
 
             // Set access and refresh token for further "spotifyApi" object usage
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
@@ -37,14 +37,14 @@ public class AuthorizationCodeRefresh {
         }
     }
 
-    public static void authorizationCodeRefresh_Async() {
+    public void authorizationCodeRefresh_Async() {
         try {
-            final CompletableFuture<AuthorizationCodeCredentials> authorizationCodeCredentialsFuture = authorizationCodeRefreshRequest.executeAsync();
+            CompletableFuture<AuthorizationCodeCredentials> authorizationCodeCredentialsFuture = authorizationCodeRefreshRequest.executeAsync();
 
             // Thread free to do other tasks...
 
             // Example Only. Never block in production code.
-            final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeCredentialsFuture.join();
+            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeCredentialsFuture.join();
 
             // Set access token for further "spotifyApi" object usage
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
