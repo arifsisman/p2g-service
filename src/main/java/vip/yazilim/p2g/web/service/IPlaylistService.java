@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.Playlist;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.exception.DatabaseException;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Optional;
  */
 public interface IPlaylistService extends ICrudService<Playlist, String> {
 
-    Optional<List<Song>> getSongsByPlaylistUuid(String playlistUuid);
-    Optional<String> getImageUrlByPlaylistUuid(String playlistUuid);
+    List<Song> getSongsByPlaylistUuid(String playlistUuid) throws DatabaseException;
+    Optional<String> getImageUrlByPlaylistUuid(String playlistUuid) throws DatabaseException;
 
 }
