@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.exception.DatabaseException;
 
 import java.util.Optional;
 
@@ -10,6 +11,6 @@ import java.util.Optional;
  */
 public interface ISongService extends ICrudService<Song, String> {
 
-    Optional<Song> getSongByName(String songName);
+    Optional<Song> getSongByName(String songName) throws DatabaseException;
 
 }

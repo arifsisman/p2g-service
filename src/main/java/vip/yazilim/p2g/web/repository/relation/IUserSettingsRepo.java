@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IUserSettings extends JpaRepository<UserSettings, String> {
+public interface IUserSettingsRepo extends JpaRepository<UserSettings, String> {
 
     Optional<UserSettings> findByUuid(String uuid);
     Optional<UserSettings> findByUserUuid(String userUuid);
