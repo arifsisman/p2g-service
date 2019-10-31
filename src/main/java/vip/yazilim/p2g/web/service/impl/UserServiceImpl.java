@@ -7,11 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
+import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
+import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.IUserService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +37,9 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     @Autowired
     private IRoleService roleService;
 
+    @Autowired
+    private IRoomUserRepo roomUserRepo;
+
     @Override
     protected JpaRepository<User, String> getRepository() {
         return userRepo;
@@ -47,13 +56,14 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUuid(String userUuid) throws Exception {
+    public Optional<UserModel> getUserModelByUuid(String userUuid) throws DatabaseException {
         Optional<User> user;
 
         try {
             user = userRepo.findByUuid(userUuid);
-        } catch (Exception e) {
-            throw new Exception("Cannot get user.");
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting UserModel with userUuid[%s]", userUuid);
+            throw new DatabaseException(errorMessage, exception);
         }
 
         if (!user.isPresent()) {
@@ -74,4 +84,29 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
 
         return Optional.of(userModel);
     }
+
+    @Override
+    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
+        List<User> userList;
+        Iterable<RoomUser> roomUserIterable;
+
+        try {
+            userList = new ArrayList<>();
+
+            roomUserIterable = roomUserRepo.findByRoomUuid(roomUuid);
+
+            for (RoomUser roomUser: roomUserIterable) {
+                if (roomUuid == roomUser.getRoomUuid()){
+                    userList.add(userRepo.findByUuid(roomUser.getUuid()).get());
+                }
+            }
+
+        }catch (Exception exception){
+            String errorMessage = String.format("An error occurred while getting Users with roomUuid[%s]", roomUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+
+        return userList;
+    }
+
 }

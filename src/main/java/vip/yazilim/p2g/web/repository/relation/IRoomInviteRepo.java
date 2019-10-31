@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoomInvite extends JpaRepository<RoomInvite, String> {
+public interface IRoomInviteRepo extends JpaRepository<RoomInvite, String> {
 
     Optional<RoomInvite> findByUuid(String uuid);
     Iterable<RoomInvite> findByRoomId(String roomId);
