@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IAlbumSongRepo extends JpaRepository<AlbumSong, String> {
 
     Optional<AlbumSong> findByUuid(String uuid);
-    Iterable<AlbumSong> findByAlbumUuid(String uuid);
+    Iterable<AlbumSong> findByAlbumUuid(String albumUuid);
 
 }

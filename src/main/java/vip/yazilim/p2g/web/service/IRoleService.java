@@ -11,7 +11,8 @@ import java.util.Optional;
  */
 public interface IRoleService extends ICrudService<Role, String> {
 
-    Optional<Role> getRoleByUuid(String userUuid) throws DatabaseException;
+//    Optional<Role> getRoleByUserUuid(String roomUuid, String userUuid) throws DatabaseException;
+    Optional<Role> getRoleByUserUuid(String userUuid) throws DatabaseException;
     Role getDefaultRole();
 
 }

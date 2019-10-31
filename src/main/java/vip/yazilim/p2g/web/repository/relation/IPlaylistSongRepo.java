@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IPlaylistSongRepo extends JpaRepository<PlaylistSong, String> {
 
     Optional<PlaylistSong> findByUuid(String uuid);
-    Iterable<PlaylistSong> findByPlaylistId(String playlistId);
+    Iterable<PlaylistSong> findByPlaylistUuid(String playlistUuid);
 
 }

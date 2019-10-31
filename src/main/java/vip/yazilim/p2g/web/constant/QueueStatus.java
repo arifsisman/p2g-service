@@ -5,5 +5,5 @@ public enum QueueStatus {
     PREVIOUS,
     NOW_PLAYING,
     NEXT,
-    IN_QUEUE,
+    IN_QUEUE
 }

@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IQueueRepo extends JpaRepository<Queue, String> {
 
     Optional<Queue> findByUuid(String uuid);
-    Optional<Queue> findByRoomId(String roomId);
+    Iterable<Queue> findByRoomUuid(String roomUuid);
 
 }

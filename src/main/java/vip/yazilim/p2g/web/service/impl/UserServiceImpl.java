@@ -73,7 +73,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
         userModel.setUser(user.get());
 
         // User Role
-        Optional<Role> role = roleService.getRoleByUuid(userUuid);
+        Optional<Role> role = roleService.getRoleByUserUuid(userUuid);
         if (role.isPresent()) {
             userModel.setRole(role.get());
         } else {

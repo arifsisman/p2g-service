@@ -5,10 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Album;
 import vip.yazilim.p2g.web.entity.Playlist;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.entity.relation.PlaylistSong;
 import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.IPlaylistRepo;
@@ -49,7 +47,7 @@ public class PlaylistServiceImpl extends ACrudServiceImpl<Playlist, String> impl
             songList = new ArrayList<>();
             Iterable<PlaylistSong> playlistSongIterable;
 
-            playlistSongIterable = playlistSongRepo.findByPlaylistId(playlistUuid);
+            playlistSongIterable = playlistSongRepo.findByPlaylistUuid(playlistUuid);
 
             for (PlaylistSong song : playlistSongIterable) {
                 songUuid = song.getUuid();
