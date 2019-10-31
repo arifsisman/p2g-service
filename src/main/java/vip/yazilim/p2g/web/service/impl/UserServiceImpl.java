@@ -13,7 +13,6 @@ import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
-import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.IUserService;
 
 import java.util.ArrayList;
@@ -96,9 +95,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
             roomUserIterable = roomUserRepo.findByRoomUuid(roomUuid);
 
             for (RoomUser roomUser: roomUserIterable) {
-                if (roomUuid == roomUser.getRoomUuid()){
                     userList.add(userRepo.findByUuid(roomUser.getUuid()).get());
-                }
             }
 
         }catch (Exception exception){
