@@ -28,6 +28,7 @@ public class TokenServiceImpl extends ACrudServiceImpl<Token, String> implements
 
     @Override
     public List<Token> getTokensByUserUuid(String userUuid) throws DatabaseException {
+        String tokenUuid;
         List<Token> tokenList;
         Iterable<UserToken> userTokenIterable;
 
@@ -37,10 +38,11 @@ public class TokenServiceImpl extends ACrudServiceImpl<Token, String> implements
             userTokenIterable = userTokenRepo.findTokensByUserUuid(userUuid);
 
             for (UserToken token : userTokenIterable) {
-                tokenList.add(tokenRepo.findByUuid(token.getTokenUuid()).get());
+                tokenUuid = token.getTokenUuid();
+                tokenList.add(tokenRepo.findByUuid(tokenUuid).get());
             }
 
-        }catch (Exception exception){
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
         }

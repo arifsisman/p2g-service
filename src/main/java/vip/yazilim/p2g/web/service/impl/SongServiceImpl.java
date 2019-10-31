@@ -38,7 +38,7 @@ public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements I
 
         try {
             songOptional = songRepo.findBySongName(songName);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Song with name[%s]", songName);
             throw new DatabaseException(errorMessage, exception);
         }

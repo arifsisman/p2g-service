@@ -32,7 +32,7 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
 
         try {
             roomOptional = roomRepo.findByUuid(roomUuid);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Room with uuid[%s]", roomUuid);
             throw new DatabaseException(errorMessage, exception);
         }
@@ -46,7 +46,7 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
 
         try {
             roomOptional = roomRepo.findByOwnerUuid(ownerUuid);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Room with ownerUuid[%s]", ownerUuid);
             throw new DatabaseException(errorMessage, exception);
         }

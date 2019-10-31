@@ -86,6 +86,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
 
     @Override
     public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
+        String userUuid;
         List<User> userList;
         Iterable<RoomUser> roomUserIterable;
 
@@ -94,11 +95,12 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
 
             roomUserIterable = roomUserRepo.findByRoomUuid(roomUuid);
 
-            for (RoomUser roomUser: roomUserIterable) {
-                    userList.add(userRepo.findByUuid(roomUser.getUuid()).get());
+            for (RoomUser roomUser : roomUserIterable) {
+                userUuid = roomUser.getUuid();
+                userList.add(userRepo.findByUuid(userUuid).get());
             }
 
-        }catch (Exception exception){
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Users with roomUuid[%s]", roomUuid);
             throw new DatabaseException(errorMessage, exception);
         }
