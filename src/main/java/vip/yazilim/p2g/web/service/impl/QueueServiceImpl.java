@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Queue;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.DatabaseException;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Service
 public class QueueServiceImpl extends ACrudServiceImpl<Queue, String> implements IQueueService {
 
     // static fields

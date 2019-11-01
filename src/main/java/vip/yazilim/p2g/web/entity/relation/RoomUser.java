@@ -23,6 +23,7 @@ public class RoomUser implements Serializable {
     @Column(name = "user_uuid")
     private String userUuid;
 
-    private String role;
+    @Column(name = "role_uuid")
+    private String roleUuid;
 
 }
