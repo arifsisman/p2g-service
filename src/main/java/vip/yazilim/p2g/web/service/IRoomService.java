@@ -11,7 +11,6 @@ import java.util.Optional;
  */
 public interface IRoomService extends ICrudService<Room, String> {
 
-    Optional<Room> getRoomByUuid(String roomUuid) throws DatabaseException;
     Optional<Room> getRoomByOwnerUuid(String ownerUuid) throws DatabaseException;
 
 }

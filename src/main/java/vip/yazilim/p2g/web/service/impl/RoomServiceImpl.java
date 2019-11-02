@@ -27,20 +27,6 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
     private IRoomRepo roomRepo;
 
     @Override
-    public Optional<Room> getRoomByUuid(String roomUuid) throws DatabaseException {
-        Optional<Room> roomOptional;
-
-        try {
-            roomOptional = roomRepo.findByUuid(roomUuid);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Room with uuid[%s]", roomUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-
-        return roomOptional;
-    }
-
-    @Override
     public Optional<Room> getRoomByOwnerUuid(String ownerUuid) throws DatabaseException {
         Optional<Room> roomOptional;
 
