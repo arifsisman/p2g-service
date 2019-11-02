@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
 import vip.yazilim.p2g.web.repository.relation.IUserFriendsRepo;
 import vip.yazilim.p2g.web.service.IUserFriendsService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,9 +29,17 @@ public class UserFriendsServiceImpl extends ACrudServiceImpl<UserFriends, String
     private IUserFriendsRepo userFriendsRepo;
 
     @Override
-    public List<UserFriends> getUserFriendsByUserUuid(String userUuid) {
-        //TODO: implement!!!
-        return null;
+    public List<UserFriends> getUserFriendsByUserUuid(String userUuid) throws DatabaseException {
+        List<UserFriends> userFriendsList;
+
+        userFriendsList = new ArrayList<>();
+
+        try {
+            userFriendsList = userFriendsRepo.findByUserUuid(userUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting User Friends with User[%s]", userUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
     }
 
     @Override

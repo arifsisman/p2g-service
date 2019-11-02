@@ -6,6 +6,7 @@ import vip.yazilim.p2g.web.service.IRoleService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,13 @@ public class UserPrinciple implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(roleService.getRoleByUserUuid(user.getUuid()).toString()));
+
+        try {
+            authorityList.add(new SimpleGrantedAuthority(roleService.getRoleByUserUuid(user.getUuid()).toString()));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+
         return authorityList;
     }
 

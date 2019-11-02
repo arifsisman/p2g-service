@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "queue")
@@ -25,7 +25,7 @@ public class Queue implements Serializable {
     private String songUuid;
 
     @Column(name = "queue_time")
-    private Timestamp queuedTime;
+    private LocalDateTime queuedTime;
 
     private String status;
 

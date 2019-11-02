@@ -21,6 +21,7 @@ public class Song implements Serializable {
 
     @Column(nullable = false)
     private String name;
+
     @Column(nullable = false)
     private String artists;
 

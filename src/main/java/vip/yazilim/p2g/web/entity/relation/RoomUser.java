@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "room_user")
@@ -27,11 +28,13 @@ public class RoomUser implements Serializable {
     private String roleUuid;
 
     @Column(name = "invitation_date")
-    private boolean invitationDate;
+    private LocalDateTime invitationDate;
 
-    @Column(name = "is_accepted")
-    private boolean isAccepted;
+    @Column(name = "accepted_flag")
+    private Boolean acceptedFlag;
 
-    //
+    @Column(name = "active_flag")
+    private Boolean activeFlag;
+
 
 }

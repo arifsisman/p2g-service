@@ -20,22 +20,22 @@ public class UserSettings implements Serializable {
     @Column(name = "user_uuid")
     private String userUuid;
 
-    @Column(name = "show_name")
-    private boolean showName;
+    @Column(name = "show_name_flag")
+    private Boolean showNameFlag;
 
-    @Column(name = "show_friends")
-    private boolean showFriends;
+    @Column(name = "show_friends_flag")
+    private Boolean showFriendsFlag;
 
-    @Column(name = "show_anthem")
-    private boolean showAnthem;
+    @Column(name = "show_anthem_flag")
+    private Boolean showAnthemFlag;
 
-    @Column(name = "show_activity")
-    private boolean showActivity;
+    @Column(name = "show_activity_flag")
+    private Boolean showActivityFlag;
 
-    @Column(name = "show_online_status")
-    private boolean showOnlineStatus;
+    @Column(name = "show_online_status_flag")
+    private Boolean showOnlineStatusFlag;
 
-    @Column(name = "allow_friend_requests")
-    private boolean allowFriendRequests;
+    @Column(name = "allow_friend_requests_flag")
+    private Boolean allowFriendRequestsFlag;
 
 }

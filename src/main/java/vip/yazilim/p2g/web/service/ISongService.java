@@ -13,5 +13,6 @@ import java.util.Optional;
 public interface ISongService extends ICrudService<Song, String> {
 
     Optional<Song> getSongByName(String songName) throws DatabaseException;
+    Song getUndefinedSong();
 
 }

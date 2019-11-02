@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.ISongService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements ISongService {
 
     @Autowired
-    ISongRepo songRepo;
+    private ISongRepo songRepo;
 
     @Override
     protected JpaRepository<Song, String> getRepository() {
@@ -44,4 +45,17 @@ public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements I
 
         return songOptional;
     }
+
+    // private static final UndefinedSong x = new UndinfedSong();
+    // return x;
+    @Override
+    public Song getUndefinedSong() {
+        Song undefinedSong = new Song();
+
+        undefinedSong.setUuid(DBHelper.getRandomUuid());
+        undefinedSong.setName("Undefined Song");
+
+        return undefinedSong;
+    }
+
 }
