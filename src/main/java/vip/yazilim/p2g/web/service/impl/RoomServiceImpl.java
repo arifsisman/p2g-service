@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.DatabaseException;
+import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
+import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoomService;
 
 import java.util.Optional;
@@ -26,6 +29,9 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
     @Autowired
     private IRoomRepo roomRepo;
 
+    @Autowired
+    private IRoomUserRepo roomUserRepo;
+
     @Override
     public Optional<Room> getRoomByOwnerUuid(String ownerUuid) throws DatabaseException {
         Optional<Room> roomOptional;
@@ -38,6 +44,33 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
         }
 
         return roomOptional;
+    }
+
+    @Override
+    public boolean replyInviteByUuid(String roomUserUuid, boolean isAccepted) throws DatabaseException {
+        Optional<RoomUser> roomUser;
+
+        try {
+            roomUser = roomUserRepo.findByUuid(roomUserUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+
+        if (!roomUser.isPresent()) {
+            String exceptionMessage = String.format("Invitation cannot send with roomUserUuid[%s]", roomUserUuid);
+            throw new InviteException(exceptionMessage, new Exception());
+        }
+
+        roomUser.get().setAccepted(isAccepted);
+
+        try {
+            roomUserRepo.save(roomUser.get());
+            return true;
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
     }
 
     @Override

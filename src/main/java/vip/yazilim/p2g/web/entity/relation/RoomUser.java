@@ -26,4 +26,12 @@ public class RoomUser implements Serializable {
     @Column(name = "role_uuid")
     private String roleUuid;
 
+    @Column(name = "invitation_date")
+    private boolean invitationDate;
+
+    @Column(name = "is_accepted")
+    private boolean isAccepted;
+
+    //
+
 }
