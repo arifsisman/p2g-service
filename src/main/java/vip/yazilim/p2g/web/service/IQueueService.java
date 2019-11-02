@@ -13,6 +13,6 @@ import java.util.List;
  */
 public interface IQueueService extends ICrudService<Queue, String> {
 
-    List<Song> getSongsByRoomUuid(String roomUuid) throws DatabaseException;
+    List<Queue> getQueueListByRoomUuid(String roomUuid) throws DatabaseException;
 
 }

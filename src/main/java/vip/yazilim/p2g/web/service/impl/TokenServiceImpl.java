@@ -13,6 +13,7 @@ import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 31.10.2019
@@ -29,23 +30,29 @@ public class TokenServiceImpl extends ACrudServiceImpl<Token, String> implements
 
     @Override
     public List<Token> getTokensByUserUuid(String userUuid) throws DatabaseException {
-        String tokenUuid;
-        List<Token> tokenList;
-        Iterable<UserToken> userTokenIterable;
+
+        List<UserToken> userTokenList;
 
         try {
-            tokenList = new ArrayList<>();
-
-            userTokenIterable = userTokenRepo.findTokensByUserUuid(userUuid);
-
-            for (UserToken token : userTokenIterable) {
-                tokenUuid = token.getTokenUuid();
-                tokenList.add(tokenRepo.findByUuid(tokenUuid).get());
-            }
-
+            userTokenList = userTokenRepo.findTokensByUserUuid(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
+        }
+
+        List<Token> tokenList = new ArrayList<>();
+
+
+        for (UserToken userToken : userTokenList) {
+            String tokenUuid = userToken.getTokenUuid();
+            Optional<Token> token = getById(tokenUuid);
+
+            if (!token.isPresent()) {
+                //TODO: new token should be requested from Spotify
+                continue;
+            }
+
+            tokenList.add(token.get());
         }
 
         return tokenList;

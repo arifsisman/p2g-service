@@ -47,32 +47,7 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
         return roomOptional;
     }
 
-    @Override
-    public boolean replyInviteByUuid(String roomUserUuid, boolean isAccepted) throws DatabaseException {
-        Optional<RoomUser> roomUser;
 
-        try {
-            roomUser = roomUserRepo.findByUuid(roomUserUuid);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-
-        if (!roomUser.isPresent()) {
-            String exceptionMessage = String.format("Invitation cannot send with roomUserUuid[%s]", roomUserUuid);
-            throw new InviteException(exceptionMessage, new Exception());
-        }
-
-        roomUser.get().setAccepted(isAccepted);
-
-        try {
-            roomUserRepo.save(roomUser.get());
-            return true;
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-    }
 
     @Override
     protected JpaRepository<Room, String> getRepository() {

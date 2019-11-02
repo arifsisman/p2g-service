@@ -6,17 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Playlist;
-import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.entity.relation.PlaylistSong;
 import vip.yazilim.p2g.web.repository.IPlaylistRepo;
-import vip.yazilim.p2g.web.repository.relation.IPlaylistSongRepo;
 import vip.yazilim.p2g.web.service.IPlaylistService;
-import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,36 +26,6 @@ public class PlaylistServiceImpl extends ACrudServiceImpl<Playlist, String> impl
     // injected dependencies
     @Autowired
     private IPlaylistRepo playlistRepo;
-
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private IPlaylistSongRepo playlistSongRepo;
-
-    @Override
-    public List<Song> getSongsByPlaylistUuid(String playlistUuid) throws DatabaseException {
-        String songUuid = "unknown-song-uuid";
-        List<Song> songList;
-
-        try {
-            songList = new ArrayList<>();
-            Iterable<PlaylistSong> playlistSongIterable;
-
-            playlistSongIterable = playlistSongRepo.findByPlaylistUuid(playlistUuid);
-
-            for (PlaylistSong song : playlistSongIterable) {
-                songUuid = song.getUuid();
-                songList.add(songService.getById(songUuid));
-            }
-
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Song[%s] with playlistUuid[%s]", songUuid, playlistUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-
-        return songList;
-    }
 
     @Override
     public Optional<String> getImageUrlByPlaylistUuid(String playlistUuid) throws DatabaseException {

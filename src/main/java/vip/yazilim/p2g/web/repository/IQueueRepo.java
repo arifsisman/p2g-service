@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface IQueueRepo extends JpaRepository<Queue, String> {
 
     Optional<Queue> findByUuid(String uuid);
+
     List<Queue> findByRoomUuid(String roomUuid);
 
 }

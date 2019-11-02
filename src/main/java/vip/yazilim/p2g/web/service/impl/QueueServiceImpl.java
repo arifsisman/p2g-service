@@ -30,33 +30,6 @@ public class QueueServiceImpl extends ACrudServiceImpl<Queue, String> implements
     @Autowired
     private IQueueRepo queueRepo;
 
-    @Autowired
-    private ISongService songService;
-
-    @Override
-    public List<Song> getSongsByRoomUuid(String roomUuid) throws DatabaseException {
-        String songUuid = "unknown-song-uuid";
-        List<Song> songList;
-
-        try {
-            songList = new ArrayList<>();
-            Iterable<Queue> queueIterable;
-
-            queueIterable = queueRepo.findByRoomUuid(roomUuid);
-
-            for (Queue queue : queueIterable) {
-                songUuid = queue.getSongUuid();
-                songList.add(songService.getById(songUuid).get());
-            }
-
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Song[%s] with roomUuid[%s]", songUuid, roomUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-
-        return null;
-    }
-
     @Override
     protected JpaRepository<Queue, String> getRepository() {
         return queueRepo;
@@ -65,5 +38,15 @@ public class QueueServiceImpl extends ACrudServiceImpl<Queue, String> implements
     @Override
     protected String getId(Queue entity) {
         return entity.getUuid();
+    }
+
+    @Override
+    public List<Queue> getQueueListByRoomUuid(String roomUuid) throws DatabaseException {
+        try {
+            return queueRepo.findByRoomUuid(roomUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting Queue with roomName[%s]", roomUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
     }
 }

@@ -20,6 +20,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -39,17 +40,6 @@ public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements I
     private IRoomUserService roomUserService;
 
     @Override
-    public Role getDefaultRole() throws DatabaseException, RoleException {
-        Optional<Role> role =  getById(Roles.USER.getRoleName());
-
-        if(!role.isPresent()){
-            throw new RoleException("Role not found!");
-        }
-
-        return role.get();
-    }
-
-    @Override
     protected JpaRepository<Role, String> getRepository() {
         return roleRepo;
     }
@@ -57,5 +47,29 @@ public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements I
     @Override
     protected String getId(Role entity) {
         return entity.getName();
+    }
+
+    @Override
+    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException {
+        Optional<RoomUser> roomUser = roomUserService.getRoomUser(roomUuid, userUuid);
+
+        if (!roomUser.isPresent()) {
+            return Optional.empty();
+        }
+
+        String roleName = roomUser.get().getRoleName();
+        return getById(roleName);
+    }
+
+
+    @Override
+    public Role getDefaultRole() throws DatabaseException, RoleException {
+        Optional<Role> role = getById(Roles.USER.getRoleName());
+
+        if (!role.isPresent()) {
+            throw new RoleException("Role not found!");
+        }
+
+        return role.get();
     }
 }

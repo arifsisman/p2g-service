@@ -14,7 +14,6 @@ import java.util.Optional;
  */
 public interface IAlbumService extends ICrudService<Album, String> {
 
-    List<Song> getSongsByAlbumUuid(String albumUuid) throws DatabaseException;
     Optional<String> getImageUrlByAlbumUuid(String albumUuid) throws DatabaseException;
 
 }

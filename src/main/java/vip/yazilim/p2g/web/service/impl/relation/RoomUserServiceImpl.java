@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
-import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
@@ -29,10 +28,6 @@ public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> impl
     @Autowired
     private IRoomUserRepo roomUserRepo;
 
-    @Autowired
-    private IRoleService roleService;
-
-
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
         return roomUserRepo;
@@ -44,23 +39,40 @@ public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> impl
     }
 
     @Override
-    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException {
-        Optional<RoomUser> roomUser;
-
+    public Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
         try {
-            roomUser = roomUserRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);
-
+            return roomUserRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Role with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid,userUuid);
+            throw new DatabaseException(errMsg, exception);
         }
-
-        if(!roomUser.isPresent()){
-            // TODO ....
-        }
-
-        String roleName = roomUser.get().getRoleName();
-        return roleService.getById(roleName);
     }
 
+    @Override
+    public void acceptInviteByUuid(String roomUserUuid) throws DatabaseException, InviteException {
+        replyInviteByUuid(roomUserUuid, true);
+    }
+
+    @Override
+    public void rejectInviteByUuid(String roomUserUuid) throws DatabaseException, InviteException {
+        replyInviteByUuid(roomUserUuid, false);
+    }
+
+    private void replyInviteByUuid(String roomUserUuid, boolean accepted) throws DatabaseException, InviteException {
+        Optional<RoomUser> roomUser = getById(roomUserUuid);
+
+        if (!roomUser.isPresent()) {
+            String exceptionMessage = String.format("Invitation cannot send with roomUserUuid[%s]", roomUserUuid);
+            throw new InviteException(exceptionMessage);
+        }
+
+        roomUser.get().setAcceptedFlag(accepted);
+
+        try {
+            roomUserRepo.save(roomUser.get());
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+    }
 }
