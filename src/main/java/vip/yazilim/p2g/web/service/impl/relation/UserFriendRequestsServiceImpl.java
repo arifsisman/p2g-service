@@ -5,14 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.entity.relation.UserFriendRequests;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.relation.IUserFriendRequestsRepo;
 import vip.yazilim.p2g.web.service.IUserFriendRequestService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,16 +29,16 @@ public class UserFriendRequestsServiceImpl extends ACrudServiceImpl<UserFriendRe
 
     @Override
     public List<UserFriendRequests> getUserFriendRequestsByUserUuid(String userUuid) throws DatabaseException {
-        //TODO: implement!!!
-        List<UserFriendRequests> userFriendRequests;
+        List<UserFriendRequests> userFriendRequestsList;
 
         try {
-
+            userFriendRequestsList = userFriendRequestsRepo.findByUserUuid(userUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Song[%s] with albumUuid[%s]", songUuid, albumUuid);
+            String errorMessage = String.format("An error occurred while getting User[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
         }
 
+        return userFriendRequestsList;
     }
 
     @Override

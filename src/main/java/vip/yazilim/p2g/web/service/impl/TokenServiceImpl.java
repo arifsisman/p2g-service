@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Token;
 import vip.yazilim.p2g.web.entity.relation.UserToken;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.repository.relation.IUserTokenRepo;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;

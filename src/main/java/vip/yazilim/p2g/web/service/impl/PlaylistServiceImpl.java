@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Playlist;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.relation.PlaylistSong;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.IPlaylistRepo;
 import vip.yazilim.p2g.web.repository.relation.IPlaylistSongRepo;
 import vip.yazilim.p2g.web.service.IPlaylistService;
 import vip.yazilim.p2g.web.service.ISongService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;

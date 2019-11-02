@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Album;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.IAlbumRepo;
 import vip.yazilim.p2g.web.repository.relation.IAlbumSongRepo;
 import vip.yazilim.p2g.web.service.IAlbumService;
 import vip.yazilim.p2g.web.service.ISongService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
@@ -44,22 +44,25 @@ public class AlbumServiceImpl extends ACrudServiceImpl<Album, String> implements
         String songUuid = "unknown-song-uuid";
         List<Song> songList;
 
+        songList = new ArrayList<>();
+        List<AlbumSong> albumSongList;
+        
         try {
-            songList = new ArrayList<>();
-            Iterable<AlbumSong> albumSongIterable;
-
-            albumSongIterable = albumSongRepo.findByAlbumUuid(albumUuid);
-
-            for (AlbumSong song : albumSongIterable) {
-                songUuid = song.getUuid();
-                songList.add(songService.getById(songUuid));
-            }
-
+            albumSongList = albumSongRepo.findByAlbumUuid(albumUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Song[%s] with albumUuid[%s]", songUuid, albumUuid);
             throw new DatabaseException(errorMessage, exception);
         }
 
+        for (AlbumSong albumSong: albumSongList) {
+            songUuid = albumSong.getUuid();
+            
+            Optional<Song> song = songService.getById(songUuid);
+            if(song.isPresent()){
+                //TODO: something happened :) what can I do sometimes...
+            }
+            songList.add(song.get());
+        }
         return songList;
     }
 

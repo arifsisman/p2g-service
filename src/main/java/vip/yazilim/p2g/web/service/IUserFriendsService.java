@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
 
 import java.util.List;
@@ -11,6 +12,6 @@ import java.util.List;
  */
 public interface IUserFriendsService extends ICrudService<UserFriends, String> {
 
-    List<UserFriends> getUserFriendsByUserUuid(String userUuid);
+    List<UserFriends> getUserFriendsByUserUuid(String userUuid) throws DatabaseException;
 
 }

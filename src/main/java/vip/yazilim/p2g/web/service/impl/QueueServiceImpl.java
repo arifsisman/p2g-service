@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Queue;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.IQueueRepo;
 import vip.yazilim.p2g.web.service.IQueueService;
 import vip.yazilim.p2g.web.service.ISongService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class QueueServiceImpl extends ACrudServiceImpl<Queue, String> implements
 
             for (Queue queue : queueIterable) {
                 songUuid = queue.getSongUuid();
-                songList.add(songService.getById(songUuid));
+                songList.add(songService.getById(songUuid).get());
             }
 
         } catch (Exception exception) {

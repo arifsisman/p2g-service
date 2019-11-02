@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.entity.relation.UserFriendRequests;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Optional;
  */
 public interface IUserFriendRequestsRepo extends JpaRepository<UserFriendRequests, String> {
 
-    Optional<RoomUser> findByUuid(String uuid);
-    Iterable<RoomUser> findByUserUuid(String userUuid);
+    Optional<UserFriendRequests> findByUuid(String uuid);
+    List<UserFriendRequests> findByUserUuid(String userUuid);
 
 }
