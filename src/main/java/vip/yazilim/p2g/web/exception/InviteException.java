@@ -1,10 +1,12 @@
 package vip.yazilim.p2g.web.exception;
 
+import vip.yazilim.spring.utils.exception.GeneralException;
+
 /**
  * @author mustafaarifsisman - 2.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public class InviteException extends RuntimeException {
+public class InviteException extends GeneralException {
 
     public InviteException(String message){
         super(message);

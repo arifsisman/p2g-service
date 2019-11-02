@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
+import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
@@ -34,51 +36,17 @@ public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements I
     private IRoleRepo roleRepo;
 
     @Autowired
-    private IRoomUserRepo roomUserRepo;
+    private IRoomUserService roomUserService;
 
     @Override
-    public Optional<Role> getRoleByUserUuid(String userUuid) throws DatabaseException {
-        Optional<Role> roleOptional;
-        Optional<RoomUser> roomUserOptional;
+    public Role getDefaultRole() throws DatabaseException, RoleException {
+        Optional<Role> role =  getById(Roles.USER.getRoleName());
 
-        try {
-            roomUserOptional = roomUserRepo.findByUserUuid(userUuid);
-
-            if (!roomUserOptional.isPresent()) {
-                return Optional.of(getIdleRole());
-            }
-
-            String roleUuid = roomUserOptional.get().getRoleUuid();
-            roleOptional = roleRepo.findByUuid(roleUuid);
-
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Role with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+        if(!role.isPresent()){
+            throw new RoleException("Role not found!");
         }
 
-        return roleOptional;
-    }
-
-    @Override
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Role getIdleRole() {
-        Role idleRole = new Role();
-        String randomUuid = DBHelper.getRandomUuid();
-        idleRole.setUuid(randomUuid);
-        idleRole.setName(String.valueOf(Roles.NOT_IN_ANY_ROOM));
-
-        return idleRole;
-    }
-
-    @Override
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Role getDefaultRole() {
-        Role defaultRole = new Role();
-        String randomUuid = DBHelper.getRandomUuid();
-        defaultRole.setUuid(randomUuid);
-        defaultRole.setName(String.valueOf(Roles.USER));
-
-        return defaultRole;
+        return role.get();
     }
 
     @Override
@@ -88,6 +56,6 @@ public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements I
 
     @Override
     protected String getId(Role entity) {
-        return entity.getUuid();
+        return entity.getName();
     }
 }

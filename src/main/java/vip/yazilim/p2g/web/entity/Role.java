@@ -18,7 +18,6 @@ import java.io.Serializable;
 public class Role implements Serializable {
 
     @Id
-    private String uuid;
     private String name;
 
 }

@@ -40,6 +40,8 @@ public class UserFriendsServiceImpl extends ACrudServiceImpl<UserFriends, String
             String errorMessage = String.format("An error occurred while getting User Friends with User[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
         }
+
+        return userFriendsList;
     }
 
     @Override

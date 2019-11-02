@@ -24,8 +24,8 @@ public class RoomUser implements Serializable {
     @Column(name = "user_uuid")
     private String userUuid;
 
-    @Column(name = "role_uuid")
-    private String roleUuid;
+    @Column(name = "role_name")
+    private String roleName;
 
     @Column(name = "invitation_date")
     private LocalDateTime invitationDate;
