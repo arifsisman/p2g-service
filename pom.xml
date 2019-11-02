@@ -36,6 +36,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>vip.yazilim</groupId>
+            <artifactId>spring-utils</artifactId>
+            <version>1.0.00</version>
+        </dependency>
+
         <!-- Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

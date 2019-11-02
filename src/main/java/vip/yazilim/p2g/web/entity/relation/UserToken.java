@@ -15,6 +15,8 @@ import java.io.Serializable;
 public class UserToken implements Serializable {
 
     @Id
+    private String uuid;
+
     @Column(name = "user_uuid")
     private String userUuid;
 
