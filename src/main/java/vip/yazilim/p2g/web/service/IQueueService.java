@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service;
 import vip.yazilim.p2g.web.entity.Queue;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.DatabaseException;
+import vip.yazilim.spring.utils.service.ICrudService;
 
 import java.util.List;
 

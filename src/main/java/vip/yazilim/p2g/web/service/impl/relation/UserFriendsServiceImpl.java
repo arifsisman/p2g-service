@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
 import vip.yazilim.p2g.web.repository.relation.IUserFriendsRepo;
 import vip.yazilim.p2g.web.service.IUserFriendsService;
-import vip.yazilim.p2g.web.service.impl.ACrudServiceImpl;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.List;
 

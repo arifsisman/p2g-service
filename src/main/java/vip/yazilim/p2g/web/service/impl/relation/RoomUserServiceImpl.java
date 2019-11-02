@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
-import vip.yazilim.p2g.web.service.impl.ACrudServiceImpl;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 /**
  * @author mustafaarifsisman - 2.11.2019

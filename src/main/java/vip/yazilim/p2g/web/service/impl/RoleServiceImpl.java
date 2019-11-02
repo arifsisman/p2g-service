@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.Optional;
 

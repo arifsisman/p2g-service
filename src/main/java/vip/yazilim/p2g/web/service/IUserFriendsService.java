@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
+import vip.yazilim.spring.utils.service.ICrudService;
 
 import java.util.List;
 

@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.repository.relation.IUserTokenRepo;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;

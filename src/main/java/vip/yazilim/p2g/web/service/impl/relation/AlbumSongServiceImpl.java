@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.repository.relation.IAlbumSongRepo;
-import vip.yazilim.p2g.web.service.impl.ACrudServiceImpl;
 import vip.yazilim.p2g.web.service.relation.IAlbumSongService;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
