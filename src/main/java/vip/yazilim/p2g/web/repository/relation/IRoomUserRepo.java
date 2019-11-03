@@ -12,7 +12,10 @@ import java.util.Optional;
  */
 public interface IRoomUserRepo extends JpaRepository<RoomUser, String> {
 
+    List<RoomUser> findByRoomUuid(String roomUuid);
+
     Optional<RoomUser> findByRoomUuidAndUserUuid(String roomUuid, String userUuid);
 
     List<RoomUser> findByUserUuid(String userUuid);
+
 }

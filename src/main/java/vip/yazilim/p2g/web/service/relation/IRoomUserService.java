@@ -5,6 +5,7 @@ import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,6 +14,7 @@ import java.util.Optional;
  */
 public interface IRoomUserService extends ICrudService<RoomUser, String> {
 
+    List<RoomUser> getRoomUsersByRoomUuid(String roomUuid) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
     void acceptInviteByUuid(String roomUserUuid) throws DatabaseException, InviteException;

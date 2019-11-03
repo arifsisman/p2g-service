@@ -13,6 +13,6 @@ public class UserModel {
     Room room;
     Role role;
 
-    List<User> friends;
-    List<User> friendRequests;
+//    List<User> friends;
+//    List<User> friendRequests;
 }

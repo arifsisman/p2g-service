@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,6 +37,16 @@ public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> impl
     @Override
     protected String getId(RoomUser entity) {
         return entity.getUuid();
+    }
+
+    @Override
+    public List<RoomUser> getRoomUsersByRoomUuid(String roomUuid) throws DatabaseException {
+        try {
+            return roomUserRepo.findByRoomUuid(roomUuid);
+        } catch (Exception exception) {
+            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
+            throw new DatabaseException(errMsg, exception);
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.exception.InviteException;
+import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
 
@@ -13,8 +13,6 @@ import java.util.Optional;
  */
 public interface IRoomService extends ICrudService<Room, String> {
 
-    Optional<Room> getRoomByOwnerUuid(String ownerUuid) throws DatabaseException;
-
-
+    Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException;
 
 }

@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IRoomRepo extends JpaRepository<Room, String> {
 
     Optional<Room> findByUuid(String uuid);
-    Optional<Room> findByOwnerUuid(String ownerUuid);
+    Optional<Room> findByUserUuid(String userUuid);
 
 }
