@@ -5,10 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.exception.DatabaseException;
+import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
+import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoomService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.Optional;
 
@@ -26,33 +31,28 @@ public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements I
     @Autowired
     private IRoomRepo roomRepo;
 
+    @Autowired
+    private IRoomUserRepo roomUserRepo;
+
     @Override
-    public Optional<Room> getRoomByUuid(String roomUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
         Optional<Room> roomOptional;
 
         try {
-            roomOptional = roomRepo.findByUuid(roomUuid);
-        }catch (Exception exception){
-            String errorMessage = String.format("An error occurred while getting Room with uuid[%s]", roomUuid);
+            roomOptional = roomRepo.findByUserUuid(userUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
+        }
+
+        if(!roomOptional.isPresent()){
+            LOGGER.warn("User[{}] not in any Room!", userUuid);
+            return Optional.empty();
         }
 
         return roomOptional;
     }
 
-    @Override
-    public Optional<Room> getRoomByOwnerUuid(String ownerUuid) throws DatabaseException {
-        Optional<Room> roomOptional;
-
-        try {
-            roomOptional = roomRepo.findByOwnerUuid(ownerUuid);
-        }catch (Exception exception){
-            String errorMessage = String.format("An error occurred while getting Room with ownerUuid[%s]", ownerUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-
-        return roomOptional;
-    }
 
     @Override
     protected JpaRepository<Room, String> getRepository() {

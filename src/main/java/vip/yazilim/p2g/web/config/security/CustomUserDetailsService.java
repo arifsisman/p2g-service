@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.service.IUserService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.util.Optional;
 
@@ -22,8 +23,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Optional<User> userOptional = userService.getUserByEmail(s);
-        //TODO: or else throw ?
+        Optional<User> userOptional = null;
+
+        try {
+            userOptional = userService.getUserByEmail(s);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+
         User user = userOptional
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         return new UserPrinciple(user);

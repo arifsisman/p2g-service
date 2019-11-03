@@ -1,8 +1,10 @@
 package vip.yazilim.p2g.web.service;
 
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.exception.DatabaseException;
+import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.model.UserModel;
+import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +16,7 @@ import java.util.Optional;
 public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByEmail(String email) throws DatabaseException;
-    Optional<UserModel> getUserModelByUuid(String userUuid) throws DatabaseException;
+    Optional<UserModel> getUserModelByUuid(String userUuid) throws DatabaseException, RoleException;
     List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException;
 
 }

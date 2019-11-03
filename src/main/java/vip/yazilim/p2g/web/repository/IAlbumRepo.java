@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.Album;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +13,6 @@ import java.util.Optional;
 public interface IAlbumRepo extends JpaRepository<Album, String> {
 
     Optional<Album> findByUuid(String uuid);
-    Iterable<Album> findByAlbumId(String albumId);
+    List<Album> findByAlbumId(String albumId);
 
 }

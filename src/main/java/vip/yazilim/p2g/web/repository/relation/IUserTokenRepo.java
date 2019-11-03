@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.repository.relation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.relation.UserToken;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +13,6 @@ import java.util.Optional;
 public interface IUserTokenRepo extends JpaRepository<UserToken, String> {
 
     Optional<UserToken> findByUuid(String uuid);
-    Iterable<UserToken> findTokensByUserUuid(String userUuid);
+    List<UserToken> findTokensByUserUuid(String userUuid);
 
 }

@@ -1,12 +1,14 @@
 package vip.yazilim.p2g.web.entity;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room")
@@ -23,28 +25,29 @@ public class Room implements Serializable {
     private String queueUuid;
 
     @Column(name = "creation_date")
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
 
     private String name;
     private String description;
 
-    @Column(name = "private", nullable = false)
-    private boolean isPrivate;
+    @Column(name = "private_flag", nullable = false)
+    private Boolean privateFlag;
+
     private String password;
 
     @Column(name = "max_users")
     private int maxUsers;
 
-    @Column(name = "active")
-    private boolean isActive;
+    @Column(name = "active_flag")
+    private Boolean activeFlag;
 
-    @Column(name = "is_everyone_allowed_queue")
-    private boolean isEveryoneAllowedQueue;
+    @Column(name = "everyone_allowed_queue_flag")
+    private Boolean everyoneAllowedQueueFlag;
 
-    @Column(name = "is_everyone_allowed_control")
-    private boolean isEveryoneAllowedControl;
+    @Column(name = "everyone_allowed_control_flag")
+    private Boolean everyoneAllowedControlFlag;
 
-    @Column(name = "show_room_activity")
-    private boolean showRoomActivity;
+    @Column(name = "show_room_activity_flag")
+    private Boolean showRoomActivityFlag;
 
 }

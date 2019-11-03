@@ -5,13 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Token;
 import vip.yazilim.p2g.web.entity.relation.UserToken;
-import vip.yazilim.p2g.web.exception.DatabaseException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.repository.relation.IUserTokenRepo;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 31.10.2019
@@ -28,21 +30,29 @@ public class TokenServiceImpl extends ACrudServiceImpl<Token, String> implements
 
     @Override
     public List<Token> getTokensByUserUuid(String userUuid) throws DatabaseException {
-        List<Token> tokenList;
-        Iterable<UserToken> userTokenIterable;
+
+        List<UserToken> userTokenList;
 
         try {
-            tokenList = new ArrayList<>();
-
-            userTokenIterable = userTokenRepo.findTokensByUserUuid(userUuid);
-
-            for (UserToken token : userTokenIterable) {
-                tokenList.add(tokenRepo.findByUuid(token.getTokenUuid()).get());
-            }
-
-        }catch (Exception exception){
+            userTokenList = userTokenRepo.findTokensByUserUuid(userUuid);
+        } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
+        }
+
+        List<Token> tokenList = new ArrayList<>();
+
+
+        for (UserToken userToken : userTokenList) {
+            String tokenUuid = userToken.getTokenUuid();
+            Optional<Token> token = getById(tokenUuid);
+
+            if (!token.isPresent()) {
+                //TODO: new token should be requested from Spotify
+                continue;
+            }
+
+            tokenList.add(token.get());
         }
 
         return tokenList;

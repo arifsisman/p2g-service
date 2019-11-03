@@ -12,6 +12,6 @@ import java.util.Optional;
  */
 public interface IRoleRepo extends JpaRepository<Role, String> {
 
-    Optional<Token> findByUuid(String uuid);
+    Optional<Role> findByUuid(String uuid);
 
 }

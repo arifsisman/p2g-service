@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.Queue;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Optional;
 public interface IQueueRepo extends JpaRepository<Queue, String> {
 
     Optional<Queue> findByUuid(String uuid);
-    Optional<Queue> findByRoomId(String roomId);
+
+    List<Queue> findByRoomUuid(String roomUuid);
 
 }

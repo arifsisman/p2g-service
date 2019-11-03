@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.repository.relation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,6 +13,6 @@ import java.util.Optional;
 public interface IUserFriendsRepo extends JpaRepository<UserFriends, String> {
 
     Optional<UserFriends> findByUuid(String uuid);
-    Iterable<UserFriends> findByUserUuid(String userUuid);
+    List<UserFriends> findByUserUuid(String userUuid);
     
 }
