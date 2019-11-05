@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.service.IRoleService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,8 +37,9 @@ public class UserPrinciple implements UserDetails {
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
         try {
-            authorityList.add(new SimpleGrantedAuthority(roleService.getRoleByUserUuid(user.getUuid()).toString()));
-        } catch (DatabaseException e) {
+            //TODO: fix get default role
+            authorityList.add(new SimpleGrantedAuthority(roleService.getDefaultRole().toString()));
+        } catch (DatabaseException | RoleException e) {
             e.printStackTrace();
         }
 

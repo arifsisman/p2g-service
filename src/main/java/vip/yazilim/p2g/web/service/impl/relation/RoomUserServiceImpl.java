@@ -50,6 +50,16 @@ public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> impl
     }
 
     @Override
+    public Optional<RoomUser> getRoomUserByUserUuid(String userUuid) throws DatabaseException {
+        try {
+            return roomUserRepo.findByUserUuid(userUuid);
+        } catch (Exception exception) {
+            String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
+            throw new DatabaseException(errMsg, exception);
+        }
+    }
+
+    @Override
     public Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
         try {
             return roomUserRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Album;
 import vip.yazilim.p2g.web.entity.Queue;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
@@ -63,7 +62,7 @@ public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements I
         Optional<Song> songOptional;
 
         try {
-            songOptional = songRepo.findBySongName(songName);
+            songOptional = songRepo.findByName(songName);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Song with name[%s]", songName);
             throw new DatabaseException(errorMessage, exception);

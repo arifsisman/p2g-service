@@ -23,7 +23,7 @@ public class SpotifyConfig {
     @Value("${spotify.clientSecret}")
     private String clientSecret;
 
-    @Value("${spotify.redirectUri}")
+    @Value("${spotify.redirectUrl}")
     private String redirectUrl;
 
     @Value("${spotify.refreshToken}")

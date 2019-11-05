@@ -16,6 +16,6 @@ public interface IRoomUserRepo extends JpaRepository<RoomUser, String> {
 
     Optional<RoomUser> findByRoomUuidAndUserUuid(String roomUuid, String userUuid);
 
-    List<RoomUser> findByUserUuid(String userUuid);
+    Optional<RoomUser> findByUserUuid(String userUuid);
 
 }
