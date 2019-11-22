@@ -53,4 +53,15 @@ public class SpotifyConfig {
                 .build();
     }
 
+    // For simple Spotify requests
+    @Bean("simple")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public SpotifyApi spotifyApiSimple() {
+
+        return new SpotifyApi.Builder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .build();
+    }
+
 }

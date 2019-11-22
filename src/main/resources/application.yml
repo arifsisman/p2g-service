@@ -21,7 +21,7 @@ spring:
 
 # Spotify configuration
 spotify:
-  clientId: zyuxhfo1c51b5hxjk09x2uhv5n0svgd6g
-  clientSecret: zudknyqbh3wunbhcvg9uyvo7uwzeu6nne
-  redirectUrl: https://example.com/spotify-redirect
-  refreshToken: dsfdsf
+  clientId: 76f07bcdc1054c32884054e43a135480
+  clientSecret: 9881b96bb7e24401a9162312598185ba
+  redirectUrl: play2gether://callback
+  refreshToken: refreshToken
