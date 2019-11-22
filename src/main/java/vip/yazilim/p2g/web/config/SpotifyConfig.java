@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import vip.yazilim.p2g.web.constant.Constants;
 
 import java.net.URI;
 
@@ -24,16 +25,17 @@ public class SpotifyConfig {
     private String clientSecret;
 
     @Value("${spotify.redirectUrl}")
-    private String redirectUrl;
+    private String redirectUri;
 
     @Value("${spotify.refreshToken}")
     private String refreshToken;
 
-    @Bean("redirectUri")
+    // For auth required Spotify requests
+    @Bean(Constants.BEAN_NAME_REDIRECT_URI)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public SpotifyApi spotifyApi() {
+    public SpotifyApi spotifyApiRedirectUri() {
 
-        URI redirectUri = SpotifyHttpManager.makeUri(redirectUrl);
+        URI redirectUri = SpotifyHttpManager.makeUri(this.redirectUri);
 
         return new SpotifyApi.Builder()
                 .setClientId(clientId)
@@ -42,7 +44,21 @@ public class SpotifyConfig {
                 .build();
     }
 
-    @Bean("refresh")
+    @Bean(Constants.BEAN_NAME_AUTHORIZATION_CODE)
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public SpotifyApi spotifyApiAuthorizationCode() {
+
+        URI redirectUri = SpotifyHttpManager.makeUri(this.redirectUri);
+
+        return new SpotifyApi.Builder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .setRedirectUri(redirectUri)
+                .build();
+    }
+
+    // For refresh tokens
+    @Bean(Constants.BEAN_NAME_SIMPLE)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public SpotifyApi spotifyApiRefresh() {
 
@@ -54,7 +70,7 @@ public class SpotifyConfig {
     }
 
     // For simple Spotify requests
-    @Bean("simple")
+    @Bean(Constants.BEAN_NAME_SIMPLE)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public SpotifyApi spotifyApiSimple() {
 

@@ -9,10 +9,11 @@ import java.util.List;
 
 @Data
 public class UserModel {
-    User user;
-    Room room;
-    Role role;
 
-//    List<User> friends;
-//    List<User> friendRequests;
+    private User user;
+    private Room room;
+    private Role role;
+
+//    private List<User> friends;1
+//    private List<User> friendRequests;
 }
