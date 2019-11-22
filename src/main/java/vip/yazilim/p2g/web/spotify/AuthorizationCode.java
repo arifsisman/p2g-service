@@ -5,6 +5,9 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -16,6 +19,7 @@ public class AuthorizationCode {
     private String code = "";
 
     @Autowired
+    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
     private SpotifyApi spotifyApi;
 
     AuthorizationCodeRequest authorizationCodeRequest;

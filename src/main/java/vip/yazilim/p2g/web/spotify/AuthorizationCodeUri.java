@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
@@ -24,7 +25,7 @@ import java.util.concurrent.CompletionException;
 public class AuthorizationCodeUri {
 
     @Autowired
-    @Qualifier("redirectUri")
+    @Qualifier(Constants.BEAN_NAME_REDIRECT_URI)
     private SpotifyApi spotifyApi;
 
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;

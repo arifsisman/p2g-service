@@ -6,6 +6,7 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.concurrent.CompletionException;
 public class AuthorizationCodeRefresh {
 
     @Autowired
-    @Qualifier("refresh")
+    @Qualifier(Constants.BEAN_NAME_REFRESH)
     private SpotifyApi spotifyApi;
 
     AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;

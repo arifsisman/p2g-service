@@ -58,7 +58,7 @@ public class SpotifyConfig {
     }
 
     // For refresh tokens
-    @Bean(Constants.BEAN_NAME_SIMPLE)
+    @Bean(Constants.BEAN_NAME_REFRESH)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public SpotifyApi spotifyApiRefresh() {
 
