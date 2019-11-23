@@ -11,9 +11,8 @@ public class Constants {
     public static final String FORM_OPERATION_STUDENT_ENROLL = "enroll";
     public static final String FORM_OPERATION_STUDENT_LEAVE = "leave";
 
-    public static final String BEAN_NAME_REDIRECT_URI = "redirectUri";
     public static final String BEAN_NAME_AUTHORIZATION_CODE = "redirectUri";
-    public static final String BEAN_NAME_REFRESH = "refresh";
-    public static final String BEAN_NAME_SIMPLE = "simple";
+
+    public static final String BEAN_NAME_CLIENT_CREDENTIALS = "clientCredentials";
 
 }

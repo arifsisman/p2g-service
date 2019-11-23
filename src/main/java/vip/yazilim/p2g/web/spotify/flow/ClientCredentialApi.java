@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.spotify;
+package vip.yazilim.p2g.web.spotify.flow;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -27,7 +27,7 @@ import java.util.concurrent.CompletionException;
 public class ClientCredentialApi {
 
     @Autowired
-    @Qualifier(Constants.BEAN_NAME_SIMPLE)
+    @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
     private SpotifyApi spotifyApi;
 
     private ClientCredentialsRequest clientCredentialsRequest;

@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.spotify;
+package vip.yazilim.p2g.web.spotify.flow;
 
 /**
  * @author mustafaarifsisman - 30.10.2019
@@ -10,8 +10,11 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.annotation.PostConstruct;
@@ -22,27 +25,22 @@ import java.util.concurrent.CompletionException;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class AuthorizationCodeUri {
+public class AuthorizationCodeUri implements CommandLineRunner {
 
     @Autowired
-    @Qualifier(Constants.BEAN_NAME_REDIRECT_URI)
+    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
     private SpotifyApi spotifyApi;
 
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;
 
-    @PostConstruct
-    public void init(){
-        authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
-//          .state("x4xkmn9pu3j6ukrs8n")
-//          .scope("user-read-birthdate,user-read-email")
-//          .show_dialog(true)
-                .build();
-    }
-
-    public void authorizationCodeUri_Sync() {
-        URI uri = authorizationCodeUriRequest.execute();
-
-        System.out.println("URI: " + uri.toString());
+    @Override
+    public void run(String... args) throws Exception {
+//        RestTemplate template = new RestTemplate();
+//
+//        URI uri = authorizationCodeUriRequest.execute();
+//        ResponseEntity<String> response = template.getForEntity(uri, String.class);
+//        System.out.println("Response: " + response.getBody());
+//        System.out.println("URI:" + uri.toString());
     }
 
     public void authorizationCodeUri_Async() {

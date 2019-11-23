@@ -1,7 +1,8 @@
-package vip.yazilim.p2g.web.config;
+package vip.yazilim.p2g.web.config.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
+import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,7 @@ import java.net.URI;
  * @contact mustafaarifsisman@gmail.com
  */
 @Configuration
-public class SpotifyConfig {
+public class SpotifyApiConfig {
 
     @Value("${spotify.clientId}")
     private String clientId;
@@ -27,26 +28,9 @@ public class SpotifyConfig {
     @Value("${spotify.redirectUrl}")
     private String redirectUri;
 
-    @Value("${spotify.refreshToken}")
-    private String refreshToken;
-
     // For auth required Spotify requests
-    @Bean(Constants.BEAN_NAME_REDIRECT_URI)
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public SpotifyApi spotifyApiRedirectUri() {
-
-        URI redirectUri = SpotifyHttpManager.makeUri(this.redirectUri);
-
-        return new SpotifyApi.Builder()
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRedirectUri(redirectUri)
-                .build();
-    }
-
     @Bean(Constants.BEAN_NAME_AUTHORIZATION_CODE)
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public SpotifyApi spotifyApiAuthorizationCode() {
+    public SpotifyApi spotifyApiAuthenticationCode() {
 
         URI redirectUri = SpotifyHttpManager.makeUri(this.redirectUri);
 
@@ -54,25 +38,13 @@ public class SpotifyConfig {
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
                 .setRedirectUri(redirectUri)
-                .build();
-    }
-
-    // For refresh tokens
-    @Bean(Constants.BEAN_NAME_REFRESH)
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public SpotifyApi spotifyApiRefresh() {
-
-        return new SpotifyApi.Builder()
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRefreshToken(refreshToken)
                 .build();
     }
 
     // For simple Spotify requests
-    @Bean(Constants.BEAN_NAME_SIMPLE)
+    @Bean(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public SpotifyApi spotifyApiSimple() {
+    public SpotifyApi spotifyApiClientCredentials() {
 
         return new SpotifyApi.Builder()
                 .setClientId(clientId)
@@ -80,4 +52,12 @@ public class SpotifyConfig {
                 .build();
     }
 
+    @Bean
+    public AuthorizationCodeUriRequest init() {
+        return spotifyApiAuthenticationCode().authorizationCodeUri()
+//          .state("x4xkmn9pu3j6ukrs8n")
+//          .scope("user-read-birthdate,user-read-email")
+//          .show_dialog(true)
+                .build();
+    }
 }
