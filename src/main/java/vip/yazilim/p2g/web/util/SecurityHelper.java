@@ -20,6 +20,10 @@ public class SecurityHelper {
         return getUserPrinciple().getUser();
     }
 
+    public static String getUserUuid() {
+        return getUser().getUuid();
+    }
+
     public static boolean hasAnyRole(String... roleNames) {
         for (String roleName : roleNames) {
             if (hasRole(roleName)) {

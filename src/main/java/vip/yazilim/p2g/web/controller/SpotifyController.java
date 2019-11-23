@@ -1,21 +1,29 @@
 package vip.yazilim.p2g.web.controller;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.spotify.flow.AuthorizationCodeUri;
+import vip.yazilim.p2g.web.entity.Token;
+import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
+import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -25,10 +33,14 @@ import java.net.URI;
 @Controller
 public class SpotifyController {
 
-    private final Logger LOGGER  = LoggerFactory.getLogger(SpotifyApi.class);
-//    @Autowired
-//    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
-//    private SpotifyApi spotifyApi;
+    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyController.class);
+
+    @Autowired
+    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
+    private SpotifyApi spotifyApi;
+
+    @Autowired
+    private ITokenService tokenService;
 
     @Autowired
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;
@@ -43,13 +55,25 @@ public class SpotifyController {
 
     @GetMapping("/callback")
     @ResponseBody
-    public String callback(@RequestParam String code){
-        //play2gether://callback/?code=AQDYiF6yNSfQ-zF6Z7OL4_kQo64LI3J-RlZnWSeW9LRjWRNcdlg3wUV3DEZhn7ZB93wmmTvHwKo9KLt
-        // MprbR2sUXfwlsvx2zrhsPhrqR9HY2nbnEUXBoQ9vW2ucGA78wY8d2dFW5kqHWpVISFKIfNXc9LkD31KemBWZaoRJYlXeFpL_JO898tFgRoHw
+    public Token callback(@RequestParam String code, Authentication authentication) throws DatabaseException, InvalidUpdateException {
 
-        LOGGER.info("Code: " + code);
+        AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
 
-        return code;
+        final AuthorizationCodeCredentials authorizationCodeCredentials;
+
+        try {
+            authorizationCodeCredentials = authorizationCodeRequest.execute();
+        } catch (IOException | SpotifyWebApiException e) {
+            throw new ServiceException("Error while fetching tokens");
+        }
+
+        // Set access and refresh token for further "spotifyApi" object usage
+        String accessToken = authorizationCodeCredentials.getAccessToken();
+        String refreshToken = authorizationCodeCredentials.getRefreshToken();
+        Integer expireTime = authorizationCodeCredentials.getExpiresIn();
+
+        String userUuid = SecurityHelper.getUserUuid();
+
+        return tokenService.saveUserToken(userUuid, accessToken, refreshToken);
     }
-
 }

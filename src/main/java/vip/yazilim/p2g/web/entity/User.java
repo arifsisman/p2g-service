@@ -21,10 +21,6 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
-//    odadaki userin rolu olarak degistirildi (RoomUser)
-//    @Column(name = "role_uuid")
-////    private String roleUuid;
-
     @Column(name = "display_name")
     private String displayName;
 

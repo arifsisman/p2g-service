@@ -19,9 +19,6 @@ import java.util.List;
  */
 public class UserPrinciple implements UserDetails {
 
-    @Autowired
-    private IRoleService roleService;
-    
     private final User user;
 
     public UserPrinciple(User user) {
@@ -35,14 +32,6 @@ public class UserPrinciple implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-
-        try {
-            //TODO: fix get default role
-            authorityList.add(new SimpleGrantedAuthority(roleService.getDefaultRole().toString()));
-        } catch (DatabaseException | RoleException e) {
-            e.printStackTrace();
-        }
-
         return authorityList;
     }
 

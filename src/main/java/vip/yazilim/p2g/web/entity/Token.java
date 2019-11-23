@@ -7,13 +7,14 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "token")
+@Table(name = Constants.TABLE_PREFIX + "spotify_token")
 @Data
 public class Token implements Serializable {
+    //TODO: name will be SpotifyToken
 
     @Id
     private String uuid;
-    private String source;
+    private String userUuid;
 
     @Column(name = "access_token")
     private String accessToken;

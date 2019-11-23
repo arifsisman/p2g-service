@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -57,6 +58,12 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     }
 
     @Override
+    protected User preInsert(User entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
     public Optional<User> getUserByEmail(String email) {
         return userRepo.findByEmail(email);
     }
@@ -68,12 +75,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
         Optional<Role> role;
         String roomUuid;
 
-        try {
-            user = userRepo.findByUuid(userUuid);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting UserModel with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
+        user = getById(userUuid);
 
         // Set User
         if (!user.isPresent()) {
@@ -81,6 +83,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
         } else {
             userModel.setUser(user.get());
         }
+
 
         // Room & Role
         Optional<Room> room = roomService.getRoomByUserUuid(userUuid);
@@ -93,7 +96,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
             roomUuid = room.get().getUuid();
             role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
 
-            userModel.setRole(role.get());
+            userModel.setRole(role.get()); //TODO: get check if present
         } else {
             Role defaultRole = roleService.getDefaultRole();
             userModel.setRole(defaultRole);
@@ -104,26 +107,17 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
 
     @Override
     public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
-        String userUuid;
-        List<User> userList;
-        List<RoomUser> roomUserList;
 
-        try {
-            userList = new ArrayList<>();
+        List<User>  userList = new ArrayList<>();
+        List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
-            roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
-
-            for (RoomUser roomUser : roomUserList) {
-                userUuid = roomUser.getUuid();
-                userList.add(userRepo.findByUuid(userUuid).get());
-            }
-
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Users with roomUuid[%s]", roomUuid);
-            throw new DatabaseException(errorMessage, exception);
+        for (RoomUser roomUser : roomUserList) {
+            String userUuid = roomUser.getUserUuid();
+            getById(userUuid).ifPresent(userList::add);
         }
 
         return userList;
     }
+
 
 }
