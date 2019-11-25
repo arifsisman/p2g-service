@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class SpotifyController {
         try {
             authorizationCodeCredentials = authorizationCodeRequest.execute();
         } catch (IOException | SpotifyWebApiException e) {
-            throw new ServiceException("Error while fetching tokens!");
+            throw new TokenException("Error while fetching tokens!");
         }
 
         // Set access and refresh token for further "spotifyApi" object usage
@@ -73,6 +73,10 @@ public class SpotifyController {
 
         spotifyApi.setAccessToken(accessToken);
         spotifyApi.setRefreshToken(refreshToken);
+
+//        LOGGER.info("Access Token: " + accessToken);
+//        LOGGER.info("Refresh Token: " + refreshToken);
+//        LOGGER.info("Expire time: " + expireTime);
 
         String userUuid = SecurityHelper.getUserUuid();
 

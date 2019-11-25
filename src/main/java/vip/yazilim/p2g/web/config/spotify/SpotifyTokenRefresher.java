@@ -1,0 +1,40 @@
+package vip.yazilim.p2g.web.config.spotify;
+
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.exception.TokenException;
+
+import java.io.IOException;
+
+@EnableScheduling
+@Configuration
+public class SpotifyTokenRefresher {
+
+    @Autowired
+    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
+    private SpotifyApi spotifyApi;
+
+    @Scheduled(fixedRate = 3000000)
+    public void refreshToken() {
+
+        String refreshToken = spotifyApi.getRefreshToken();
+
+        try {
+            if (refreshToken != null) {
+                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh().build().execute();
+                String accessToken = authorizationCodeCredentials.getAccessToken();
+                spotifyApi.setAccessToken(accessToken);
+            }
+        } catch (IOException | SpotifyWebApiException e) {
+            throw new TokenException("Error while refreshing access token!");
+        }
+
+    }
+}
