@@ -29,7 +29,7 @@ public class SpotifyTokenRefresher {
     private ITokenService tokenService;
 
     @Scheduled(fixedRate = 3000000)
-    public void refreshToken() {
+    public void refreshToken() throws DatabaseException, InvalidUpdateException {
 
         String refreshToken = spotifyApi.getRefreshToken();
 
@@ -37,17 +37,15 @@ public class SpotifyTokenRefresher {
             if (refreshToken != null) {
                 AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
                         .build().execute();
+
                 String accessToken = authorizationCodeCredentials.getAccessToken();
                 spotifyApi.setAccessToken(accessToken);
 
                 String userUuid = SecurityHelper.getUserUuid();
-
                 tokenService.saveUserToken(userUuid, accessToken, refreshToken);
             }
         } catch (IOException | SpotifyWebApiException e) {
             throw new TokenException("Error while getting new access token!");
-        } catch (InvalidUpdateException | DatabaseException e) {
-            throw new TokenException("Error while updating new access token!");
         }
 
     }

@@ -39,10 +39,10 @@ public class SpotifyController {
     private SpotifyApi spotifyApi;
 
     @Autowired
-    private ITokenService tokenService;
+    private AuthorizationCodeUriRequest authorizationCodeUriRequest;
 
     @Autowired
-    private AuthorizationCodeUriRequest authorizationCodeUriRequest;
+    private ITokenService tokenService;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
