@@ -10,6 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.exception.TokenException;
+import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 
 import java.io.IOException;
 
@@ -21,6 +25,9 @@ public class SpotifyTokenRefresher {
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
     private SpotifyApi spotifyApi;
 
+    @Autowired
+    private ITokenService tokenService;
+
     @Scheduled(fixedRate = 3000000)
     public void refreshToken() {
 
@@ -28,12 +35,19 @@ public class SpotifyTokenRefresher {
 
         try {
             if (refreshToken != null) {
-                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh().build().execute();
+                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
+                        .build().execute();
                 String accessToken = authorizationCodeCredentials.getAccessToken();
                 spotifyApi.setAccessToken(accessToken);
+
+                String userUuid = SecurityHelper.getUserUuid();
+
+                tokenService.saveUserToken(userUuid, accessToken, refreshToken);
             }
         } catch (IOException | SpotifyWebApiException e) {
-            throw new TokenException("Error while refreshing access token!");
+            throw new TokenException("Error while getting new access token!");
+        } catch (InvalidUpdateException | DatabaseException e) {
+            throw new TokenException("Error while updating new access token!");
         }
 
     }

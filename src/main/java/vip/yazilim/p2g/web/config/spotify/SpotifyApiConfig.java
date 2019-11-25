@@ -3,15 +3,12 @@ package vip.yazilim.p2g.web.config.spotify;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.controller.SpotifyController;
 
 import java.net.URI;
 
@@ -29,13 +26,12 @@ public class SpotifyApiConfig {
     private String clientSecret;
 
     @Value("${spotify.redirectUrl}")
-    private String redirectUri;
+    private String redirectUrl;
 
-    // For auth required Spotify requests
+    // For Spotify requests that require authorization
     @Bean(Constants.BEAN_NAME_AUTHORIZATION_CODE)
-    public SpotifyApi spotifyApiAuthenticationCode() {
-
-        URI redirectUri = SpotifyHttpManager.makeUri(this.redirectUri);
+    public SpotifyApi spotifyApiAuthorizationCode() {
+        URI redirectUri = SpotifyHttpManager.makeUri(redirectUrl);
 
         return new SpotifyApi.Builder()
                 .setClientId(clientId)
@@ -44,7 +40,16 @@ public class SpotifyApiConfig {
                 .build();
     }
 
-    // For simple Spotify requests
+    // For build AuthorizationCodeUriRequest and define scope
+    @Bean
+    public AuthorizationCodeUriRequest getUri() {
+        return spotifyApiAuthorizationCode()
+                .authorizationCodeUri()
+                .scope(Constants.SCOPE)
+                .build();
+    }
+
+    // For Spotify requests that does not require authorization
     @Bean(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public SpotifyApi spotifyApiClientCredentials() {
@@ -55,10 +60,4 @@ public class SpotifyApiConfig {
                 .build();
     }
 
-    @Bean
-    public AuthorizationCodeUriRequest initScopes() {
-        return spotifyApiAuthenticationCode().authorizationCodeUri()
-                .scope(Constants.SCOPE)
-                .build();
-    }
 }

@@ -66,7 +66,6 @@ public class SpotifyController {
             throw new TokenException("Error while fetching tokens!");
         }
 
-        // Set access and refresh token for further "spotifyApi" object usage
         String accessToken = authorizationCodeCredentials.getAccessToken();
         String refreshToken = authorizationCodeCredentials.getRefreshToken();
         Integer expireTime = authorizationCodeCredentials.getExpiresIn();

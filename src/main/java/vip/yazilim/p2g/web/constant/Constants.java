@@ -11,9 +11,9 @@ public class Constants {
     public static final String FORM_OPERATION_STUDENT_ENROLL = "enroll";
     public static final String FORM_OPERATION_STUDENT_LEAVE = "leave";
 
-    public static final String BEAN_NAME_AUTHORIZATION_CODE = "redirectUri";
+    public static final String BEAN_NAME_AUTHORIZATION_CODE = "authorizationCodeApi";
 
-    public static final String BEAN_NAME_CLIENT_CREDENTIALS = "clientCredentials";
+    public static final String BEAN_NAME_CLIENT_CREDENTIALS = "clientCredentialsApi";
 
     public static final String SCOPE = "user-read-recently-played,user-read-private,playlist-read-private" +
             ",user-library-modify,playlist-read-collaborative,playlist-modify-private,user-follow-modify" +
