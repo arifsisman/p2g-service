@@ -26,42 +26,41 @@ public class AuthorizationCode {
 
     @PostConstruct
     public void init(){
-        authorizationCodeRequest = spotifyApi.authorizationCode(code)
-                .build();
+        authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
     }
 
-    public void authorizationCode_Sync() {
-        try {
-            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
-
-            // Set access and refresh token for further "spotifyApi" object usage
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-
-            System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-        } catch (IOException | SpotifyWebApiException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    public void authorizationCode_Async() {
-        try {
-            CompletableFuture<AuthorizationCodeCredentials> authorizationCodeCredentialsFuture = authorizationCodeRequest.executeAsync();
-
-            // Thread free to do other tasks...
-
-            // Example Only. Never block in production code.
-            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeCredentialsFuture.join();
-
-            // Set access and refresh token for further "spotifyApi" object usage
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-
-            System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-        } catch (CompletionException e) {
-            System.out.println("Error: " + e.getCause().getMessage());
-        } catch (CancellationException e) {
-            System.out.println("Async operation cancelled.");
-        }
-    }
+//    public void authorizationCode_Sync() {
+//        try {
+//            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
+//
+//            // Set access and refresh token for further "spotifyApi" object usage
+//            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+//            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+//
+//            System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
+//        } catch (IOException | SpotifyWebApiException e) {
+//            System.out.println("Error: " + e.getMessage());
+//        }
+//    }
+//
+//    public void authorizationCode_Async() {
+//        try {
+//            CompletableFuture<AuthorizationCodeCredentials> authorizationCodeCredentialsFuture = authorizationCodeRequest.executeAsync();
+//
+//            // Thread free to do other tasks...
+//
+//            // Example Only. Never block in production code.
+//            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeCredentialsFuture.join();
+//
+//            // Set access and refresh token for further "spotifyApi" object usage
+//            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+//            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+//
+//            System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
+//        } catch (CompletionException e) {
+//            System.out.println("Error: " + e.getCause().getMessage());
+//        } catch (CancellationException e) {
+//            System.out.println("Async operation cancelled.");
+//        }
+//    }
 }

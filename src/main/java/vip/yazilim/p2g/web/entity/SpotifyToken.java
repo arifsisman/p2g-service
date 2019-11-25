@@ -9,16 +9,15 @@ import java.io.Serializable;
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "spotify_token")
 @Data
-public class Token implements Serializable {
-    //TODO: name will be SpotifyToken
+public class SpotifyToken implements Serializable {
 
     @Id
     private String uuid;
     private String userUuid;
 
-    @Column(name = "access_token")
+    @Column(name = "access_token", length = 512)
     private String accessToken;
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 }

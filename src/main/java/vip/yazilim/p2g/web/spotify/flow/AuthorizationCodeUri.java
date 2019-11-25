@@ -25,7 +25,7 @@ import java.util.concurrent.CompletionException;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class AuthorizationCodeUri implements CommandLineRunner {
+public class AuthorizationCodeUri {
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
@@ -33,30 +33,30 @@ public class AuthorizationCodeUri implements CommandLineRunner {
 
     private AuthorizationCodeUriRequest authorizationCodeUriRequest;
 
-    @Override
-    public void run(String... args) throws Exception {
-//        RestTemplate template = new RestTemplate();
+//    @Override
+//    public void run(String... args) throws Exception {
+////        RestTemplate template = new RestTemplate();
+////
+////        URI uri = authorizationCodeUriRequest.execute();
+////        ResponseEntity<String> response = template.getForEntity(uri, String.class);
+////        System.out.println("Response: " + response.getBody());
+////        System.out.println("URI:" + uri.toString());
+//    }
 //
-//        URI uri = authorizationCodeUriRequest.execute();
-//        ResponseEntity<String> response = template.getForEntity(uri, String.class);
-//        System.out.println("Response: " + response.getBody());
-//        System.out.println("URI:" + uri.toString());
-    }
-
-    public void authorizationCodeUri_Async() {
-        try {
-            CompletableFuture<URI> uriFuture = authorizationCodeUriRequest.executeAsync();
-
-            // Thread free to do other tasks...
-
-            // Example Only. Never block in production code.
-            URI uri = uriFuture.join();
-
-            System.out.println("URI: " + uri.toString());
-        } catch (CompletionException e) {
-            System.out.println("Error: " + e.getCause().getMessage());
-        } catch (CancellationException e) {
-            System.out.println("Async operation cancelled.");
-        }
-    }
+//    public void authorizationCodeUri_Async() {
+//        try {
+//            CompletableFuture<URI> uriFuture = authorizationCodeUriRequest.executeAsync();
+//
+//            // Thread free to do other tasks...
+//
+//            // Example Only. Never block in production code.
+//            URI uri = uriFuture.join();
+//
+//            System.out.println("URI: " + uri.toString());
+//        } catch (CompletionException e) {
+//            System.out.println("Error: " + e.getCause().getMessage());
+//        } catch (CancellationException e) {
+//            System.out.println("Async operation cancelled.");
+//        }
+//    }
 }

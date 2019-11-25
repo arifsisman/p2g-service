@@ -3,12 +3,15 @@ package vip.yazilim.p2g.web.config.spotify;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.controller.SpotifyController;
 
 import java.net.URI;
 
@@ -53,11 +56,9 @@ public class SpotifyApiConfig {
     }
 
     @Bean
-    public AuthorizationCodeUriRequest init() {
+    public AuthorizationCodeUriRequest initScopes() {
         return spotifyApiAuthenticationCode().authorizationCodeUri()
-//          .state("x4xkmn9pu3j6ukrs8n")
-//          .scope("user-read-birthdate,user-read-email")
-//          .show_dialog(true)
+                .scope(Constants.SCOPE)
                 .build();
     }
 }

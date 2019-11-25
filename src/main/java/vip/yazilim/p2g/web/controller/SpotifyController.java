@@ -9,13 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.entity.Token;
+import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -55,7 +54,7 @@ public class SpotifyController {
 
     @GetMapping("/callback")
     @ResponseBody
-    public Token callback(@RequestParam String code, Authentication authentication) throws DatabaseException, InvalidUpdateException {
+    public SpotifyToken callback(@RequestParam String code) throws DatabaseException, InvalidUpdateException {
 
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
 
@@ -64,13 +63,16 @@ public class SpotifyController {
         try {
             authorizationCodeCredentials = authorizationCodeRequest.execute();
         } catch (IOException | SpotifyWebApiException e) {
-            throw new ServiceException("Error while fetching tokens");
+            throw new ServiceException("Error while fetching tokens!");
         }
 
         // Set access and refresh token for further "spotifyApi" object usage
         String accessToken = authorizationCodeCredentials.getAccessToken();
         String refreshToken = authorizationCodeCredentials.getRefreshToken();
         Integer expireTime = authorizationCodeCredentials.getExpiresIn();
+
+        spotifyApi.setAccessToken(accessToken);
+        spotifyApi.setRefreshToken(refreshToken);
 
         String userUuid = SecurityHelper.getUserUuid();
 

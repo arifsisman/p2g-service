@@ -5,7 +5,7 @@ server:
 # Data source configuration
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/p2g_db
+    url: jdbc:postgresql://${db_ip}:5432/p2g_db
     username: postgres
     password: pos
     initialization-mode: never

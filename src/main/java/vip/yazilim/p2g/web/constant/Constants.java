@@ -15,4 +15,9 @@ public class Constants {
 
     public static final String BEAN_NAME_CLIENT_CREDENTIALS = "clientCredentials";
 
+    public static final String SCOPE = "user-read-recently-played,user-read-private,playlist-read-private" +
+            ",user-library-modify,playlist-read-collaborative,playlist-modify-private,user-follow-modify" +
+            ",user-read-currently-playing,user-read-email,user-library-read,user-top-read,playlist-modify-public" +
+            ",user-follow-read,user-read-playback-state,user-modify-playback-state,app-remote-control,streaming";
+
 }
