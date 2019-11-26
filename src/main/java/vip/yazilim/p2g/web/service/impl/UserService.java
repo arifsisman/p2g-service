@@ -11,12 +11,15 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.entity.relation.UserSettings;
 import vip.yazilim.p2g.web.exception.RoleException;
+import vip.yazilim.p2g.web.exception.UserFriendsException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.IRoomService;
+import vip.yazilim.p2g.web.service.IUserFriendsService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.relation.IUserSettingsService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
@@ -48,6 +51,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Autowired
     private IRoomUserService roomUserService;
 
+    @Autowired
+    private IUserFriendsService userFriendsService;
+
+    @Autowired
+    private IUserSettingsService userSettingsService;
+
     @Override
     protected JpaRepository<User, String> getRepository() {
         return userRepo;
@@ -77,13 +86,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
         UserModel userModel = new UserModel();
-        Optional<User> user;
-        Optional<Role> role;
-        String roomUuid;
 
-        List<User> friends;
-        List<User> friendRequests;
-        UserSettings userSettings;
+        Optional<User> user;
+        Optional<Room> room;
+        Optional<Role> role;
+        List<User> friends = new ArrayList<>();
+        List<User> friendRequests = new ArrayList<>();
+        Optional<UserSettings> userSettings;
+
 
         user = getById(userUuid);
 
@@ -94,15 +104,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setUser(user.get());
         }
 
-        // Room & Role
-        Optional<Room> room = roomService.getRoomByUserUuid(userUuid);
+        // Set Room & Role
+        room = roomService.getRoomByUserUuid(userUuid);
 
         // If user joined a room, user has got a room and role
         // Else user is not in a room, user hasn't got a room and has got default role
         if (room.isPresent()) {
             userModel.setRoom(room.get());
 
-            roomUuid = room.get().getUuid();
+            String roomUuid = room.get().getUuid();
             role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
 
             role.ifPresent(userModel::setRole);
@@ -111,7 +121,25 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setRole(defaultRole);
         }
 
-        //TODO: add others
+        // Set Friends
+        try {
+            friends = userFriendsService.getUserFriendsByUserUuid(userUuid);
+        } catch (UserFriendsException e) {
+            LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
+        }
+        userModel.setFriends(friends);
+
+        // Set Friend Requests
+        try {
+            friendRequests = userFriendsService.getUserFriendRequestsByUserUuid(userUuid);
+        } catch (UserFriendsException e) {
+            LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
+        }
+        userModel.setFriendRequests(friendRequests);
+
+        // Set User Settings
+        userSettings = userSettingsService.getById(userUuid);
+        userSettings.ifPresent(userModel::setUserSettings);
 
         return Optional.of(userModel);
     }

@@ -32,5 +32,11 @@ public class UserSettingsService extends ACrudServiceImpl<UserSettings, String> 
     @Override
     protected String getId(UserSettings entity) {
         return entity.getUuid();
+//        return entity.getUserUuid();
+    }
+
+    @Override
+    public UserSettings getUserSettings(String userUuid) {
+        return userSettingsRepo.findByUserUuid(userUuid);
     }
 }

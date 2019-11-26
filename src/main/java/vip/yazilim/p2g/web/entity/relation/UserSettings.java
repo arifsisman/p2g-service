@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.entity.relation;
 
 import lombok.Data;
+import org.springframework.core.annotation.Order;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.Column;

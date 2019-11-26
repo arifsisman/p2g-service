@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface IUserSettingsRepo extends JpaRepository<UserSettings, String> {
 
     Optional<UserSettings> findByUuid(String uuid);
-    Optional<UserSettings> findByUserUuid(String userUuid);
+    UserSettings findByUserUuid(String userUuid);
 
 }

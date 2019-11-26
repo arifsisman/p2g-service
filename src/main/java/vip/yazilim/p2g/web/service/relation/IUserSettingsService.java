@@ -9,4 +9,6 @@ import vip.yazilim.spring.utils.service.ICrudService;
  */
 public interface IUserSettingsService extends ICrudService<UserSettings, String> {
 
+    UserSettings getUserSettings(String userUuid);
+
 }
