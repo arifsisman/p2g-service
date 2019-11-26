@@ -29,17 +29,18 @@ public class PlaylistServiceImpl extends ACrudServiceImpl<Playlist, String> impl
 
     @Override
     public Optional<String> getImageUrlByPlaylistUuid(String playlistUuid) throws DatabaseException {
-        Optional<String> imageUrl;
-
         try {
-            Playlist playlist = playlistRepo.findByUuid(playlistUuid).get();
-            imageUrl = Optional.of(playlist.getImageUrl());
+            Optional<Playlist> playlist = playlistRepo.findByUuid(playlistUuid);
+
+            if(playlist.isPresent())
+                return Optional.of(playlist.get().getImageUrl());
+
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Image URL with playlistUuid[%s]", playlistUuid);
             throw new DatabaseException(errorMessage, exception);
         }
 
-        return imageUrl;
+        return Optional.empty();
     }
 
     @Override

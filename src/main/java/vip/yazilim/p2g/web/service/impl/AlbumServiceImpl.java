@@ -33,22 +33,20 @@ public class AlbumServiceImpl extends ACrudServiceImpl<Album, String> implements
     @Autowired
     private IAlbumRepo albumRepo;
 
-    @Autowired
-    private IAlbumSongRepo albumSongRepo;
-
     @Override
     public Optional<String> getImageUrlByAlbumUuid(String albumUuid) throws DatabaseException {
-        Optional<String> imageUrl;
-
         try {
-            Album album = albumRepo.findByUuid(albumUuid).get();
-            imageUrl = Optional.of(album.getImageUrl());
+            Optional<Album> album = albumRepo.findByUuid(albumUuid);
+
+            if(album.isPresent())
+                return Optional.of(album.get().getImageUrl());
+
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Image URL with albumUuid[%s]", albumUuid);
             throw new DatabaseException(errorMessage, exception);
         }
 
-        return imageUrl;
+        return Optional.empty();
     }
 
     @Override

@@ -96,7 +96,8 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
             roomUuid = room.get().getUuid();
             role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
 
-            userModel.setRole(role.get()); //TODO: get check if present
+            if(role.isPresent())
+                userModel.setRole(role.get());
         } else {
             Role defaultRole = roleService.getDefaultRole();
             userModel.setRole(defaultRole);
