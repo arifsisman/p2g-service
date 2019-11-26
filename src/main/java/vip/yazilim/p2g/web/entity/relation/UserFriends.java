@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "friends")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "user_friends")
 @Data
 public class UserFriends implements Serializable {
 
@@ -23,4 +23,9 @@ public class UserFriends implements Serializable {
     @Column(name = "friend_uuid")
     private String friendUuid;
 
+    @Column(name = "request_status")
+    private String requestStatus;
+
+    @Column(name = "request_date")
+    private String requestDate;
 }

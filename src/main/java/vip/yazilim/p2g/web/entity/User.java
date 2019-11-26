@@ -27,6 +27,9 @@ public class User implements Serializable {
     @Column(name = "spotify_account_id")
     private String spotifyAccountId;
 
+    @Column(name = "spotify_account_type")
+    private String spotifyAccountType;
+
     @Column(unique = true)
     private String email;
 

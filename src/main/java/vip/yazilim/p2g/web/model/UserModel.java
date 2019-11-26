@@ -4,6 +4,7 @@ import lombok.Data;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.relation.UserSettings;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class UserModel {
     private Room room;
     private Role role;
 
-//    private List<User> friends;1
-//    private List<User> friendRequests;
+    private List<User> friends;
+    private List<User> friendRequests;
+
+    private UserSettings userSettings;
 }

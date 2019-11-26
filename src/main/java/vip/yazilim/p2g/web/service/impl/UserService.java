@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.entity.relation.UserSettings;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
@@ -80,6 +81,10 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         Optional<Role> role;
         String roomUuid;
 
+        List<User> friends;
+        List<User> friendRequests;
+        UserSettings userSettings;
+
         user = getById(userUuid);
 
         // Set User
@@ -88,7 +93,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         } else {
             userModel.setUser(user.get());
         }
-
 
         // Room & Role
         Optional<Room> room = roomService.getRoomByUserUuid(userUuid);
@@ -107,13 +111,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setRole(defaultRole);
         }
 
+        //TODO: add others
+
         return Optional.of(userModel);
     }
 
     @Override
     public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
 
-        List<User>  userList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
         for (RoomUser roomUser : roomUserList) {
