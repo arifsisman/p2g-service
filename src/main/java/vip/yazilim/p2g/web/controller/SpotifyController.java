@@ -19,7 +19,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.ITokenService;
-import vip.yazilim.p2g.web.spotify.profile.Profile;
+import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
@@ -51,7 +51,7 @@ public class SpotifyController {
     private String userUuid;
 
     @Autowired
-    private Profile profile;
+    private IProfile profile;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {

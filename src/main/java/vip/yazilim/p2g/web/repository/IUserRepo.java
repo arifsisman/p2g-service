@@ -15,5 +15,6 @@ public interface IUserRepo extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
     Optional<User> findByUuid(String uuid);
+    Optional<User> findBySpotifyAccountId(String spotifyAccountId);
 
 }

@@ -79,6 +79,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
+    public Optional<User> getUserBySpotifyAccountId(String spotifyAccountId) {
+        //TODO: implement if user not exists in repo
+        return userRepo.findBySpotifyAccountId(spotifyAccountId);
+    }
+
+    @Override
     public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
         UserModel userModel = new UserModel();
 

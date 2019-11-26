@@ -17,6 +17,7 @@ public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByEmail(String email) throws DatabaseException;
     Optional<User> getUserByUuid(String uuid);
+    Optional<User> getUserBySpotifyAccountId(String spotifyAccountId);
     Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException;
     List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException;
 
