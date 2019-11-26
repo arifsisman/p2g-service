@@ -6,14 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.FriendRequestStatus;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
+import vip.yazilim.p2g.web.exception.UserFriendsException;
 import vip.yazilim.p2g.web.repository.relation.IUserFriendsRepo;
 import vip.yazilim.p2g.web.service.IUserFriendsService;
+import vip.yazilim.p2g.web.service.IUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -29,46 +36,117 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
     @Autowired
     private IUserFriendsRepo userFriendsRepo;
 
+    @Autowired
+    private IUserService userService;
+
     @Override
-    public List<UserFriends> getUserFriendsByUserUuid(String userUuid) throws DatabaseException {
+    public List<User> getUserFriendsByUserUuid(String userUuid) throws UserFriendsException {
         List<UserFriends> userFriendsList;
+        List<User> users = new ArrayList<>();
 
         try {
             userFriendsList = userFriendsRepo.findByUserUuid(userUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting User Friends with User[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userUuid);
+            throw new UserFriendsException(errorMessage, exception);
         }
 
-        return userFriendsList;
+        for (UserFriends uf : userFriendsList) {
+            Optional<User> user = userService.getUserByUuid(uf.getUserUuid());
+            user.ifPresent(users::add);
+        }
+
+        return users;
     }
 
     @Override
-    public List<UserFriends> getUserFriendRequestsByUserUuid(String userUuid) throws DatabaseException {
+    public List<User> getUserFriendRequestsByUserUuid(String userUuid) throws UserFriendsException {
         List<UserFriends> userFriendRequestsList;
-        //TODO: IMPLEMENT USER FRIEND REQUESTS!
+        List<User> users = new ArrayList<>();
+
         try {
             userFriendRequestsList = userFriendsRepo.findByUserUuid(userUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting User[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userUuid);
+            throw new UserFriendsException(errorMessage, exception);
         }
 
-        return userFriendRequestsList;
+        for (UserFriends uf : userFriendRequestsList) {
+            if (uf.getRequestStatus().equals(FriendRequestStatus.WAITING.toString())) {
+                Optional<User> user = userService.getUserByUuid(uf.getUserUuid());
+                user.ifPresent(users::add);
+            }
+        }
+
+        return users;
     }
 
     @Override
-    public boolean createUserFriendRequest(String user1, String user2) {
-        //TODO: IMPLEMENT USER FRIEND REQUESTS!
-        return false;
+    public Optional<UserFriends> getUserFriendRequestByUserAndFriendUuid(String user1, String user2) throws UserFriendsException {
+        UserFriends userFriend;
+
+        try {
+            userFriend = userFriendsRepo.findByUserUuidAndFriendUuid(user1, user2);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", user1, user2);
+            throw new UserFriendsException(errorMessage, exception);
+        }
+
+        return Optional.of(userFriend);
     }
 
     @Override
-    public boolean replyUserFriendRequest(String user1, String user2, Enum<FriendRequestStatus> statusEnum) {
-        //TODO: IMPLEMENT USER FRIEND REQUESTS!
-        return false;
+    public boolean createUserFriendRequest(String user1, String user2) throws UserFriendsException {
+        UserFriends friendRequest = new UserFriends();
+
+        friendRequest.setUserUuid(user1);
+        friendRequest.setFriendUuid(user2);
+        friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
+        friendRequest.setRequestStatus(LocalDateTime.now().toString());
+
+        try {
+            create(friendRequest);
+        } catch (Exception exception) {
+            throw new UserFriendsException("Friend request cannot created!", exception);
+        }
+
+        return true;
     }
 
+    @Override
+    public boolean replyUserFriendRequest(String user1, String user2, String status) throws UserFriendsException {
+        Optional<UserFriends> friendRequestOpt = Optional.empty();
+
+
+        try {
+            friendRequestOpt = getUserFriendRequestByUserAndFriendUuid(user2, user1);
+        } catch (UserFriendsException e) {
+            LOGGER.error("Friend request cannot found!");
+        }
+
+        if (!friendRequestOpt.isPresent()) {
+            LOGGER.error("Friend request cannot found!");
+            return false;
+        }
+
+        UserFriends friendRequest = friendRequestOpt.get();
+
+        try {
+            if (status.equals(FriendRequestStatus.ACCEPTED.toString()) || status.equals(FriendRequestStatus.IGNORED.toString())) {
+                friendRequest.setRequestStatus(status);
+                update(friendRequest);
+            } else if (status.equals(FriendRequestStatus.REJECTED.toString())) {
+                delete(friendRequest);
+            } else {
+                friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
+                update(friendRequest);
+            }
+        } catch (DatabaseException | InvalidUpdateException exception) {
+            throw new UserFriendsException("Friend request cannot replied!", exception);
+        }
+
+        return true;
+    }
 
     @Override
     protected JpaRepository<UserFriends, String> getRepository() {
@@ -80,4 +158,9 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
         return entity.getUuid();
     }
 
+    @Override
+    protected UserFriends preInsert(UserFriends entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 }

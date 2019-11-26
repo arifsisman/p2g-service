@@ -14,5 +14,8 @@ public interface IUserFriendsRepo extends JpaRepository<UserFriends, String> {
 
     Optional<UserFriends> findByUuid(String uuid);
     List<UserFriends> findByUserUuid(String userUuid);
-    
+    List<UserFriends> findByFriendUuid(String friendUuid);
+
+    UserFriends findByUserUuidAndFriendUuid(String userUuid, String friendUuid);
+
 }
