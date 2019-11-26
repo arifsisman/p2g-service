@@ -10,8 +10,8 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * @author Emre Sen - 25.05.2019
- * @contact maemresen07@gmail.com
+ * @author mustafaarifsisman - 29.10.2019
+ * @contact mustafaarifsisman@gmail.com
  */
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "user")
@@ -21,20 +21,14 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
-    @Column(name = "display_name")
-    private String displayName;
-
-    @Column(name = "spotify_account_id")
-    private String spotifyAccountId;
-
-    @Column(name = "spotify_account_type")
-    private String spotifyAccountType;
-
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "display_name", nullable = false)
+    private String displayName;
 
     @Column(name = "online_status")
     private String onlineStatus;
@@ -46,5 +40,19 @@ public class User implements Serializable {
 
     @Column(name = "now_playing")
     private String nowPlaying;
+
+    // Spotify
+    @Column(name = "spotify_account_type")
+    private String spotifyAccountType;
+
+    @Column(name = "spotify_account_id")
+    private String spotifyAccountId;
+
+    // Settings
+    @Column(name = "show_activity_flag")
+    private Boolean showActivityFlag;
+
+    @Column(name = "show_friends_flag")
+    private Boolean showFriendsFlag;
 
 }

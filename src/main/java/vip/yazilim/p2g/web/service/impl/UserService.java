@@ -9,7 +9,6 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.entity.relation.UserSettings;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.UserFriendsException;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -19,7 +18,6 @@ import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.IUserFriendsService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
-import vip.yazilim.p2g.web.service.relation.IUserSettingsService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
@@ -53,9 +51,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private IUserFriendsService userFriendsService;
-
-    @Autowired
-    private IUserSettingsService userSettingsService;
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -92,12 +87,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         Optional<Role> role;
         List<User> friends = new ArrayList<>();
         List<User> friendRequests = new ArrayList<>();
-        Optional<UserSettings> userSettings;
-
-
-        user = getById(userUuid);
 
         // Set User
+        user = getById(userUuid);
         if (!user.isPresent()) {
             return Optional.empty();
         } else {
@@ -136,10 +128,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
         }
         userModel.setFriendRequests(friendRequests);
-
-        // Set User Settings
-        userSettings = userSettingsService.getById(userUuid);
-        userSettings.ifPresent(userModel::setUserSettings);
 
         return Optional.of(userModel);
     }
