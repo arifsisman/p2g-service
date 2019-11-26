@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.service.relation.IAlbumSongService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +45,15 @@ public class AlbumSongService extends ACrudServiceImpl<AlbumSong, String> implem
 
     @Override
     public List<AlbumSong> getAlbumSongListByAlbum(String albumUuid) throws DatabaseException {
-        //TODO: implement!!!!
-        return null;
+        List<AlbumSong> albumSongList;
+
+        try {
+            albumSongList = albumSongRepo.findByAlbumUuid(albumUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting AlbumSongs from albumUuid[%s]", albumUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+
+        return albumSongList;
     }
 }

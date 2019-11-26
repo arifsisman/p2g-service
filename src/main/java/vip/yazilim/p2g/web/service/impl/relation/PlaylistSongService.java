@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.entity.relation.PlaylistSong;
 import vip.yazilim.p2g.web.repository.relation.IPlaylistSongRepo;
 import vip.yazilim.p2g.web.service.ISongService;
@@ -43,7 +44,15 @@ public class PlaylistSongService extends ACrudServiceImpl<PlaylistSong, String> 
 
     @Override
     public List<PlaylistSong> getPlaylistSongListByPlaylist(String playlistUuid) throws DatabaseException {
-        //TODO: implement!!!
-        return null;
+        List<PlaylistSong> playlistSongList;
+
+        try {
+            playlistSongList = playlistSongRepo.findByPlaylistUuid(playlistUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting PlaylistSongs from playlistUuid[%s]", playlistUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+
+        return playlistSongList;
     }
 }
