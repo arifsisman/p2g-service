@@ -12,7 +12,7 @@ public class PageController {
 
     @GetMapping("/")
     public String home() {
-        return "page_home";
+        return "redirect:authorize";
     }
 
     @GetMapping("/profile")

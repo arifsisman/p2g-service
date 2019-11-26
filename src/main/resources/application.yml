@@ -5,9 +5,9 @@ server:
 # Data source configuration
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/p2g_db
+    url: jdbc:postgresql://${db_ip}:5432/p2g_db
     username: postgres
-    password: 16181618
+    password: pos
     initialization-mode: never
 
   jpa:
@@ -18,3 +18,9 @@ spring:
         format_sql: true
         jdbc.lob.non_contextual_creation: true
 
+
+# Spotify configuration
+spotify:
+  clientId: 76f07bcdc1054c32884054e43a135480
+  clientSecret: 9881b96bb7e24401a9162312598185ba
+  redirectUrl: http://localhost:8080/callback

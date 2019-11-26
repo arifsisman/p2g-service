@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface ISongRepo extends JpaRepository<Song, String> {
 
     Optional<Song> findByUuid(String uuid);
-    Optional<Song> findBySongId(String singId);
-    Optional<Song> findByArtistName(String artistName);
-    Optional<Song> findBySongName(String songName);
+    Optional<Song> findBySongId(String songId);
+    Optional<Song> findByArtists(String artistName);
+    Optional<Song> findByName(String songName);
 
 }

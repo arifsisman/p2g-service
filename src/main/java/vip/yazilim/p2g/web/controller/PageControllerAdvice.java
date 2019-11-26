@@ -25,9 +25,8 @@ public class PageControllerAdvice {
         User user = SecurityHelper.getUser();
 
         LOGGER.info("Adding user to model."
-                        + "\n\t User Name: {} {}"
-                , user.getFirstName()
-                , user.getLastName());
+                        + "\n\t User Name: {}"
+                , user.getDisplayName());
 
         model.addAttribute("user", user);
 

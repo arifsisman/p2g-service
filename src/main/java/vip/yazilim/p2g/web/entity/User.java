@@ -21,10 +21,6 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
-//    odadaki userin rolu olarak degistirildi (RoomUser)
-//    @Column(name = "role_uuid")
-//    private String roleUuid;
-
     @Column(name = "display_name")
     private String displayName;
 
@@ -34,9 +30,8 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
 
-//     sifre yerine OAuth dan gelen tokenlar kullaniliyor
-//    @Column(nullable = false)
-//    private String password;
+    @Column(nullable = false)
+    private String password;
 
     @Column(name = "online_status")
     private String onlineStatus;
