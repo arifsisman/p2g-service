@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.IQueueService;
@@ -18,6 +19,8 @@ import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -89,48 +92,105 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
-        List<RoomQueue> roomQueue;
-        Optional<Song> nowPlaying;
+
         List<User> userList;
-        String chatUuid;
         List<User> invitedUserList;
 
-        room = getById(roomUuid);
+        List<RoomQueue> roomQueue;
+        List<Song> songList;
+        Song nowPlaying;
+
+        String chatUuid;
+
         // Set Room
+        room = getById(roomUuid);
         if (!room.isPresent()) {
-            LOGGER.error("Room cannot found with roomUuid: " + roomUuid);
+            LOGGER.error("Cannot found Room with roomUuid: " + roomUuid);
             return Optional.empty();
         } else {
             roomModel.setRoom(room.get());
         }
 
-        // Set RoomQueue
-        roomQueue = queueService.getQueueListByRoomUuid(roomUuid);
-
-        // Set Now Playing Song
-        if (!roomQueue.isEmpty()) {
-            RoomQueue roomQueue0 = roomQueue.get(0);
-            String queue0SongUuid = roomQueue0.getSongUuid();
-            Song nowPlayingSong = songService.getSafeSong(queue0SongUuid);
-            nowPlaying = Optional.of(nowPlayingSong);
-        } else {
-            nowPlaying = Optional.empty();
-        }
-        roomModel.setNowPlaying(nowPlaying);
-
         // Set User List
         userList = userService.getUsersByRoomUuid(roomUuid);
         roomModel.setUserList(userList);
-
-        // Set Room Chat Uuid
-        chatUuid = room.get().getChatUuid();
-        roomModel.setChatUuid(chatUuid);
 
         // Set Invited User List
         invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
         roomModel.setInvitedUserList(invitedUserList);
 
+        // Set RoomQueue
+        roomQueue = queueService.getQueueListByRoomUuid(roomUuid);
+
+        // Set Song List
+        if (!roomQueue.isEmpty()) {
+            songList = songService.getSongsByRoomUuid(roomUuid);
+            roomModel.setSongList(songList);
+        }
+
+        // Set Now Playing Song
+        if (!roomQueue.isEmpty()) {
+            RoomQueue roomQueue0 = roomQueue.get(0);
+            String queue0SongUuid = roomQueue0.getSongUuid();
+            nowPlaying = songService.getSafeSong(queue0SongUuid);
+        } else {
+            nowPlaying = null;
+        }
+        roomModel.setNowPlaying(nowPlaying);
+
+        // Set Room Chat Uuid
+        chatUuid = room.get().getChatUuid();
+        roomModel.setChatUuid(chatUuid);
+
         return Optional.of(roomModel);
+    }
+
+    @Override
+    public Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
+                           Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException {
+        Room room = new Room();
+
+        room.setName(name);
+        room.setOwnerUuid(ownerUuid);
+        room.setCreationDate(TimeHelper.getCurrentTime());
+
+        if (password == null) {
+            room.setPrivateFlag(false);
+            room.setShowRoomActivityFlag(true);
+        } else {
+            room.setPassword(password);
+            room.setPrivateFlag(true);
+            room.setShowRoomActivityFlag(false);
+        }
+
+        if (maxUsers == null) {
+            room.setMaxUsers(5);
+        } else {
+            room.setMaxUsers(maxUsers);
+        }
+
+        if (usersAllowedQueue == null) {
+            room.setUsersAllowedQueueFlag(usersAllowedQueue);
+        } else {
+            room.setUsersAllowedQueueFlag(false);
+        }
+
+        if (usersAllowedControl == null) {
+            room.setUsersAllowedControlFlag(usersAllowedControl);
+        } else {
+            room.setUsersAllowedControlFlag(false);
+        }
+
+        room.setActiveFlag(true);
+        room.setChatUuid(chatUuid);
+
+        try {
+            create(room);
+        } catch (DatabaseException e) {
+            LOGGER.error("Room cannot created!");
+            throw new RoomException("Room cannot created!", e);
+        }
+        return room;
     }
 
 
@@ -144,4 +204,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return entity.getUuid();
     }
 
+    @Override
+    protected Room preInsert(Room entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 }

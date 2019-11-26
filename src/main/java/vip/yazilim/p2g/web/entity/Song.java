@@ -26,6 +26,6 @@ public class Song implements Serializable {
     private String artists;
 
     @Column(name = "duration_ms")
-    private String durationMs;
+    private Integer durationMs;
 
 }

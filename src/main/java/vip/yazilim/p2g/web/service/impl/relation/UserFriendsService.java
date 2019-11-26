@@ -13,11 +13,11 @@ import vip.yazilim.p2g.web.repository.relation.IUserFriendsRepo;
 import vip.yazilim.p2g.web.service.IUserFriendsService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -102,7 +102,7 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
         friendRequest.setUserUuid(user1);
         friendRequest.setFriendUuid(user2);
         friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
-        friendRequest.setRequestStatus(LocalDateTime.now().toString());
+        friendRequest.setRequestDate(TimeHelper.getCurrentTime());
 
         try {
             create(friendRequest);
