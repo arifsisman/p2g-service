@@ -23,10 +23,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomInviteServiceImpl extends ACrudServiceImpl<RoomInvite, String> implements IRoomInviteService {
+public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> implements IRoomInviteService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomInviteServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomInviteService.class);
 
     // injected dependencies
     @Autowired

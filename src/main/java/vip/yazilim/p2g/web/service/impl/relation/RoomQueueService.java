@@ -18,10 +18,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomQueueServiceImpl extends ACrudServiceImpl<RoomQueue, String> implements IQueueService {
+public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implements IQueueService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomQueueServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomQueueService.class);
 
     // injected dependencies
     @Autowired

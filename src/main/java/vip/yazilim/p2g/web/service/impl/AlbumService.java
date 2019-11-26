@@ -6,17 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Album;
-import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.repository.IAlbumRepo;
-import vip.yazilim.p2g.web.repository.relation.IAlbumSongRepo;
 import vip.yazilim.p2g.web.service.IAlbumService;
-import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,10 +18,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class AlbumServiceImpl extends ACrudServiceImpl<Album, String> implements IAlbumService {
+public class AlbumService extends ACrudServiceImpl<Album, String> implements IAlbumService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(AlbumServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(AlbumService.class);
 
     // injected dependencies
     @Autowired

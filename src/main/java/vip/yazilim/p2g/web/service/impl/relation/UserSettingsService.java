@@ -15,10 +15,10 @@ import vip.yazilim.spring.utils.service.ACrudServiceImpl;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class UserSettingsServiceImpl extends ACrudServiceImpl<UserSettings, String> implements IUserSettingsService {
+public class UserSettingsService extends ACrudServiceImpl<UserSettings, String> implements IUserSettingsService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserSettingsServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(UserSettingsService.class);
 
     // injected dependencies
     @Autowired

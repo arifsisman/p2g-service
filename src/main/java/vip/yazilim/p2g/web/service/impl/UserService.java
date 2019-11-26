@@ -29,10 +29,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class UserServiceImpl extends ACrudServiceImpl<User, String> implements IUserService {
+public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     // injected dependencies
     @Autowired

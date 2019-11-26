@@ -20,9 +20,9 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class TokenServiceImpl extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
+public class TokenService extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
     @Autowired
     private ITokenRepo tokenRepo;

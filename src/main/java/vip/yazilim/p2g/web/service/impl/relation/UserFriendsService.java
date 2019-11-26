@@ -19,10 +19,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class UserFriendsServiceImpl extends ACrudServiceImpl<UserFriends, String> implements IUserFriendsService {
+public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> implements IUserFriendsService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserFriendsServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(UserFriendsService.class);
 
     // injected dependencies
     @Autowired

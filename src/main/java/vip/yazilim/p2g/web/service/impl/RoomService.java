@@ -30,10 +30,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomServiceImpl extends ACrudServiceImpl<Room, String> implements IRoomService {
+public class RoomService extends ACrudServiceImpl<Room, String> implements IRoomService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomService.class);
 
     // injected dependencies
     @Autowired

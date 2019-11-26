@@ -5,18 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
-import vip.yazilim.p2g.web.service.IUserService;
-import vip.yazilim.p2g.web.service.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +19,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> implements IRoomUserService {
+public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implements IRoomUserService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomUserServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomUserService.class);
 
     // injected dependencies
     @Autowired

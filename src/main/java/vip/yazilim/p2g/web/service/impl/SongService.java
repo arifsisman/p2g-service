@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements ISongService {
+public class SongService extends ACrudServiceImpl<Song, String> implements ISongService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(SongServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SongService.class);
 
     private static final String UNDEFINED_SONG_NAME = "Undefined Song";
 
