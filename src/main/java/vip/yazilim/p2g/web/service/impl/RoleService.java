@@ -3,8 +3,6 @@ package vip.yazilim.p2g.web.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
@@ -12,25 +10,23 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
-import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements IRoleService {
+public class RoleService extends ACrudServiceImpl<Role, String> implements IRoleService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoleServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoleService.class);
 
     // injected dependencies
     @Autowired
@@ -61,6 +57,50 @@ public class RoleServiceImpl extends ACrudServiceImpl<Role, String> implements I
         return getById(roleName);
     }
 
+    @Override
+    public String changeUserRole(String roomUuid, String userUuid, boolean rank) throws DatabaseException, RoleException {
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(roomUuid, userUuid);
+        RoomUser roomUser;
+
+        if (!roomUserOpt.isPresent()) {
+            LOGGER.warn("User[{}] not in Room[{}]", userUuid, roomUuid);
+            return getDefaultRole().getName();
+        }else{
+            roomUser = roomUserOpt.get();
+        }
+
+        String roleName = roomUser.getRoleName();
+
+        if (rank) {
+            switch (roleName) {
+                case "USER":
+                    roleName = Roles.MODERATOR.getRoleName();
+                    break;
+                case "MODERATOR":
+                    roleName = Roles.ADMIN.getRoleName();
+                    break;
+            }
+        } else {
+            switch (roleName) {
+                case "MODERATOR":
+                    roleName = Roles.USER.getRoleName();
+                    break;
+                case "ADMIN":
+                    roleName = Roles.MODERATOR.getRoleName();
+                    break;
+            }
+        }
+
+        roomUser.setRoleName(roleName);
+
+        try {
+            roomUserService.update(roomUser);
+        } catch (InvalidUpdateException e) {
+            e.printStackTrace();
+        }
+
+        return roleName;
+    }
 
     @Override
     public Role getDefaultRole() throws DatabaseException, RoleException {

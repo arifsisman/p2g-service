@@ -7,23 +7,25 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "friend_requests")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "room_invite")
 @Data
-public class UserFriendRequests implements Serializable {
+public class RoomInvite {
 
     @Id
     private String uuid;
 
+    @Column(name = "room_uuid")
+    private String roomUuid;
+
     @Column(name = "user_uuid")
     private String userUuid;
 
-    @Column(name = "friend_uuid")
-    private String friendUuid;
+    @Column(name = "invitation_date")
+    private String invitationDate;
 
-    @Column(name = "request_status")
-    private String requestStatus;
+    @Column(name = "accepted_flag")
+    private Boolean acceptedFlag;
 
 }

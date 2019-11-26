@@ -12,8 +12,8 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import java.util.Optional;
 
 /**
- * @author Emre Sen - 25.05.2019
- * @contact maemresen07@gmail.com
+ * @author mustafaarifsisman - 26.11.2019
+ * @contact mustafaarifsisman@gmail.com
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -22,17 +22,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     private IUserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Optional<User> userOptional = null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> userOptional = Optional.empty();
 
         try {
-            userOptional = userService.getUserByEmail(s);
+            userOptional = userService.getUserByEmail(email);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
 
-        User user = userOptional
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
+
         return new UserPrinciple(user);
     }
 }

@@ -18,10 +18,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class PlaylistServiceImpl extends ACrudServiceImpl<Playlist, String> implements IPlaylistService {
+public class PlaylistService extends ACrudServiceImpl<Playlist, String> implements IPlaylistService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(PlaylistServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(PlaylistService.class);
 
     // injected dependencies
     @Autowired

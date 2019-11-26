@@ -27,14 +27,6 @@ public class RoomUser implements Serializable {
     @Column(name = "role_name")
     private String roleName;
 
-    @Column(name = "invitation_date")
-    private LocalDateTime invitationDate;
-
-    @Column(name = "accepted_flag")
-    private Boolean acceptedFlag;
-
     @Column(name = "active_flag")
     private Boolean activeFlag;
-
-
 }

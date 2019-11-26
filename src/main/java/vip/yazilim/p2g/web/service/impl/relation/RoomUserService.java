@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -20,10 +19,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> implements IRoomUserService {
+public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implements IRoomUserService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomUserServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomUserService.class);
 
     // injected dependencies
     @Autowired
@@ -69,31 +68,4 @@ public class RoomUserServiceImpl extends ACrudServiceImpl<RoomUser, String> impl
         }
     }
 
-    @Override
-    public void acceptInviteByUuid(String roomUserUuid) throws DatabaseException, InviteException {
-        replyInviteByUuid(roomUserUuid, true);
-    }
-
-    @Override
-    public void rejectInviteByUuid(String roomUserUuid) throws DatabaseException, InviteException {
-        replyInviteByUuid(roomUserUuid, false);
-    }
-
-    private void replyInviteByUuid(String roomUserUuid, boolean accepted) throws DatabaseException, InviteException {
-        Optional<RoomUser> roomUser = getById(roomUserUuid);
-
-        if (!roomUser.isPresent()) {
-            String exceptionMessage = String.format("Invitation cannot send with roomUserUuid[%s]", roomUserUuid);
-            throw new InviteException(exceptionMessage);
-        }
-
-        roomUser.get().setAcceptedFlag(accepted);
-
-        try {
-            roomUserRepo.save(roomUser.get());
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomUserUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
-    }
 }

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.repository.relation.IAlbumSongRepo;
 import vip.yazilim.p2g.web.service.ISongService;
@@ -15,17 +14,16 @@ import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class AlbumSongServiceImpl extends ACrudServiceImpl<AlbumSong, String> implements IAlbumSongService {
+public class AlbumSongService extends ACrudServiceImpl<AlbumSong, String> implements IAlbumSongService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(AlbumSongServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(AlbumSongService.class);
 
     // injected dependencies
     @Autowired
@@ -47,7 +45,15 @@ public class AlbumSongServiceImpl extends ACrudServiceImpl<AlbumSong, String> im
 
     @Override
     public List<AlbumSong> getAlbumSongListByAlbum(String albumUuid) throws DatabaseException {
-        //TODO: implement!!!!
-        return null;
+        List<AlbumSong> albumSongList;
+
+        try {
+            albumSongList = albumSongRepo.findByAlbumUuid(albumUuid);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting AlbumSongs from albumUuid[%s]", albumUuid);
+            throw new DatabaseException(errorMessage, exception);
+        }
+
+        return albumSongList;
     }
 }

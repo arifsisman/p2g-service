@@ -10,10 +10,12 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoleException;
+import vip.yazilim.p2g.web.exception.UserFriendsException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.IRoleService;
 import vip.yazilim.p2g.web.service.IRoomService;
+import vip.yazilim.p2g.web.service.IUserFriendsService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
@@ -29,10 +31,10 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class UserServiceImpl extends ACrudServiceImpl<User, String> implements IUserService {
+public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     // injected dependencies
     @Autowired
@@ -46,6 +48,9 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
 
     @Autowired
     private IRoomUserService roomUserService;
+
+    @Autowired
+    private IUserFriendsService userFriendsService;
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -69,39 +74,60 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUuid(String userUuid) throws DatabaseException, RoleException {
-        UserModel userModel = new UserModel();
-        Optional<User> user;
-        Optional<Role> role;
-        String roomUuid;
+    public Optional<User> getUserByUuid(String uuid) {
+        return userRepo.findByUuid(uuid);
+    }
 
-        user = getById(userUuid);
+    @Override
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
+        UserModel userModel = new UserModel();
+
+        Optional<User> user;
+        Optional<Room> room;
+        Optional<Role> role;
+        List<User> friends = new ArrayList<>();
+        List<User> friendRequests = new ArrayList<>();
 
         // Set User
+        user = getById(userUuid);
         if (!user.isPresent()) {
             return Optional.empty();
         } else {
             userModel.setUser(user.get());
         }
 
-
-        // Room & Role
-        Optional<Room> room = roomService.getRoomByUserUuid(userUuid);
+        // Set Room & Role
+        room = roomService.getRoomByUserUuid(userUuid);
 
         // If user joined a room, user has got a room and role
         // Else user is not in a room, user hasn't got a room and has got default role
         if (room.isPresent()) {
             userModel.setRoom(room.get());
 
-            roomUuid = room.get().getUuid();
+            String roomUuid = room.get().getUuid();
             role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
 
-            if(role.isPresent())
-                userModel.setRole(role.get());
+            role.ifPresent(userModel::setRole);
         } else {
             Role defaultRole = roleService.getDefaultRole();
             userModel.setRole(defaultRole);
         }
+
+        // Set Friends
+        try {
+            friends = userFriendsService.getUserFriendsByUserUuid(userUuid);
+        } catch (UserFriendsException e) {
+            LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
+        }
+        userModel.setFriends(friends);
+
+        // Set Friend Requests
+        try {
+            friendRequests = userFriendsService.getUserFriendRequestsByUserUuid(userUuid);
+        } catch (UserFriendsException e) {
+            LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
+        }
+        userModel.setFriendRequests(friendRequests);
 
         return Optional.of(userModel);
     }
@@ -109,7 +135,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     @Override
     public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
 
-        List<User>  userList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
         for (RoomUser roomUser : roomUserList) {

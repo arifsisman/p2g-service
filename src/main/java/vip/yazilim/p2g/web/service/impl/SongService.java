@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Queue;
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.entity.relation.PlaylistSong;
@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements ISongService {
+public class SongService extends ACrudServiceImpl<Song, String> implements ISongService {
 
     // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(SongServiceImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SongService.class);
 
     private static final String UNDEFINED_SONG_NAME = "Undefined Song";
 
@@ -73,8 +73,8 @@ public class SongServiceImpl extends ACrudServiceImpl<Song, String> implements I
 
     @Override
     public List<Song> getSongsByRoomUuid(String roomUuid) throws DatabaseException {
-        List<Queue> queueSongList = queueService.getQueueListByRoomUuid(roomUuid);
-        List<String> songUuidList = queueSongList.stream().map((Queue::getSongUuid)).collect(Collectors.toList());
+        List<RoomQueue> roomQueueSongList = queueService.getQueueListByRoomUuid(roomUuid);
+        List<String> songUuidList = roomQueueSongList.stream().map((RoomQueue::getSongUuid)).collect(Collectors.toList());
         return getSongListBySongUuidList(songUuidList);
     }
 

@@ -15,6 +15,8 @@ public interface IRoleService extends ICrudService<Role, String> {
 
     Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException;
 
+    String changeUserRole(String roomUuid, String userUuid, boolean rank) throws DatabaseException, RoleException;
+
     Role getDefaultRole() throws DatabaseException, RoleException;
 
 }

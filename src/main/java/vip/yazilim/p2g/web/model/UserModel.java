@@ -7,6 +7,10 @@ import vip.yazilim.p2g.web.entity.User;
 
 import java.util.List;
 
+/**
+ * @author mustafaarifsisman - 26.11.2019
+ * @contact mustafaarifsisman@gmail.com
+ */
 @Data
 public class UserModel {
 
@@ -14,6 +18,7 @@ public class UserModel {
     private Room room;
     private Role role;
 
-//    private List<User> friends;1
-//    private List<User> friendRequests;
+    private List<User> friends;
+    private List<User> friendRequests;
+
 }
