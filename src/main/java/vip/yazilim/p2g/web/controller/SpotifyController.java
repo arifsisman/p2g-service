@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,7 @@ import java.net.URI;
  * @author mustafaarifsisman - 23.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@EnableScheduling
 @Controller
 public class SpotifyController {
 
@@ -43,6 +46,8 @@ public class SpotifyController {
 
     @Autowired
     private ITokenService tokenService;
+
+    private String userUuid;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
@@ -77,8 +82,30 @@ public class SpotifyController {
 //        LOGGER.info("Refresh Token: " + refreshToken);
 //        LOGGER.info("Expire time: " + expireTime);
 
-        String userUuid = SecurityHelper.getUserUuid();
+        userUuid = SecurityHelper.getUserUuid();
 
         return tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+    }
+
+    @Scheduled(fixedRate = 3000000)
+    public void refreshToken() throws DatabaseException, InvalidUpdateException {
+
+        String refreshToken = spotifyApi.getRefreshToken();
+
+        try {
+            if (refreshToken != null) {
+                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
+                        .build().execute();
+
+                String accessToken = authorizationCodeCredentials.getAccessToken();
+                spotifyApi.setAccessToken(accessToken);
+//                LOGGER.info("Access Token: " + accessToken);
+
+                tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+//                LOGGER.info("Access token updated.");
+            }
+        } catch (IOException | SpotifyWebApiException e) {
+            throw new TokenException("Error while getting new access token!");
+        }
     }
 }
