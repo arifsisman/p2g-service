@@ -21,7 +21,6 @@ public class RoomModel {
 
     private List<RoomQueue> roomQueue;
     private List<Song> songList;
-    private Song nowPlaying;
 
     private String chatUuid;
 

@@ -128,16 +128,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             roomModel.setSongList(songList);
         }
 
-        // Set Now Playing Song
-        if (!roomQueue.isEmpty()) {
-            RoomQueue roomQueue0 = roomQueue.get(0);
-            String queue0SongUuid = roomQueue0.getSongUuid();
-            nowPlaying = songService.getSafeSong(queue0SongUuid);
-        } else {
-            nowPlaying = null;
-        }
-        roomModel.setNowPlaying(nowPlaying);
-
         // Set Room Chat Uuid
         chatUuid = room.get().getChatUuid();
         roomModel.setChatUuid(chatUuid);
