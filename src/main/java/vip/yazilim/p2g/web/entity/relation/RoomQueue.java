@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "room_user")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "room_queue")
 @Data
-public class RoomUser implements Serializable {
+public class RoomQueue implements Serializable {
 
     @Id
     private String uuid;
@@ -21,12 +21,14 @@ public class RoomUser implements Serializable {
     @Column(name = "room_uuid")
     private String roomUuid;
 
-    @Column(name = "user_uuid")
-    private String userUuid;
+    @Column(name = "song_uuid")
+    private String songUuid;
 
-    @Column(name = "role_name")
-    private String roleName;
+    @Column(name = "queue_time")
+    private LocalDateTime queuedTime;
 
-    @Column(name = "active_flag")
-    private Boolean activeFlag;
+    private String status;
+
+    private int votes;
+
 }

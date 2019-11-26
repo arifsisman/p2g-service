@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.entity;
+package vip.yazilim.p2g.web.entity.relation;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -7,13 +7,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "queue")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "room_invite")
 @Data
-public class Queue implements Serializable {
+public class RoomInvite {
 
     @Id
     private String uuid;
@@ -21,14 +20,13 @@ public class Queue implements Serializable {
     @Column(name = "room_uuid")
     private String roomUuid;
 
-    @Column(name = "song_uuid")
-    private String songUuid;
+    @Column(name = "user_uuid")
+    private String userUuid;
 
-    @Column(name = "queue_time")
-    private LocalDateTime queuedTime;
+    @Column(name = "invitation_date")
+    private LocalDateTime invitationDate;
 
-    private String status;
-
-    private int votes;
+    @Column(name = "accepted_flag")
+    private Boolean acceptedFlag;
 
 }

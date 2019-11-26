@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface IUserRepo extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
-//    Optional<User> findByUuid(String uuid);
+    Optional<User> findByUuid(String uuid);
+    //TODO: replace userUuids with userEmail!!!!
 
 }

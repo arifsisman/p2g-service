@@ -35,6 +35,8 @@ public class Room implements Serializable {
 
     private String password;
 
+    private String chatUuid;
+
     @Column(name = "max_users")
     private int maxUsers;
 

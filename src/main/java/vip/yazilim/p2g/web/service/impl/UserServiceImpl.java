@@ -69,7 +69,12 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUuid(String userUuid) throws DatabaseException, RoleException {
+    public Optional<User> getUserByUuid(String uuid) {
+        return userRepo.findByUuid(uuid);
+    }
+
+    @Override
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
         UserModel userModel = new UserModel();
         Optional<User> user;
         Optional<Role> role;
@@ -96,8 +101,7 @@ public class UserServiceImpl extends ACrudServiceImpl<User, String> implements I
             roomUuid = room.get().getUuid();
             role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
 
-            if(role.isPresent())
-                userModel.setRole(role.get());
+            role.ifPresent(userModel::setRole);
         } else {
             Role defaultRole = roleService.getDefaultRole();
             userModel.setRole(defaultRole);
