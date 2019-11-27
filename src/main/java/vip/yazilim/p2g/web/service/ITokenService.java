@@ -5,6 +5,8 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ICrudService;
 
+import javax.xml.crypto.Data;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,5 +18,7 @@ public interface ITokenService extends ICrudService<SpotifyToken, String> {
     Optional<SpotifyToken> getTokenByUserUuid(String userUuid) throws DatabaseException;
 
     SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException;
+
+    List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException;
 
 }

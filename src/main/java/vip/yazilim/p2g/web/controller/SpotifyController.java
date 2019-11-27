@@ -94,7 +94,15 @@ public class SpotifyController {
     }
 
     private void test() {
-        profile.getCurrentUsersProfile();
+        try {
+            final String string = spotifyApi.startResumeUsersPlayback()
+                    .context_uri("spotify:album:5zT1JLIj9E57p3e1rFm9Uq")
+                    .build().execute();
+
+            System.out.println("Null: " + string);
+        } catch (IOException | SpotifyWebApiException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     @Scheduled(fixedRate = 3000000)
@@ -118,4 +126,10 @@ public class SpotifyController {
             throw new TokenException("Error while getting new access token!");
         }
     }
+
+    //TODO: Scheduler works for last login user, not all
+//    @Scheduled(fixedRate = 2000)
+//    public void x(){
+//        LOGGER.info("User: " + userUuid);
+//    }
 }

@@ -1,18 +1,23 @@
 package vip.yazilim.p2g.web.service.impl;
 
+import com.wrapper.spotify.SpotifyApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,6 +31,9 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
 
     @Autowired
     private ITokenRepo tokenRepo;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public Optional<SpotifyToken> getTokenByUserUuid(String userUuid) throws DatabaseException {
@@ -42,8 +50,8 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
 
         Optional<SpotifyToken> token = getTokenByUserUuid(userUuid);
 
-        if(token.isPresent()) {
-            LOGGER.debug("Updating token for userUuid:"+ userUuid);
+        if (token.isPresent()) {
+            LOGGER.debug("Updating token for userUuid:" + userUuid);
             token.get().setAccessToken(accessToken);
             token.get().setRefreshToken(refreshToken);
             return update(token.get());
@@ -54,6 +62,20 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
         entity.setAccessToken(accessToken);
         entity.setRefreshToken(refreshToken);
         return create(entity);
+    }
+
+    @Override
+    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
+        List<SpotifyToken> spotifyTokenList = new ArrayList<>();
+
+        List<User> userList = userService.getUsersByRoomUuid(roomUuid);
+
+        for (User u : userList) {
+            Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
+            token.ifPresent(spotifyTokenList::add);
+        }
+
+        return spotifyTokenList;
     }
 
     @Override

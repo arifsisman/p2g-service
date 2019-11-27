@@ -79,6 +79,27 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     }
 
     @Override
+    public String getRoomCurrentSongUuid(String roomUuid) throws DatabaseException {
+        List<RoomQueue> roomQueueSongList = queueService.getQueueListByRoomUuid(roomUuid);
+
+        if (!roomQueueSongList.isEmpty()) {
+            String songUuid;
+
+            //TODO: implement sort by queue votes
+            //roomQueueSongList.sort();
+            songUuid = roomQueueSongList.get(0).getSongUuid();
+
+            Optional<Song> song = getById(songUuid);
+
+            //TODO: check return song uuid or id
+            if (song.isPresent())
+                return song.get().getUuid();
+        }
+
+        return null;
+    }
+
+    @Override
     public List<Song> getSongsByAlbumUuid(String albumUuid) throws DatabaseException {
         List<AlbumSong> albumSongList = albumSongService.getAlbumSongListByAlbum(albumUuid);
         List<String> songUuidList = albumSongList.stream().map((AlbumSong::getSongUuid)).collect(Collectors.toList());
