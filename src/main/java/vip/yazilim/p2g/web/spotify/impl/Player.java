@@ -9,9 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.service.ISongService;
+import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
 
@@ -49,10 +48,8 @@ public class Player implements IPlayer {
         } catch (Exception e) {
             LOGGER.error("An error occurred while executing request[{}], roomUuid[{}]"
                     , request.getClass().getName(), roomUuid);
-            e.printStackTrace();
+            throw new PlayerException("An error occurred while executing request", e);
         }
-
-        return false;
     }
 
     @Override
