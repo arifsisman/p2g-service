@@ -37,7 +37,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     @Override
     public Optional<SpotifyToken> getTokenByUserUuid(String userUuid) throws DatabaseException {
         try {
-            return tokenRepo.findTokenByUserUuid(userUuid);
+            return tokenRepo.findSpotifyTokenByUserUuid(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);

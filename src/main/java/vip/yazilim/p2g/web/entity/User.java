@@ -48,6 +48,9 @@ public class User implements Serializable {
     @Column(name = "spotify_account_id")
     private String spotifyAccountId;
 
+    @Column(name = "device_id")
+    private String deviceId;
+
     // Settings
     @Column(name = "show_activity_flag")
     private Boolean showActivityFlag;

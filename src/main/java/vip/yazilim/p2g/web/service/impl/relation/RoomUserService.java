@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -36,6 +38,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Override
     protected String getId(RoomUser entity) {
         return entity.getUuid();
+    }
+
+    @Override
+    protected RoomUser preInsert(RoomUser entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
     }
 
     @Override

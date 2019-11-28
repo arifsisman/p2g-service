@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import com.wrapper.spotify.requests.data.player.*;
 import org.slf4j.Logger;
@@ -14,6 +16,8 @@ import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,9 +38,7 @@ public class Player implements IPlayer {
 
     @Override
     public boolean executeRequest(String roomUuid, AbstractDataRequest request) {
-        List<SpotifyToken> spotifyTokenList;
-
-        spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
         try {
             for (SpotifyToken token : spotifyTokenList) {
@@ -109,5 +111,25 @@ public class Player implements IPlayer {
                 .build();
 
         return executeRequest(roomUuid, request);
+    }
+
+    @Override
+    public List<String> getUsersAvailableDevices() {
+        List<String> deviceIdList = new ArrayList<>();
+        GetUsersAvailableDevicesRequest request = spotifyApi
+                .getUsersAvailableDevices()
+                .build();
+
+        try {
+            Device[] devices = request.execute();
+
+            for(Device d:devices){
+                deviceIdList.add(d.getId());
+            }
+        } catch (IOException | SpotifyWebApiException e) {
+            LOGGER.error("An error occurred while getting devices.");
+        }
+
+        return deviceIdList;
     }
 }

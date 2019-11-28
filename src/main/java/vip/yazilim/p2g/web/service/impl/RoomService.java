@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
@@ -183,6 +185,24 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return room;
     }
 
+    @Override
+    public RoomUser joinRoom(String roomUuid, String userUuid) {
+        RoomUser roomUser = new RoomUser();
+
+        roomUser.setRoomUuid(roomUuid);
+        roomUser.setUserUuid(userUuid);
+        roomUser.setRoleName(Roles.USER.getRoleName());
+        roomUser.setActiveFlag(true);
+
+        try {
+            roomUserService.create(roomUser);
+        } catch (DatabaseException e) {
+            LOGGER.error("An error occurred when joining roomUuid[{}], userUuid[{}]", roomUuid, userUuid);
+        }
+
+        return roomUser;
+    }
+
 
     @Override
     protected JpaRepository<Room, String> getRepository() {
@@ -194,9 +214,10 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return entity.getUuid();
     }
 
-    @Override
-    protected Room preInsert(Room entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
-    }
+    //TODO: uncomment
+//    @Override
+//    protected Room preInsert(Room entity) {
+//        entity.setUuid(DBHelper.getRandomUuid());
+//        return entity;
+//    }
 }

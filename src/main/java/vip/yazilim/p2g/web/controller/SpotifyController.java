@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.spotify.impl.Player;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
@@ -97,17 +99,4 @@ public class SpotifyController {
 
         return token;
     }
-
-//    private void test() {
-////        try {
-////            final String string = spotifyApi.startResumeUsersPlayback()
-////                    .context_uri("spotify:album:5zT1JLIj9E57p3e1rFm9Uq")
-////                    .build().execute();
-////
-////            System.out.println("Null: " + string);
-////        } catch (IOException | SpotifyWebApiException e) {
-////            System.out.println("Error: " + e.getMessage());
-////        }
-//    }
-
 }
