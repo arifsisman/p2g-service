@@ -19,6 +19,6 @@ public interface ITokenService extends ICrudService<SpotifyToken, String> {
 
     SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException;
 
-    List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException;
+    List<SpotifyToken> getTokenListByRoomUuid(String roomUuid);
 
 }

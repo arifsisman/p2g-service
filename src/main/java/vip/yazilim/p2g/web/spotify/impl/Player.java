@@ -1,7 +1,8 @@
 package vip.yazilim.p2g.web.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.requests.data.AbstractDataRequest;
+import com.wrapper.spotify.requests.data.player.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +11,11 @@ import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.p2g.web.service.ITokenService;
-import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.spring.utils.exception.DatabaseException;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -37,87 +31,86 @@ public class Player implements IPlayer {
     private SpotifyApi spotifyApi;
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private ISongService songServices;
-
-    @Autowired
     private ITokenService tokenService;
 
     @Override
-    public boolean play(String roomUuid, String songUuid) {
-        Song song;
-        String songUri = null;
-        List<SpotifyToken> spotifyTokenList = null;
+    public boolean executeRequest(String roomUuid, AbstractDataRequest request) {
+        List<SpotifyToken> spotifyTokenList;
+
+        spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
         try {
-            Optional<Song> songOpt = songServices.getById(songUuid);
-
-            if (songOpt.isPresent()) {
-                song = songOpt.get();
-                songUri = song.getUri();
-            } else {
-                LOGGER.warn("Song not found with songUuid[{}]", songUuid);
-                return false;
-            }
-
-            spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
-
-        String accessToken = null;
-        try {
-            for (SpotifyToken token : Objects.requireNonNull(spotifyTokenList)) {
-                accessToken = token.getAccessToken();
+            for (SpotifyToken token : spotifyTokenList) {
+                String accessToken = token.getAccessToken();
                 spotifyApi.setAccessToken(accessToken);
-                spotifyApi.startResumeUsersPlayback()
-                        .context_uri(songUri)
-                        .build().execute();
+                request.executeAsync();
             }
             return true;
-        } catch (SpotifyWebApiException | IOException e) {
-            LOGGER.error("An error occurred when playing songUuid[{}], roomUuid[{}], accessToken[{}]", songUuid, roomUuid
-                    , accessToken);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while executing request[{}], roomUuid[{}]"
+                    , request.getClass().getName(), roomUuid);
             e.printStackTrace();
         }
 
         return false;
+    }
+
+    @Override
+    public boolean play(String roomUuid, String songUri) {
+        StartResumeUsersPlaybackRequest request = spotifyApi.startResumeUsersPlayback()
+                .context_uri(songUri)
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 
     @Override
     public boolean play(String roomUuid) {
-        return false;
+        StartResumeUsersPlaybackRequest request = spotifyApi.startResumeUsersPlayback()
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 
     @Override
     public boolean pause(String roomUuid) {
-        return false;
+        PauseUsersPlaybackRequest request = spotifyApi.pauseUsersPlayback()
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 
     @Override
     public boolean next(String roomUuid) {
-        return false;
+        SkipUsersPlaybackToNextTrackRequest request = spotifyApi.skipUsersPlaybackToNextTrack()
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 
     @Override
     public boolean previous(String roomUuid) {
-        return false;
+        SkipUsersPlaybackToPreviousTrackRequest request = spotifyApi.skipUsersPlaybackToPreviousTrack()
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean seek(String roomUuid, Integer ms) {
-        return false;
-    }
+    public boolean seek(String roomUuid, Integer positionMs) {
+        SeekToPositionInCurrentlyPlayingTrackRequest request =
+                spotifyApi.seekToPositionInCurrentlyPlayingTrack(positionMs).build();
 
-    @Override
-    public boolean shuffle(String roomUuid) {
-        return false;
+        return executeRequest(roomUuid, request);
     }
 
     @Override
     public boolean repeat(String roomUuid) {
-        return false;
+        String state = "track";
+
+        SetRepeatModeOnUsersPlaybackRequest request = spotifyApi.setRepeatModeOnUsersPlayback(state)
+                .build();
+
+        return executeRequest(roomUuid, request);
     }
 }

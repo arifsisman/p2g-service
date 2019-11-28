@@ -88,7 +88,7 @@ public class SpotifyController {
         String userUuid = SecurityHelper.getUserUuid();
         SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
-        int delayMs = 55 * 60000;
+        int delayMs = 55 * 60 * 1000;
         Date now = new Date();
         Date startDate = new Date(now.getTime() + delayMs);
 

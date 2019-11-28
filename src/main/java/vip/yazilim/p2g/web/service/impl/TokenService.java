@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.service.impl;
 
-import com.wrapper.spotify.SpotifyApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,14 +64,24 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     }
 
     @Override
-    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) {
+        List<User> userList;
         List<SpotifyToken> spotifyTokenList = new ArrayList<>();
 
-        List<User> userList = userService.getUsersByRoomUuid(roomUuid);
+        try {
+            userList = userService.getUsersByRoomUuid(roomUuid);
+        } catch (DatabaseException e) {
+            LOGGER.error("An error occurred while getting userList from roomUuid[{}]", roomUuid);
+            return null;
+        }
 
-        for (User u : userList) {
-            Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
-            token.ifPresent(spotifyTokenList::add);
+        try {
+            for (User u : userList) {
+                Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
+                token.ifPresent(spotifyTokenList::add);
+            }
+        } catch (DatabaseException e) {
+            LOGGER.error("An error occurred while getting tokenList from roomUuid[{}]", roomUuid);
         }
 
         return spotifyTokenList;
