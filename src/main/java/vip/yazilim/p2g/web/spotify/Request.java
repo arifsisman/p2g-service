@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.spotify.impl;
+package vip.yazilim.p2g.web.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
