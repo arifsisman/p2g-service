@@ -9,17 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.ITokenService;
-import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
@@ -32,7 +30,8 @@ import java.net.URI;
  * @author mustafaarifsisman - 23.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@EnableScheduling
+//@EnableScheduling
+//@EnableAsync
 @Controller
 public class SpotifyController {
 
@@ -48,10 +47,14 @@ public class SpotifyController {
     @Autowired
     private ITokenService tokenService;
 
-    private String userUuid;
+//    private String userUuid;
+
+//    TaskScheduler scheduler;
+
+//    ScheduledFuture scheduledFuture;
 
     @Autowired
-    private IProfile profile;
+    private TokenRefreshScheduler scheduler;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
@@ -86,50 +89,52 @@ public class SpotifyController {
 //        LOGGER.info("Refresh Token: " + refreshToken);
 //        LOGGER.info("Expire time: " + expireTime);
 
-        userUuid = SecurityHelper.getUserUuid();
+        String userUuid = SecurityHelper.getUserUuid();
 
-        test();
+        scheduler.getScheduler().scheduleAtFixedRate(() -> test(userUuid), 2000);
+//        scheduler.getAsyncExecutor().execute(() -> test(userUuid));
 
         return tokenService.saveUserToken(userUuid, accessToken, refreshToken);
     }
 
-    private void test() {
-        try {
-            final String string = spotifyApi.startResumeUsersPlayback()
-                    .context_uri("spotify:album:5zT1JLIj9E57p3e1rFm9Uq")
-                    .build().execute();
+    private void test(String user) {
+//        try {
+//            final String string = spotifyApi.startResumeUsersPlayback()
+//                    .context_uri("spotify:album:5zT1JLIj9E57p3e1rFm9Uq")
+//                    .build().execute();
+//
+//            System.out.println("Null: " + string);
+//        } catch (IOException | SpotifyWebApiException e) {
+//            System.out.println("Error: " + e.getMessage());
+//        }
 
-            System.out.println("Null: " + string);
-        } catch (IOException | SpotifyWebApiException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    @Scheduled(fixedRate = 3000000)
-    public void refreshToken() throws DatabaseException, InvalidUpdateException {
-
-        String refreshToken = spotifyApi.getRefreshToken();
-
-        try {
-            if (refreshToken != null) {
-                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
-                        .build().execute();
-
-                String accessToken = authorizationCodeCredentials.getAccessToken();
-                spotifyApi.setAccessToken(accessToken);
-//                LOGGER.info("Access Token: " + accessToken);
-
-                tokenService.saveUserToken(userUuid, accessToken, refreshToken);
-//                LOGGER.info("Access token updated.");
-            }
-        } catch (IOException | SpotifyWebApiException e) {
-            throw new TokenException("Error while getting new access token!");
-        }
+        LOGGER.info("User: " + user);
     }
 
     //TODO: Scheduler works for last login user, not all
-//    @Scheduled(fixedRate = 2000)
-//    public void x(){
-//        LOGGER.info("User: " + userUuid);
+//    @Scheduled(fixedRate = 3000000)
+//    public void refreshToken(String userUuid) {
+//
+//        String refreshToken = spotifyApi.getRefreshToken();
+//
+//        try {
+//            if (refreshToken != null) {
+//                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
+//                        .build().execute();
+//
+//                String accessToken = authorizationCodeCredentials.getAccessToken();
+//                spotifyApi.setAccessToken(accessToken);
+////                LOGGER.info("Access Token: " + accessToken);
+//
+//                tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+////                LOGGER.info("Access token updated.");
+//            }
+//        } catch (IOException | SpotifyWebApiException e) {
+//            throw new TokenException("Error while getting new access token!");
+//        } catch (InvalidUpdateException | DatabaseException e) {
+//            e.printStackTrace();
+//        }
 //    }
+
+
 }

@@ -20,6 +20,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -47,11 +48,12 @@ public class Player implements IPlayer {
     @Override
     public boolean play(String roomUuid, String songUuid) {
         Song song;
-        String songUri;
-        List<SpotifyToken> spotifyTokenList;
+        String songUri = null;
+        List<SpotifyToken> spotifyTokenList = null;
 
         try {
             Optional<Song> songOpt = songServices.getById(songUuid);
+
             if (songOpt.isPresent()) {
                 song = songOpt.get();
                 songUri = song.getUri();
@@ -63,12 +65,11 @@ public class Player implements IPlayer {
             spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         } catch (DatabaseException e) {
             e.printStackTrace();
-            return false;
         }
 
         String accessToken = null;
         try {
-            for (SpotifyToken token : spotifyTokenList) {
+            for (SpotifyToken token : Objects.requireNonNull(spotifyTokenList)) {
                 accessToken = token.getAccessToken();
                 spotifyApi.setAccessToken(accessToken);
                 spotifyApi.startResumeUsersPlayback()
