@@ -9,7 +9,7 @@ import com.wrapper.spotify.requests.data.AbstractDataRequest;
  */
 public abstract class Request{
 
-    public  Request(){
+    public Request(){
     }
 
     public abstract AbstractDataRequest build(SpotifyApi spotifyApi);
