@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.config.spotify;
+package vip.yazilim.p2g.web.controller;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -34,7 +34,7 @@ public class TokenRefresher {
     @Autowired
     private ITokenService tokenService;
 
-    public void refreshToken(String userUuid) {
+    void refreshToken(String userUuid) {
         Optional<SpotifyToken> tokenOptional;
         SpotifyToken token;
 
@@ -63,8 +63,8 @@ public class TokenRefresher {
 
                 tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
-                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
-                LOGGER.info("Access Token: " + accessToken);
+//                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
+//                LOGGER.info("Access Token: " + accessToken);
             }
         } catch (IOException | SpotifyWebApiException e) {
             throw new TokenException("Error while getting new access token!");
