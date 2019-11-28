@@ -6,9 +6,8 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.ITokenService;
@@ -27,9 +26,11 @@ public class TokenRefresher {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TokenRefresher.class);
 
-    @Autowired
-    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
-    private SpotifyApi spotifyApi;
+    @Value("${spotify.clientId}")
+    private String clientId;
+
+    @Value("${spotify.clientSecret}")
+    private String clientSecret;
 
     @Autowired
     private ITokenService tokenService;
@@ -55,6 +56,12 @@ public class TokenRefresher {
 
         try {
             if (refreshToken != null) {
+                SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                        .setClientId(clientId)
+                        .setClientSecret(clientSecret)
+                        .setRefreshToken(refreshToken)
+                        .build();
+
                 AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
                         .build().execute();
 
