@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.spotify;
 
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
+import vip.yazilim.p2g.web.spotify.impl.Request;
 
 import java.util.List;
 
@@ -10,16 +11,17 @@ import java.util.List;
  */
 public interface IPlayer {
 
-    boolean executeRequest(String roomUuid, AbstractDataRequest request);
+    List<AbstractDataRequest> initRequests(String roomUuid, Request request);
+    void execRequests(List<AbstractDataRequest> requestList);
 
-    boolean play(String roomUuid, String songUri);
-    boolean play(String roomUuid);
-    boolean pause(String roomUuid);
-    boolean next(String roomUuid);
-    boolean previous(String roomUuid);
+    void play(String roomUuid, String songUri);
+    void play(String roomUuid);
+    void pause(String roomUuid);
+    void next(String roomUuid);
+    void previous(String roomUuid);
 
-    boolean seek(String roomUuid, Integer ms);
-    boolean repeat(String roomUuid);
+    void seek(String roomUuid, Integer ms);
+    void repeat(String roomUuid);
 
     List<String> getUsersAvailableDevices();
 

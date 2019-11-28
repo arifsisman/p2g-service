@@ -14,13 +14,15 @@ import java.util.Optional;
 public interface ISongService extends ICrudService<Song, String> {
 
     Optional<Song> getSongByName(String songName) throws DatabaseException;
-    List<Song> getSongsByRoomUuid(String roomUuid) throws DatabaseException;
+    List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;
 
-    String getRoomCurrentSongUuid(String roomUuid) throws DatabaseException;
+    Song getRoomCurrentSongUuid(String roomUuid) throws DatabaseException;
 
-    List<Song> getSongsByAlbumUuid(String albumUuid) throws DatabaseException;
-    List<Song> getSongsByPlaylistUuid(String playlistUuid) throws DatabaseException;
+    List<Song> getSongListByAlbumUuid(String albumUuid) throws DatabaseException;
+    List<Song> getSongListByPlaylistUuid(String playlistUuid) throws DatabaseException;
 
     Song getSafeSong(String uuid) throws DatabaseException;
+
+    Song createSafeSong(Song song);
 
 }

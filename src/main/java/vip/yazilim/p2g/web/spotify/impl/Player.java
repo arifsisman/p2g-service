@@ -1,22 +1,15 @@
 package vip.yazilim.p2g.web.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import com.wrapper.spotify.requests.data.player.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
-import vip.yazilim.p2g.web.constant.Constants;
+import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,112 +17,118 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Controller
+@Service
 public class Player implements IPlayer {
 
     private final Logger LOGGER = LoggerFactory.getLogger(Player.class);
 
     @Autowired
-    @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
-    private SpotifyApi spotifyApi;
-
-    @Autowired
     private ITokenService tokenService;
 
     @Override
-    public boolean executeRequest(String roomUuid, AbstractDataRequest request) {
+    public List<AbstractDataRequest> initRequests(String roomUuid, Request request) {
+
+        List<AbstractDataRequest> requestList = new ArrayList<>();
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        try {
-            for (SpotifyToken token : spotifyTokenList) {
-                String accessToken = token.getAccessToken();
-                spotifyApi.setAccessToken(accessToken);
-                request.executeAsync();
-            }
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("An error occurred while executing request[{}], roomUuid[{}]"
-                    , request.getClass().getName(), roomUuid);
-            throw new PlayerException("An error occurred while executing request", e);
+        for (SpotifyToken token : spotifyTokenList) {
+            SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                    .setAccessToken(token.getAccessToken())
+                    .build();
+
+            requestList.add(request.build(spotifyApi));
+        }
+
+        return requestList;
+    }
+
+    @Override
+    public void execRequests(List<AbstractDataRequest> requestList) {
+        for (AbstractDataRequest request : requestList) {
+            request.executeAsync();
         }
     }
 
     @Override
-    public boolean play(String roomUuid, String songUri) {
-        StartResumeUsersPlaybackRequest request = spotifyApi.startResumeUsersPlayback()
-                .context_uri(songUri)
-                .build();
+    public void play(String roomUuid, String songUri) {
+//        List<AbstractDataRequest> requestList = new ArrayList<>();
+//        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+//
+//        for (SpotifyToken token : spotifyTokenList) {
+//            String accessToken = token.getAccessToken();
+//
+//            SpotifyApi spotifyApi = new SpotifyApi.Builder()
+//                    .setAccessToken(accessToken)
+//                    .build();
+//
+//            StartResumeUsersPlaybackRequest request = spotifyApi.startResumeUsersPlayback()
+//                    .context_uri(songUri)
+//                    .build();
+//
+//            requestList.add(request);
+//        }
 
-        return executeRequest(roomUuid, request);
+        Request request = new Request() {
+            @Override
+            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+                return spotifyApi.startResumeUsersPlayback()
+                        .context_uri(songUri)
+                        .build();
+            }
+        };
+
+        List<AbstractDataRequest> requestList = initRequests(roomUuid, request);
+        execRequests(requestList);
     }
 
     @Override
-    public boolean play(String roomUuid) {
-        StartResumeUsersPlaybackRequest request = spotifyApi.startResumeUsersPlayback()
-                .build();
+    public void play(String roomUuid) {
 
-        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean pause(String roomUuid) {
-        PauseUsersPlaybackRequest request = spotifyApi.pauseUsersPlayback()
-                .build();
+    public void pause(String roomUuid) {
 
-        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean next(String roomUuid) {
-        SkipUsersPlaybackToNextTrackRequest request = spotifyApi.skipUsersPlaybackToNextTrack()
-                .build();
+    public void next(String roomUuid) {
 
-        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean previous(String roomUuid) {
-        SkipUsersPlaybackToPreviousTrackRequest request = spotifyApi.skipUsersPlaybackToPreviousTrack()
-                .build();
+    public void previous(String roomUuid) {
 
-        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean seek(String roomUuid, Integer positionMs) {
-        SeekToPositionInCurrentlyPlayingTrackRequest request =
-                spotifyApi.seekToPositionInCurrentlyPlayingTrack(positionMs).build();
+    public void seek(String roomUuid, Integer ms) {
 
-        return executeRequest(roomUuid, request);
     }
 
     @Override
-    public boolean repeat(String roomUuid) {
-        String state = "track";
+    public void repeat(String roomUuid) {
 
-        SetRepeatModeOnUsersPlaybackRequest request = spotifyApi.setRepeatModeOnUsersPlayback(state)
-                .build();
-
-        return executeRequest(roomUuid, request);
     }
+
 
     @Override
     public List<String> getUsersAvailableDevices() {
         List<String> deviceIdList = new ArrayList<>();
-        GetUsersAvailableDevicesRequest request = spotifyApi
-                .getUsersAvailableDevices()
-                .build();
-
-        try {
-            Device[] devices = request.execute();
-
-            for(Device d:devices){
-                deviceIdList.add(d.getId());
-            }
-        } catch (IOException | SpotifyWebApiException e) {
-            LOGGER.error("An error occurred while getting devices.");
-        }
-
+//        GetUsersAvailableDevicesRequest request = spotifyApi
+//                .getUsersAvailableDevices()
+//                .build();
+//
+//        try {
+//            Device[] devices = request.execute();
+//
+//            for (Device d : devices) {
+//                deviceIdList.add(d.getId());
+//            }
+//        } catch (IOException | SpotifyWebApiException e) {
+//            LOGGER.error("An error occurred while getting devices.");
+//        }
+//
         return deviceIdList;
     }
 }

@@ -58,6 +58,13 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     }
 
     @Override
+    protected Song preInsert(Song entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+
+    @Override
     public Optional<Song> getSongByName(String songName) throws DatabaseException {
         Optional<Song> songOptional;
 
@@ -72,42 +79,42 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     }
 
     @Override
-    public List<Song> getSongsByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException {
         List<RoomQueue> roomQueueSongList = queueService.getQueueListByRoomUuid(roomUuid);
         List<String> songUuidList = roomQueueSongList.stream().map((RoomQueue::getSongUuid)).collect(Collectors.toList());
         return getSongListBySongUuidList(songUuidList);
     }
 
     @Override
-    public String getRoomCurrentSongUuid(String roomUuid) throws DatabaseException {
-        List<RoomQueue> roomQueueSongList = queueService.getQueueListByRoomUuid(roomUuid);
+    public Song getRoomCurrentSongUuid(String roomUuid) throws DatabaseException {
+        List<RoomQueue> roomQueueSongs = queueService.getQueueListByRoomUuid(roomUuid);
 
-        if (!roomQueueSongList.isEmpty()) {
+        if (!roomQueueSongs.isEmpty()) {
             String songUuid;
 
             //TODO: implement sort by queue votes
             //roomQueueSongList.sort();
-            songUuid = roomQueueSongList.get(0).getSongUuid();
+            songUuid = roomQueueSongs.get(0).getSongUuid();
 
             Optional<Song> song = getById(songUuid);
 
             //TODO: check return song uuid or id
             if (song.isPresent())
-                return song.get().getUuid();
+                return song.get();
         }
 
         return null;
     }
 
     @Override
-    public List<Song> getSongsByAlbumUuid(String albumUuid) throws DatabaseException {
+    public List<Song> getSongListByAlbumUuid(String albumUuid) throws DatabaseException {
         List<AlbumSong> albumSongList = albumSongService.getAlbumSongListByAlbum(albumUuid);
         List<String> songUuidList = albumSongList.stream().map((AlbumSong::getSongUuid)).collect(Collectors.toList());
         return getSongListBySongUuidList(songUuidList);
     }
 
     @Override
-    public List<Song> getSongsByPlaylistUuid(String playlistUuid) throws DatabaseException {
+    public List<Song> getSongListByPlaylistUuid(String playlistUuid) throws DatabaseException {
         List<PlaylistSong> playlistSongList = playlistSongService.getPlaylistSongListByPlaylist(playlistUuid);
         List<String> songUuidList = playlistSongList.stream().map((PlaylistSong::getSongUuid)).collect(Collectors.toList());
         return getSongListBySongUuidList(songUuidList);
@@ -141,5 +148,29 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         undefinedSong.setUuid(DBHelper.getRandomUuid());
         undefinedSong.setName(UNDEFINED_SONG_NAME);
         return undefinedSong;
+    }
+
+    @Override
+    public Song createSafeSong(Song song) {
+        Optional<Song> existingSong = Optional.empty();
+
+        try {
+            existingSong = getById(song.getUuid());
+        } catch (DatabaseException e) {
+            LOGGER.error("An error occurred while getting song.");
+        }
+
+        if (existingSong.isPresent()) {
+            LOGGER.trace("Song already exists.");
+            return existingSong.get();
+        } else {
+            try {
+                create(song);
+            } catch (DatabaseException e) {
+                LOGGER.error("An error occurred while creating song.");
+            }
+        }
+
+        return song;
     }
 }

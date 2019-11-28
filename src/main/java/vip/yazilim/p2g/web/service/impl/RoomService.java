@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
@@ -21,7 +20,6 @@ import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
@@ -58,6 +56,23 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Override
+    protected JpaRepository<Room, String> getRepository() {
+        return roomRepo;
+    }
+
+    @Override
+    protected String getId(Room entity) {
+        return entity.getUuid();
+    }
+
+    //TODO: uncomment
+//    @Override
+//    protected Room preInsert(Room entity) {
+//        entity.setUuid(DBHelper.getRandomUuid());
+//        return entity;
+//    }
 
     @Override
     public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
@@ -126,7 +141,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         // Set Song List
         if (!roomQueue.isEmpty()) {
-            songList = songService.getSongsByRoomUuid(roomUuid);
+            songList = songService.getSongListByRoomUuid(roomUuid);
             roomModel.setSongList(songList);
         }
 
@@ -202,22 +217,4 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         return roomUser;
     }
-
-
-    @Override
-    protected JpaRepository<Room, String> getRepository() {
-        return roomRepo;
-    }
-
-    @Override
-    protected String getId(Room entity) {
-        return entity.getUuid();
-    }
-
-    //TODO: uncomment
-//    @Override
-//    protected Room preInsert(Room entity) {
-//        entity.setUuid(DBHelper.getRandomUuid());
-//        return entity;
-//    }
 }
