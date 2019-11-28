@@ -40,6 +40,22 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
     private IUserService userService;
 
     @Override
+    protected JpaRepository<UserFriends, String> getRepository() {
+        return userFriendsRepo;
+    }
+
+    @Override
+    protected String getId(UserFriends entity) {
+        return entity.getUuid();
+    }
+
+    @Override
+    protected UserFriends preInsert(UserFriends entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
     public List<User> getUserFriendsByUserUuid(String userUuid) throws UserFriendsException {
         List<UserFriends> userFriendsList;
         List<User> users = new ArrayList<>();
@@ -148,19 +164,4 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
         return true;
     }
 
-    @Override
-    protected JpaRepository<UserFriends, String> getRepository() {
-        return userFriendsRepo;
-    }
-
-    @Override
-    protected String getId(UserFriends entity) {
-        return entity.getUuid();
-    }
-
-    @Override
-    protected UserFriends preInsert(UserFriends entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
-    }
 }

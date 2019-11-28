@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.requests.AbstractRequest;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
 import org.slf4j.Logger;
@@ -13,7 +12,8 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.p2g.web.spotify.Request;
+import vip.yazilim.p2g.web.spotify.ARequest;
+import vip.yazilim.p2g.web.spotify.IRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,134 +31,104 @@ public class Player implements IPlayer {
     @Autowired
     private ITokenService tokenService;
 
-    @Override
-    public List<AbstractDataRequest> initRequests(List<SpotifyToken> spotifyTokenList, Request request) {
-
-        List<AbstractDataRequest> requestList = new ArrayList<>();
-        SpotifyApi spotifyApi;
-
-        for (SpotifyToken token : spotifyTokenList) {
-            spotifyApi = new SpotifyApi.Builder()
-                    .setAccessToken(token.getAccessToken())
-                    .build();
-
-            requestList.add(request.build(spotifyApi));
-        }
-
-        return requestList;
-    }
-
-    @Override
-    public void execRequestsAsync(List<AbstractDataRequest> requestList) {
-        requestList.forEach(AbstractRequest::executeAsync);
-    }
-
-    @Override
-    public void execRequestsSync(List<AbstractDataRequest> requestList) {
-        for (AbstractDataRequest dataRequest : requestList) {
-            try {
-                dataRequest.execute();
-            } catch (IOException | SpotifyWebApiException e) {
-                LOGGER.error("An error occurred while executing request.");
-            }
-        }
-    }
+    @Autowired
+    private IRequest spotifyRequest;
 
     @Override
     public void play(String roomUuid, String songUri) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.startResumeUsersPlayback().context_uri(songUri).build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void play(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.startResumeUsersPlayback().build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void pause(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.pauseUsersPlayback().build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void next(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.skipUsersPlaybackToNextTrack().build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void previous(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.skipUsersPlaybackToPreviousTrack().build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void seek(String roomUuid, Integer ms) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
     @Override
     public void repeat(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 String state = "track";
@@ -166,8 +136,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
-        execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        spotifyRequest.execRequestsAsync(requestList);
     }
 
 
@@ -178,14 +148,14 @@ public class Player implements IPlayer {
 
         spotifyTokenList.add(token);
 
-        Request request = new Request() {
+        ARequest request = new ARequest() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.getUsersAvailableDevices().build();
             }
         };
 
-        List<AbstractDataRequest> requestList = initRequests(spotifyTokenList, request);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
 
         try {
             Device[] devices = ((GetUsersAvailableDevicesRequest) requestList.get(0)).execute();

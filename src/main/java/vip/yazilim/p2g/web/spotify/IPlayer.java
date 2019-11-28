@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.spotify;
 
-import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 
 import java.util.List;
@@ -10,10 +9,6 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface IPlayer {
-
-    List<AbstractDataRequest> initRequests(List<SpotifyToken> spotifyTokenList, Request request);
-    void execRequestsAsync(List<AbstractDataRequest> requestList);
-    void execRequestsSync(List<AbstractDataRequest> requestList);
 
     void play(String roomUuid, String songUri);
     void play(String roomUuid);

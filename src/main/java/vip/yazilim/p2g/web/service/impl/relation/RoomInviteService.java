@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomInviteService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -35,6 +36,21 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     @Autowired
     private IUserService userService;
 
+    @Override
+    protected JpaRepository<RoomInvite, String> getRepository() {
+        return roomInviteRepo;
+    }
+
+    @Override
+    protected String getId(RoomInvite roomInvite) {
+        return roomInvite.getUuid();
+    }
+
+    @Override
+    protected RoomInvite preInsert(RoomInvite entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 
     @Override
     public List<User> getInvitedUserListByRoomUuid(String roomUuid) throws DatabaseException {
@@ -85,13 +101,4 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
         }
     }
 
-    @Override
-    protected JpaRepository<RoomInvite, String> getRepository() {
-        return roomInviteRepo;
-    }
-
-    @Override
-    protected String getId(RoomInvite roomInvite) {
-        return roomInvite.getUuid();
-    }
 }

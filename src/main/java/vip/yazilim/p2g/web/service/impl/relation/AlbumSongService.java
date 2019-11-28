@@ -7,12 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.AlbumSong;
 import vip.yazilim.p2g.web.repository.relation.IAlbumSongRepo;
-import vip.yazilim.p2g.web.service.ISongService;
 import vip.yazilim.p2g.web.service.relation.IAlbumSongService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,10 +28,6 @@ public class AlbumSongService extends ACrudServiceImpl<AlbumSong, String> implem
     @Autowired
     private IAlbumSongRepo albumSongRepo;
 
-    @Autowired
-    private ISongService songService;
-
-
     @Override
     protected JpaRepository<AlbumSong, String> getRepository() {
         return albumSongRepo;
@@ -41,6 +36,12 @@ public class AlbumSongService extends ACrudServiceImpl<AlbumSong, String> implem
     @Override
     protected String getId(AlbumSong entity) {
         return entity.getUuid();
+    }
+
+    @Override
+    protected AlbumSong preInsert(AlbumSong entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
     }
 
     @Override

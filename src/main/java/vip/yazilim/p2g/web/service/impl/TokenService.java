@@ -35,6 +35,22 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     private IUserService userService;
 
     @Override
+    protected JpaRepository<SpotifyToken, String> getRepository() {
+        return tokenRepo;
+    }
+
+    @Override
+    protected String getId(SpotifyToken entity) {
+        return entity.getUuid();
+    }
+
+    @Override
+    protected SpotifyToken preInsert(SpotifyToken entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
     public Optional<SpotifyToken> getTokenByUserUuid(String userUuid) throws DatabaseException {
         try {
             return tokenRepo.findSpotifyTokenByUserUuid(userUuid);
@@ -87,19 +103,4 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
         return spotifyTokenList;
     }
 
-    @Override
-    protected JpaRepository<SpotifyToken, String> getRepository() {
-        return tokenRepo;
-    }
-
-    @Override
-    protected String getId(SpotifyToken entity) {
-        return entity.getUuid();
-    }
-
-    @Override
-    protected SpotifyToken preInsert(SpotifyToken entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
-    }
 }

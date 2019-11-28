@@ -63,7 +63,6 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return entity;
     }
 
-
     @Override
     public Optional<Song> getSongByName(String songName) throws DatabaseException {
         Optional<Song> songOptional;

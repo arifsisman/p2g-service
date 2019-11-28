@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.IQueueService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -35,6 +36,12 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     @Override
     protected String getId(RoomQueue entity) {
         return entity.getUuid();
+    }
+
+    @Override
+    protected RoomQueue preInsert(RoomQueue entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
     }
 
     @Override

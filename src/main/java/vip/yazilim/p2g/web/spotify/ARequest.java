@@ -7,9 +7,9 @@ import com.wrapper.spotify.requests.data.AbstractDataRequest;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public abstract class Request{
+public abstract class ARequest {
 
-    public Request(){
+    protected ARequest(){
     }
 
     public abstract AbstractDataRequest build(SpotifyApi spotifyApi);

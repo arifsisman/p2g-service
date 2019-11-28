@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Album;
 import vip.yazilim.p2g.web.repository.IAlbumRepo;
 import vip.yazilim.p2g.web.service.IAlbumService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -28,6 +29,22 @@ public class AlbumService extends ACrudServiceImpl<Album, String> implements IAl
     private IAlbumRepo albumRepo;
 
     @Override
+    protected JpaRepository<Album, String> getRepository() {
+        return albumRepo;
+    }
+
+    @Override
+    protected String getId(Album entity) {
+        return entity.getUuid();
+    }
+
+    @Override
+    protected Album preInsert(Album entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
     public Optional<String> getImageUrlByAlbumUuid(String albumUuid) throws DatabaseException {
         try {
             Optional<Album> album = albumRepo.findByUuid(albumUuid);
@@ -43,13 +60,4 @@ public class AlbumService extends ACrudServiceImpl<Album, String> implements IAl
         return Optional.empty();
     }
 
-    @Override
-    protected JpaRepository<Album, String> getRepository() {
-        return albumRepo;
-    }
-
-    @Override
-    protected String getId(Album entity) {
-        return entity.getUuid();
-    }
 }
