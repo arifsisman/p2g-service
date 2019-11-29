@@ -32,29 +32,6 @@ public class Search implements ISearch {
     private IRequest spotifyRequest;
 
     @Override
-    public List<Song> searchSong(SpotifyToken token, String q) {
-        List<Song> songList = new LinkedList<>();
-        String type = ModelObjectType.TRACK.getType();
-
-        ARequestBuilder request = new ARequestBuilder() {
-            @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
-                return spotifyApi.searchItem(q, type).build();
-            }
-        };
-
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
-        SearchResult searchResult = (SearchResult) spotifyRequest.execRequestSync(dataRequest);
-
-        Track[] tracks = searchResult.getTracks().getItems();
-
-        for (Track t : tracks)
-            songList.add(SpotifyHelper.trackToSong(t));
-
-        return songList;
-    }
-
-    @Override
     public List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) {
         List<SearchModel> searchModelList = new LinkedList<>();
         StringBuilder type = new StringBuilder();
@@ -108,7 +85,7 @@ public class Search implements ISearch {
         if(playlists.length > 0){
             for (PlaylistSimplified a : playlists){
                 SearchModel searchModel = new SearchModel();
-                searchModel.setType(SearchTypes.ALBUM);
+                searchModel.setType(SearchTypes.PLAYLIST);
                 searchModel.setName(a.getName());
                 searchModel.setImageUrl(a.getImages()[0].getUrl());
                 searchModel.setUri(a.getUri());

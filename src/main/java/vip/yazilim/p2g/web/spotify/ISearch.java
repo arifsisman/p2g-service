@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.spotify;
 
 
 import vip.yazilim.p2g.web.constant.SearchTypes;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.model.SearchModel;
 
@@ -14,7 +13,6 @@ import java.util.List;
  */
 public interface ISearch {
 
-    List<Song> searchSong(SpotifyToken token, String q);
     List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes);
 
 }
