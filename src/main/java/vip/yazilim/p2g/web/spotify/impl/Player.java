@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.p2g.web.spotify.ARequest;
+import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IRequest;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class Player implements IPlayer {
     public void play(String roomUuid, String songUri) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.startResumeUsersPlayback().context_uri(songUri).build();
@@ -53,7 +53,7 @@ public class Player implements IPlayer {
     public void play(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.startResumeUsersPlayback().build();
@@ -68,7 +68,7 @@ public class Player implements IPlayer {
     public void pause(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.pauseUsersPlayback().build();
@@ -83,7 +83,7 @@ public class Player implements IPlayer {
     public void next(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.skipUsersPlaybackToNextTrack().build();
@@ -98,7 +98,7 @@ public class Player implements IPlayer {
     public void previous(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.skipUsersPlaybackToPreviousTrack().build();
@@ -113,7 +113,7 @@ public class Player implements IPlayer {
     public void seek(String roomUuid, Integer ms) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build();
@@ -128,7 +128,7 @@ public class Player implements IPlayer {
     public void repeat(String roomUuid) {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 String state = "track";
@@ -148,7 +148,7 @@ public class Player implements IPlayer {
 
         spotifyTokenList.add(token);
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.getUsersAvailableDevices().build();

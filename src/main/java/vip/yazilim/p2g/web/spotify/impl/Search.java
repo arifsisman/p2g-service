@@ -7,9 +7,10 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.spotify.ARequest;
+import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IRequest;
 import vip.yazilim.p2g.web.spotify.ISearch;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
@@ -18,8 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author mustafaarifsism
- * an - 28.11.2019
+ * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
@@ -33,7 +33,7 @@ public class Search implements ISearch {
         List<Song> songList = new LinkedList<>();
         String type = ModelObjectType.TRACK.getType();
 
-        ARequest request = new ARequest() {
+        ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
                 return spotifyApi.searchItem(q, type).build();
@@ -41,13 +41,18 @@ public class Search implements ISearch {
         };
 
         AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
-        SearchResult searchResult = (SearchResult) spotifyRequest.execRequest(dataRequest);
-        
+        SearchResult searchResult = (SearchResult) spotifyRequest.execRequestSync(dataRequest);
+
         Track[] tracks = searchResult.getTracks().getItems();
 
         for (Track t : tracks)
             songList.add(SpotifyHelper.trackToSong(t));
 
         return songList;
+    }
+
+    @Override
+    public List<Song> search(SpotifyToken token, String q, SearchTypes... searchTypes) {
+        return null;
     }
 }

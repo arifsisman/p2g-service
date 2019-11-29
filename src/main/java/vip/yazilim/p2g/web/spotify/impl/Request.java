@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.spotify.ARequest;
+import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -25,7 +26,7 @@ public class Request implements IRequest {
     private final Logger LOGGER = LoggerFactory.getLogger(Request.class);
 
     @Override
-    public List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequest request) {
+    public List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request) {
 
         List<AbstractDataRequest> requestList = new ArrayList<>();
         SpotifyApi spotifyApi;
@@ -58,7 +59,7 @@ public class Request implements IRequest {
     }
 
     @Override
-    public AbstractDataRequest initRequest(SpotifyToken token, ARequest request) {
+    public AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request) {
         AbstractDataRequest dataRequest;
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -70,16 +71,19 @@ public class Request implements IRequest {
 
 
     @Override
-    public Object execRequest(AbstractDataRequest request) {
-        Object var = new Object();
-
+    public Object execRequestSync(AbstractDataRequest request) {
         try {
-            var = request.execute();
+            return request.execute();
         } catch (IOException | SpotifyWebApiException e) {
-            e.printStackTrace();
+            LOGGER.error("An error occurred while executing request.");
         }
+        return null;
+    }
 
-        return var;
+    @Override
+    public Object execRequestAsync(AbstractDataRequest request) {
+        CompletableFuture result = request.executeAsync();
+        return result.join();
     }
 
 }

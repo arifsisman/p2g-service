@@ -11,10 +11,11 @@ import java.util.List;
  */
 public interface IRequest {
 
-    List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequest request);
+    List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request);
     void execRequestListAsync(List<AbstractDataRequest> requestList);
     void execRequestListSync(List<AbstractDataRequest> requestList);
 
-    AbstractDataRequest initRequest(SpotifyToken token, ARequest request);
-    Object execRequest(AbstractDataRequest request);
+    AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request);
+    Object execRequestSync(AbstractDataRequest request);
+    Object execRequestAsync(AbstractDataRequest request);
 }
