@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.enums.ModelObjectType;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
@@ -16,6 +18,7 @@ import vip.yazilim.p2g.web.spotify.IRequest;
 import vip.yazilim.p2g.web.spotify.ISearch;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,34 +33,16 @@ public class Search implements ISearch {
     private IRequest spotifyRequest;
 
     @Override
-    public List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) {
+    public List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException {
         List<SearchModel> searchModelList = new LinkedList<>();
-        StringBuilder type = new StringBuilder();
+
+        SpotifyApi spotifyApi = spotifyRequest.initApi(token);
 
         for (SearchTypes s : searchTypes) {
-            type.append(s).append(",");
-        }
+            if (s.type.equals(SearchTypes.TRACK.getType())) {
+                SearchResult searchResult = spotifyApi.searchItem(q, ModelObjectType.TRACK.getType()).build().execute();
+                Track[] tracks = searchResult.getTracks().getItems();
 
-        String finalType = type.toString();
-
-        ARequestBuilder request = new ARequestBuilder() {
-            @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
-                return spotifyApi.searchItem(q, finalType).build();
-            }
-        };
-
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
-        SearchResult searchResult = (SearchResult) spotifyRequest.execRequestSync(dataRequest);
-
-        Track[] tracks;
-        AlbumSimplified[] albums;
-        PlaylistSimplified[] playlists;
-
-        if (finalType.contains(SearchTypes.TRACK.getType())){
-            tracks = searchResult.getTracks().getItems();
-
-            if (tracks.length > 0) {
                 for (Track t : tracks) {
                     SearchModel searchModel = new SearchModel();
                     searchModel.setType(SearchTypes.TRACK);
@@ -70,12 +55,10 @@ public class Search implements ISearch {
                     searchModelList.add(searchModel);
                 }
             }
-        }
+            if (s.type.equals(SearchTypes.ALBUM.getType())) {
+                SearchResult searchResult = spotifyApi.searchItem(q, ModelObjectType.ALBUM.getType()).build().execute();
+                AlbumSimplified[] albums = searchResult.getAlbums().getItems();
 
-        if (finalType.contains(SearchTypes.ALBUM.getType())){
-            albums = searchResult.getAlbums().getItems();
-
-            if (albums.length > 0) {
                 for (AlbumSimplified a : albums) {
                     SearchModel searchModel = new SearchModel();
                     searchModel.setType(SearchTypes.ALBUM);
@@ -87,13 +70,12 @@ public class Search implements ISearch {
 
                     searchModelList.add(searchModel);
                 }
+
             }
-        }
+            if (s.type.equals(SearchTypes.PLAYLIST.getType())) {
+                SearchResult searchResult = spotifyApi.searchItem(q, ModelObjectType.PLAYLIST.getType()).build().execute();
+                PlaylistSimplified[] playlists = searchResult.getPlaylists().getItems();
 
-        if (finalType.contains(SearchTypes.PLAYLIST.getType())){
-            playlists = searchResult.getPlaylists().getItems();
-
-            if (playlists.length > 0) {
                 for (PlaylistSimplified p : playlists) {
                     SearchModel searchModel = new SearchModel();
                     searchModel.setType(SearchTypes.PLAYLIST);
@@ -106,6 +88,7 @@ public class Search implements ISearch {
                 }
             }
         }
+
 
         return searchModelList;
     }

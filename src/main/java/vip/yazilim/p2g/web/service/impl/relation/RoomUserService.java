@@ -49,7 +49,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Override
     public List<RoomUser> getRoomUsersByRoomUuid(String roomUuid) throws DatabaseException {
         try {
-            return roomUserRepo.findByRoomUuid(roomUuid);
+            return roomUserRepo.findRoomUserByRoomUuid(roomUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
             throw new DatabaseException(errMsg, exception);
@@ -59,7 +59,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Override
     public Optional<RoomUser> getRoomUserByUserUuid(String userUuid) throws DatabaseException {
         try {
-            return roomUserRepo.findByUserUuid(userUuid);
+            return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
             throw new DatabaseException(errMsg, exception);
@@ -69,7 +69,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Override
     public Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
         try {
-            return roomUserRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);
+            return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid,userUuid);
             throw new DatabaseException(errMsg, exception);

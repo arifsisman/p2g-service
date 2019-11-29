@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.spotify;
 
+import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 
@@ -18,4 +19,6 @@ public interface IRequest {
     AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request);
     Object execRequestSync(AbstractDataRequest request);
     Object execRequestAsync(AbstractDataRequest request);
+
+    SpotifyApi initApi(SpotifyToken token);
 }

@@ -60,11 +60,7 @@ public class Request implements IRequest {
 
     @Override
     public AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request) {
-        AbstractDataRequest dataRequest;
-
-        SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setAccessToken(token.getAccessToken())
-                .build();
+        SpotifyApi spotifyApi = initApi(token);
 
         return request.build(spotifyApi);
     }
@@ -84,6 +80,13 @@ public class Request implements IRequest {
     public Object execRequestAsync(AbstractDataRequest request) {
         CompletableFuture result = request.executeAsync();
         return result.join();
+    }
+
+    @Override
+    public SpotifyApi initApi(SpotifyToken token) {
+        return new SpotifyApi.Builder()
+                .setAccessToken(token.getAccessToken())
+                .build();
     }
 
 }
