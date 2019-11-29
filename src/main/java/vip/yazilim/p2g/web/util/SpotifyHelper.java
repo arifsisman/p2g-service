@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.util;
 
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vip.yazilim.p2g.web.entity.Song;
@@ -20,6 +21,18 @@ public class SpotifyHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyHelper.class);
 
     public static Song trackToSong(Track track) {
+        Song song = new Song();
+
+        song.setUri(track.getUri());
+        song.setSongId(track.getId());
+        song.setName(track.getName());
+        song.setArtists(Arrays.toString(track.getArtists()));
+        song.setDurationMs(track.getDurationMs());
+
+        return song;
+    }
+
+    public static Song trackToSong(TrackSimplified track) {
         Song song = new Song();
 
         song.setUri(track.getUri());

@@ -24,6 +24,7 @@ import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.ISearchService;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.spotify.IAlbum;
 import vip.yazilim.p2g.web.spotify.IPlayer;
 import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.spotify.ITrack;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 23.11.2019
@@ -74,6 +74,9 @@ public class SpotifyController {
 
     @Autowired
     private ITrack track;
+
+    @Autowired
+    private IAlbum album;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
@@ -133,11 +136,10 @@ public class SpotifyController {
         List<SearchModel> searchModelList = searchService.search(query, SearchTypes.TRACK, SearchTypes.ALBUM, SearchTypes.PLAYLIST);
 //        List<SearchModel> searchModelList = searchService.search(query);
 
-//        return searchService.search(spotifyToken, query);
+//        return searchService.search(query);
 
         for (SearchModel searchModel : searchModelList) {
-            LOGGER.info(searchModel.getType().getType());
-            LOGGER.info(searchModel.getName());
+            LOGGER.info(searchModel.getType().getType() + " - " +searchModel.getName());
         }
 
         return searchModelList;
@@ -147,7 +149,7 @@ public class SpotifyController {
     public Song getSong(@PathVariable String id) {
         Song song;
 
-//        return track.getTrack(spotifyToken, id);
+//        return track.getTrack(id);
         song = track.getTrack(id);
 
         LOGGER.info(song.getName());
@@ -177,5 +179,17 @@ public class SpotifyController {
         return user;
 
 //        return profile.getUser(spotifyAccountId);
+    }
+
+    @GetMapping("/spotify/album/{albumId}/songs")
+    public List<Song> getAlbumSongList(@PathVariable String albumId) {
+        List<Song> songList;
+
+//        return album.getAlbumSongs(albumId);
+        songList = album.getSongs(albumId);
+
+        LOGGER.info(String.valueOf(songList.size()));
+
+        return songList;
     }
 }
