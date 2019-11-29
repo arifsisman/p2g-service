@@ -17,8 +17,12 @@ public interface IRequest {
     void execRequestListSync(List<AbstractDataRequest> requestList);
 
     AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request);
+    AbstractDataRequest initRequest(ARequestBuilder request);
+
     Object execRequestSync(AbstractDataRequest request);
     Object execRequestAsync(AbstractDataRequest request);
 
-    SpotifyApi initApi(SpotifyToken token);
+    SpotifyApi initAuthorizedApi(SpotifyToken token);
+    SpotifyApi getClientCredentialsApi();
+
 }

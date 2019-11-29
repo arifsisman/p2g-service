@@ -3,7 +3,9 @@ package vip.yazilim.p2g.web.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.spotify.ARequestBuilder;
@@ -25,7 +27,7 @@ public class Track implements ITrack {
     private IRequest spotifyRequest;
 
     @Override
-    public Song getTrack(SpotifyToken token, String id) {
+    public Song getTrack(String id) {
         ARequestBuilder request = new ARequestBuilder() {
             @Override
             public AbstractDataRequest build(SpotifyApi spotifyApi) {
@@ -33,7 +35,7 @@ public class Track implements ITrack {
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
         com.wrapper.spotify.model_objects.specification.Track track;
         track = (com.wrapper.spotify.model_objects.specification.Track) spotifyRequest.execRequestSync(dataRequest);
 
@@ -41,7 +43,7 @@ public class Track implements ITrack {
     }
 
     @Override
-    public List<Song> getSeveralTracks(SpotifyToken token, String[] ids) {
+    public List<Song> getSeveralTracks(String[] ids) {
         List<Song> songList = new LinkedList<>();
 
         ARequestBuilder request = new ARequestBuilder() {
@@ -51,7 +53,7 @@ public class Track implements ITrack {
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
         com.wrapper.spotify.model_objects.specification.Track[] tracks;
         tracks = (com.wrapper.spotify.model_objects.specification.Track[]) spotifyRequest.execRequestSync(dataRequest);
 

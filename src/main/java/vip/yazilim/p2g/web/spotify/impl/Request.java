@@ -6,7 +6,10 @@ import com.wrapper.spotify.requests.AbstractRequest;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IRequest;
@@ -24,6 +27,10 @@ import java.util.concurrent.CompletableFuture;
 public class Request implements IRequest {
 
     private final Logger LOGGER = LoggerFactory.getLogger(Request.class);
+
+    @Autowired
+    @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
+    private SpotifyApi spotifyApi;
 
     @Override
     public List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request) {
@@ -60,11 +67,15 @@ public class Request implements IRequest {
 
     @Override
     public AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request) {
-        SpotifyApi spotifyApi = initApi(token);
+        SpotifyApi spotifyApi = initAuthorizedApi(token);
 
         return request.build(spotifyApi);
     }
 
+    @Override
+    public AbstractDataRequest initRequest(ARequestBuilder request) {
+        return request.build(spotifyApi);
+    }
 
     @Override
     public Object execRequestSync(AbstractDataRequest request) {
@@ -83,10 +94,15 @@ public class Request implements IRequest {
     }
 
     @Override
-    public SpotifyApi initApi(SpotifyToken token) {
+    public SpotifyApi initAuthorizedApi(SpotifyToken token) {
         return new SpotifyApi.Builder()
                 .setAccessToken(token.getAccessToken())
                 .build();
+    }
+
+    @Override
+    public SpotifyApi getClientCredentialsApi() {
+        return spotifyApi;
     }
 
 }

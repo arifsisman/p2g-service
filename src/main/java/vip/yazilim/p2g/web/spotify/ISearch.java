@@ -15,6 +15,6 @@ import java.util.List;
  */
 public interface ISearch {
 
-    List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException;
+    List<SearchModel> search(String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException;
 
 }

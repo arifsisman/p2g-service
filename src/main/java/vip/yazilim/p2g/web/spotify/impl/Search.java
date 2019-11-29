@@ -31,10 +31,10 @@ public class Search implements ISearch {
     private IRequest spotifyRequest;
 
     @Override
-    public List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException {
+    public List<SearchModel> search(String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        SpotifyApi spotifyApi = spotifyRequest.initApi(token);
+        SpotifyApi spotifyApi = spotifyRequest.getClientCredentialsApi();
 
         for (SearchTypes s : searchTypes) {
             if (s.type.equals(SearchTypes.TRACK.getType())) {

@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SearchTypes;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.ISearchService;
 import vip.yazilim.p2g.web.spotify.ISearch;
@@ -27,9 +26,9 @@ public class SearchService implements ISearchService {
     private ISearch searchService;
 
     @Override
-    public List<SearchModel> search(SpotifyToken token, String q, SearchTypes... searchTypes) {
+    public List<SearchModel> search(String q, SearchTypes... searchTypes) {
         try {
-            return searchService.search(token, q, searchTypes);
+            return searchService.search(q, searchTypes);
         } catch (IOException | SpotifyWebApiException e) {
             LOGGER.info("An error occurred while searching with query [{}]", q);
             return null;

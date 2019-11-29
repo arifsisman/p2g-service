@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
@@ -126,21 +127,11 @@ public class SpotifyController {
         player.play("1", "spotify:album:5zT1JLIj9E57p3e1rFm9Uq");
     }
 
-    @GetMapping("/search/{userUuid}/{query}")
-    public List<SearchModel> search(@PathVariable String userUuid, @PathVariable String query) {
+    @GetMapping("/spotify/search/{query}")
+    public List<SearchModel> search(@PathVariable String query) {
 
-        SpotifyToken spotifyToken = null;
-
-        try {
-            Optional<SpotifyToken> spotifyTokenOptional = tokenService.getTokenByUserUuid(userUuid);
-            if (spotifyTokenOptional.isPresent())
-                spotifyToken = spotifyTokenOptional.get();
-        } catch (DatabaseException e) {
-            LOGGER.error("Token not found for userUuid[{}]", userUuid);
-        }
-
-//        List<SearchModel> searchModelList = searchService.search(spotifyToken, query, SearchTypes.TRACK);
-        List<SearchModel> searchModelList = searchService.search(spotifyToken, query);
+        List<SearchModel> searchModelList = searchService.search(query, SearchTypes.TRACK, SearchTypes.ALBUM, SearchTypes.PLAYLIST);
+//        List<SearchModel> searchModelList = searchService.search(query);
 
 //        return searchService.search(spotifyToken, query);
 
@@ -152,42 +143,24 @@ public class SpotifyController {
         return searchModelList;
     }
 
-    @GetMapping("/song/{userUuid}/{id}")
-    public Song getSong(@PathVariable String userUuid, @PathVariable String id) {
+    @GetMapping("/spotify/song/{id}")
+    public Song getSong(@PathVariable String id) {
         Song song;
-        SpotifyToken spotifyToken = null;
-
-        try {
-            Optional<SpotifyToken> spotifyTokenOptional = tokenService.getTokenByUserUuid(userUuid);
-            if (spotifyTokenOptional.isPresent())
-                spotifyToken = spotifyTokenOptional.get();
-        } catch (DatabaseException e) {
-            LOGGER.error("Token not found for userUuid[{}]", userUuid);
-        }
 
 //        return track.getTrack(spotifyToken, id);
-        song = track.getTrack(spotifyToken, id);
+        song = track.getTrack(id);
 
         LOGGER.info(song.getName());
 
         return song;
     }
 
-    @GetMapping("/songs/{userUuid}/{ids}")
-    public List<Song> getSongList(@PathVariable String userUuid, @PathVariable String[] ids) {
+    @GetMapping("/spotify/songs/{ids}")
+    public List<Song> getSongList(@PathVariable String[] ids) {
         List<Song> songList;
-        SpotifyToken spotifyToken = null;
-
-        try {
-            Optional<SpotifyToken> spotifyTokenOptional = tokenService.getTokenByUserUuid(userUuid);
-            if (spotifyTokenOptional.isPresent())
-                spotifyToken = spotifyTokenOptional.get();
-        } catch (DatabaseException e) {
-            LOGGER.error("Token not found for userUuid[{}]", userUuid);
-        }
 
 //        return track.getSeveralTracks(spotifyToken, ids);
-        songList = track.getSeveralTracks(spotifyToken, ids);
+        songList = track.getSeveralTracks(ids);
 
         for (Song s:songList) {
             LOGGER.info(s.getName());
