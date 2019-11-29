@@ -24,10 +24,7 @@ import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.ISearchService;
 import vip.yazilim.p2g.web.service.ITokenService;
-import vip.yazilim.p2g.web.spotify.IAlbum;
-import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.p2g.web.spotify.IProfile;
-import vip.yazilim.p2g.web.spotify.ITrack;
+import vip.yazilim.p2g.web.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
@@ -77,6 +74,9 @@ public class SpotifyController {
 
     @Autowired
     private IAlbum album;
+
+    @Autowired
+    private IPlaylist playlist;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
@@ -187,6 +187,18 @@ public class SpotifyController {
 
 //        return album.getAlbumSongs(albumId);
         songList = album.getSongs(albumId);
+
+        LOGGER.info(String.valueOf(songList.size()));
+
+        return songList;
+    }
+
+    @GetMapping("/spotify/playlist/{playlistId}/songs")
+    public List<Song> getPlaylistSongList(@PathVariable String playlistId) {
+        List<Song> songList;
+
+//        return playlist.getSongs(playlistId);
+        songList = playlist.getSongs(playlistId);
 
         LOGGER.info(String.valueOf(songList.size()));
 

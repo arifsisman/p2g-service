@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.util;
 
+import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
@@ -20,26 +21,22 @@ public class SpotifyHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyHelper.class);
 
-    public static Song trackToSong(Track track) {
-        Song song = new Song();
-
-        song.setUri(track.getUri());
-        song.setSongId(track.getId());
-        song.setName(track.getName());
-        song.setArtists(Arrays.toString(track.getArtists()));
-        song.setDurationMs(track.getDurationMs());
-
-        return song;
+    public static Song trackToSong(TrackSimplified track) {
+        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs(), track);
     }
 
-    public static Song trackToSong(TrackSimplified track) {
+    public static Song trackToSong(Track track) {
+        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs(), track);
+    }
+
+    private static Song getSong(String uri, String id, String name, ArtistSimplified[] artists, Integer durationMs, AbstractModelObject track) {
         Song song = new Song();
 
-        song.setUri(track.getUri());
-        song.setSongId(track.getId());
-        song.setName(track.getName());
-        song.setArtists(Arrays.toString(track.getArtists()));
-        song.setDurationMs(track.getDurationMs());
+        song.setUri(uri);
+        song.setSongId(id);
+        song.setName(name);
+        song.setArtists(Arrays.toString(artists));
+        song.setDurationMs(durationMs);
 
         return song;
     }
