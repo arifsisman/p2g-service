@@ -14,6 +14,7 @@ public class SearchModel {
     private SearchTypes type;
     private String name;
     private List<String> artists;
+    private String id;
     private String uri;
     private String imageUrl;
 }

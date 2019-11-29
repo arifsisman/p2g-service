@@ -25,6 +25,9 @@ public class Song implements Serializable {
     @Column(nullable = false)
     private String artists;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "duration_ms")
     private Integer durationMs;
 
