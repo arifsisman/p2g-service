@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.util;
 
-import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
@@ -22,14 +21,14 @@ public class SpotifyHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyHelper.class);
 
     public static Song trackToSong(TrackSimplified track) {
-        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs(), track);
+        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs());
     }
 
     public static Song trackToSong(Track track) {
-        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs(), track);
+        return getSong(track.getUri(), track.getId(), track.getName(), track.getArtists(), track.getDurationMs());
     }
 
-    private static Song getSong(String uri, String id, String name, ArtistSimplified[] artists, Integer durationMs, AbstractModelObject track) {
+    private static Song getSong(String uri, String id, String name, ArtistSimplified[] artists, Integer durationMs) {
         Song song = new Song();
 
         song.setUri(uri);
@@ -61,7 +60,7 @@ public class SpotifyHelper {
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());
         }catch (RuntimeException e){
-            LOGGER.warn("Image not found for spotify user userId[{}]", spotifyUser.getId());
+            LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
         }
 
         return user;

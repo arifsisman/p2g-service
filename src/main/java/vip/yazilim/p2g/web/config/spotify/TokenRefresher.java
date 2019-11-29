@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller;
+package vip.yazilim.p2g.web.config.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
@@ -21,7 +22,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Controller
+@Configuration
 public class TokenRefresher {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TokenRefresher.class);
@@ -35,7 +36,7 @@ public class TokenRefresher {
     @Autowired
     private ITokenService tokenService;
 
-    void refreshToken(String userUuid) {
+    public void refreshToken(String userUuid) {
         Optional<SpotifyToken> tokenOptional;
         SpotifyToken token;
 
