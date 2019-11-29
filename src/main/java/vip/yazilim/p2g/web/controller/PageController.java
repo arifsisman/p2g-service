@@ -51,15 +51,15 @@ public class PageController {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid("1");
         SpotifyToken spotifyToken = null;
 
-        if(!spotifyTokenList.isEmpty()){
+        if (!spotifyTokenList.isEmpty()) {
             spotifyToken = spotifyTokenList.get(0);
             LOGGER.info("Token: " + spotifyToken);
-        }else{
+        } else {
             LOGGER.info("Token is null");
         }
 
-        List<SearchModel> searchModelList = searchService.search(spotifyToken, query
-                , SearchTypes.TRACK, SearchTypes.ALBUM, SearchTypes.PLAYLIST);
+//        List<SearchModel> searchModelList = searchService.search(spotifyToken, query, SearchTypes.TRACK);
+        List<SearchModel> searchModelList = searchService.search(spotifyToken, query);
 
         for (SearchModel searchModel : searchModelList) {
             LOGGER.info(searchModel.getType().getType());
