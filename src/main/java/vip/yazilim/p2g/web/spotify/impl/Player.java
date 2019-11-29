@@ -45,8 +45,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -75,8 +75,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -90,8 +90,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -105,8 +105,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -120,8 +120,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
     @Override
@@ -136,8 +136,8 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
-        spotifyRequest.execRequestsAsync(requestList);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        spotifyRequest.execRequestListAsync(requestList);
     }
 
 
@@ -155,7 +155,7 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequests(spotifyTokenList, request);
+        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
 
         try {
             Device[] devices = ((GetUsersAvailableDevicesRequest) requestList.get(0)).execute();

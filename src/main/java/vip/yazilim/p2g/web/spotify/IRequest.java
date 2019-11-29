@@ -11,8 +11,9 @@ import java.util.List;
  */
 public interface IRequest {
 
-    List<AbstractDataRequest> initRequests(List<SpotifyToken> spotifyTokenList, ARequest request);
-    void execRequestsAsync(List<AbstractDataRequest> requestList);
-    void execRequestsSync(List<AbstractDataRequest> requestList);
+    List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequest request);
+    void execRequestListAsync(List<AbstractDataRequest> requestList);
+    void execRequestListSync(List<AbstractDataRequest> requestList);
 
+    Object execSingleRequest(SpotifyToken token, ARequest request);
 }

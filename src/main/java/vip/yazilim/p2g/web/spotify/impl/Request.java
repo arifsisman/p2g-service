@@ -25,7 +25,7 @@ public class Request implements IRequest {
     private final Logger LOGGER = LoggerFactory.getLogger(Request.class);
 
     @Override
-    public List<AbstractDataRequest> initRequests(List<SpotifyToken> spotifyTokenList, ARequest request) {
+    public List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequest request) {
 
         List<AbstractDataRequest> requestList = new ArrayList<>();
         SpotifyApi spotifyApi;
@@ -42,19 +42,39 @@ public class Request implements IRequest {
     }
 
     @Override
-    public void execRequestsAsync(List<AbstractDataRequest> requestList) {
+    public void execRequestListAsync(List<AbstractDataRequest> requestList) {
         requestList.forEach(AbstractRequest::executeAsync);
     }
 
     @Override
-    public void execRequestsSync(List<AbstractDataRequest> requestList) {
-        for (AbstractDataRequest dataRequest : requestList) {
+    public void execRequestListSync(List<AbstractDataRequest> requestList) {
+        for (AbstractDataRequest request : requestList) {
             try {
-                dataRequest.execute();
+                request.execute();
             } catch (IOException | SpotifyWebApiException e) {
                 LOGGER.error("An error occurred while executing request.");
             }
         }
+    }
+
+    @Override
+    public Object execSingleRequest(SpotifyToken token, ARequest request) {
+        Object var = new Object();
+        AbstractDataRequest dataRequest;
+
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setAccessToken(token.getAccessToken())
+                .build();
+
+        dataRequest = request.build(spotifyApi);
+
+        try {
+            var = dataRequest.execute();
+        } catch (IOException | SpotifyWebApiException e) {
+            e.printStackTrace();
+        }
+
+        return var;
     }
 
 }
