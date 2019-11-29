@@ -1,8 +1,32 @@
 package vip.yazilim.p2g.web.constant;
 
+import java.util.HashMap;
+
 public enum OnlineStatus {
-    ONLINE,
-    OFFLINE,
-    AWAY,
-    WAITING
+    ONLINE("ONLINE"),
+    OFFLINE("OFFLINE"),
+    AWAY("AWAY");
+
+    private final String onlineStatus;
+
+    OnlineStatus(String onlineStatus) {
+        this.onlineStatus = onlineStatus;
+    }
+
+    public String getOnlineStatus() {
+        return this.onlineStatus;
+    }
+
+    private static final HashMap<String, OnlineStatus> map = new HashMap<>();
+
+    public static Object keyOf(String type) {
+        return map.get(type);
+    }
+
+    static {
+        for (OnlineStatus status : values()) {
+            map.put(status.onlineStatus, status);
+        }
+    }
+
 }

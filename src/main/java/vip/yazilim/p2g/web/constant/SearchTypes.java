@@ -7,9 +7,9 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum SearchTypes {
-    ALBUM("album"),
-    PLAYLIST("playlist"),
-    TRACK("track");
+    ALBUM("ALBUM"),
+    PLAYLIST("PLAYLIST"),
+    TRACK("TRACK");
 
     private static final HashMap<String, SearchTypes> map = new HashMap<>();
     public final String type;
@@ -27,9 +27,7 @@ public enum SearchTypes {
     }
 
     static {
-        SearchTypes[] var0 = values();
-
-        for (SearchTypes searchTypes : var0) {
+        for (SearchTypes searchTypes : values()) {
             map.put(searchTypes.type, searchTypes);
         }
     }

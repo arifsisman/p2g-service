@@ -24,9 +24,7 @@ public enum Roles {
     }
 
     static {
-        Roles[] var0 = values();
-
-        for (Roles roles : var0) {
+        for (Roles roles : values()) {
             map.put(roles.roleName, roles);
         }
     }
