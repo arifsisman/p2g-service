@@ -62,11 +62,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return entity.getUuid();
     }
 
-    @Override
-    protected User preInsert(User entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
-    }
+    //TODO: uncomment
+//    @Override
+//    protected User preInsert(User entity) {
+//        entity.setUuid(DBHelper.getRandomUuid());
+//        return entity;
+//    }
 
     @Override
     public Optional<User> getUserByEmail(String email) {

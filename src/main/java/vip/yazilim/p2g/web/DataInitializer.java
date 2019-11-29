@@ -26,8 +26,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User arif = createUser("arif", "arif", "0");
-        User emre = createUser("emre", "emre", "0");
+        User arif = createUser("1","arif", "arif", "0");
+        User emre = createUser("2","emre", "emre", "0");
 
         Room room = createRoom("Test Room", arif.getUuid());
 
@@ -35,8 +35,9 @@ public class DataInitializer implements CommandLineRunner {
         roomService.joinRoom(room.getUuid(), emre.getUuid());
     }
 
-    private User createUser(String email, String username, String password){
+    private User createUser(String uuid, String email, String username, String password){
         User user = new User();
+        user.setUuid(uuid);
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);

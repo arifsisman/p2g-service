@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.spotify.IProfile;
+import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -30,39 +32,36 @@ public class Profile implements IProfile {
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
     private SpotifyApi spotifyApi;
 
-    public Optional<User> getCurrentUsersProfile() {
-        GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile().build();
-        User user;
-
-        try {
-            final CompletableFuture<User> userFuture = getCurrentUsersProfileRequest.executeAsync();
-            user = userFuture.join();
-            return Optional.of(user);
-        } catch (CompletionException e) {
-            LOGGER.error("Error: " + e.getCause().getMessage());
-        } catch (CancellationException e) {
-            LOGGER.warn("Async operation cancelled.");
-        }
-
-        return Optional.empty();
-    }
+    @Autowired
+    private IUserService userService;
 
     @Override
-    public Optional<User> getUsersProfile(String spotifyAccountId) {
+    public vip.yazilim.p2g.web.entity.User getUsersProfile(String userUuid) {
+        String spotifyAccountId;
+        Optional<vip.yazilim.p2g.web.entity.User> user = userService.getUserByUuid(userUuid);
+
+        if (user.isPresent()) {
+            spotifyAccountId = user.get().getSpotifyAccountId();
+        } else {
+            LOGGER.error("User not found with userUuid[{}]", userUuid);
+            return null;
+        }
+
         GetUsersProfileRequest getUsersProfileRequest = spotifyApi.getUsersProfile(spotifyAccountId).build();
-        User user;
+        User spotifyUser;
 
         try {
             final CompletableFuture<User> userFuture = getUsersProfileRequest.executeAsync();
-            user = userFuture.join();
-            return Optional.of(user);
+            spotifyUser = userFuture.join();
+
+            return SpotifyHelper.spotifyUserToUser(spotifyUser);
         } catch (CompletionException e) {
             System.out.println("Error: " + e.getCause().getMessage());
         } catch (CancellationException e) {
             System.out.println("Async operation cancelled.");
         }
 
-        return Optional.empty();
+        return null;
     }
 
 }
