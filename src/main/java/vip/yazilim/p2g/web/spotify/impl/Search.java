@@ -40,7 +40,9 @@ public class Search implements ISearch {
             }
         };
 
-        SearchResult searchResult = (SearchResult) spotifyRequest.execSingleRequest(token, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(token, request);
+        SearchResult searchResult = (SearchResult) spotifyRequest.execRequest(dataRequest);
+        
         Track[] tracks = searchResult.getTracks().getItems();
 
         for (Track t : tracks)

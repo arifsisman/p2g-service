@@ -58,18 +58,23 @@ public class Request implements IRequest {
     }
 
     @Override
-    public Object execSingleRequest(SpotifyToken token, ARequest request) {
-        Object var = new Object();
+    public AbstractDataRequest initRequest(SpotifyToken token, ARequest request) {
         AbstractDataRequest dataRequest;
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setAccessToken(token.getAccessToken())
                 .build();
 
-        dataRequest = request.build(spotifyApi);
+        return request.build(spotifyApi);
+    }
+
+
+    @Override
+    public Object execRequest(AbstractDataRequest request) {
+        Object var = new Object();
 
         try {
-            var = dataRequest.execute();
+            var = request.execute();
         } catch (IOException | SpotifyWebApiException e) {
             e.printStackTrace();
         }

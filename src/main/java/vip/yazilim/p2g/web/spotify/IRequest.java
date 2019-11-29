@@ -15,5 +15,6 @@ public interface IRequest {
     void execRequestListAsync(List<AbstractDataRequest> requestList);
     void execRequestListSync(List<AbstractDataRequest> requestList);
 
-    Object execSingleRequest(SpotifyToken token, ARequest request);
+    AbstractDataRequest initRequest(SpotifyToken token, ARequest request);
+    Object execRequest(AbstractDataRequest request);
 }
