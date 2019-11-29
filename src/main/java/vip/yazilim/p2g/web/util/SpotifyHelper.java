@@ -46,7 +46,7 @@ public class SpotifyHelper {
 
         user.setDisplayName(spotifyUser.getDisplayName());
         user.setSpotifyAccountId(spotifyUser.getId());
-        user.setSpotifyAccountType(spotifyUser.getProduct().getType());
+        user.setSpotifyAccountType(spotifyUser.getType().toString());
 
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());

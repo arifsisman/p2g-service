@@ -18,11 +18,13 @@ import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.ISearchService;
 import vip.yazilim.p2g.web.service.ITokenService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
+import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.spotify.ITrack;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -62,6 +64,9 @@ public class SpotifyController {
 
     @Autowired
     private IPlayer player;
+
+    @Autowired
+    private IProfile profile;
 
     @Autowired
     private ISearchService searchService;
@@ -189,5 +194,15 @@ public class SpotifyController {
         }
 
         return songList;
+    }
+
+    @GetMapping("/spotify/user/{spotifyAccountId}")
+    public User getUser(@PathVariable String spotifyAccountId) {
+        User user;
+        user = profile.getUser(spotifyAccountId);
+        LOGGER.info("User Name: {}", user.getDisplayName());
+        return user;
+
+//        return profile.getUser(spotifyAccountId);
     }
 }

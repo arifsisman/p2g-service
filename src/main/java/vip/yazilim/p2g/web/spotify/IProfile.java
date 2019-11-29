@@ -9,6 +9,6 @@ import vip.yazilim.p2g.web.entity.User;
  */
 public interface IProfile {
 
-    User getUsersProfile(String spotifyAccountId);
+    User getUser(String spotifyAccountId);
 
 }
