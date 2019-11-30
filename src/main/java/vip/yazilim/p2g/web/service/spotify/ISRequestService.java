@@ -10,7 +10,7 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRequest {
+public interface ISRequestService {
 
     SpotifyApi initAuthorizedApi(SpotifyToken token);
     SpotifyApi getClientCredentialsApi();

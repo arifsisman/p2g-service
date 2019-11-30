@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.service.spotify.ARequestBuilder;
-import vip.yazilim.p2g.web.service.spotify.IRequest;
+import vip.yazilim.p2g.web.service.spotify.ISRequestService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,9 +24,9 @@ import java.util.concurrent.CompletableFuture;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class Request implements IRequest {
+public class SRequestService implements ISRequestService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Request.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SRequestService.class);
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)

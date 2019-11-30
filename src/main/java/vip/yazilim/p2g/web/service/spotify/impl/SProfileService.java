@@ -7,18 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.service.spotify.ARequestBuilder;
-import vip.yazilim.p2g.web.service.spotify.IProfile;
-import vip.yazilim.p2g.web.service.spotify.IRequest;
+import vip.yazilim.p2g.web.service.spotify.ISProfileService;
+import vip.yazilim.p2g.web.service.spotify.ISRequestService;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class Profile implements IProfile {
+public class SProfileService implements ISProfileService {
 
     @Autowired
-    private IRequest spotifyRequest;
+    private ISRequestService spotifyRequest;
 
     @Override
     public User getSpotifyUser(String spotifyAccountId) {

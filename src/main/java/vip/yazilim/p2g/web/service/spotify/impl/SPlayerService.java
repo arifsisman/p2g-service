@@ -14,8 +14,8 @@ import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.spotify.ARequestBuilder;
-import vip.yazilim.p2g.web.service.spotify.IPlayer;
-import vip.yazilim.p2g.web.service.spotify.IRequest;
+import vip.yazilim.p2g.web.service.spotify.ISPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.io.IOException;
@@ -28,15 +28,15 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class Player implements IPlayer {
+public class SPlayerService implements ISPlayerService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Player.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SPlayerService.class);
 
     @Autowired
     private ITokenService tokenService;
 
     @Autowired
-    private IRequest spotifyRequest;
+    private ISRequestService spotifyRequest;
 
     @Override
     public void play(String roomUuid, String songUri) {

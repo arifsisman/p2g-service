@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.ISearchService;
-import vip.yazilim.p2g.web.service.spotify.ISearch;
+import vip.yazilim.p2g.web.service.spotify.ISSearchService;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,12 +17,12 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SearchService implements ISearchService {
+public class SearchService implements vip.yazilim.p2g.web.service.p2g.ISearchService {
 
     private Logger LOGGER = LoggerFactory.getLogger(SearchService.class);
 
     @Autowired
-    private ISearch searchService;
+    private ISSearchService searchService;
 
     @Override
     public List<SearchModel> search(String q, SearchTypes... searchTypes) {

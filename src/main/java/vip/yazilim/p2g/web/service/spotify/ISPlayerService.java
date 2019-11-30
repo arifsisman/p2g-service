@@ -8,7 +8,7 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IPlayer {
+public interface ISPlayerService {
 
     void play(String roomUuid, String songUri);
     void play(String roomUuid);

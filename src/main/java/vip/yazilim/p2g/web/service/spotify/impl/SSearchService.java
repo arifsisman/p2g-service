@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.spotify.IRequest;
-import vip.yazilim.p2g.web.service.spotify.ISearch;
+import vip.yazilim.p2g.web.service.spotify.ISRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISSearchService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.io.IOException;
@@ -24,10 +24,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class Search implements ISearch {
+public class SSearchService implements ISSearchService {
 
     @Autowired
-    private IRequest spotifyRequest;
+    private ISRequestService spotifyRequest;
 
     @Override
     public List<SearchModel> search(String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException {

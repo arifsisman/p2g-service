@@ -72,25 +72,25 @@ public class SpotifyController {
     private IUserService userService;
 
     @Autowired
-    private IPlayer player;
+    private ISPlayerService player;
 
     @Autowired
-    private IProfile profile;
+    private ISProfileService profile;
 
     @Autowired
     private ISearchService searchService;
 
     @Autowired
-    private ITrack track;
+    private ISTrackService track;
 
     @Autowired
-    private IAlbum album;
+    private ISAlbumService album;
 
     @Autowired
-    private IPlaylist playlist;
+    private ISPlaylistService playlist;
 
     @Autowired
-    private IRequest request;
+    private ISRequestService request;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {

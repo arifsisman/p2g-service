@@ -12,7 +12,7 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISearch {
+public interface ISSearchService {
 
     List<SearchModel> search(String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException;
 
