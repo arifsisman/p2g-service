@@ -6,7 +6,6 @@ import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.entity.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,19 +49,4 @@ public class SpotifyHelper {
         return artistList;
     }
 
-    public static User spotifyUserToUser(com.wrapper.spotify.model_objects.specification.User spotifyUser){
-        User user = new User();
-
-        user.setDisplayName(spotifyUser.getDisplayName());
-        user.setSpotifyAccountId(spotifyUser.getId());
-        user.setSpotifyAccountType(spotifyUser.getType().toString());
-
-        try {
-            user.setImageUrl(spotifyUser.getImages()[0].getUrl());
-        }catch (RuntimeException e){
-            LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
-        }
-
-        return user;
-    }
 }

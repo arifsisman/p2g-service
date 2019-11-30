@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
@@ -10,14 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.ITokenService;
-import vip.yazilim.p2g.web.spotify.IPlayer;
 import vip.yazilim.p2g.web.spotify.ARequestBuilder;
+import vip.yazilim.p2g.web.spotify.IPlayer;
 import vip.yazilim.p2g.web.spotify.IRequest;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -36,6 +40,12 @@ public class Player implements IPlayer {
 
     @Override
     public void play(String roomUuid, String songUri) {
+
+        if (!songUri.contains(ModelObjectType.TRACK.getType())) {
+            LOGGER.warn("URI[{}] does not match with an song URI", songUri);
+            return;
+        }
+
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
 
         ARequestBuilder request = new ARequestBuilder() {
@@ -142,11 +152,20 @@ public class Player implements IPlayer {
 
 
     @Override
-    public List<String> getUsersAvailableDevices(SpotifyToken token) {
-        List<SpotifyToken> spotifyTokenList = new ArrayList<>();
-        List<String> deviceIdList = new ArrayList<>();
+    public List<UserDevice> getUsersAvailableDevices(String userUuid) {
+        List<UserDevice> userDeviceList = new LinkedList<>();
+        SpotifyToken spotifyToken = null;
 
-        spotifyTokenList.add(token);
+        try {
+            Optional<SpotifyToken> spotifyTokenOpt;
+            spotifyTokenOpt = tokenService.getTokenByUserUuid(userUuid);
+
+            if(spotifyTokenOpt.isPresent())
+                spotifyToken = spotifyTokenOpt.get();
+
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
 
         ARequestBuilder request = new ARequestBuilder() {
             @Override
@@ -155,19 +174,28 @@ public class Player implements IPlayer {
             }
         };
 
-        List<AbstractDataRequest> requestList = spotifyRequest.initRequestList(spotifyTokenList, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(spotifyToken, request);
 
         try {
-            Device[] devices = ((GetUsersAvailableDevicesRequest) requestList.get(0)).execute();
+            Device[] devices = ((GetUsersAvailableDevicesRequest) dataRequest).execute();
 
-            for(Device d:devices){
-                deviceIdList.add(d.getId());
+            for (Device d : devices) {
+                UserDevice userDevice = new UserDevice();
+
+                userDevice.setUserUuid(userUuid);
+                userDevice.setDeviceId(d.getId());
+                userDevice.setDeviceName(d.getName());
+                userDevice.setDeviceName(d.getName());
+                userDevice.setActiveFlag(d.getIs_active());
+                userDevice.setDeviceType(d.getType());
+
+                userDeviceList.add(userDevice);
             }
 
         } catch (IOException | SpotifyWebApiException e) {
             LOGGER.error("An error occurred while getting devices.");
         }
 
-        return deviceIdList;
+        return userDeviceList;
     }
 }

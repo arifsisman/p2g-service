@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.spotify;
 
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.UserDevice;
 
 import java.util.List;
 
@@ -19,6 +19,6 @@ public interface IPlayer {
     void seek(String roomUuid, Integer ms);
     void repeat(String roomUuid);
 
-    List<String> getUsersAvailableDevices(SpotifyToken token);
+    List<UserDevice> getUsersAvailableDevices(String userUuid);
 
 }

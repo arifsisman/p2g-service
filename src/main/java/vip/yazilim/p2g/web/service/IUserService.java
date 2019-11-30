@@ -21,4 +21,5 @@ public interface IUserService extends ICrudService<User, String> {
     Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException;
     List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException;
 
+    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user);
 }

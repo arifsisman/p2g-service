@@ -5,7 +5,6 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ICrudService;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 

@@ -10,7 +10,6 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SearchTypes;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.spotify.IRequest;
 import vip.yazilim.p2g.web.spotify.ISearch;
@@ -65,7 +64,7 @@ public class Search implements ISearch {
             searchModel.setName(t.getName());
             searchModel.setArtists(SpotifyHelper.artistsToArtistNameList(t.getArtists()));
             searchModel.setImageUrl(t.getPreviewUrl());
-            searchModel.setUri(t.getId());
+            searchModel.setId(t.getId());
             searchModel.setUri(t.getUri());
 
             searchModelList.add(searchModel);
@@ -85,7 +84,7 @@ public class Search implements ISearch {
             searchModel.setName(a.getName());
             searchModel.setArtists(SpotifyHelper.artistsToArtistNameList(a.getArtists()));
             searchModel.setImageUrl(a.getImages()[0].getUrl());
-            searchModel.setUri(a.getId());
+            searchModel.setId(a.getId());
             searchModel.setUri(a.getUri());
 
             searchModelList.add(searchModel);
@@ -104,7 +103,7 @@ public class Search implements ISearch {
             searchModel.setType(SearchTypes.PLAYLIST);
             searchModel.setName(p.getName());
             searchModel.setImageUrl(p.getImages()[0].getUrl());
-            searchModel.setUri(p.getId());
+            searchModel.setId(p.getId());
             searchModel.setUri(p.getUri());
 
             searchModelList.add(searchModel);
@@ -112,5 +111,4 @@ public class Search implements ISearch {
 
         return searchModelList;
     }
-
 }

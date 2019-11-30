@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.spotify;
 
 
-import vip.yazilim.p2g.web.entity.User;
+import com.wrapper.spotify.model_objects.specification.User;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -9,6 +9,6 @@ import vip.yazilim.p2g.web.entity.User;
  */
 public interface IProfile {
 
-    User getUser(String spotifyAccountId);
+    User getSpotifyUser(String spotifyAccountId);
 
 }

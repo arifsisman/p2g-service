@@ -103,7 +103,7 @@ public class SpotifyController {
 
         String accessToken = authorizationCodeCredentials.getAccessToken();
         String refreshToken = authorizationCodeCredentials.getRefreshToken();
-        Integer expireTime = authorizationCodeCredentials.getExpiresIn();
+//        Integer expireTime = authorizationCodeCredentials.getExpiresIn();
 
         spotifyApi.setAccessToken(accessToken);
         spotifyApi.setRefreshToken(refreshToken);
@@ -127,8 +127,7 @@ public class SpotifyController {
 
     @GetMapping("/play/{roomUuid}/{uri}")
     public void play(@PathVariable String roomUuid, @PathVariable String uri) {
-//        player.play(roomUuid, uri);
-        player.play("1", "spotify:album:5zT1JLIj9E57p3e1rFm9Uq");
+        player.play(roomUuid, uri);
     }
 
     @GetMapping("/spotify/search/{query}")
@@ -140,7 +139,7 @@ public class SpotifyController {
 //        return searchService.search(query);
 
         for (SearchModel searchModel : searchModelList) {
-            LOGGER.info(searchModel.getType().getType() + " - " +searchModel.getName());
+            LOGGER.info(searchModel.getType().getType() + " - " + searchModel.getName());
         }
 
         return searchModelList;
@@ -165,7 +164,7 @@ public class SpotifyController {
 //        return track.getSeveralTracks(spotifyToken, ids);
         songList = track.getSeveralTracks(ids);
 
-        for (Song s:songList) {
+        for (Song s : songList) {
             LOGGER.info(s.getName());
         }
 
@@ -173,13 +172,12 @@ public class SpotifyController {
     }
 
     @GetMapping("/spotify/user/{spotifyAccountId}")
-    public User getUser(@PathVariable String spotifyAccountId) {
-        User user;
-        user = profile.getUser(spotifyAccountId);
+    public com.wrapper.spotify.model_objects.specification.User getSpotifyUser(@PathVariable String spotifyAccountId) {
+        com.wrapper.spotify.model_objects.specification.User user = profile.getSpotifyUser(spotifyAccountId);
         LOGGER.info("User Name: {}", user.getDisplayName());
         return user;
 
-//        return profile.getUser(spotifyAccountId);
+//        return profile.getSpotifyUser(spotifyAccountId);
     }
 
     @GetMapping("/spotify/album/{albumId}/songs")

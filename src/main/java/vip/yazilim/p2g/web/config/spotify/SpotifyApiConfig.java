@@ -61,6 +61,7 @@ public class SpotifyApiConfig {
     // For Spotify requests that does not require authorization
     @Bean(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @PostConstruct
     public SpotifyApi spotifyApiClientCredentials() {
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()

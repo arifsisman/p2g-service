@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.spotify.IRequest;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -21,7 +20,7 @@ public class Profile implements IProfile {
     private IRequest spotifyRequest;
 
     @Override
-    public vip.yazilim.p2g.web.entity.User getUser(String spotifyAccountId) {
+    public User getSpotifyUser(String spotifyAccountId) {
         User spotifyUser;
 
         ARequestBuilder request = new ARequestBuilder() {
@@ -34,7 +33,7 @@ public class Profile implements IProfile {
         AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
         spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
 
-        return SpotifyHelper.spotifyUserToUser(spotifyUser);
+        return spotifyUser;
     }
 
 }
