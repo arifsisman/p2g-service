@@ -160,14 +160,14 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         room.setName(name);
         room.setOwnerUuid(ownerUuid);
         room.setCreationDate(TimeHelper.getCurrentTime());
+        room.setShowRoomActivityFlag(true);
 
         if (password == null) {
             room.setPrivateFlag(false);
-            room.setShowRoomActivityFlag(true);
+
         } else {
             room.setPassword(password);
             room.setPrivateFlag(true);
-            room.setShowRoomActivityFlag(false);
         }
 
         if (maxUsers == null) {
