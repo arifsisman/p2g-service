@@ -29,17 +29,17 @@ public class Playlist implements IPlaylist {
     public List<Song> getSongs(String playlistId) {
         List<Song> songList = new LinkedList<>();
 
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<Paging<PlaylistTrack>> request = new ARequestBuilder<Paging<PlaylistTrack>>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<Paging<PlaylistTrack>> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getPlaylistsTracks(playlistId).build();
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
-        Paging<?> playlistTrackPaging = (Paging<?>) spotifyRequest.execRequestSync(dataRequest);
+        AbstractDataRequest<Paging<PlaylistTrack>> dataRequest = spotifyRequest.initRequest(request);
+        Paging<PlaylistTrack> playlistTrackPaging = spotifyRequest.execRequestSync(dataRequest);
 
-        PlaylistTrack[] tracks = (PlaylistTrack[]) playlistTrackPaging.getItems();
+        PlaylistTrack[] tracks = playlistTrackPaging.getItems();
 
         for (PlaylistTrack t : tracks) {
             songList.add(SpotifyHelper.trackToSong(t.getTrack()));

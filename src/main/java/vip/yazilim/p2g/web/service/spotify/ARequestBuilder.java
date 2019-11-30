@@ -7,11 +7,11 @@ import com.wrapper.spotify.requests.data.AbstractDataRequest;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public abstract class ARequestBuilder {
+public abstract class ARequestBuilder<R> {
 
     protected ARequestBuilder(){
     }
 
-    public abstract AbstractDataRequest build(SpotifyApi spotifyApi);
+    public abstract AbstractDataRequest<R> build(SpotifyApi spotifyApi);
 
 }

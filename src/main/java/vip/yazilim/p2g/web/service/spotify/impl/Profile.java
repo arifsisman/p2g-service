@@ -24,15 +24,15 @@ public class Profile implements IProfile {
     public User getSpotifyUser(String spotifyAccountId) {
         User spotifyUser;
 
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<User> request = new ARequestBuilder<User>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<User> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getUsersProfile(spotifyAccountId).build();
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
-        spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
+        AbstractDataRequest<User> dataRequest = spotifyRequest.initRequest(request);
+        spotifyUser = spotifyRequest.execRequestSync(dataRequest);
 
         return spotifyUser;
     }
@@ -41,16 +41,16 @@ public class Profile implements IProfile {
     public User getCurrentSpotifyUser(SpotifyToken spotifyToken) {
         User spotifyUser;
 
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<User> request = new ARequestBuilder<User>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<User> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getCurrentUsersProfile().build();
 
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request, spotifyToken);
-        spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
+        AbstractDataRequest<User> dataRequest = spotifyRequest.initRequest(request, spotifyToken);
+        spotifyUser = spotifyRequest.execRequestSync(dataRequest);
 
         return spotifyUser;
     }

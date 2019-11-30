@@ -33,9 +33,32 @@ public class Request implements IRequest {
     private SpotifyApi spotifyApi;
 
     @Override
-    public List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request) {
+    public SpotifyApi initAuthorizedApi(SpotifyToken token) {
+        return new SpotifyApi.Builder()
+                .setAccessToken(token.getAccessToken())
+                .build();
+    }
 
-        List<AbstractDataRequest> requestList = new ArrayList<>();
+    @Override
+    public SpotifyApi getClientCredentialsApi() {
+        return spotifyApi;
+    }
+
+    @Override
+    public <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request, SpotifyToken token) {
+        SpotifyApi spotifyApi = initAuthorizedApi(token);
+
+        return request.build(spotifyApi);
+    }
+
+    @Override
+    public <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request) {
+        return request.build(spotifyApi);
+    }
+
+    @Override
+    public <R> List<AbstractDataRequest<R>> initRequestList(ARequestBuilder<R> request, List<SpotifyToken> spotifyTokenList) {
+        List<AbstractDataRequest<R>> requestList = new ArrayList<>();
         SpotifyApi spotifyApi;
 
         for (SpotifyToken token : spotifyTokenList) {
@@ -50,35 +73,7 @@ public class Request implements IRequest {
     }
 
     @Override
-    public void execRequestListAsync(List<AbstractDataRequest> requestList) {
-        requestList.forEach(AbstractRequest::executeAsync);
-    }
-
-    @Override
-    public void execRequestListSync(List<AbstractDataRequest> requestList) {
-        for (AbstractDataRequest request : requestList) {
-            try {
-                request.execute();
-            } catch (IOException | SpotifyWebApiException e) {
-                LOGGER.error("An error occurred while executing request.");
-            }
-        }
-    }
-
-    @Override
-    public AbstractDataRequest initRequest(ARequestBuilder request, SpotifyToken token) {
-        SpotifyApi spotifyApi = initAuthorizedApi(token);
-
-        return request.build(spotifyApi);
-    }
-
-    @Override
-    public AbstractDataRequest initRequest(ARequestBuilder request) {
-        return request.build(spotifyApi);
-    }
-
-    @Override
-    public Object execRequestSync(AbstractDataRequest request) {
+    public <R> R execRequestSync(AbstractDataRequest<R> request) {
         try {
             return request.execute();
         } catch (IOException | SpotifyWebApiException e) {
@@ -88,21 +83,26 @@ public class Request implements IRequest {
     }
 
     @Override
-    public Object execRequestAsync(AbstractDataRequest request) {
-        CompletableFuture result = request.executeAsync();
+    public <R> R execRequestAsync(AbstractDataRequest<R> request) {
+        CompletableFuture<R> result = request.executeAsync();
         return result.join();
     }
 
     @Override
-    public SpotifyApi initAuthorizedApi(SpotifyToken token) {
-        return new SpotifyApi.Builder()
-                .setAccessToken(token.getAccessToken())
-                .build();
+    public <R> void execRequestListSync(List<AbstractDataRequest<R>> abstractDataRequests) {
+        for (AbstractDataRequest request : abstractDataRequests) {
+            try {
+                request.execute();
+            } catch (IOException | SpotifyWebApiException e) {
+                LOGGER.error("An error occurred while executing request.");
+            }
+        }
     }
 
+
     @Override
-    public SpotifyApi getClientCredentialsApi() {
-        return spotifyApi;
+    public <R> void execRequestListAsync(List<AbstractDataRequest<R>> requestList) {
+        requestList.forEach(AbstractRequest::executeAsync);
     }
 
 }

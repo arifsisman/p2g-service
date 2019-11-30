@@ -15,14 +15,14 @@ public interface IRequest {
     SpotifyApi initAuthorizedApi(SpotifyToken token);
     SpotifyApi getClientCredentialsApi();
 
-    List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request);
-    void execRequestListAsync(List<AbstractDataRequest> requestList);
-    void execRequestListSync(List<AbstractDataRequest> requestList);
+    <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request, SpotifyToken token);
+    <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request);
+    <R> List<AbstractDataRequest<R>> initRequestList(ARequestBuilder<R> request, List<SpotifyToken> spotifyTokenList);
 
-    AbstractDataRequest initRequest(ARequestBuilder request, SpotifyToken token);
-    AbstractDataRequest initRequest(ARequestBuilder request);
+    <R> R execRequestSync(AbstractDataRequest<R> request);
+    <R> R execRequestAsync(AbstractDataRequest<R> request);
 
-    Object execRequestSync(AbstractDataRequest request);
-    Object execRequestAsync(AbstractDataRequest request);
+    <R> void execRequestListSync(List<AbstractDataRequest<R>> requestList);
+    <R> void execRequestListAsync(List<AbstractDataRequest<R>> requestList);
 
 }

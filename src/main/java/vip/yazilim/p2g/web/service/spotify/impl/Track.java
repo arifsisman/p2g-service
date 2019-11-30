@@ -25,16 +25,19 @@ public class Track implements ITrack {
 
     @Override
     public Song getTrack(String id) {
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track> request
+                = new ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getTrack(id).build();
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
+        AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track> dataRequest
+                = spotifyRequest.initRequest(request);
+
         com.wrapper.spotify.model_objects.specification.Track track;
-        track = (com.wrapper.spotify.model_objects.specification.Track) spotifyRequest.execRequestSync(dataRequest);
+        track = spotifyRequest.execRequestSync(dataRequest);
 
         return SpotifyHelper.trackToSong(track);
     }
@@ -43,16 +46,16 @@ public class Track implements ITrack {
     public List<Song> getSeveralTracks(String[] ids) {
         List<Song> songList = new LinkedList<>();
 
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track[]> request = new ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track[]>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track[]> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getSeveralTracks(ids).build();
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
+        AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track[]> dataRequest = spotifyRequest.initRequest(request);
         com.wrapper.spotify.model_objects.specification.Track[] tracks;
-        tracks = (com.wrapper.spotify.model_objects.specification.Track[]) spotifyRequest.execRequestSync(dataRequest);
+        tracks = spotifyRequest.execRequestSync(dataRequest);
 
         for (com.wrapper.spotify.model_objects.specification.Track track : tracks) {
             songList.add(SpotifyHelper.trackToSong(track));

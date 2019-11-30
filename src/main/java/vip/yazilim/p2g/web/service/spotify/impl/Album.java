@@ -29,17 +29,17 @@ public class Album implements IAlbum {
     public List<Song> getSongs(String albumId) {
         List<Song> songList = new LinkedList<>();
 
-        ARequestBuilder request = new ARequestBuilder() {
+        ARequestBuilder<Paging<TrackSimplified>> request = new ARequestBuilder<Paging<TrackSimplified>>() {
             @Override
-            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+            public AbstractDataRequest<Paging<TrackSimplified>> build(SpotifyApi spotifyApi) {
                 return spotifyApi.getAlbumsTracks(albumId).build();
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
-        Paging<?> trackSimplifiedPaging = (Paging<?>) spotifyRequest.execRequestSync(dataRequest);
+        AbstractDataRequest<Paging<TrackSimplified>> dataRequest = spotifyRequest.initRequest(request);
+        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync(dataRequest);
 
-        TrackSimplified[] tracks = (TrackSimplified[]) trackSimplifiedPaging.getItems();
+        TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 
         for (TrackSimplified t : tracks) {
             songList.add(SpotifyHelper.trackToSong(t));

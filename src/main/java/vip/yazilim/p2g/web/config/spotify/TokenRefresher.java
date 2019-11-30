@@ -53,26 +53,27 @@ public class TokenRefresher {
         }
 
         String refreshToken = token.getRefreshToken();
+        if (refreshToken == null) {
+            return;
+        }
 
         try {
-            if (refreshToken != null) {
-                SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                        .setClientId(clientId)
-                        .setClientSecret(clientSecret)
-                        .setRefreshToken(refreshToken)
-                        .build();
+            SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                    .setClientId(clientId)
+                    .setClientSecret(clientSecret)
+                    .setRefreshToken(refreshToken)
+                    .build();
 
-                AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
-                        .build().execute();
+            AuthorizationCodeCredentials authorizationCodeCredentials = spotifyApi.authorizationCodeRefresh()
+                    .build().execute();
 
-                String accessToken = authorizationCodeCredentials.getAccessToken();
-                spotifyApi.setAccessToken(accessToken);
+            String accessToken = authorizationCodeCredentials.getAccessToken();
+            spotifyApi.setAccessToken(accessToken);
 
-                tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+            tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
 //                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
 //                LOGGER.info("Access Token: " + accessToken);
-            }
         } catch (IOException | SpotifyWebApiException e) {
             throw new TokenException("Error while getting new access token!");
         } catch (InvalidUpdateException | DatabaseException e) {
