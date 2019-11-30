@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -39,25 +42,51 @@ public class SRequestService implements ISRequestService {
                 .build();
     }
 
-    @Override
-    public SpotifyApi getClientCredentialsApi() {
-        return spotifyApi;
-    }
 
-    @Override
-    public <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request, SpotifyToken token) {
+    private <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request, SpotifyToken token) {
         SpotifyApi spotifyApi = initAuthorizedApi(token);
 
         return request.build(spotifyApi);
     }
 
+//    private <R> AbstractDataRequest<R> initRequest(SpotifyToken token, Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) {
+//        SpotifyApi spotifyApi = initAuthorizedApi(token);
+//        return dataRequestBuilder.apply(spotifyApi);
+//    }
+
     @Override
-    public <R> AbstractDataRequest<R> initRequest(ARequestBuilder<R> request) {
-        return request.build(spotifyApi);
+    public <R> R execRequest(ARequestBuilder<R> request, boolean async) {
+        AbstractDataRequest<R> abstractDataRequest = request.build(spotifyApi);
+
+        if (async) {
+            return abstractDataRequest.executeAsync().join();
+        } else {
+            try {
+                return abstractDataRequest.execute();
+            } catch (IOException | SpotifyWebApiException e) {
+                LOGGER.error("An error occurred while executing request.");
+            }
+        }
+        return null;
     }
 
     @Override
-    public <R> List<AbstractDataRequest<R>> initRequestList(ARequestBuilder<R> request, List<SpotifyToken> spotifyTokenList) {
+    public <R> R execRequest(ARequestBuilder<R> request, SpotifyToken token, boolean async) {
+        AbstractDataRequest<R> abstractDataRequest = initRequest(request, token);
+
+        if (async) {
+            return abstractDataRequest.executeAsync().join();
+        } else {
+            try {
+                return abstractDataRequest.execute();
+            } catch (IOException | SpotifyWebApiException e) {
+                LOGGER.error("An error occurred while executing request.");
+            }
+        }
+        return null;
+    }
+
+    private <R> List<AbstractDataRequest<R>> initRequestList(ARequestBuilder<R> request, List<SpotifyToken> spotifyTokenList) {
         List<AbstractDataRequest<R>> requestList = new ArrayList<>();
         SpotifyApi spotifyApi;
 
@@ -73,36 +102,20 @@ public class SRequestService implements ISRequestService {
     }
 
     @Override
-    public <R> R execRequestSync(AbstractDataRequest<R> request) {
-        try {
-            return request.execute();
-        } catch (IOException | SpotifyWebApiException e) {
-            LOGGER.error("An error occurred while executing request.");
-        }
-        return null;
-    }
-
-    @Override
-    public <R> R execRequestAsync(AbstractDataRequest<R> request) {
-        CompletableFuture<R> result = request.executeAsync();
-        return result.join();
-    }
-
-    @Override
-    public <R> void execRequestListSync(List<AbstractDataRequest<R>> abstractDataRequests) {
-        for (AbstractDataRequest request : abstractDataRequests) {
-            try {
-                request.execute();
-            } catch (IOException | SpotifyWebApiException e) {
-                LOGGER.error("An error occurred while executing request.");
+    public <R> void execRequestList(ARequestBuilder<R> request, List<SpotifyToken> spotifyTokenList, boolean async) {
+        List<AbstractDataRequest<R>> abstractDataRequests = initRequestList(request, spotifyTokenList);
+        if (async) {
+            abstractDataRequests.forEach(AbstractRequest::executeAsync);
+        } else {
+            for (AbstractDataRequest r : abstractDataRequests) {
+                try {
+                    r.execute();
+                } catch (IOException | SpotifyWebApiException e) {
+                    LOGGER.error("An error occurred while executing request.");
+                }
             }
         }
-    }
 
-
-    @Override
-    public <R> void execRequestListAsync(List<AbstractDataRequest<R>> requestList) {
-        requestList.forEach(AbstractRequest::executeAsync);
     }
 
 }

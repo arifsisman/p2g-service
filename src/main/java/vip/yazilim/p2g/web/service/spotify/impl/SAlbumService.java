@@ -37,7 +37,7 @@ public class SAlbumService implements ISAlbumService {
         };
 
         AbstractDataRequest<Paging<TrackSimplified>> dataRequest = spotifyRequest.initRequest(request);
-        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync(dataRequest);
+        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync(request);
 
         TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 

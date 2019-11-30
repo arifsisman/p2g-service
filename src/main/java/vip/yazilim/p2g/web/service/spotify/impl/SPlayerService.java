@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -54,6 +55,8 @@ public class SPlayerService implements ISPlayerService {
                 return spotifyApi.startResumeUsersPlayback().context_uri(songUri).build();
             }
         };
+
+        spotifyRequest.initRequest((spotifyApi -> spotifyApi.startResumeUsersPlayback().context_uri(songUri).build()),  spotifyTokenList.get(0));
 
         List<AbstractDataRequest<String>> requestList = spotifyRequest.initRequestList(request, spotifyTokenList);
         spotifyRequest.execRequestListAsync(requestList);
@@ -100,8 +103,10 @@ public class SPlayerService implements ISPlayerService {
             }
         };
 
+
         List<AbstractDataRequest<String>> requestList = spotifyRequest.initRequestList(request, spotifyTokenList);
         spotifyRequest.execRequestListAsync(requestList);
+
     }
 
     @Override

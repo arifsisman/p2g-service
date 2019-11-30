@@ -8,7 +8,9 @@ import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
 import com.wrapper.spotify.model_objects.specification.Track;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISRequestService;
@@ -29,12 +31,15 @@ public class SSearchService implements ISSearchService {
     @Autowired
     private ISRequestService spotifyRequest;
 
+    @Autowired
+    @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
+    private SpotifyApi spotifyApi;
+
     @Override
     public List<SearchModel> search(String q, SearchTypes... searchTypes) throws IOException, SpotifyWebApiException {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        SpotifyApi spotifyApi = spotifyRequest.getClientCredentialsApi();
-
+        //TODO: check api is working!!
         for (SearchTypes s : searchTypes) {
             if (s.type.equals(SearchTypes.TRACK.getType())) {
                 searchModelList.addAll(searchSong(spotifyApi, q));
