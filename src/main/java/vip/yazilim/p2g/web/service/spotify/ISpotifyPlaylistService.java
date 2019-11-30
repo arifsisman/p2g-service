@@ -8,8 +8,8 @@ import java.util.List;
  * @author mustafaarifsisman - 29.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISAlbumService {
+public interface ISpotifyPlaylistService {
 
-    List<Song> getSongs(String albumId);
+    List<Song> getSongs(String playlistId);
 
 }

@@ -21,7 +21,6 @@ import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISearchService;
@@ -29,8 +28,6 @@ import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
 import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
@@ -73,25 +70,25 @@ public class SpotifyController {
     private IUserService userService;
 
     @Autowired
-    private ISPlayerService player;
+    private ISpotifyPlayerService player;
 
     @Autowired
-    private ISProfileService profile;
+    private ISpotifyProfileService profile;
 
     @Autowired
     private ISearchService searchService;
 
     @Autowired
-    private ISTrackService track;
+    private ISpotifyTrackService track;
 
     @Autowired
-    private ISAlbumService album;
+    private ISpotifyAlbumService album;
 
     @Autowired
-    private ISPlaylistService playlist;
+    private ISpotifyPlaylistService playlist;
 
     @Autowired
-    private ISRequestService request;
+    private ISpotifyRequestService request;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {

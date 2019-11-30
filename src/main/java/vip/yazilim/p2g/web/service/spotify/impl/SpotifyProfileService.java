@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
-import vip.yazilim.p2g.web.service.spotify.ISProfileService;
-import vip.yazilim.p2g.web.service.spotify.ISRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyProfileService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
 /**
@@ -15,10 +15,10 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SProfileService implements ISProfileService {
+public class SpotifyProfileService implements ISpotifyProfileService {
 
     @Autowired
-    private ISRequestService spotifyRequest;
+    private ISpotifyRequestService spotifyRequest;
 
     @Autowired
     private ITokenService tokenService;

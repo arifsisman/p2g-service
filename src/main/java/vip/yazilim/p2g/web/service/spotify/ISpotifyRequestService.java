@@ -11,7 +11,7 @@ import java.util.function.Function;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISRequestService {
+public interface ISpotifyRequestService {
 
     SpotifyApi initAuthorizedApi(SpotifyToken token);
 

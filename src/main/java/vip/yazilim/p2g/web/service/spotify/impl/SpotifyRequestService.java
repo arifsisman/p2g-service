@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.service.spotify.ISRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import java.util.function.Function;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SRequestService implements ISRequestService {
+public class SpotifyRequestService implements ISpotifyRequestService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SRequestService.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)

@@ -1,11 +1,7 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
-import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
-import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import com.wrapper.spotify.requests.data.player.GetUsersAvailableDevicesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,31 +10,27 @@ import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
-import vip.yazilim.p2g.web.service.spotify.ARequestBuilder;
-import vip.yazilim.p2g.web.service.spotify.ISPlayerService;
-import vip.yazilim.p2g.web.service.spotify.ISRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SPlayerService implements ISPlayerService {
+public class SpotifyPlayerService implements ISpotifyPlayerService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SPlayerService.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyPlayerService.class);
 
     @Autowired
     private ITokenService tokenService;
 
     @Autowired
-    private ISRequestService spotifyRequest;
+    private ISpotifyRequestService spotifyRequest;
 
     @Override
     public void play(String roomUuid, String songUri) {

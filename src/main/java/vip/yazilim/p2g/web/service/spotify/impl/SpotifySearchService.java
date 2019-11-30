@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.SearchTypes;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.spotify.ISRequestService;
-import vip.yazilim.p2g.web.service.spotify.ISSearchService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.io.IOException;
@@ -26,10 +26,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SSearchService implements ISSearchService {
+public class SpotifySearchService implements ISpotifySearchService {
 
     @Autowired
-    private ISRequestService spotifyRequest;
+    private ISpotifyRequestService spotifyRequest;
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)

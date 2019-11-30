@@ -5,8 +5,8 @@ import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.service.spotify.ISAlbumService;
-import vip.yazilim.p2g.web.service.spotify.ISRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.LinkedList;
@@ -17,10 +17,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SAlbumService implements ISAlbumService {
+public class SpotifyAlbumService implements ISpotifyAlbumService {
 
     @Autowired
-    private ISRequestService spotifyRequest;
+    private ISpotifyRequestService spotifyRequest;
 
     @Override
     public List<Song> getSongs(String albumId) {

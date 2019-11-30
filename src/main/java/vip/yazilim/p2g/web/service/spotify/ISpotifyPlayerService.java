@@ -10,7 +10,7 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISPlayerService {
+public interface ISpotifyPlayerService {
 
     void play(String roomUuid, String songUri);
     void play(String roomUuid);

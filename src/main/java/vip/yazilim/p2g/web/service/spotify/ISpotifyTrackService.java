@@ -8,8 +8,9 @@ import java.util.List;
  * @author mustafaarifsisman - 29.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISPlaylistService {
+public interface ISpotifyTrackService {
 
-    List<Song> getSongs(String playlistId);
+    Song getTrack(String id);
+    List<Song> getSeveralTracks(String[] ids);
 
 }

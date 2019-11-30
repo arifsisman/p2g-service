@@ -7,14 +7,14 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.spotify.ISPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private ISPlayerService player;
+    private ISpotifyPlayerService player;
 
     @Autowired
     private IUserService userService;

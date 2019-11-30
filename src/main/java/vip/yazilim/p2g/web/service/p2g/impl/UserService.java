@@ -21,7 +21,7 @@ import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
-import vip.yazilim.p2g.web.service.spotify.ISPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -56,7 +56,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     private IUserFriendsService userFriendsService;
 
     @Autowired
-    private ISPlayerService player;
+    private ISpotifyPlayerService player;
 
     @Autowired
     private IUserDeviceService userDeviceService;

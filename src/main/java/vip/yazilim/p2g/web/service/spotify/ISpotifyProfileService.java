@@ -9,7 +9,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISProfileService {
+public interface ISpotifyProfileService {
 
     User getSpotifyUser(String spotifyAccountId);
 
