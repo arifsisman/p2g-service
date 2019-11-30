@@ -5,6 +5,7 @@ import com.wrapper.spotify.model_objects.specification.User;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.spotify.IProfile;
 import vip.yazilim.p2g.web.spotify.IRequest;
@@ -31,6 +32,24 @@ public class Profile implements IProfile {
         };
 
         AbstractDataRequest dataRequest = spotifyRequest.initRequest(request);
+        spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
+
+        return spotifyUser;
+    }
+
+    @Override
+    public User getCurrentSpotifyUser(SpotifyToken spotifyToken) {
+        User spotifyUser;
+
+        ARequestBuilder request = new ARequestBuilder() {
+            @Override
+            public AbstractDataRequest build(SpotifyApi spotifyApi) {
+                return spotifyApi.getCurrentUsersProfile().build();
+
+            }
+        };
+
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(spotifyToken, request);
         spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
 
         return spotifyUser;

@@ -21,7 +21,6 @@ import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.service.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -163,7 +162,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user){
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
 
         user.setSpotifyAccountId(spotifyUser.getId());
         user.setSpotifyAccountType(spotifyUser.getType().toString());
@@ -171,20 +170,20 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
         }
 
         try {
             List<UserDevice> userDeviceList = player.getUsersAvailableDevices(user.getUuid());
 
-            for(UserDevice userDevice: userDeviceList){
+            for (UserDevice userDevice : userDeviceList) {
                 userDeviceService.create(userDevice);
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             LOGGER.warn("Device not found for Spotify user with userId[{}]", spotifyUser.getId());
         } catch (DatabaseException e) {
-            LOGGER.error("Device can not saved for Spotify user with userUuid[{}]", user.getUuid());
+            LOGGER.error("Device can not saved for user with userUuid[{}]", user.getUuid());
         }
 
         return user;
