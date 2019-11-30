@@ -12,17 +12,17 @@ import java.util.List;
  */
 public interface IRequest {
 
+    SpotifyApi initAuthorizedApi(SpotifyToken token);
+    SpotifyApi getClientCredentialsApi();
+
     List<AbstractDataRequest> initRequestList(List<SpotifyToken> spotifyTokenList, ARequestBuilder request);
     void execRequestListAsync(List<AbstractDataRequest> requestList);
     void execRequestListSync(List<AbstractDataRequest> requestList);
 
-    AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request);
+    AbstractDataRequest initRequest(ARequestBuilder request, SpotifyToken token);
     AbstractDataRequest initRequest(ARequestBuilder request);
 
     Object execRequestSync(AbstractDataRequest request);
     Object execRequestAsync(AbstractDataRequest request);
-
-    SpotifyApi initAuthorizedApi(SpotifyToken token);
-    SpotifyApi getClientCredentialsApi();
 
 }

@@ -66,7 +66,7 @@ public class Request implements IRequest {
     }
 
     @Override
-    public AbstractDataRequest initRequest(SpotifyToken token, ARequestBuilder request) {
+    public AbstractDataRequest initRequest(ARequestBuilder request, SpotifyToken token) {
         SpotifyApi spotifyApi = initAuthorizedApi(token);
 
         return request.build(spotifyApi);

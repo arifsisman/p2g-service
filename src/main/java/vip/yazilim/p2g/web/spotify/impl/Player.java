@@ -160,7 +160,7 @@ public class Player implements IPlayer {
             Optional<SpotifyToken> spotifyTokenOpt;
             spotifyTokenOpt = tokenService.getTokenByUserUuid(userUuid);
 
-            if(spotifyTokenOpt.isPresent())
+            if (spotifyTokenOpt.isPresent())
                 spotifyToken = spotifyTokenOpt.get();
 
         } catch (DatabaseException e) {
@@ -174,7 +174,7 @@ public class Player implements IPlayer {
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(spotifyToken, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request, spotifyToken);
 
         try {
             Device[] devices = ((GetUsersAvailableDevicesRequest) dataRequest).execute();

@@ -49,7 +49,7 @@ public class Profile implements IProfile {
             }
         };
 
-        AbstractDataRequest dataRequest = spotifyRequest.initRequest(spotifyToken, request);
+        AbstractDataRequest dataRequest = spotifyRequest.initRequest(request, spotifyToken);
         spotifyUser = (User) spotifyRequest.execRequestSync(dataRequest);
 
         return spotifyUser;

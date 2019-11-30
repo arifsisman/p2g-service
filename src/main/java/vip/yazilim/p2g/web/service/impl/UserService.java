@@ -180,6 +180,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             for (UserDevice userDevice : userDeviceList) {
                 userDeviceService.create(userDevice);
             }
+
         } catch (RuntimeException e) {
             LOGGER.warn("Device not found for Spotify user with userId[{}]", spotifyUser.getId());
         } catch (DatabaseException e) {

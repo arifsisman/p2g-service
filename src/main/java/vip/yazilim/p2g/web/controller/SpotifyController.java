@@ -27,6 +27,7 @@ import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.IRoomService;
 import vip.yazilim.p2g.web.service.ISearchService;
 import vip.yazilim.p2g.web.service.ITokenService;
+import vip.yazilim.p2g.web.service.IUserService;
 import vip.yazilim.p2g.web.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -66,6 +67,9 @@ public class SpotifyController {
 
     @Autowired
     private IRoomService roomService;
+
+    @Autowired
+    private IUserService userService;
 
     @Autowired
     private IPlayer player;
@@ -124,8 +128,12 @@ public class SpotifyController {
         String userUuid = SecurityHelper.getUserUuid();
         SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
-//        User spotifyUser = profile.getCurrentSpotifyUser(spotifyApi);
-//        LOGGER.info("Spotify User Id: " + spotifyUser.getId());
+        User spotifyUser = getCurrentSpotifyUser();
+        Optional<vip.yazilim.p2g.web.entity.User> userOpt = userService.getUserByUuid(userUuid);
+
+        //TODO: check for existing users!!!
+        // Set Spotify infos
+        userOpt.ifPresent(value -> userService.setSpotifyInfo(spotifyUser, value));
 
         // Set Token refresh scheduler
         int delayMs = 55 * 60 * 1000;
