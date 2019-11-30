@@ -2,14 +2,12 @@ package vip.yazilim.p2g.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.IRoomService;
-import vip.yazilim.p2g.web.service.IUserService;
-import vip.yazilim.p2g.web.spotify.IPlayer;
-import vip.yazilim.p2g.web.spotify.impl.Player;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.spotify.IPlayer;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
 @Component
