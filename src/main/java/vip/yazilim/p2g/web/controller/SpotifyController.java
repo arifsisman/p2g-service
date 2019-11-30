@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.controller;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import com.wrapper.spotify.model_objects.specification.User;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.slf4j.Logger;
@@ -32,6 +31,8 @@ import vip.yazilim.p2g.web.service.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
+import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
+import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -102,16 +103,21 @@ public class SpotifyController {
 
     @GetMapping("/callback")
     @ResponseBody
-    public SpotifyToken callback(@RequestParam String code) throws DatabaseException, InvalidUpdateException {
+    public SpotifyToken callback(@RequestParam String code) {
+        String userUuid = SecurityHelper.getUserUuid();
+        Optional<vip.yazilim.p2g.web.entity.User> userOpt = userService.getUserByUuid(userUuid);
+
+        if (!userOpt.isPresent()) {
+            throw new NotFoundException();
+        }
 
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-
         final AuthorizationCodeCredentials authorizationCodeCredentials;
 
         try {
             authorizationCodeCredentials = authorizationCodeRequest.execute();
         } catch (IOException | SpotifyWebApiException e) {
-            throw new TokenException("Error while fetching tokens!");
+            throw new ServiceException("Error while fetching tokens!", e);
         }
 
         String accessToken = authorizationCodeCredentials.getAccessToken();
@@ -125,15 +131,21 @@ public class SpotifyController {
 //        LOGGER.info("Refresh Token: " + refreshToken);
 //        LOGGER.info("Expire time: " + expireTime);
 
-        String userUuid = SecurityHelper.getUserUuid();
-        SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        SpotifyToken token;
 
-        User spotifyUser = getCurrentSpotifyUser();
-        Optional<vip.yazilim.p2g.web.entity.User> userOpt = userService.getUserByUuid(userUuid);
+        try {
+            token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
 
         //TODO: check for existing users!!!
         // Set Spotify infos
-        userOpt.ifPresent(value -> userService.setSpotifyInfo(spotifyUser, value));
+        try {
+            userService.setSpotifyInfo(getCurrentSpotifyUser(), userOpt.get());
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
 
         // Set Token refresh scheduler
         int delayMs = 55 * 60 * 1000;
@@ -148,23 +160,23 @@ public class SpotifyController {
 
     @GetMapping("/rooms")
     public List<Room> rooms() {
-        List<Room> roomList = null;
+        List<Room> roomList;
         try {
             roomList = roomService.getAll();
 
             for (Room room : roomList)
                 LOGGER.info("Room Uuid [{}]", room.getUuid());
-        } catch (DatabaseException e) {
+        } catch (Exception e) {
             LOGGER.error("An error occurred while getting rooms.");
+            throw new ServiceException("Error while fetching tokens!", e);
         }
-
         return roomList;
-//        return roomService.getAll();
     }
 
     @GetMapping("/room/{roomUuid}/play/{uri}")
-    public void play(@PathVariable String roomUuid, @PathVariable String uri) {
+    public boolean play(@PathVariable String roomUuid, @PathVariable String uri) {
         player.play(roomUuid, uri);
+        return true;
     }
 
     @GetMapping("/spotify/search/{query}")
@@ -218,27 +230,16 @@ public class SpotifyController {
     }
 
     @GetMapping("/spotify/user/current")
-    public User getCurrentSpotifyUser() {
-        Optional<SpotifyToken> spotifyTokenOpt;
-        SpotifyToken spotifyToken = null;
-        String userUuid = SecurityHelper.getUserUuid();
-        User spotifyUser;
-
+    public com.wrapper.spotify.model_objects.specification.User getCurrentSpotifyUser() {
         try {
-            spotifyTokenOpt = tokenService.getTokenByUserUuid(userUuid);
-
-            if (spotifyTokenOpt.isPresent())
-                spotifyToken = spotifyTokenOpt.get();
-
-            spotifyUser = profile.getCurrentSpotifyUser(spotifyToken);
+            com.wrapper.spotify.model_objects.specification.User spotifyUser = profile.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
             LOGGER.info("Spotify User Id: " + spotifyUser.getId());
 
             return spotifyUser;
-        } catch (DatabaseException e) {
+        } catch (Exception e) {
             LOGGER.error("An error occurred while getting user.");
+            throw new ServiceException(e);
         }
-
-        return null;
     }
 
     @GetMapping("/spotify/album/{albumId}/songs")

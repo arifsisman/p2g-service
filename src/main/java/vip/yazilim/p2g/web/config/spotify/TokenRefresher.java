@@ -35,14 +35,15 @@ public class TokenRefresher {
     @Autowired
     private ITokenService tokenService;
 
-    public void refreshToken(String userUuid) {
+    public void refreshToken(String userUuid){
         Optional<SpotifyToken> tokenOptional;
         SpotifyToken token;
 
         try {
             tokenOptional = tokenService.getTokenByUserUuid(userUuid);
         } catch (DatabaseException e) {
-            throw new TokenException("Error while fetching tokens!");
+            LOGGER.error("Error while fetching tokens!");
+            return;
         }
 
         if (tokenOptional.isPresent()) {
@@ -74,10 +75,8 @@ public class TokenRefresher {
 
 //                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
 //                LOGGER.info("Access Token: " + accessToken);
-        } catch (IOException | SpotifyWebApiException e) {
-            throw new TokenException("Error while getting new access token!");
-        } catch (InvalidUpdateException | DatabaseException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("Error while getting new access token!");
         }
     }
 

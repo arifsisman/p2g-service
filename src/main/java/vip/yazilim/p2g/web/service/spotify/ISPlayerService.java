@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify;
 
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.exception.TokenException;
+import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.util.List;
 
@@ -19,6 +21,6 @@ public interface ISPlayerService {
     void seek(String roomUuid, Integer ms);
     void repeat(String roomUuid);
 
-    List<UserDevice> getUsersAvailableDevices(String userUuid);
+    List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException;
 
 }

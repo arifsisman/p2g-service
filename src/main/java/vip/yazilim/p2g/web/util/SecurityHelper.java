@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.util;
 
 import vip.yazilim.p2g.web.config.security.UserPrinciple;
+import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,4 +45,5 @@ public class SecurityHelper {
         }
         return false;
     }
+
 }

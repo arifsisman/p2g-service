@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.RoleException;
+import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
@@ -21,5 +22,5 @@ public interface IUserService extends ICrudService<User, String> {
     Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException;
     List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException;
 
-    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user);
+    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException;
 }

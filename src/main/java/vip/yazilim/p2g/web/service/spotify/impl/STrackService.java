@@ -1,11 +1,9 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.requests.data.AbstractDataRequest;
+import com.wrapper.spotify.model_objects.specification.Track;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.service.spotify.ARequestBuilder;
 import vip.yazilim.p2g.web.service.spotify.ISRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISTrackService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
@@ -25,20 +23,7 @@ public class STrackService implements ISTrackService {
 
     @Override
     public Song getTrack(String id) {
-        ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track> request
-                = new ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track>() {
-            @Override
-            public AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track> build(SpotifyApi spotifyApi) {
-                return spotifyApi.getTrack(id).build();
-            }
-        };
-
-        AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track> dataRequest
-                = spotifyRequest.initRequest(request);
-
-        com.wrapper.spotify.model_objects.specification.Track track;
-        track = spotifyRequest.execRequestSync(dataRequest);
-
+        Track track = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getTrack(id).build());
         return SpotifyHelper.trackToSong(track);
     }
 
@@ -46,16 +31,7 @@ public class STrackService implements ISTrackService {
     public List<Song> getSeveralTracks(String[] ids) {
         List<Song> songList = new LinkedList<>();
 
-        ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track[]> request = new ARequestBuilder<com.wrapper.spotify.model_objects.specification.Track[]>() {
-            @Override
-            public AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track[]> build(SpotifyApi spotifyApi) {
-                return spotifyApi.getSeveralTracks(ids).build();
-            }
-        };
-
-        AbstractDataRequest<com.wrapper.spotify.model_objects.specification.Track[]> dataRequest = spotifyRequest.initRequest(request);
-        com.wrapper.spotify.model_objects.specification.Track[] tracks;
-        tracks = spotifyRequest.execRequestSync(dataRequest);
+        Track[] tracks = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getSeveralTracks(ids).build());
 
         for (com.wrapper.spotify.model_objects.specification.Track track : tracks) {
             songList.add(SpotifyHelper.trackToSong(track));
