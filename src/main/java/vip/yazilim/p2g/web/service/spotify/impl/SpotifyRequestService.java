@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +9,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
+import vip.yazilim.p2g.web.service.spotify.RFunction;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -69,7 +68,7 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> void execRequestListSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException {
+    public <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList) throws RequestException {
         execRequestList(dataRequestBuilder, spotifyTokenList, false);
     }
 
@@ -98,8 +97,8 @@ public class SpotifyRequestService implements ISpotifyRequestService {
         } else {
             try {
                 return abstractDataRequest.execute();
-            } catch (IOException | SpotifyWebApiException e) {
-                throw new RequestException("An error occurred while executing request.", e);
+            } catch (Exception e) {
+                throw new RequestException(e);
             }
         }
     }

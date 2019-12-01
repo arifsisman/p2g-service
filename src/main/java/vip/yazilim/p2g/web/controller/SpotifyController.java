@@ -67,10 +67,10 @@ public class SpotifyController {
     private IUserService userService;
 
     @Autowired
-    private ISpotifyPlayerService player;
+    private ISpotifyPlayerService spotifyPlayerService;
 
     @Autowired
-    private ISpotifyProfileService profile;
+    private ISpotifyProfileService spotifyProfileService;
 
     @Autowired
     private ISpotifyTrackService spotifyTrackService;
@@ -79,7 +79,7 @@ public class SpotifyController {
     private ISpotifyAlbumService spotifyAlbumService;
 
     @Autowired
-    private ISpotifyPlaylistService playlistService;
+    private ISpotifyPlaylistService spotifyPlaylistService;
 
     @Autowired
     private ISpotifySearchService spotifySearchService;
@@ -116,7 +116,6 @@ public class SpotifyController {
 
         String accessToken = authorizationCodeCredentials.getAccessToken();
         String refreshToken = authorizationCodeCredentials.getRefreshToken();
-//        Integer expireTime = authorizationCodeCredentials.getExpiresIn();
 
         spotifyApi.setAccessToken(accessToken);
         spotifyApi.setRefreshToken(refreshToken);
@@ -154,25 +153,19 @@ public class SpotifyController {
 
     @GetMapping("/rooms")
     public List<Room> rooms() {
-        List<Room> roomList;
         try {
-            roomList = roomService.getAll();
-
-            for (Room room : roomList)
-                LOGGER.info("Room Uuid [{}]", room.getUuid());
+            return roomService.getAll();
         } catch (Exception e) {
-            LOGGER.error("An error occurred while getting rooms.");
-            throw new ServiceException("Error while fetching tokens!", e);
+            throw new ServiceException("An error occurred while getting rooms.", e);
         }
-        return roomList;
     }
 
     @GetMapping("/room/{roomUuid}/play/{uri}")
     public boolean play(@PathVariable String roomUuid, @PathVariable String uri) {
         try {
-            player.play(roomUuid, uri);
+            spotifyPlayerService.play(roomUuid, uri);
         } catch (Exception e) {
-            throw new SecurityException(e);
+            throw new ServiceException(e);
         }
         return true;
     }
@@ -191,7 +184,7 @@ public class SpotifyController {
         try {
             return spotifyTrackService.getTrack(id);
         } catch (Exception e) {
-            throw new SecurityException(e);
+            throw new ServiceException(e);
         }
     }
 
@@ -201,7 +194,7 @@ public class SpotifyController {
         try {
             searchModelList = spotifyTrackService.getSeveralTracks(ids);
         } catch (RequestException e) {
-            throw new SecurityException(e);
+            throw new ServiceException(e);
         }
         return searchModelList;
     }
@@ -209,7 +202,7 @@ public class SpotifyController {
     @GetMapping("/spotify/user/{spotifyAccountId}")
     public com.wrapper.spotify.model_objects.specification.User getSpotifyUser(@PathVariable String spotifyAccountId) {
         try {
-            return profile.getSpotifyUser(spotifyAccountId);
+            return spotifyProfileService.getSpotifyUser(spotifyAccountId);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -218,17 +211,25 @@ public class SpotifyController {
     @GetMapping("/spotify/user/current")
     public com.wrapper.spotify.model_objects.specification.User getCurrentSpotifyUser() {
         try {
-            return profile.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
+            return spotifyProfileService.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
     @GetMapping("/spotify/user/devices")
+    public List<UserDevice> getSpotifyUserDevices() {
+        try {
+            return spotifyPlayerService.getUsersAvailableDevices(SecurityHelper.getUserUuid());
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @GetMapping("/user/devices")
     public List<UserDevice> getUserDevices() {
         try {
             return userDeviceService.getDevicesByUserUuid(SecurityHelper.getUserUuid());
-//            return player.getUsersAvailableDevices(SecurityHelper.getUserUuid());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -246,7 +247,7 @@ public class SpotifyController {
     @GetMapping("/spotify/playlist/{playlistId}/songs")
     public List<SearchModel> getPlaylistSongList(@PathVariable String playlistId) {
         try {
-            return playlistService.getSongs(playlistId);
+            return spotifyPlaylistService.getSongs(playlistId);
         } catch (RequestException e) {
             throw new ServiceException(e);
         }

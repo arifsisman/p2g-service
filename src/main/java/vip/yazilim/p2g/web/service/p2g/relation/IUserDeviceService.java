@@ -14,4 +14,5 @@ public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
     List<UserDevice> getDevicesByUserUuid(String userUuid) throws DatabaseException;
 
+    List<UserDevice> getDevicesByRoomUuid(String roomUuid) throws DatabaseException;
 }

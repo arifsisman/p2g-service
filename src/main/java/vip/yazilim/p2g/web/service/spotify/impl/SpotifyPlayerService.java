@@ -43,7 +43,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
 
     @Override
-    public void play(String roomUuid, String songUri) throws RequestException, PlayerException {
+    public void play(String roomUuid, String songUri) throws RequestException, PlayerException, DatabaseException {
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
             String msg = String.format("URI[%s] does not match with an Track URI!", songUri);
             throw new PlayerException(msg);
@@ -54,42 +54,50 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).build(), spotifyTokenList);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        //TODO: generalize for users in room -> .device_id("f9527474526ac6bc2ddbdd539fb69c82187621fa")
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), spotifyTokenList);
     }
 
     @Override
-    public void play(String roomUuid) throws RequestException {
+    public void play(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().build(), spotifyTokenList);
     }
 
     @Override
-    public void pause(String roomUuid) throws RequestException {
+    public void pause(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.pauseUsersPlayback().build(), spotifyTokenList);
     }
 
     @Override
-    public void next(String roomUuid) throws RequestException {
+    public void next(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToNextTrack().build(), spotifyTokenList);
     }
 
     @Override
-    public void previous(String roomUuid) throws RequestException {
+    public void previous(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToPreviousTrack().build(), spotifyTokenList);
     }
 
     @Override
-    public void seek(String roomUuid, Integer ms) throws RequestException {
+    public void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build(), spotifyTokenList);
     }
 
     @Override
-    public void repeat(String roomUuid) throws RequestException {
+    public void repeat(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).build(), spotifyTokenList);
 
     }

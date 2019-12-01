@@ -14,19 +14,19 @@ import java.util.List;
  */
 public interface ISpotifyPlayerService {
 
-    void play(String roomUuid, String songUri) throws RequestException, PlayerException;
+    void play(String roomUuid, String songUri) throws RequestException, PlayerException, DatabaseException;
 
-    void play(String roomUuid) throws RequestException;
+    void play(String roomUuid) throws RequestException, DatabaseException;
 
-    void pause(String roomUuid) throws RequestException;
+    void pause(String roomUuid) throws RequestException, DatabaseException;
 
-    void next(String roomUuid) throws RequestException;
+    void next(String roomUuid) throws RequestException, DatabaseException;
 
-    void previous(String roomUuid) throws RequestException;
+    void previous(String roomUuid) throws RequestException, DatabaseException;
 
-    void seek(String roomUuid, Integer ms) throws RequestException;
+    void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
 
-    void repeat(String roomUuid) throws RequestException;
+    void repeat(String roomUuid) throws RequestException, DatabaseException;
 
     List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException;
 

@@ -7,14 +7,10 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
-
-    @Autowired
-    private ISpotifyPlayerService player;
 
     @Autowired
     private IUserService userService;
@@ -24,8 +20,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User arif = createUser("1","arif", "arif", "0");
-        User emre = createUser("2","emre", "emre", "0");
+        User arif = createUser("1", "arif", "arif", "0");
+        User emre = createUser("2", "emre", "emre", "0");
 
         Room room = createRoom("Test Room", arif.getUuid());
 
@@ -33,7 +29,7 @@ public class DataInitializer implements CommandLineRunner {
         roomService.joinRoom(room.getUuid(), emre.getUuid());
     }
 
-    private User createUser(String uuid, String email, String username, String password){
+    private User createUser(String uuid, String email, String username, String password) {
         User user = new User();
         user.setUuid(uuid);
         user.setEmail(email);
@@ -49,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
         return user;
     }
 
-    private Room createRoom(String name, String owner){
+    private Room createRoom(String name, String owner) {
         Room room = new Room();
 
         room.setUuid("1");
