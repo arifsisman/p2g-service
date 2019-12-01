@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.repository.relation.IUserDeviceRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -49,12 +48,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
 
     @Override
     protected String getId(UserDevice userDevice) {
-        return userDevice.getUuid();
+        return userDevice.getDeviceId();
     }
 
-    @Override
-    protected UserDevice preInsert(UserDevice entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
-    }
 }

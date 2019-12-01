@@ -18,13 +18,11 @@ import javax.persistence.Table;
 public class UserDevice {
 
     @Id
-    private String uuid;
+    @Column(name = "device_id")
+    private String deviceId;
 
     @Column(name = "user_uuid")
     private String userUuid;
-
-    @Column(name = "device_id")
-    private String deviceId;
 
     @Column(name = "device_name")
     private String deviceName;

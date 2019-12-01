@@ -3,11 +3,11 @@ package vip.yazilim.p2g.web.constant;
 import java.util.HashMap;
 
 public enum QueueStatus {
-    PLAYED("PLAYED"),
-    PREVIOUS("PREVIOUS"),
-    NOW_PLAYING("NOW_PLAYING"),
-    NEXT("NEXT"),
-    IN_QUEUE("IN_QUEUE");
+    PLAYED("played"),
+    PREVIOUS("previous"),
+    NOW_PLAYING("now_playing"),
+    NEXT("next"),
+    IN_QUEUE("in_queue");
 
     private final String queueStatus;
 

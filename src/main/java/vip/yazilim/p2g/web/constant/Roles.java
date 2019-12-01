@@ -3,9 +3,9 @@ package vip.yazilim.p2g.web.constant;
 import java.util.HashMap;
 
 public enum Roles {
-    ADMIN("ADMIN"),
-    MODERATOR("MODERATOR"),
-    USER("USER");
+    ADMIN("admin"),
+    MODERATOR("moderator"),
+    USER("user");
 
     private final  String roleName;
 

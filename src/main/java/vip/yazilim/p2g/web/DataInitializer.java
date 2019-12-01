@@ -39,7 +39,6 @@ public class DataInitializer implements CommandLineRunner {
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
-//        user.setDeviceId(player.getUsersAvailableDevices().get(0));
 
         try {
             userService.create(user);

@@ -3,10 +3,10 @@ package vip.yazilim.p2g.web.constant;
 import java.util.HashMap;
 
 public enum FriendRequestStatus {
-    WAITING("WAITING"),
-    ACCEPTED("ACCEPTED"),
-    REJECTED("REJECTED"),
-    IGNORED("IGNORED");
+    WAITING("waiting"),
+    ACCEPTED("accepted"),
+    REJECTED("rejected"),
+    IGNORED("ignored");
 
     private final String friendRequestStatus;
 

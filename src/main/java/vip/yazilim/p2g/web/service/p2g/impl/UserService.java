@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.OnlineStatus;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
@@ -167,8 +168,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException {
 
         user.setSpotifyAccountId(spotifyUser.getId());
-        user.setSpotifyAccountType(spotifyUser.getType().toString());
         user.setCountryCode(spotifyUser.getCountry().getName());
+        user.setSpotifyProductType(spotifyUser.getProduct().getType());
+        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
 
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());

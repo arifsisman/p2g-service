@@ -3,9 +3,9 @@ package vip.yazilim.p2g.web.constant;
 import java.util.HashMap;
 
 public enum OnlineStatus {
-    ONLINE("ONLINE"),
-    OFFLINE("OFFLINE"),
-    AWAY("AWAY");
+    ONLINE("online"),
+    OFFLINE("offline"),
+    AWAY("away");
 
     private final String onlineStatus;
 

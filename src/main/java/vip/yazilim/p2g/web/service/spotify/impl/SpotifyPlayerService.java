@@ -14,6 +14,7 @@ import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -37,6 +38,10 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Autowired
     private ISpotifyRequestService spotifyRequest;
 
+    @Autowired
+    private IUserDeviceService userDeviceService;
+
+
     @Override
     public void play(String roomUuid, String songUri) throws RequestException, PlayerException {
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
@@ -55,37 +60,37 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Override
     public void play(String roomUuid) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().build(), spotifyTokenList);
     }
 
     @Override
     public void pause(String roomUuid) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.pauseUsersPlayback().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.pauseUsersPlayback().build(), spotifyTokenList);
     }
 
     @Override
     public void next(String roomUuid) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.skipUsersPlaybackToNextTrack().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToNextTrack().build(), spotifyTokenList);
     }
 
     @Override
     public void previous(String roomUuid) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.skipUsersPlaybackToPreviousTrack().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToPreviousTrack().build(), spotifyTokenList);
     }
 
     @Override
     public void seek(String roomUuid, Integer ms) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build(), spotifyTokenList);
     }
 
     @Override
     public void repeat(String roomUuid) throws RequestException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).build(), spotifyTokenList);
 
     }
 

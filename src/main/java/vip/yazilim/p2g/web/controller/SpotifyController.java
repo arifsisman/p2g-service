@@ -16,11 +16,13 @@ import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
@@ -83,7 +85,7 @@ public class SpotifyController {
     private ISpotifySearchService spotifySearchService;
 
     @Autowired
-    private ISpotifyRequestService requestService;
+    private IUserDeviceService userDeviceService;
 
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
@@ -177,30 +179,20 @@ public class SpotifyController {
 
     @GetMapping("/spotify/search/{query}")
     public List<SearchModel> search(@PathVariable String query) {
-        List<SearchModel> searchModelList;
         try {
-            searchModelList = spotifySearchService.search(query, ModelObjectType.TRACK, ModelObjectType.ALBUM, ModelObjectType.PLAYLIST);
+            return spotifySearchService.search(query, ModelObjectType.TRACK, ModelObjectType.ALBUM, ModelObjectType.PLAYLIST);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-
-        for (SearchModel searchModel : searchModelList) {
-            LOGGER.info(searchModel.getType() + " - " + searchModel.getName());
-        }
-
-        return searchModelList;
     }
 
     @GetMapping("/spotify/song/{id}")
     public SearchModel getSong(@PathVariable String id) {
-        SearchModel searchModel;
         try {
-            searchModel = spotifyTrackService.getTrack(id);
+            return spotifyTrackService.getTrack(id);
         } catch (Exception e) {
             throw new SecurityException(e);
         }
-        LOGGER.info(searchModel.getName());
-        return searchModel;
     }
 
     @GetMapping("/spotify/songs/{ids}")
@@ -216,25 +208,27 @@ public class SpotifyController {
 
     @GetMapping("/spotify/user/{spotifyAccountId}")
     public com.wrapper.spotify.model_objects.specification.User getSpotifyUser(@PathVariable String spotifyAccountId) {
-        com.wrapper.spotify.model_objects.specification.User spotifyUser;
         try {
-            spotifyUser = profile.getSpotifyUser(spotifyAccountId);
+            return profile.getSpotifyUser(spotifyAccountId);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        LOGGER.info("User Name: {}", spotifyUser.getDisplayName());
-        return spotifyUser;
-
-//        return profile.getSpotifyUser(spotifyAccountId);
     }
 
     @GetMapping("/spotify/user/current")
     public com.wrapper.spotify.model_objects.specification.User getCurrentSpotifyUser() {
         try {
-            com.wrapper.spotify.model_objects.specification.User spotifyUser = profile.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
-            LOGGER.info("Spotify User Id: " + spotifyUser.getId());
+            return profile.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
 
-            return spotifyUser;
+    @GetMapping("/spotify/user/devices")
+    public List<UserDevice> getUserDevices() {
+        try {
+            return userDeviceService.getDevicesByUserUuid(SecurityHelper.getUserUuid());
+//            return player.getUsersAvailableDevices(SecurityHelper.getUserUuid());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -242,27 +236,19 @@ public class SpotifyController {
 
     @GetMapping("/spotify/album/{albumId}/songs")
     public List<SearchModel> getAlbumSongList(@PathVariable String albumId) {
-        List<SearchModel> songList;
-
         try {
-            songList = spotifyAlbumService.getSongs(albumId);
+            return spotifyAlbumService.getSongs(albumId);
         } catch (RequestException e) {
             throw new ServiceException(e);
         }
-
-        return songList;
     }
 
     @GetMapping("/spotify/playlist/{playlistId}/songs")
     public List<SearchModel> getPlaylistSongList(@PathVariable String playlistId) {
-        List<SearchModel> songList;
-
         try {
-            songList = playlistService.getSongs(playlistId);
+            return playlistService.getSongs(playlistId);
         } catch (RequestException e) {
             throw new ServiceException(e);
         }
-
-        return songList;
     }
 }
