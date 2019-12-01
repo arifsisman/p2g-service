@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -39,12 +41,12 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) {
+    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws RequestException {
         return execRequest(dataRequestBuilder.apply(spotifyApi), false);
     }
 
     @Override
-    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) {
+    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws RequestException {
         return execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
@@ -54,34 +56,33 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) {
+    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
         SpotifyApi spotifyApi = initAuthorizedApi(token);
         return execRequest(dataRequestBuilder.apply(spotifyApi), false);
     }
 
     @Override
-    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) {
+    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
         SpotifyApi spotifyApi = initAuthorizedApi(token);
         return execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //------------------------------------------------------
     @Override
-    public <R> void execRequestListSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) {
+    public <R> void execRequestListSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException {
         execRequestList(dataRequestBuilder, spotifyTokenList, false);
     }
 
     @Override
-    public <R> void execRequestListAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) {
+    public <R> void execRequestListAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException {
         execRequestList(dataRequestBuilder, spotifyTokenList, true);
     }
 
-    private <R> void execRequestList(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, boolean async) {
-        List<AbstractDataRequest<R>> abstractDataRequests = new ArrayList<>();
-        SpotifyApi spotifyApi;
+    private <R> void execRequestList(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, boolean async) throws RequestException {
+        List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
 
         for (SpotifyToken token : spotifyTokenList) {
-            spotifyApi = initAuthorizedApi(token);
+            SpotifyApi spotifyApi = initAuthorizedApi(token);
             abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi));
         }
 
@@ -91,17 +92,15 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     }
 
     //------------------------------------------------------
-    private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) {
-
+    private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) throws RequestException {
         if (async) {
             return abstractDataRequest.executeAsync().join();
         } else {
             try {
                 return abstractDataRequest.execute();
             } catch (IOException | SpotifyWebApiException e) {
-                LOGGER.error("An error occurred while executing request.");
+                throw new RequestException("An error occurred while executing request.", e);
             }
         }
-        return null;
     }
 }

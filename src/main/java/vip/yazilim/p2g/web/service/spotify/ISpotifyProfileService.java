@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.service.spotify;
 
 
 import com.wrapper.spotify.model_objects.specification.User;
+import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
@@ -11,8 +12,8 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
  */
 public interface ISpotifyProfileService {
 
-    User getSpotifyUser(String spotifyAccountId);
+    User getSpotifyUser(String spotifyAccountId) throws RequestException;
 
-    User getCurrentSpotifyUser(String userUuid) throws DatabaseException, TokenException;
+    User getCurrentSpotifyUser(String userUuid) throws DatabaseException, TokenException, RequestException;
 
 }

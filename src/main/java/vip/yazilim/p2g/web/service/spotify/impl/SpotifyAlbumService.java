@@ -5,6 +5,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -25,7 +26,7 @@ public class SpotifyAlbumService implements ISpotifyAlbumService {
     private ISpotifyRequestService spotifyRequest;
 
     @Override
-    public List<SearchModel> getSongs(String albumId) {
+    public List<SearchModel> getSongs(String albumId) throws RequestException {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build());

@@ -4,35 +4,31 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.ISearchService;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.*;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
 import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -171,7 +167,11 @@ public class SpotifyController {
 
     @GetMapping("/room/{roomUuid}/play/{uri}")
     public boolean play(@PathVariable String roomUuid, @PathVariable String uri) {
-        player.play(roomUuid, uri);
+        try {
+            player.play(roomUuid, uri);
+        } catch (Exception e) {
+            throw new SecurityException(e);
+        }
         return true;
     }
 
@@ -193,22 +193,35 @@ public class SpotifyController {
 
     @GetMapping("/spotify/song/{id}")
     public SearchModel getSong(@PathVariable String id) {
-        SearchModel searchModel = spotifyTrackService.getTrack(id);
+        SearchModel searchModel;
+        try {
+            searchModel = spotifyTrackService.getTrack(id);
+        } catch (Exception e) {
+            throw new SecurityException(e);
+        }
         LOGGER.info(searchModel.getName());
         return searchModel;
     }
 
     @GetMapping("/spotify/songs/{ids}")
     public List<SearchModel> getSongList(@PathVariable String[] ids) {
-        List<SearchModel> searchModelList = spotifyTrackService.getSeveralTracks(ids);
-        searchModelList.forEach(System.out::println);
-
+        List<SearchModel> searchModelList;
+        try {
+            searchModelList = spotifyTrackService.getSeveralTracks(ids);
+        } catch (RequestException e) {
+            throw new SecurityException(e);
+        }
         return searchModelList;
     }
 
     @GetMapping("/spotify/user/{spotifyAccountId}")
     public com.wrapper.spotify.model_objects.specification.User getSpotifyUser(@PathVariable String spotifyAccountId) {
-        com.wrapper.spotify.model_objects.specification.User spotifyUser = profile.getSpotifyUser(spotifyAccountId);
+        com.wrapper.spotify.model_objects.specification.User spotifyUser;
+        try {
+            spotifyUser = profile.getSpotifyUser(spotifyAccountId);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
         LOGGER.info("User Name: {}", spotifyUser.getDisplayName());
         return spotifyUser;
 
@@ -223,7 +236,6 @@ public class SpotifyController {
 
             return spotifyUser;
         } catch (Exception e) {
-            LOGGER.error("An error occurred while getting user.");
             throw new ServiceException(e);
         }
     }
@@ -232,10 +244,11 @@ public class SpotifyController {
     public List<SearchModel> getAlbumSongList(@PathVariable String albumId) {
         List<SearchModel> songList;
 
-//        return album.getAlbumSongs(albumId);
-        songList = spotifyAlbumService.getSongs(albumId);
-
-        LOGGER.info(String.valueOf(songList.size()));
+        try {
+            songList = spotifyAlbumService.getSongs(albumId);
+        } catch (RequestException e) {
+            throw new ServiceException(e);
+        }
 
         return songList;
     }
@@ -244,10 +257,11 @@ public class SpotifyController {
     public List<SearchModel> getPlaylistSongList(@PathVariable String playlistId) {
         List<SearchModel> songList;
 
-//        return playlist.getSongs(playlistId);
-        songList = playlistService.getSongs(playlistId);
-
-        LOGGER.info(String.valueOf(songList.size()));
+        try {
+            songList = playlistService.getSongs(playlistId);
+        } catch (RequestException e) {
+            throw new ServiceException(e);
+        }
 
         return songList;
     }

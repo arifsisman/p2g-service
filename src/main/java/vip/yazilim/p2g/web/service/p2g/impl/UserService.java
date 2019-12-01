@@ -10,6 +10,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.exception.UserFriendsException;
@@ -163,7 +164,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException {
 
         user.setSpotifyAccountId(spotifyUser.getId());
         user.setSpotifyAccountType(spotifyUser.getType().toString());
