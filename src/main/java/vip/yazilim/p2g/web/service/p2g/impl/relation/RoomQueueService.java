@@ -16,7 +16,6 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -71,9 +70,8 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     @Override
-    public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException {
-        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
-        return roomQueueList.stream().filter(x -> x.getQueueStatus().equals(queueStatus.getQueueStatus())).collect(Collectors.toList());
+    public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
+        return queueRepo.findQueuesByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
     }
 
 }
