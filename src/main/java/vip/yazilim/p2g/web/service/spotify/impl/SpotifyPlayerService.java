@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
@@ -17,6 +18,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,16 +38,14 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private ISpotifyRequestService spotifyRequest;
 
     @Override
-    public void play(String roomUuid, String songUri) throws RequestException {
+    public void play(String roomUuid, String songUri) throws RequestException, PlayerException {
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
-            LOGGER.warn("URI[{}] does not match with an song URI", songUri);
-            return;
+            String msg = String.format("URI[%s] does not match with an Track URI!", songUri);
+            throw new PlayerException(msg);
         }
 
         // JsonArray with song, because uris endpoint needs JsonArray as input
-        List<String> songList = new LinkedList<>();
-        songList.add(songUri);
-
+        List<String> songList = Collections.singletonList(songUri);
         JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);

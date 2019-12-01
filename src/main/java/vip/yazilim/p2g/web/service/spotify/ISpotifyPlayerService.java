@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service.spotify;
 
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface ISpotifyPlayerService {
 
-    void play(String roomUuid, String songUri) throws RequestException;
+    void play(String roomUuid, String songUri) throws RequestException, PlayerException;
 
     void play(String roomUuid) throws RequestException;
 
