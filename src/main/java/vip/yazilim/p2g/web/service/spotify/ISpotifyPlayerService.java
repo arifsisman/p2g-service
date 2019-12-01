@@ -1,12 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
-
-import java.util.List;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -27,7 +23,5 @@ public interface ISpotifyPlayerService {
     void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
 
     void repeat(String roomUuid) throws RequestException, DatabaseException;
-
-    List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException;
 
 }

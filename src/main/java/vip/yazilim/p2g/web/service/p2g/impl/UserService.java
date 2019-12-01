@@ -10,7 +10,6 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.TokenException;
@@ -22,8 +21,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
@@ -58,10 +56,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     private IUserFriendsService userFriendsService;
 
     @Autowired
-    private ISpotifyPlayerService player;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
+    private ISpotifyUserService spotifyUserService;
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -172,11 +167,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
         }
 
-        List<UserDevice> userDeviceList = player.getUsersAvailableDevices(user.getUuid());
-
-        for (UserDevice userDevice : userDeviceList) {
-            userDeviceService.create(userDevice);
-        }
+        spotifyUserService.updateUsersAvailableDevices(user.getUuid());
 
         return user;
     }
