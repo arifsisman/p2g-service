@@ -26,7 +26,7 @@ public class DataInitializer implements CommandLineRunner {
         Room room = createRoom("Test Room", arif.getUuid());
 
         roomService.joinRoom(room.getUuid(), arif.getUuid());
-//        roomService.joinRoom(room.getUuid(), emre.getUuid());
+        roomService.joinRoom(room.getUuid(), emre.getUuid());
     }
 
     private User createUser(String uuid, String email, String username, String password) {

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.IQueueService;
@@ -53,4 +54,22 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
             throw new DatabaseException(errorMessage, exception);
         }
     }
+
+    //TODO: implement
+
+    @Override
+    public RoomQueue addToRoomQueue(String roomUuid, RoomQueue roomQueue) throws DatabaseException {
+        return null;
+    }
+
+    @Override
+    public RoomQueue removeFromRoomQueue(String roomUuid, RoomQueue roomQueue) throws DatabaseException {
+        return null;
+    }
+
+    @Override
+    public RoomQueue getSong(String roomUuid, QueueStatus queueStatus) throws DatabaseException {
+        return null;
+    }
+
 }

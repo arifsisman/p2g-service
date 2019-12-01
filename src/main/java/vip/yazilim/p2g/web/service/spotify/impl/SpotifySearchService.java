@@ -33,18 +33,18 @@ public class SpotifySearchService implements ISpotifySearchService {
 
         if (searchTypes.length == 0) {
             SearchResult songSearchResult = spotifyApi.searchItem(q, ModelObjectType.TRACK.getType()).build().execute();
-            searchModelList.addAll(SpotifyHelper.convertToSearchModelList(songSearchResult.getTracks().getItems()));
+            searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             return searchModelList;
         }
 
         for (ModelObjectType s : searchTypes) {
             SearchResult songSearchResult = spotifyApi.searchItem(q, s.getType()).build().execute();
             if (s == ModelObjectType.TRACK) {
-                searchModelList.addAll(SpotifyHelper.convertToSearchModelList(songSearchResult.getTracks().getItems()));
+                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             } else if (s == ModelObjectType.ALBUM) {
-                searchModelList.addAll(SpotifyHelper.convertToSearchModelList(songSearchResult.getAlbums().getItems()));
+                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getAlbums().getItems()));
             } else if (s == ModelObjectType.PLAYLIST) {
-                searchModelList.addAll(SpotifyHelper.convertToSearchModelList(songSearchResult.getPlaylists().getItems()));
+                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getPlaylists().getItems()));
             }
         }
 

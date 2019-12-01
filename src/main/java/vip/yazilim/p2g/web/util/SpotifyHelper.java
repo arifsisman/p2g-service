@@ -1,15 +1,16 @@
 package vip.yazilim.p2g.web.util;
 
+import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import com.wrapper.spotify.model_objects.specification.PlaylistSimplified;
-import com.wrapper.spotify.model_objects.specification.Track;
-import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vip.yazilim.p2g.web.constant.QueueStatus;
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +21,6 @@ public class SpotifyHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyHelper.class);
 
-
     public static List<String> artistsToArtistNameList(ArtistSimplified[] artists) {
         List<String> artistList = new ArrayList<>();
 
@@ -30,11 +30,54 @@ public class SpotifyHelper {
         return artistList;
     }
 
-    public static List<SearchModel> convertToSearchModelList(AbstractModelObject[] abstractModelObjects) {
+    public static List<SearchModel> convertAbstractModelObjectToSearchModelList(AbstractModelObject[] abstractModelObjects) {
         List<SearchModel> searchModelList = new ArrayList<>();
         for (AbstractModelObject a : abstractModelObjects) {
-           searchModelList.add(new SearchModel(a));
+            searchModelList.add(new SearchModel(a));
         }
         return searchModelList;
     }
+
+    public static String convertIdToUri(String id, ModelObjectType type) {
+        String uri = "spotify:";
+        switch (type) {
+            case TRACK:
+                uri += ModelObjectType.TRACK.getType();
+                break;
+            case ALBUM:
+                uri += ModelObjectType.ALBUM.getType();
+                break;
+            case PLAYLIST:
+                uri += ModelObjectType.PLAYLIST.getType();
+                break;
+        }
+        return uri + id;
+    }
+
+    public static RoomQueue convertSearchModelToRoomQueue(String roomUuid, SearchModel searchModel) {
+        RoomQueue roomQueue = new RoomQueue();
+
+        roomQueue.setRoomUuid(roomUuid);
+        roomQueue.setSongId(searchModel.getId());
+        roomQueue.setSongUri(searchModel.getUri());
+        roomQueue.setSongName(searchModel.getName());
+        roomQueue.setImageUrl(searchModel.getImageUrl());
+        roomQueue.setCurrentMs(0);
+        roomQueue.setDurationMs(searchModel.getDurationMs());
+        roomQueue.setQueuedTime(new Date());
+        roomQueue.setVotes(0);
+        roomQueue.setStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+
+        ArtistSimplified[] artists = searchModel.getArtists();
+        String[] roomQueueArtists = new String[artists.length];
+
+        for (int i = 0; i < artists.length; i++) {
+            roomQueueArtists[i] = artists[i].getName();
+        }
+
+        roomQueue.setArtists(roomQueueArtists);
+
+        return roomQueue;
+    }
+
 }

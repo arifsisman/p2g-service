@@ -23,4 +23,4 @@ spring:
 spotify:
   clientId: 76f07bcdc1054c32884054e43a135480
   clientSecret: 9881b96bb7e24401a9162312598185ba
-  redirectUrl: http://localhost:8080/callback
+  redirectUrl: http://192.168.1.38:8080/callback

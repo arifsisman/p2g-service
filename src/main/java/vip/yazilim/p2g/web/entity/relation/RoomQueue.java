@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "room_queue")
@@ -20,11 +21,20 @@ public class RoomQueue implements Serializable {
     @Column(name = "room_uuid", nullable = false)
     private String roomUuid;
 
+    @Column(name = "song_id", nullable = false)
+    private String songId;
+
     @Column(name = "song_uri")
     private String songUri;
 
-    @Column(name = "song_id", nullable = false)
-    private String songId;
+    @Column(name = "song_name", nullable = false)
+    private String songName;
+
+    @Column(name = "artists")
+    private String[] artists;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Column(name = "current_ms")
     private Integer currentMs;
@@ -33,7 +43,7 @@ public class RoomQueue implements Serializable {
     private Integer durationMs;
 
     @Column(name = "queued_time")
-    private String queuedTime;
+    private Date queuedTime;
 
     private int votes;
     private String status;

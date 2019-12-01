@@ -29,6 +29,6 @@ public class SpotifyTrackService implements ISpotifyTrackService {
     @Override
     public List<SearchModel> getSeveralTracks(String[] ids) throws RequestException {
         Track[] tracks = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getSeveralTracks(ids).build());
-        return SpotifyHelper.convertToSearchModelList(tracks);
+        return SpotifyHelper.convertAbstractModelObjectToSearchModelList(tracks);
     }
 }
