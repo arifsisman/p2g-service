@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -16,7 +15,6 @@ import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IQueueService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -47,9 +45,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Autowired
     private IQueueService queueService;
-
-    @Autowired
-    private ISongService songService;
 
     @Autowired
     private IUserService userService;
@@ -113,9 +108,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         List<User> userList;
         List<User> invitedUserList;
 
-        List<RoomQueue> roomQueue;
-        List<Song> songList;
-        Song nowPlaying;
+        List<RoomQueue> roomQueueList;
+        RoomQueue nowPlaying;
 
         String chatUuid;
 
@@ -137,13 +131,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         roomModel.setInvitedUserList(invitedUserList);
 
         // Set RoomQueue
-        roomQueue = queueService.getQueueListByRoomUuid(roomUuid);
-
-        // Set Song List
-        if (!roomQueue.isEmpty()) {
-            songList = songService.getSongListByRoomUuid(roomUuid);
-            roomModel.setSongList(songList);
-        }
+        roomQueueList = queueService.getQueueListByRoomUuid(roomUuid);
+        roomModel.setRoomQueueList(roomQueueList);
 
         // Set Room Chat Uuid
         chatUuid = room.get().getChatUuid();
@@ -160,14 +149,14 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         room.setName(name);
         room.setOwnerUuid(ownerUuid);
         room.setCreationDate(TimeHelper.getCurrentTime());
-        room.setShowRoomActivityFlag(true);
 
         if (password == null) {
             room.setPrivateFlag(false);
-
+            room.setShowRoomActivityFlag(true);
         } else {
             room.setPassword(password);
             room.setPrivateFlag(true);
+            room.setShowRoomActivityFlag(false);
         }
 
         if (maxUsers == null) {

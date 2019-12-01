@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.List;
 
@@ -10,7 +10,8 @@ import java.util.List;
  */
 public interface ISpotifyTrackService {
 
-    Song getTrack(String id);
-    List<Song> getSeveralTracks(String[] ids);
+    SearchModel getTrack(String id);
+
+    List<SearchModel> getSeveralTracks(String[] ids);
 
 }

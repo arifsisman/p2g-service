@@ -4,10 +4,9 @@ import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.PlaylistTrack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,16 +22,17 @@ public class SpotifyPlaylistService implements ISpotifyPlaylistService {
     private ISpotifyRequestService spotifyRequest;
 
     @Override
-    public List<Song> getSongs(String playlistId) {
-        List<Song> songList = new LinkedList<>();
+    public List<SearchModel> getSongs(String playlistId) {
+        List<SearchModel> searchModelList = new LinkedList<>();
 
         Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestSync((spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build()));
-        PlaylistTrack[] tracks = dataRequest.getItems();
+        PlaylistTrack[] playlistTracks = dataRequest.getItems();
 
-        for (PlaylistTrack t : tracks) {
-            songList.add(SpotifyHelper.trackToSong(t.getTrack()));
+        for (PlaylistTrack p : playlistTracks) {
+            SearchModel searchModel = new SearchModel(p.getTrack());
+            searchModelList.add(searchModel);
         }
 
-        return songList;
+        return searchModelList;
     }
 }

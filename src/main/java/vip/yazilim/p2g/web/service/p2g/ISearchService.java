@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.p2g.web.constant.SearchTypes;
+import com.wrapper.spotify.enums.ModelObjectType;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.List;
@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface ISearchService {
 
-    List<SearchModel> search(String q, SearchTypes... searchTypes);
+    List<SearchModel> search(String q, ModelObjectType... searchTypes);
 
 }

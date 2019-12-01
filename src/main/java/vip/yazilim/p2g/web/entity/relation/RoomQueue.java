@@ -17,14 +17,20 @@ public class RoomQueue implements Serializable {
     @Id
     private String uuid;
 
-    @Column(name = "room_uuid")
+    @Column(name = "room_uuid", nullable = false)
     private String roomUuid;
 
-    @Column(name = "song_uuid")
-    private String songUuid;
+    @Column(name = "song_uri")
+    private String songUri;
+
+    @Column(name = "song_id", nullable = false)
+    private String songId;
 
     @Column(name = "current_ms")
     private Integer currentMs;
+
+    @Column(name = "duration_ms", nullable = false)
+    private Integer durationMs;
 
     @Column(name = "queued_time")
     private String queuedTime;

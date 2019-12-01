@@ -7,10 +7,10 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum SearchTypes {
-    ALBUM("ALBUM"),
-    PLAYLIST("PLAYLIST"),
-    TRACK("TRACK"),
-    ARTIST("ARTIST");
+    ALBUM("album"),
+    PLAYLIST("playlist"),
+    TRACK("track"),
+    ARTIST("artist");
 
     private static final HashMap<String, SearchTypes> map = new HashMap<>();
     public final String type;

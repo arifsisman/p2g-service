@@ -40,7 +40,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         }
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().context_uri(songUri).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().context_uri(songUri).build(), spotifyTokenList);
     }
 
     @Override
