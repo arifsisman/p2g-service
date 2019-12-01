@@ -7,13 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.IQueueService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -55,21 +58,22 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         }
     }
 
-    //TODO: implement
-
     @Override
-    public RoomQueue addToRoomQueue(String roomUuid, RoomQueue roomQueue) throws DatabaseException {
-        return null;
+    public RoomQueue addToQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
+        RoomQueue roomQueue = SpotifyHelper.convertSearchModelToRoomQueue(searchModel);
+        roomQueue.setRoomUuid(roomUuid);
+        return create(roomQueue);
     }
 
     @Override
-    public RoomQueue removeFromRoomQueue(String roomUuid, RoomQueue roomQueue) throws DatabaseException {
-        return null;
+    public boolean removeFromQueue(RoomQueue roomQueue) throws DatabaseException {
+        return delete(roomQueue);
     }
 
     @Override
-    public RoomQueue getSong(String roomUuid, QueueStatus queueStatus) throws DatabaseException {
-        return null;
+    public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException {
+        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
+        return roomQueueList.stream().filter(x -> x.getQueueStatus().equals(queueStatus.getQueueStatus())).collect(Collectors.toList());
     }
 
 }

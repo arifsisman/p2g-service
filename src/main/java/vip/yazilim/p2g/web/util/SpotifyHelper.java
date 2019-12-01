@@ -54,10 +54,9 @@ public class SpotifyHelper {
         return uri + id;
     }
 
-    public static RoomQueue convertSearchModelToRoomQueue(String roomUuid, SearchModel searchModel) {
+    public static RoomQueue convertSearchModelToRoomQueue(SearchModel searchModel) {
         RoomQueue roomQueue = new RoomQueue();
 
-        roomQueue.setRoomUuid(roomUuid);
         roomQueue.setSongId(searchModel.getId());
         roomQueue.setSongUri(searchModel.getUri());
         roomQueue.setSongName(searchModel.getName());
@@ -66,7 +65,7 @@ public class SpotifyHelper {
         roomQueue.setDurationMs(searchModel.getDurationMs());
         roomQueue.setQueuedTime(new Date());
         roomQueue.setVotes(0);
-        roomQueue.setStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
 
         ArtistSimplified[] artists = searchModel.getArtists();
         String[] roomQueueArtists = new String[artists.length];

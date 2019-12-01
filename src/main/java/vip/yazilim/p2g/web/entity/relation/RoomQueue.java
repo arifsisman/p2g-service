@@ -45,7 +45,9 @@ public class RoomQueue implements Serializable {
     @Column(name = "queued_time")
     private Date queuedTime;
 
+    @Column(name = "queue_status")
+    private String queueStatus;
+
     private int votes;
-    private String status;
 
 }
