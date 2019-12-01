@@ -16,9 +16,9 @@ public interface ISpotifyPlayerService {
 
     void pause(String roomUuid) throws RequestException, DatabaseException;
 
-    void next(String roomUuid) throws RequestException, DatabaseException;
+    void next(String roomUuid) throws RequestException, DatabaseException, PlayerException;
 
-    void previous(String roomUuid) throws RequestException, DatabaseException;
+    void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException;
 
     void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
 

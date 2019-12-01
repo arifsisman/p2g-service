@@ -9,10 +9,11 @@ import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
-import vip.yazilim.p2g.web.service.p2g.IQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implements IQueueService {
+public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implements IRoomQueueService {
 
     // static fields
     private Logger LOGGER = LoggerFactory.getLogger(RoomQueueService.class);
@@ -48,13 +49,8 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     @Override
-    public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) throws DatabaseException {
-        try {
-            return queueRepo.findQueuesByRoomUuid(roomUuid);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Queue with roomName[%s]", roomUuid);
-            throw new DatabaseException(errorMessage, exception);
-        }
+    public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) {
+        return queueRepo.findQueuesByRoomUuid(roomUuid);
     }
 
     @Override
@@ -72,6 +68,39 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     @Override
     public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
         return queueRepo.findQueuesByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
+    }
+
+    @Override
+    public List<RoomQueue> updateQueueStatus(String roomUuid, RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
+
+        int playingIndex = roomQueueList.indexOf(playing);
+
+        for (int i = 0; i < roomQueueList.size(); i++) {
+            int diff = i - playingIndex;
+            if (diff >= 2) {
+                roomQueueList.get(i).setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+            } else if (diff == 1) {
+                roomQueueList.get(i).setQueueStatus(QueueStatus.NEXT.getQueueStatus());
+            } else if (diff == 0) {
+                roomQueueList.get(i).setQueueStatus(QueueStatus.NOW_PLAYING.getQueueStatus());
+            } else if (diff == -1) {
+                roomQueueList.get(i).setQueueStatus(QueueStatus.PREVIOUS.getQueueStatus());
+            } else {
+                roomQueueList.get(i).setQueueStatus(QueueStatus.PLAYED.getQueueStatus());
+            }
+        }
+
+        for (RoomQueue r : roomQueueList) {
+            update(r);
+        }
+
+        return roomQueueList;
+    }
+
+    private RoomQueue setQueueStatus(RoomQueue roomQueue, QueueStatus queueStatus) {
+        roomQueue.setQueueStatus(queueStatus.getQueueStatus());
+        return roomQueue;
     }
 
 }

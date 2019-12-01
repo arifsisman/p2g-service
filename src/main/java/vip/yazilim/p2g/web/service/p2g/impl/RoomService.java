@@ -13,7 +13,7 @@ import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
-import vip.yazilim.p2g.web.service.p2g.IQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
@@ -44,7 +44,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IQueueService queueService;
+    private IRoomQueueService queueService;
 
     @Autowired
     private IUserService userService;

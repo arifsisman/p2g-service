@@ -5,11 +5,14 @@ import com.google.gson.JsonArray;
 import com.wrapper.spotify.enums.ModelObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -34,6 +37,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Autowired
     private IUserDeviceService userDeviceService;
 
+    @Autowired
+    private IRoomQueueService roomQueueService;
+
     @Override
     public void play(String roomUuid, String songUri) throws RequestException, PlayerException, DatabaseException {
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
@@ -41,7 +47,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             throw new PlayerException(msg);
         }
 
-        // JsonArray with song, because uris endpoint needs JsonArray as input
+        // JsonArray with song, because uris needs JsonArray as input
         List<String> songList = Collections.singletonList(songUri);
         JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
@@ -65,17 +71,33 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public void next(String roomUuid) throws RequestException, DatabaseException {
-        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToNextTrack().device_id(device).build(), spotifyTokenList, userDeviceList);
+    public void next(String roomUuid) throws RequestException, DatabaseException, PlayerException {
+//        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+//        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+//        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToNextTrack().device_id(device).build(), spotifyTokenList, userDeviceList);
+        List<RoomQueue> roomQueueList = roomQueueService.getQueueListByRoomUuidAndStatus(roomUuid, QueueStatus.NEXT);
+
+        if (roomQueueList.size() == 0) {
+            throw new PlayerException("Queue is empty.");
+        } else {
+            play(roomUuid, roomQueueList.get(0).getSongUri());
+        }
+
     }
 
     @Override
-    public void previous(String roomUuid) throws RequestException, DatabaseException {
-        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToPreviousTrack().device_id(device).build(), spotifyTokenList, userDeviceList);
+    public void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException {
+//        List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
+//        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+//        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToPreviousTrack().device_id(device).build(), spotifyTokenList, userDeviceList);
+
+        List<RoomQueue> roomQueueList = roomQueueService.getQueueListByRoomUuidAndStatus(roomUuid, QueueStatus.PREVIOUS);
+
+        if (roomQueueList.size() == 0) {
+            throw new PlayerException("Previous song cannot found.");
+        } else {
+            play(roomUuid, roomQueueList.get(0).getSongUri());
+        }
     }
 
     @Override
