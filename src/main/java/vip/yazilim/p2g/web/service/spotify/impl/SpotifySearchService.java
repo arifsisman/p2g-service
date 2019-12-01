@@ -37,7 +37,6 @@ public class SpotifySearchService implements ISpotifySearchService {
             return searchModelList;
         }
 
-        //TODO: check api is working!!
         for (ModelObjectType s : searchTypes) {
             SearchResult songSearchResult = spotifyApi.searchItem(q, s.getType()).build().execute();
             if (s == ModelObjectType.TRACK) {

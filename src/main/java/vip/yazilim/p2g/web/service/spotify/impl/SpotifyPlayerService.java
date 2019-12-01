@@ -55,7 +55,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        //TODO: generalize for users in room -> .device_id("f9527474526ac6bc2ddbdd539fb69c82187621fa")
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), spotifyTokenList, userDeviceList);
     }
 

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.constant.SpotifyScopes;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class SpotifyApiConfig {
     public AuthorizationCodeUriRequest getUri() {
         return spotifyApiAuthorizationCode()
                 .authorizationCodeUri()
-                .scope(Constants.SCOPE)
+                .scope(SpotifyScopes.getAll())
                 .build();
     }
 

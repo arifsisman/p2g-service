@@ -132,8 +132,7 @@ public class SpotifyController {
             throw new ServiceException(e);
         }
 
-        //TODO: check for existing users!!!
-        // Set Spotify infos
+        // updates spotify infos every authorize
         try {
             userService.setSpotifyInfo(getCurrentSpotifyUser(), userOpt.get());
         } catch (Exception e) {

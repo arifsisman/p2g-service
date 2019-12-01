@@ -83,17 +83,6 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     private <R> void execRequestList(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList, boolean async) throws RequestException {
         List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
 
-//        for (SpotifyToken token : spotifyTokenList) {
-//            SpotifyApi spotifyApi = initAuthorizedApi(token);
-//            String deviceId = spotifyTokenList.get(0);
-//            abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi, "device"));
-//        }
-
-//        Stream.concat(spotifyTokenList.stream(), userDeviceList.stream()).forEach(e -> {
-//            SpotifyApi spotifyApi = initAuthorizedApi(token);
-//            abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi, "device"));
-//        });
-
         Iterator<SpotifyToken> tokenIterator = spotifyTokenList.iterator();
         Iterator<UserDevice> deviceOperator = userDeviceList.iterator();
 
@@ -102,7 +91,6 @@ public class SpotifyRequestService implements ISpotifyRequestService {
             SpotifyToken s = tokenIterator.next();
             UserDevice d = deviceOperator.next();
             SpotifyApi spotifyApi = initAuthorizedApi(s);
-            LOGGER.info("token:{} deviceId:{}", s.getAccessToken(), d.getDeviceId());
             abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi, d.getDeviceId()));
         }
 
