@@ -63,42 +63,42 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     public void play(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().device_id(device).build(), spotifyTokenList);
     }
 
     @Override
     public void pause(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.pauseUsersPlayback().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenList);
     }
 
     @Override
     public void next(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToNextTrack().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToNextTrack().device_id(device).build(), spotifyTokenList);
     }
 
     @Override
     public void previous(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.skipUsersPlaybackToPreviousTrack().build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.skipUsersPlaybackToPreviousTrack().device_id(device).build(), spotifyTokenList);
     }
 
     @Override
     public void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenList);
     }
 
     @Override
     public void repeat(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).device_id(device).build(), spotifyTokenList);
 
     }
 

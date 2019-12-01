@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.service.spotify;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public interface ISpotifyRequestService {
     <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException;
 
     //-------------------------------
-    <R> void execRequestListSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList) throws RequestException;
-    <R> void execRequestListAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException;
+    <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException;
+    <R> void execRequestListAsync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList) throws RequestException;
 
 }
