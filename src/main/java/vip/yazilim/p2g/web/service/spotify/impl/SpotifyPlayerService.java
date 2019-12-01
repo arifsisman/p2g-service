@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import org.slf4j.Logger;
@@ -35,14 +37,19 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public void play(String roomUuid, String songUri) throws RequestException {
-        //TODO: implement for list (context uri)
-//        if (!songUri.contains(ModelObjectType.TRACK.getType())) {
-//            LOGGER.warn("URI[{}] does not match with an song URI", songUri);
-//            return;
-//        }
+        if (!songUri.contains(ModelObjectType.TRACK.getType())) {
+            LOGGER.warn("URI[{}] does not match with an song URI", songUri);
+            return;
+        }
+
+        // JsonArray with song, because uris endpoint needs JsonArray as input
+        List<String> songList = new LinkedList<>();
+        songList.add(songUri);
+
+        JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().context_uri(songUri).build(), spotifyTokenList);
+        spotifyRequest.execRequestListSync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).build(), spotifyTokenList);
     }
 
     @Override
