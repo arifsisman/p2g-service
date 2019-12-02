@@ -90,7 +90,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
         RoomQueue next = roomQueueService.getRoomQueueNext(roomUuid);
         if (next == null) {
-            throw new PlayerException("Queue is empty.");
+            throw new PlayerException("Next song is empty.");
         } else {
             play(next);
         }
@@ -100,7 +100,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     public void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
         RoomQueue previous = roomQueueService.getRoomQueuePrevious(roomUuid);
         if (previous == null) {
-            throw new PlayerException("Queue is empty.");
+            throw new PlayerException("Previous song is empty.");
         } else {
             play(previous);
         }

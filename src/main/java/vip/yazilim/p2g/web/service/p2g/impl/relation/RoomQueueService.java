@@ -16,7 +16,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -55,7 +55,11 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     /////////////////////////////
     @Override
     public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) {
-        return roomQueueRepo.findByRoomUuid(roomUuid);
+        List<RoomQueue> roomQueueList = roomQueueRepo.findByRoomUuid(roomUuid);
+
+        roomQueueList.sort(Comparator.comparing(RoomQueue::getQueuedTime));
+
+        return roomQueueList;
     }
 
     @Override
@@ -108,7 +112,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     @Override
     public List<RoomQueue> updateQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
         String roomUuid = playing.getRoomUuid();
-        List<RoomQueue> roomQueueList = new LinkedList<>(getQueueListByRoomUuid(roomUuid));
+        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
 
         int playingIndex = roomQueueList.indexOf(playing);
 
