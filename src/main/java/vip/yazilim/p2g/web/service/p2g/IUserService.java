@@ -1,10 +1,10 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.model.UserModel;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.TokenException;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
 

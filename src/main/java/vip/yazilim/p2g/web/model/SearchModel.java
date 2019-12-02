@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.entity.model;
+package vip.yazilim.p2g.web.model;
 
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;

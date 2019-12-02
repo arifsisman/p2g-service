@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.entity.model;
+package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.entity.Room;
@@ -19,6 +19,7 @@ public class RoomModel {
     private List<User> invitedUserList;
 
     private List<RoomQueue> roomQueueList;
+    private RoomQueue nowPlaying;
 
     private String chatUuid;
 }

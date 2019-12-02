@@ -1,9 +1,9 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.model.RoomModel;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
+import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ICrudService;
 

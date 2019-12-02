@@ -80,16 +80,11 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     }
 
     @Override
-    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) {
+    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
         List<User> userList;
         List<SpotifyToken> spotifyTokenList = new ArrayList<>();
 
-        try {
-            userList = userService.getUsersByRoomUuid(roomUuid);
-        } catch (DatabaseException e) {
-            LOGGER.error("An error occurred while getting userList from roomUuid[{}]", roomUuid);
-            return null;
-        }
+        userList = userService.getUsersByRoomUuid(roomUuid);
 
         try {
             for (User u : userList) {
@@ -97,7 +92,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
                 token.ifPresent(spotifyTokenList::add);
             }
         } catch (DatabaseException e) {
-            LOGGER.error("An error occurred while getting tokenList from roomUuid[{}]", roomUuid);
+            throw new DatabaseException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
         }
 
         return spotifyTokenList;

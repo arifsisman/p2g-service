@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.model.RoomModel;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
+import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -44,7 +44,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IRoomQueueService queueService;
+    private IRoomQueueService roomQueueService;
 
     @Autowired
     private IUserService userService;
@@ -92,7 +92,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         }
 
         if (!room.isPresent()) {
-            LOGGER.warn("User[{}] not in any Room!", userUuid);
+            LOGGER.warn("Room[{}] is not present!", roomUuid);
             return Optional.empty();
         }
 
@@ -116,7 +116,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         // Set Room
         room = getById(roomUuid);
         if (!room.isPresent()) {
-            LOGGER.error("Cannot found Room with roomUuid: " + roomUuid);
+            LOGGER.error("Room[{}] is not present", roomUuid);
             return Optional.empty();
         } else {
             roomModel.setRoom(room.get());
@@ -131,8 +131,12 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         roomModel.setInvitedUserList(invitedUserList);
 
         // Set RoomQueue
-        roomQueueList = queueService.getQueueListByRoomUuid(roomUuid);
+        roomQueueList = roomQueueService.getQueueListByRoomUuid(roomUuid);
         roomModel.setRoomQueueList(roomQueueList);
+
+        // Set Now Playing
+        nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+        roomModel.setNowPlaying(nowPlaying);
 
         // Set Room Chat Uuid
         chatUuid = room.get().getChatUuid();
