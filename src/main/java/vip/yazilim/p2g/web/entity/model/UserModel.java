@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.model;
+package vip.yazilim.p2g.web.entity.model;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.entity.Role;

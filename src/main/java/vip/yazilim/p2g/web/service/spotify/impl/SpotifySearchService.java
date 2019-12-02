@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.model.SearchModel;
+import vip.yazilim.p2g.web.entity.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 

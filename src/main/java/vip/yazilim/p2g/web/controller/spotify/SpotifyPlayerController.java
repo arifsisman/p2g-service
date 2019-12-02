@@ -23,7 +23,7 @@ public class SpotifyPlayerController {
     @Autowired
     private IRoomQueueService roomQueueService;
 
-    @GetMapping("/spotify/play/{queueUuid}")
+    @GetMapping("/spotify/{queueUuid}/play")
     public boolean play(@PathVariable String queueUuid) {
         try {
             RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));

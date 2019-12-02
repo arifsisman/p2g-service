@@ -1,9 +1,9 @@
 package vip.yazilim.p2g.web.service.p2g.relation;
 
 import vip.yazilim.p2g.web.constant.QueueStatus;
+import vip.yazilim.p2g.web.entity.model.SearchModel;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.exception.QueueException;
-import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ICrudService;

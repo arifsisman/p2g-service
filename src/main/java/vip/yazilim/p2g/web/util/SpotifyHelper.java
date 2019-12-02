@@ -6,8 +6,8 @@ import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vip.yazilim.p2g.web.constant.QueueStatus;
+import vip.yazilim.p2g.web.entity.model.SearchModel;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
-import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.ArrayList;
 import java.util.Date;
