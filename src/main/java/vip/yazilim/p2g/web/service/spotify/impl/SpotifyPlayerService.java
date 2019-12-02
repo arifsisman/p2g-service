@@ -63,6 +63,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         roomQueueService.updateQueueStatus(roomQueue);
 
         roomQueue.setPlayingTime(new Date());
+        roomQueue.setPlayingFlag(true);
         roomQueueService.update(roomQueue);
     }
 
@@ -73,16 +74,20 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
 
         RoomQueue roomQueue = roomQueueService.getRoomQueueNowPlaying(roomUuid);
-
         roomQueue.setCurrentMs(new Date().getTime() - roomQueue.getPlayingTime().getTime());
+        roomQueue.setPlayingFlag(false);
         roomQueueService.update(roomQueue);
     }
 
     @Override
-    public void resume(String roomUuid) throws RequestException, DatabaseException {
+    public void resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
+
+        RoomQueue roomQueue = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+        roomQueue.setPlayingFlag(true);
+        roomQueueService.update(roomQueue);
     }
 
     @Override

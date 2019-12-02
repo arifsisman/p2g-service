@@ -51,6 +51,9 @@ public class RoomQueue implements Serializable {
     @Column(name = "queue_status", nullable = false)
     private String queueStatus;
 
+    @Column(name = "playing_flag")
+    private Boolean playingFlag;
+
     private int votes;
 
 }
