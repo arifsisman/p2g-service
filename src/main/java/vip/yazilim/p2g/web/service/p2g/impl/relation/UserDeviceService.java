@@ -35,7 +35,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     private IUserService userService;
 
     @Override
-    public List<UserDevice> getDevicesByUserUuid(String userUuid) throws DatabaseException {
+    public List<UserDevice> getUserDevicesByUserUuid(String userUuid) throws DatabaseException {
         List<UserDevice> userDeviceList;
 
         try {
@@ -50,13 +50,14 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public List<UserDevice> getDevicesByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<UserDevice> getUserDevicesByRoomUuid(String roomUuid) throws DatabaseException {
         List<UserDevice> userDeviceList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
         for (User u : userList) {
-            UserDevice userDevice = getDevicesByUserUuid(u.getUuid()).get(0);
-            userDeviceList.add(userDevice);
+            List<UserDevice> userDevices = getUserDevicesByUserUuid(u.getUuid());
+            if (!userDevices.isEmpty())
+                userDeviceList.add(userDevices.get(0));
         }
 
         return userDeviceList;

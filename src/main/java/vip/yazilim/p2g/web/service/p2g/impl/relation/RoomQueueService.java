@@ -16,7 +16,9 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -50,7 +52,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) {
-        return queueRepo.findQueuesByRoomUuid(roomUuid);
+        return queueRepo.findRoomQueueByRoomUuid(roomUuid);
     }
 
     @Override
@@ -67,41 +69,64 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
-        return queueRepo.findQueuesByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
+        return queueRepo.findRoomQueueByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
     }
 
     @Override
-    public List<RoomQueue> setPlaying(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> updateQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
         String roomUuid = playing.getRoomUuid();
-        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
+        List<RoomQueue> roomQueueList = new LinkedList<>(getQueueListByRoomUuid(roomUuid));
+
+//        roomQueueList.sort(Comparator.comparing(anotherDate -> Date.compareTo(anotherDate)));
 
         int playingIndex = roomQueueList.indexOf(playing);
 
-        for (int i = 0; i < roomQueueList.size(); i++) {
-            int diff = i - playingIndex;
-            if (diff >= 2) {
-                roomQueueList.get(i).setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
-            } else if (diff == 1) {
-                roomQueueList.get(i).setQueueStatus(QueueStatus.NEXT.getQueueStatus());
-            } else if (diff == 0) {
-                roomQueueList.get(i).setQueueStatus(QueueStatus.NOW_PLAYING.getQueueStatus());
-            } else if (diff == -1) {
-                roomQueueList.get(i).setQueueStatus(QueueStatus.PREVIOUS.getQueueStatus());
+//        for (int i = 0; i < roomQueueList.size(); i++) {
+//            int diff = playingIndex - i;
+//            if (diff >= 2) {
+//                roomQueueList.get(i).setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+//            } else if (diff == 1) {
+//                roomQueueList.get(i).setQueueStatus(QueueStatus.NEXT.getQueueStatus());
+//            } else if (diff == 0) {
+//                roomQueueList.get(i).setQueueStatus(QueueStatus.NOW_PLAYING.getQueueStatus());
+//            } else if (diff == -1) {
+//                roomQueueList.get(i).setQueueStatus(QueueStatus.PREVIOUS.getQueueStatus());
+//            } else {
+//                roomQueueList.get(i).setQueueStatus(QueueStatus.PLAYED.getQueueStatus());
+//            }
+//            update(roomQueueList.get(i));
+//        }
+
+        boolean prev = true;
+        ListIterator<RoomQueue> p = roomQueueList.listIterator(playingIndex);
+        while (p.hasPrevious()) {
+            if (!prev) {
+                updateQueue(p.previous(), QueueStatus.PLAYED);
             } else {
-                roomQueueList.get(i).setQueueStatus(QueueStatus.PLAYED.getQueueStatus());
+                prev = false;
+                updateQueue(p.previous(), QueueStatus.PREVIOUS);
             }
         }
 
-        for (RoomQueue r : roomQueueList) {
-            update(r);
+        boolean next = true;
+        ListIterator<RoomQueue> n = roomQueueList.listIterator(playingIndex);
+        while (n.hasNext()) {
+            if (!next) {
+                updateQueue(n.next(), QueueStatus.IN_QUEUE);
+            } else {
+                next = false;
+                updateQueue(n.next(), QueueStatus.NEXT);
+            }
         }
+
+        updateQueue(playing, QueueStatus.NOW_PLAYING);
 
         return roomQueueList;
     }
 
-    private RoomQueue setQueueStatus(RoomQueue roomQueue, QueueStatus queueStatus) {
+    private RoomQueue updateQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
-        return roomQueue;
+        return update(roomQueue);
     }
 
 }

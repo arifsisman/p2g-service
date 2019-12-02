@@ -11,8 +11,8 @@ import java.util.List;
  */
 public interface IRoomQueueRepo extends JpaRepository<RoomQueue, String> {
 
-    List<RoomQueue> findQueuesByRoomUuid(String roomUuid);
+    List<RoomQueue> findRoomQueueByRoomUuid(String roomUuid);
 
-    List<RoomQueue> findQueuesByRoomUuidAndQueueStatus(String roomUuid, String queueStatus);
+    List<RoomQueue> findRoomQueueByRoomUuidAndQueueStatus(String roomUuid, String queueStatus);
 
 }

@@ -42,12 +42,13 @@ public class SpotifyPlayerController {
             throw new ServiceException(e);
         }
         return true;
-    }
+    }//9e23ae67-d84b-45fa-ac7f-e7c8042f082c
 
-    @GetMapping("/spotify/{roomUuid}/pause")
-    public boolean pause(@PathVariable String roomUuid) {
+    @GetMapping("/spotify/{queueUuid}/pause")
+    public boolean pause(@PathVariable String queueUuid) {
         try {
-            spotifyPlayerService.pause(roomUuid);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.pause(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

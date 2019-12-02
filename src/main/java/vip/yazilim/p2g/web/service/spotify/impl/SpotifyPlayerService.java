@@ -21,6 +21,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,24 +58,31 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), spotifyTokenList, userDeviceList);
 
-        roomQueueService.setPlaying(roomQueue);
+        roomQueueService.updateQueueStatus(roomQueue);
+
+//        roomQueue.setCurrentMs((int) (roomQueue.getPlayingTime().getTime() - System.currentTimeMillis()));
+        roomQueueService.update(roomQueue);
     }
 
     @Override
     public void resume(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
     }
 
     @Override
-    public void pause(String roomUuid) throws RequestException, DatabaseException {
+    public void pause(RoomQueue roomQueue) throws RequestException, DatabaseException, InvalidUpdateException {
+        String roomUuid = roomQueue.getRoomUuid();
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
+
+        roomQueue.setCurrentMs((int) (new Date().getTime() - roomQueue.getPlayingTime().getTime()));
+        roomQueueService.update(roomQueue);
     }
 
     @Override
@@ -102,14 +110,14 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Override
     public void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenList, userDeviceList);
     }
 
     @Override
     public void repeat(String roomUuid) throws RequestException, DatabaseException {
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
-        List<UserDevice> userDeviceList = userDeviceService.getDevicesByRoomUuid(roomUuid);
+        List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListSync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).device_id(device).build(), spotifyTokenList, userDeviceList);
     }
 

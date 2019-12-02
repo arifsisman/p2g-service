@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
-    List<UserDevice> getDevicesByUserUuid(String userUuid) throws DatabaseException;
+    List<UserDevice> getUserDevicesByUserUuid(String userUuid) throws DatabaseException;
 
-    List<UserDevice> getDevicesByRoomUuid(String roomUuid) throws DatabaseException;
+    List<UserDevice> getUserDevicesByRoomUuid(String roomUuid) throws DatabaseException;
 }

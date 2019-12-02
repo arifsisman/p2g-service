@@ -17,7 +17,7 @@ public interface ISpotifyPlayerService {
 
     void resume(String roomUuid) throws RequestException, DatabaseException;
 
-    void pause(String roomUuid) throws RequestException, DatabaseException;
+    void pause(RoomQueue roomQueue) throws RequestException, DatabaseException, InvalidUpdateException;
 
     void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
