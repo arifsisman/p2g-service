@@ -16,7 +16,7 @@ public class SearchModel {
     private ArtistSimplified[] artists;
     private String id;
     private String uri;
-    private Integer durationMs;
+    private Long durationMs;
     private String imageUrl;
 
     public SearchModel(AbstractModelObject object) {
@@ -37,7 +37,7 @@ public class SearchModel {
         this.artists = track.getArtists();
         this.id = track.getId();
         this.uri = track.getUri();
-        this.durationMs = track.getDurationMs();
+        this.durationMs = track.getDurationMs().longValue();
         this.imageUrl = track.getPreviewUrl();
     }
 
@@ -47,7 +47,7 @@ public class SearchModel {
         this.artists = trackSimplified.getArtists();
         this.id = trackSimplified.getId();
         this.uri = trackSimplified.getUri();
-        this.durationMs = trackSimplified.getDurationMs();
+        this.durationMs = trackSimplified.getDurationMs().longValue();
         this.imageUrl = trackSimplified.getPreviewUrl();
     }
 

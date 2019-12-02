@@ -34,16 +34,6 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/spotify/{roomUuid}/resume")
-    public boolean resume(@PathVariable String roomUuid) {
-        try {
-            spotifyPlayerService.resume(roomUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return true;
-    }//9e23ae67-d84b-45fa-ac7f-e7c8042f082c
-
     @GetMapping("/spotify/{queueUuid}/pause")
     public boolean pause(@PathVariable String queueUuid) {
         try {
@@ -55,40 +45,55 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/spotify/{roomUuid}/next")
-    public boolean next(@PathVariable String roomUuid) {
+    @GetMapping("/spotify/{queueUuid}/resume")
+    public boolean resume(@PathVariable String queueUuid) {
         try {
-            spotifyPlayerService.next(roomUuid);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.resume(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return true;
     }
 
-    @GetMapping("/spotify/{roomUuid}/prev")
-    public boolean previous(@PathVariable String roomUuid) {
+    @GetMapping("/spotify/{queueUuid}/next")
+    public boolean next(@PathVariable String queueUuid) {
         try {
-            spotifyPlayerService.previous(roomUuid);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.next(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return true;
     }
 
-    @GetMapping("/spotify/{roomUuid}/resume/{ms}")
-    public boolean seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
+    @GetMapping("/spotify/{queueUuid}/prev")
+    public boolean previous(@PathVariable String queueUuid) {
         try {
-            spotifyPlayerService.seek(roomUuid, ms);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.previous(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return true;
     }
 
-    @GetMapping("/spotify/{roomUuid}/repeat")
-    public boolean repeat(@PathVariable String roomUuid) {
+    @GetMapping("/spotify/{queueUuid}/resume/{ms}")
+    public boolean seek(@PathVariable String queueUuid, @PathVariable Integer ms) {
         try {
-            spotifyPlayerService.repeat(roomUuid);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.seek(queue, ms);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return true;
+    }
+
+    @GetMapping("/spotify/{queueUuid}/repeat")
+    public boolean repeat(@PathVariable String queueUuid) {
+        try {
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.repeat(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

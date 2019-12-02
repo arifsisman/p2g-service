@@ -40,11 +40,11 @@ public class DataInitializer implements CommandLineRunner {
         roomService.joinRoom(room.getUuid(), arif.getUuid());
 //        roomService.joinRoom(room.getUuid(), emre.getUuid());
 
-        for (int i = 0; i < 6; i++) {
-            createRoomQueue("1", "0R0o8uOkDz40XsR6uwThfQ", "spotify:track:0R0o8uOkDz40XsR6uwThfQ", "geceleeer", 1200000);
-        }
-
-//        createRoomQueue("1", "561F1zqRwGPCTMRsLsXVtL", "spotify:track:561F1zqRwGPCTMRsLsXVtL", "tayminebatil", 1200000);
+        createRoomQueue("1", "0R0o8uOkDz40XsR6uwThfQ", "spotify:track:0R0o8uOkDz40XsR6uwThfQ", "geceleeer", 1200000L);
+        createRoomQueue("1", "7MXVkk9YMctZqd1Srtv4MB", "spotify:track:7MXVkk9YMctZqd1Srtv4MB", "sitarboy", 1200000L);
+        createRoomQueue("1", "5CMjjywI0eZMixPeqNd75R", "spotify:track:5CMjjywI0eZMixPeqNd75R", "lusyorselftudens", 1200000L);
+        createRoomQueue("1", "5GXAXm5YOmYT0kL5jHvYBt", "spotify:track:5GXAXm5YOmYT0kL5jHvYBt", "ayfilitkaming", 1200000L);
+        createRoomQueue("1", "0DiWol3AO6WpXZgp0goxAV", "spotify:track:0DiWol3AO6WpXZgp0goxAV", "vanmortaym", 1200000L);
 
     }
 
@@ -81,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
         return room;
     }
 
-    private RoomQueue createRoomQueue(String roomUuid, String songId, String songUri, String songName, Integer durationMs) {
+    private RoomQueue createRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) {
         RoomQueue roomQueue = new RoomQueue();
         roomQueue.setRoomUuid(roomUuid);
         roomQueue.setSongId(songId);

@@ -37,10 +37,10 @@ public class RoomQueue implements Serializable {
     private String imageUrl;
 
     @Column(name = "current_ms")
-    private Integer currentMs;
+    private Long currentMs;
 
     @Column(name = "duration_ms", nullable = false)
-    private Integer durationMs;
+    private Long durationMs;
 
     @Column(name = "queued_time")
     private Date queuedTime;

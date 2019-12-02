@@ -77,56 +77,42 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         String roomUuid = playing.getRoomUuid();
         List<RoomQueue> roomQueueList = new LinkedList<>(getQueueListByRoomUuid(roomUuid));
 
-//        roomQueueList.sort(Comparator.comparing(anotherDate -> Date.compareTo(anotherDate)));
-
         int playingIndex = roomQueueList.indexOf(playing);
 
-//        for (int i = 0; i < roomQueueList.size(); i++) {
-//            int diff = playingIndex - i;
-//            if (diff >= 2) {
-//                roomQueueList.get(i).setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
-//            } else if (diff == 1) {
-//                roomQueueList.get(i).setQueueStatus(QueueStatus.NEXT.getQueueStatus());
-//            } else if (diff == 0) {
-//                roomQueueList.get(i).setQueueStatus(QueueStatus.NOW_PLAYING.getQueueStatus());
-//            } else if (diff == -1) {
-//                roomQueueList.get(i).setQueueStatus(QueueStatus.PREVIOUS.getQueueStatus());
-//            } else {
-//                roomQueueList.get(i).setQueueStatus(QueueStatus.PLAYED.getQueueStatus());
-//            }
-//            update(roomQueueList.get(i));
-//        }
-
-        boolean prev = true;
-        ListIterator<RoomQueue> p = roomQueueList.listIterator(playingIndex);
-        while (p.hasPrevious()) {
-            if (!prev) {
-                updateQueue(p.previous(), QueueStatus.PLAYED);
-            } else {
-                prev = false;
-                updateQueue(p.previous(), QueueStatus.PREVIOUS);
-            }
-        }
-
-        boolean next = true;
-        ListIterator<RoomQueue> n = roomQueueList.listIterator(playingIndex);
-        while (n.hasNext()) {
-            if (!next) {
-                updateQueue(n.next(), QueueStatus.IN_QUEUE);
-            } else {
-                next = false;
-                updateQueue(n.next(), QueueStatus.NEXT);
-            }
-        }
-
         updateQueue(playing, QueueStatus.NOW_PLAYING);
+
+        if (roomQueueList.size() > 0) {
+            boolean prevFlag = true;
+            ListIterator<RoomQueue> prevIter = roomQueueList.listIterator(playingIndex);
+            while (prevIter.hasPrevious()) {
+                if (prevFlag) {
+                    updateQueue(prevIter.previous(), QueueStatus.PREVIOUS);
+                    prevFlag = false;
+                } else {
+                    updateQueue(prevIter.previous(), QueueStatus.PLAYED);
+                }
+            }
+
+            boolean nextFlag = true;
+            ListIterator<RoomQueue> nextIter = roomQueueList.listIterator(playingIndex + 1);
+            while (nextIter.hasNext()) {
+                if (nextFlag) {
+                    updateQueue(nextIter.next(), QueueStatus.NEXT);
+                    nextFlag = false;
+                } else {
+                    updateQueue(nextIter.next(), QueueStatus.IN_QUEUE);
+
+                }
+            }
+        }
+
 
         return roomQueueList;
     }
 
-    private RoomQueue updateQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
+    private void updateQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
-        return update(roomQueue);
+        update(roomQueue);
     }
 
 }

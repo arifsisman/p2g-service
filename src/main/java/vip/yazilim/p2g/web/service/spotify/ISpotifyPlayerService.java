@@ -15,16 +15,16 @@ public interface ISpotifyPlayerService {
 
     void play(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException;
 
-    void resume(String roomUuid) throws RequestException, DatabaseException;
+    void resume(RoomQueue roomQueue) throws RequestException, DatabaseException;
 
     void pause(RoomQueue roomQueue) throws RequestException, DatabaseException, InvalidUpdateException;
 
-    void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
+    void next(RoomQueue roomQueue) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
-    void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
+    void previous(RoomQueue roomQueue) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
-    void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
+    void seek(RoomQueue roomQueue, Integer ms) throws RequestException, DatabaseException;
 
-    void repeat(String roomUuid) throws RequestException, DatabaseException;
+    void repeat(RoomQueue roomQueue) throws RequestException, DatabaseException;
 
 }
