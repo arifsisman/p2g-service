@@ -92,7 +92,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
-
         RoomQueue next = roomQueueService.getRoomQueueNext(roomUuid);
         if (next == null) {
             throw new PlayerException("Next song is empty.");

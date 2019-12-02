@@ -141,7 +141,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
                 }
             }
-        }else if(roomQueueList.size() == 1){
+        } else if (roomQueueList.size() == 1) {
             updateQueue(playing, QueueStatus.NOW_PLAYING);
         }
 
@@ -149,6 +149,11 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     private void updateQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
+        if (queueStatus == QueueStatus.NOW_PLAYING) {
+            roomQueue.setPlayingFlag(true);
+        } else {
+            roomQueue.setPlayingFlag(false);
+        }
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
         update(roomQueue);
     }

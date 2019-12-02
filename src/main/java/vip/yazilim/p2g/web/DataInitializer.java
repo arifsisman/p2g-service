@@ -93,7 +93,7 @@ public class DataInitializer implements CommandLineRunner {
 
         try {
             roomQueue = roomQueueService.create(roomQueue);
-//            LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
+            LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
