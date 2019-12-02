@@ -32,11 +32,11 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     // injected dependencies
     @Autowired
-    private IRoomQueueRepo queueRepo;
+    private IRoomQueueRepo roomQueueRepo;
 
     @Override
     protected JpaRepository<RoomQueue, String> getRepository() {
-        return queueRepo;
+        return roomQueueRepo;
     }
 
     @Override
@@ -50,11 +50,23 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return entity;
     }
 
+    /////////////////////////////
+    // Get Queue By Room or Queue Uuid
+    /////////////////////////////
     @Override
     public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) {
-        return queueRepo.findRoomQueueByRoomUuid(roomUuid);
+        return roomQueueRepo.findByRoomUuid(roomUuid);
     }
 
+    @Override
+    public List<RoomQueue> getQueueListByQueueUuid(String queueUuid) {
+        RoomQueue roomQueue = roomQueueRepo.findByUuid(queueUuid);
+        return roomQueueRepo.findByRoomUuid(roomQueue.getRoomUuid());
+    }
+
+    /////////////////////////////
+    // Control Queue
+    /////////////////////////////
     @Override
     public RoomQueue addToQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
         RoomQueue roomQueue = SpotifyHelper.convertSearchModelToRoomQueue(searchModel);
@@ -67,11 +79,32 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return delete(roomQueue);
     }
 
+    /////////////////////////////
+    // Get Queue By status
+    /////////////////////////////
     @Override
     public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
-        return queueRepo.findRoomQueueByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
+        return roomQueueRepo.findByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
     }
 
+    @Override
+    public RoomQueue getRoomQueueNowPlaying(String roomUuid) {
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NOW_PLAYING.getQueueStatus());
+    }
+
+    @Override
+    public RoomQueue getRoomQueueNext(String roomUuid) {
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
+    }
+
+    @Override
+    public RoomQueue getRoomQueuePrevious(String roomUuid) {
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PREVIOUS.getQueueStatus());
+    }
+
+    /////////////////////////////
+    // Update queue status
+    /////////////////////////////
     @Override
     public List<RoomQueue> updateQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
         String roomUuid = playing.getRoomUuid();
@@ -79,9 +112,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
         int playingIndex = roomQueueList.indexOf(playing);
 
-        updateQueue(playing, QueueStatus.NOW_PLAYING);
-
-        if (roomQueueList.size() > 0) {
+        if (roomQueueList.size() > 1) {
             boolean prevFlag = true;
             ListIterator<RoomQueue> prevIter = roomQueueList.listIterator(playingIndex);
             while (prevIter.hasPrevious()) {
@@ -92,6 +123,8 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
                     updateQueue(prevIter.previous(), QueueStatus.PLAYED);
                 }
             }
+
+            updateQueue(playing, QueueStatus.NOW_PLAYING);
 
             boolean nextFlag = true;
             ListIterator<RoomQueue> nextIter = roomQueueList.listIterator(playingIndex + 1);
@@ -104,8 +137,9 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
                 }
             }
+        }else if(roomQueueList.size() == 1){
+            updateQueue(playing, QueueStatus.NOW_PLAYING);
         }
-
 
         return roomQueueList;
     }

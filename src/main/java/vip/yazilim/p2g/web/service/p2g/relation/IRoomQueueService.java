@@ -17,9 +17,16 @@ import java.util.List;
 public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
 
     List<RoomQueue> getQueueListByRoomUuid(String roomUuid) throws DatabaseException;
+    List<RoomQueue> getQueueListByQueueUuid(String queueUuid) throws DatabaseException;
+    List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException;
+
     RoomQueue addToQueue(String roomUuid, SearchModel searchModel) throws DatabaseException;
     boolean removeFromQueue(RoomQueue roomQueue) throws DatabaseException;
-    List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException;
+
+    RoomQueue getRoomQueueNowPlaying(String roomUuid);
+    RoomQueue getRoomQueueNext(String roomUuid);
+    RoomQueue getRoomQueuePrevious(String roomUuid);
+
     List<RoomQueue> updateQueueStatus(RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException;
 
 }
