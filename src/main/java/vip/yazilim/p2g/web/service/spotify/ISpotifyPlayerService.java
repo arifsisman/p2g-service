@@ -1,8 +1,11 @@
 package vip.yazilim.p2g.web.service.spotify;
 
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.exception.PlayerException;
+import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -10,15 +13,15 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
  */
 public interface ISpotifyPlayerService {
 
-    void play(String roomUuid, String songUri) throws RequestException, PlayerException, DatabaseException;
+    void play(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException;
 
-    void play(String roomUuid) throws RequestException, DatabaseException;
+    void resume(String roomUuid) throws RequestException, DatabaseException;
 
     void pause(String roomUuid) throws RequestException, DatabaseException;
 
-    void next(String roomUuid) throws RequestException, DatabaseException, PlayerException;
+    void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
-    void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException;
+    void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
     void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
 

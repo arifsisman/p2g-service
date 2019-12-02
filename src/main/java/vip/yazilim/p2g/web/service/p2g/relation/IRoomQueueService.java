@@ -20,6 +20,6 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     RoomQueue addToQueue(String roomUuid, SearchModel searchModel) throws DatabaseException;
     boolean removeFromQueue(RoomQueue roomQueue) throws DatabaseException;
     List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException;
-    List<RoomQueue> updateQueueStatus(String roomUuid, RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException;
+    List<RoomQueue> setPlaying(RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException;
 
 }

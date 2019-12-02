@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.exception.PlayerException;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
@@ -17,27 +20,31 @@ public class SpotifyPlayerController {
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
 
-    @GetMapping("/room/{roomUuid}/play/{uri}")
-    public boolean play(@PathVariable String roomUuid, @PathVariable String uri) {
+    @Autowired
+    private IRoomQueueService roomQueueService;
+
+    @GetMapping("/spotify/play/{queueUuid}")
+    public boolean play(@PathVariable String queueUuid) {
         try {
-            spotifyPlayerService.play(roomUuid, uri);
+            RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queue not found"));
+            spotifyPlayerService.play(queue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/play")
-    public boolean play(@PathVariable String roomUuid) {
+    @GetMapping("/spotify/{roomUuid}/resume")
+    public boolean resume(@PathVariable String roomUuid) {
         try {
-            spotifyPlayerService.play(roomUuid);
+            spotifyPlayerService.resume(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/pause")
+    @GetMapping("/spotify/{roomUuid}/pause")
     public boolean pause(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.pause(roomUuid);
@@ -47,7 +54,7 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/next")
+    @GetMapping("/spotify/{roomUuid}/next")
     public boolean next(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.next(roomUuid);
@@ -57,7 +64,7 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/prev")
+    @GetMapping("/spotify/{roomUuid}/prev")
     public boolean previous(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.previous(roomUuid);
@@ -67,7 +74,7 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/seek/{ms}")
+    @GetMapping("/spotify/{roomUuid}/resume/{ms}")
     public boolean seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
         try {
             spotifyPlayerService.seek(roomUuid, ms);
@@ -77,7 +84,7 @@ public class SpotifyPlayerController {
         return true;
     }
 
-    @GetMapping("/room/{roomUuid}/repeat")
+    @GetMapping("/spotify/{roomUuid}/repeat")
     public boolean repeat(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.repeat(roomUuid);

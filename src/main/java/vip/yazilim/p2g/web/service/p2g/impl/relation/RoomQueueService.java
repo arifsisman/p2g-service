@@ -71,7 +71,8 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     @Override
-    public List<RoomQueue> updateQueueStatus(String roomUuid, RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> setPlaying(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+        String roomUuid = playing.getRoomUuid();
         List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
 
         int playingIndex = roomQueueList.indexOf(playing);
