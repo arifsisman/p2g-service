@@ -36,17 +36,17 @@ public class RoomQueue implements Serializable {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "current_ms")
-    private Long currentMs;
+    @Column(name = "queued_time")
+    private Date queuedTime;
 
     @Column(name = "duration_ms", nullable = false)
     private Long durationMs;
 
-    @Column(name = "queued_time")
-    private Date queuedTime;
-
     @Column(name = "playing_time")
     private Date playingTime;
+
+    @Column(name = "current_ms")
+    private Long currentMs;
 
     @Column(name = "queue_status", nullable = false)
     private String queueStatus;
@@ -54,6 +54,6 @@ public class RoomQueue implements Serializable {
     @Column(name = "playing_flag")
     private Boolean playingFlag;
 
-    private int votes;
+    private Integer votes;
 
 }

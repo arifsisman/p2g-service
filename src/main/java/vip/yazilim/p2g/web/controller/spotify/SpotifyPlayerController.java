@@ -30,7 +30,7 @@ public class SpotifyPlayerController {
         try {
             RoomQueue queue = roomQueueService.getById(queueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
             spotifyPlayerService.play(queue);
-            return roomQueueService.getQueueListByQueueUuid(queueUuid);
+            return roomQueueService.getRoomQueueListByQueueUuid(queueUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -40,7 +40,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> pause(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.pause(roomUuid);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -50,7 +50,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> resume(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.resume(roomUuid);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -60,7 +60,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> next(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.next(roomUuid);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -70,7 +70,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> previous(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.previous(roomUuid);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -80,7 +80,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
         try {
             spotifyPlayerService.seek(roomUuid, ms);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -90,7 +90,7 @@ public class SpotifyPlayerController {
     public List<RoomQueue> repeat(@PathVariable String roomUuid) {
         try {
             spotifyPlayerService.repeat(roomUuid);
-            return roomQueueService.getQueueListByRoomUuid(roomUuid);
+            return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

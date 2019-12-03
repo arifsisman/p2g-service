@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
@@ -108,9 +107,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         List<User> userList;
         List<User> invitedUserList;
 
-        List<RoomQueue> roomQueueList;
-        RoomQueue nowPlaying;
-
         String chatUuid;
 
         // Set Room
@@ -129,14 +125,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         // Set Invited User List
         invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
         roomModel.setInvitedUserList(invitedUserList);
-
-        // Set RoomQueue
-        roomQueueList = roomQueueService.getQueueListByRoomUuid(roomUuid);
-        roomModel.setRoomQueueList(roomQueueList);
-
-        // Set Now Playing
-        nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
-        roomModel.setNowPlaying(nowPlaying);
 
         // Set Room Chat Uuid
         chatUuid = room.get().getChatUuid();

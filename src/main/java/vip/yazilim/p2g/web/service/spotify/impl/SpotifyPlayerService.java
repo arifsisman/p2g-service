@@ -60,7 +60,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), spotifyTokenList, userDeviceList);
 
-        roomQueueService.updateQueueStatus(roomQueue);
+        roomQueueService.updateRoomQueueStatus(roomQueue);
 
         roomQueue.setPlayingTime(new Date());
         roomQueue.setPlayingFlag(true);

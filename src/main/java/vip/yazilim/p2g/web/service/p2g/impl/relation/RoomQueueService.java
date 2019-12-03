@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.model.QueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
@@ -50,20 +51,38 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return entity;
     }
 
+    @Override
+    public QueueModel getQueueModelByRoomUuid(String roomUuid) {
+        QueueModel queueModel = new QueueModel();
+        List<RoomQueue> roomQueueList;
+        RoomQueue nowPlaying;
+
+        // Set Room Uuid
+        queueModel.setRoomUuid(roomUuid);
+
+        // Set RoomQueue
+        roomQueueList = getRoomQueueListByRoomUuid(roomUuid);
+        queueModel.setRoomQueueList(roomQueueList);
+
+        // Set Now Playing
+        nowPlaying = getRoomQueueNowPlaying(roomUuid);
+        queueModel.setNowPlaying(nowPlaying);
+
+        return queueModel;
+    }
+
     /////////////////////////////
     // Get Queue By Room or Queue Uuid
     /////////////////////////////
     @Override
-    public List<RoomQueue> getQueueListByRoomUuid(String roomUuid) {
+    public List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) {
         List<RoomQueue> roomQueueList = roomQueueRepo.findByRoomUuid(roomUuid);
-
         roomQueueList.sort(Comparator.comparing(RoomQueue::getQueuedTime));
-
         return roomQueueList;
     }
 
     @Override
-    public List<RoomQueue> getQueueListByQueueUuid(String queueUuid) {
+    public List<RoomQueue> getRoomQueueListByQueueUuid(String queueUuid) {
         RoomQueue roomQueue = roomQueueRepo.findByUuid(queueUuid);
         return roomQueueRepo.findByRoomUuid(roomQueue.getRoomUuid());
     }
@@ -72,14 +91,14 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Control Queue
     /////////////////////////////
     @Override
-    public RoomQueue addToQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    public RoomQueue addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
         RoomQueue roomQueue = SpotifyHelper.convertSearchModelToRoomQueue(searchModel);
         roomQueue.setRoomUuid(roomUuid);
         return create(roomQueue);
     }
 
     @Override
-    public boolean removeFromQueue(RoomQueue roomQueue) throws DatabaseException {
+    public boolean removeFromRoomQueue(RoomQueue roomQueue) throws DatabaseException {
         return delete(roomQueue);
     }
 
@@ -87,7 +106,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Get Queue By status
     /////////////////////////////
     @Override
-    public List<RoomQueue> getQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
+    public List<RoomQueue> getRoomQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
         return roomQueueRepo.findByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
     }
 
@@ -110,9 +129,9 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Update queue status
     /////////////////////////////
     @Override
-    public List<RoomQueue> updateQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
         String roomUuid = playing.getRoomUuid();
-        List<RoomQueue> roomQueueList = getQueueListByRoomUuid(roomUuid);
+        List<RoomQueue> roomQueueList = getRoomQueueListByRoomUuid(roomUuid);
 
         int playingIndex = roomQueueList.indexOf(playing);
 
@@ -121,34 +140,34 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
             ListIterator<RoomQueue> prevIter = roomQueueList.listIterator(playingIndex);
             while (prevIter.hasPrevious()) {
                 if (prevFlag) {
-                    updateQueue(prevIter.previous(), QueueStatus.PREVIOUS);
+                    updateRoomQueue(prevIter.previous(), QueueStatus.PREVIOUS);
                     prevFlag = false;
                 } else {
-                    updateQueue(prevIter.previous(), QueueStatus.PLAYED);
+                    updateRoomQueue(prevIter.previous(), QueueStatus.PLAYED);
                 }
             }
 
-            updateQueue(playing, QueueStatus.NOW_PLAYING);
+            updateRoomQueue(playing, QueueStatus.NOW_PLAYING);
 
             boolean nextFlag = true;
             ListIterator<RoomQueue> nextIter = roomQueueList.listIterator(playingIndex + 1);
             while (nextIter.hasNext()) {
                 if (nextFlag) {
-                    updateQueue(nextIter.next(), QueueStatus.NEXT);
+                    updateRoomQueue(nextIter.next(), QueueStatus.NEXT);
                     nextFlag = false;
                 } else {
-                    updateQueue(nextIter.next(), QueueStatus.IN_QUEUE);
+                    updateRoomQueue(nextIter.next(), QueueStatus.IN_QUEUE);
 
                 }
             }
         } else if (roomQueueList.size() == 1) {
-            updateQueue(playing, QueueStatus.NOW_PLAYING);
+            updateRoomQueue(playing, QueueStatus.NOW_PLAYING);
         }
 
         return roomQueueList;
     }
 
-    private void updateQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
+    private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
         if (queueStatus == QueueStatus.NOW_PLAYING) {
             roomQueue.setPlayingFlag(true);
         } else {
