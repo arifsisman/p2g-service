@@ -60,6 +60,7 @@ public class SpotifyHelper {
         roomQueue.setSongId(searchModel.getId());
         roomQueue.setSongUri(searchModel.getUri());
         roomQueue.setSongName(searchModel.getName());
+        roomQueue.setAlbumName(searchModel.getAlbumName());
         roomQueue.setImageUrl(searchModel.getImageUrl());
         roomQueue.setCurrentMs(0L);
         roomQueue.setDurationMs(searchModel.getDurationMs());

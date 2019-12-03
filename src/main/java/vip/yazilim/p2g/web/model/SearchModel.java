@@ -14,6 +14,7 @@ public class SearchModel {
     private ModelObjectType type;
     private String name;
     private ArtistSimplified[] artists;
+    private String albumName;
     private String id;
     private String uri;
     private Long durationMs;
@@ -35,6 +36,7 @@ public class SearchModel {
         this.type = ModelObjectType.TRACK;
         this.name = track.getName();
         this.artists = track.getArtists();
+        this.albumName = track.getAlbum().getName();
         this.id = track.getId();
         this.uri = track.getUri();
         this.durationMs = track.getDurationMs().longValue();

@@ -10,7 +10,7 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Data
-public class QueueModel {
+public class RoomQueueModel {
     private String roomUuid;
 
     private List<RoomQueue> roomQueueList;

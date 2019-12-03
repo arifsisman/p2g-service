@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
-import vip.yazilim.p2g.web.model.QueueModel;
+import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
@@ -52,23 +52,23 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     @Override
-    public QueueModel getQueueModelByRoomUuid(String roomUuid) {
-        QueueModel queueModel = new QueueModel();
+    public RoomQueueModel getRoomQueueModelByRoomUuid(String roomUuid) {
+        RoomQueueModel roomQueueModel = new RoomQueueModel();
         List<RoomQueue> roomQueueList;
         RoomQueue nowPlaying;
 
         // Set Room Uuid
-        queueModel.setRoomUuid(roomUuid);
+        roomQueueModel.setRoomUuid(roomUuid);
 
         // Set RoomQueue
         roomQueueList = getRoomQueueListByRoomUuid(roomUuid);
-        queueModel.setRoomQueueList(roomQueueList);
+        roomQueueModel.setRoomQueueList(roomQueueList);
 
         // Set Now Playing
         nowPlaying = getRoomQueueNowPlaying(roomUuid);
-        queueModel.setNowPlaying(nowPlaying);
+        roomQueueModel.setNowPlaying(nowPlaying);
 
-        return queueModel;
+        return roomQueueModel;
     }
 
     /////////////////////////////
