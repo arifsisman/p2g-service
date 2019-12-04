@@ -32,13 +32,13 @@ public class SpotifySearchService implements ISpotifySearchService {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         if (searchTypes.length == 0) {
-            SearchResult songSearchResult = spotifyApi.searchItem(q, ModelObjectType.TRACK.getType()).build().execute();
+            SearchResult songSearchResult = spotifyApi.searchItem(q, ModelObjectType.TRACK.getType()).limit(10).build().execute();
             searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             return searchModelList;
         }
 
         for (ModelObjectType s : searchTypes) {
-            SearchResult songSearchResult = spotifyApi.searchItem(q, s.getType()).build().execute();
+            SearchResult songSearchResult = spotifyApi.searchItem(q, s.getType()).limit(10).build().execute();
             if (s == ModelObjectType.TRACK) {
                 searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             } else if (s == ModelObjectType.ALBUM) {

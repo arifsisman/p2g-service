@@ -38,7 +38,7 @@ public class DataInitializer implements CommandLineRunner {
         Room room = createRoom("Test Room", arif.getUuid());
 
         roomService.joinRoom(room.getUuid(), arif.getUuid());
-        roomService.joinRoom(room.getUuid(), emre.getUuid());
+//        roomService.joinRoom(room.getUuid(), emre.getUuid());
 
         createRoomQueue("1", "0R0o8uOkDz40XsR6uwThfQ", "spotify:track:0R0o8uOkDz40XsR6uwThfQ", "geceleeer", 1200000L);
         createRoomQueue("1", "7MXVkk9YMctZqd1Srtv4MB", "spotify:track:7MXVkk9YMctZqd1Srtv4MB", "sitarboy", 1200000L);

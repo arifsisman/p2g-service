@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.model.service.PlayerModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -36,9 +34,9 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     private SpotifyApi spotifyApi;
 
     @Override
-    public SpotifyApi initAuthorizedApi(SpotifyToken token) {
+    public SpotifyApi initAuthorizedApi(String accessToken) {
         return new SpotifyApi.Builder()
-                .setAccessToken(token.getAccessToken())
+                .setAccessToken(accessToken)
                 .build();
     }
 
@@ -59,14 +57,14 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
-        SpotifyApi spotifyApi = initAuthorizedApi(token);
+    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) throws RequestException {
+        SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
         return execRequest(dataRequestBuilder.apply(spotifyApi), false);
     }
 
     @Override
-    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
-        SpotifyApi spotifyApi = initAuthorizedApi(token);
+    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) throws RequestException {
+        SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
         execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
@@ -84,18 +82,18 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     private <R> void execRequestList(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel, boolean async) throws RequestException {
         List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
 
-        List<SpotifyToken> spotifyTokenList = playerModel.getSpotifyTokenList();
-        List<UserDevice> userDeviceList = playerModel.getUserDeviceList();
+        List<String> spotifyTokenList = playerModel.getSpotifyTokenList();
+        List<String> userDeviceList = playerModel.getUserDeviceList();
 
-        Iterator<SpotifyToken> tokenIterator = spotifyTokenList.iterator();
-        Iterator<UserDevice> deviceOperator = userDeviceList.iterator();
+        Iterator<String> tokenIterator = spotifyTokenList.iterator();
+        Iterator<String> deviceOperator = userDeviceList.iterator();
 
         // create requests
         while (tokenIterator.hasNext() && deviceOperator.hasNext()) {
-            SpotifyToken s = tokenIterator.next();
-            UserDevice d = deviceOperator.next();
+            String s = tokenIterator.next();
+            String d = deviceOperator.next();
             SpotifyApi spotifyApi = initAuthorizedApi(s);
-            abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi, d.getDeviceId()));
+            abstractDataRequests.add(dataRequestBuilder.apply(spotifyApi, d));
         }
 
         // execute requests

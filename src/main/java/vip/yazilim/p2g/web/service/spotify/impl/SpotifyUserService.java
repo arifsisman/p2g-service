@@ -41,7 +41,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     @Override
     public User getCurrentSpotifyUser(String userUuid) throws DatabaseException, TokenException, RequestException {
         SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new TokenException("Token not found!"));
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), spotifyToken);
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), spotifyToken.getAccessToken());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SpotifyUserService implements ISpotifyUserService {
 
         SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new TokenException("Token not found"));
 
-        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), spotifyToken);
+        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), spotifyToken.getAccessToken());
 
         for (Device d : devices) {
             UserDevice userDevice = new UserDevice();

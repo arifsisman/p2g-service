@@ -14,6 +14,7 @@ import java.util.Optional;
  */
 public interface ITokenService extends ICrudService<SpotifyToken, String> {
 
+    String getAccessTokenByUserUuid(String userUuid) throws DatabaseException;
     Optional<SpotifyToken> getTokenByUserUuid(String userUuid) throws DatabaseException;
 
     SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException;

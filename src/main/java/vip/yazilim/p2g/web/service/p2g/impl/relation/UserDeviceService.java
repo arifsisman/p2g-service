@@ -13,7 +13,6 @@ import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,8 +38,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
         List<UserDevice> userDeviceList;
 
         try {
-            userDeviceList = userDeviceRepo.findUserDevicesByUserUuid(userUuid);
-            userDeviceList.sort(Comparator.comparing(UserDevice::getActiveFlag, Boolean::compare).reversed());
+            userDeviceList = userDeviceRepo.findUserDevicesByUserUuidOrderByActiveFlagDesc(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting UserDevice with userUuid[%s]", userUuid);
             throw new DatabaseException(errorMessage, exception);
