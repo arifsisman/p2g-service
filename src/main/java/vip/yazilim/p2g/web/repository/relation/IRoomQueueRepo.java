@@ -13,7 +13,7 @@ public interface IRoomQueueRepo extends JpaRepository<RoomQueue, String> {
 
     RoomQueue findByUuid(String queueUuid);
 
-    List<RoomQueue> findByRoomUuid(String roomUuid);
+    List<RoomQueue> findByRoomUuidOrderByQueuedTime(String roomUuid);
 
     List<RoomQueue> findByRoomUuidAndQueueStatus(String roomUuid, String queueStatus);
 

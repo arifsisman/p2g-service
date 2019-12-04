@@ -17,7 +17,6 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -76,15 +75,13 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     /////////////////////////////
     @Override
     public List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) {
-        List<RoomQueue> roomQueueList = roomQueueRepo.findByRoomUuid(roomUuid);
-        roomQueueList.sort(Comparator.comparing(RoomQueue::getQueuedTime));
-        return roomQueueList;
+        return roomQueueRepo.findByRoomUuidOrderByQueuedTime(roomUuid);
     }
 
     @Override
     public List<RoomQueue> getRoomQueueListByQueueUuid(String queueUuid) {
         RoomQueue roomQueue = roomQueueRepo.findByUuid(queueUuid);
-        return roomQueueRepo.findByRoomUuid(roomQueue.getRoomUuid());
+        return roomQueueRepo.findByRoomUuidOrderByQueuedTime(roomQueue.getRoomUuid());
     }
 
     /////////////////////////////

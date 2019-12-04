@@ -176,18 +176,14 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
-        try {
-            for (User u : userList) {
-                String userUuid = u.getUuid();
-                Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
-                token.ifPresent(spotifyTokenList::add);
+        for (User u : userList) {
+            String userUuid = u.getUuid();
+            Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+            token.ifPresent(spotifyTokenList::add);
 
-                List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
-                if (!userDevices.isEmpty())
-                    userDeviceList.add(userDevices.get(0));
-            }
-        } catch (DatabaseException e) {
-            throw new DatabaseException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
+            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+            if (!userDevices.isEmpty())
+                userDeviceList.add(userDevices.get(0));
         }
 
         PlayerModel playerModel = new PlayerModel();
