@@ -5,7 +5,8 @@ import java.util.HashMap;
 public enum QueueStatus {
     PLAYED("played"),
     PREVIOUS("previous"),
-    NOW_PLAYING("now_playing"),
+    PLAYING("playing"),
+    PAUSED("paused"),
     NEXT("next"),
     IN_QUEUE("in_queue");
 

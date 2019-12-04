@@ -112,7 +112,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public RoomQueue getRoomQueueNowPlaying(String roomUuid) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NOW_PLAYING.getQueueStatus());
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PLAYING.getQueueStatus());
     }
 
     @Override
@@ -125,6 +125,10 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PREVIOUS.getQueueStatus());
     }
 
+    @Override
+    public RoomQueue getRoomQueuePaused(String roomUuid) {
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PAUSED.getQueueStatus());
+    }
     /////////////////////////////
     // Update queue status
     /////////////////////////////
@@ -147,7 +151,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
                 }
             }
 
-            updateRoomQueue(playing, QueueStatus.NOW_PLAYING);
+            updateRoomQueue(playing, QueueStatus.PLAYING);
 
             boolean nextFlag = true;
             ListIterator<RoomQueue> nextIter = roomQueueList.listIterator(playingIndex + 1);
@@ -160,18 +164,13 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
                 }
             }
         } else if (roomQueueList.size() == 1) {
-            updateRoomQueue(playing, QueueStatus.NOW_PLAYING);
+            updateRoomQueue(playing, QueueStatus.PLAYING);
         }
 
         return roomQueueList;
     }
 
     private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
-        if (queueStatus == QueueStatus.NOW_PLAYING) {
-            roomQueue.setPlayingFlag(true);
-        } else {
-            roomQueue.setPlayingFlag(false);
-        }
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
         update(roomQueue);
     }

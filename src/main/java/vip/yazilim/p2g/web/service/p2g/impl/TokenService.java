@@ -15,7 +15,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,10 +81,8 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
 
     @Override
     public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
-        List<User> userList;
-        List<SpotifyToken> spotifyTokenList = new ArrayList<>();
-
-        userList = userService.getUsersByRoomUuid(roomUuid);
+        List<SpotifyToken> spotifyTokenList = new LinkedList<>();
+        List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
         try {
             for (User u : userList) {

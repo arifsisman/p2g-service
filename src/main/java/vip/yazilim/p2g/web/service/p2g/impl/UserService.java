@@ -23,6 +23,7 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,8 +139,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Override
     public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
-
-        List<User> userList = new ArrayList<>();
+        List<User> userList = new LinkedList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
         for (RoomUser roomUser : roomUserList) {

@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.utils.exception.runtime.ServiceException;
 
@@ -20,9 +19,6 @@ public class SpotifyPlayerController {
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
-
-    @Autowired
-    private IRoomQueueService roomQueueService;
 
     @GetMapping("/s/{queueUuid}/play")
     public List<RoomQueue> play(@PathVariable String queueUuid) {

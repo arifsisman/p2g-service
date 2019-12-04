@@ -26,6 +26,7 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     RoomQueue addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException;
     boolean removeFromRoomQueue(RoomQueue roomQueue) throws DatabaseException;
 
+    RoomQueue getRoomQueuePaused(String roomUuid);
     RoomQueue getRoomQueueNowPlaying(String roomUuid);
     RoomQueue getRoomQueueNext(String roomUuid);
     RoomQueue getRoomQueuePrevious(String roomUuid);
