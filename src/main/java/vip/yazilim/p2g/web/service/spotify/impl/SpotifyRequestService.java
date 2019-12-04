@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.RequestException;
+import vip.yazilim.p2g.web.model.service.PlayerModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.RFunction;
 
@@ -71,17 +72,20 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList) throws RequestException {
-        execRequestList(dataRequestBuilder, spotifyTokenList, userDeviceList, false);
+    public <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
+        execRequestList(dataRequestBuilder, playerModel, false);
     }
 
     @Override
-    public <R> void execRequestListAsync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList) throws RequestException {
-        execRequestList(dataRequestBuilder, spotifyTokenList, userDeviceList, true);
+    public <R> void execRequestListAsync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
+        execRequestList(dataRequestBuilder, playerModel, true);
     }
 
-    private <R> void execRequestList(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList, boolean async) throws RequestException {
+    private <R> void execRequestList(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel, boolean async) throws RequestException {
         List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
+
+        List<SpotifyToken> spotifyTokenList = playerModel.getSpotifyTokenList();
+        List<UserDevice> userDeviceList = playerModel.getUserDeviceList();
 
         Iterator<SpotifyToken> tokenIterator = spotifyTokenList.iterator();
         Iterator<UserDevice> deviceOperator = userDeviceList.iterator();
