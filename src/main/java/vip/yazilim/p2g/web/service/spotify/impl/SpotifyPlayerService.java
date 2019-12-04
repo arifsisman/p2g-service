@@ -43,85 +43,134 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public void play(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException {
-        String songUri = roomQueue.getSongUri();
-        String roomUuid = roomQueue.getRoomUuid();
+    public List<RoomQueue> play(String roomQueueUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException {
+        RoomQueue nowPlaying = roomQueueService.getById(roomQueueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
+
+        String songUri = nowPlaying.getSongUri();
+        String roomUuid = nowPlaying.getRoomUuid();
 
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
-            String msg = String.format("URI[%s] does not match with an Track URI", songUri);
-            throw new PlayerException(msg);
+            String err = String.format("URI[%s] does not match with an Track URI", songUri);
+            throw new PlayerException(err);
         }
 
         // JsonArray with song, because uris needs JsonArray as input
         List<String> songList = Collections.singletonList(songUri);
         JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
+        // Start playback
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), spotifyTokenList, userDeviceList);
 
-        roomQueueService.updateRoomQueueStatus(roomQueue);
+        // Update queue status
+        roomQueueService.updateRoomQueueStatus(nowPlaying);
 
-        roomQueue.setPlayingTime(new Date());
-        roomQueue.setPlayingFlag(true);
-        roomQueueService.update(roomQueue);
+        // Update playing flag
+        nowPlaying.setPlayingTime(new Date());
+        roomQueueService.update(nowPlaying);
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException {
+        RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+
+        if (nowPlaying == null || !nowPlaying.getPlayingFlag()) {
+            String err = String.format("Not playing any song in Room[%s]", roomUuid);
+            throw new PlayerException(err);
+        }
+
+        // Pause playback
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
 
-        RoomQueue roomQueue = roomQueueService.getRoomQueueNowPlaying(roomUuid);
-        roomQueue.setCurrentMs(new Date().getTime() - roomQueue.getPlayingTime().getTime());
-        roomQueue.setPlayingFlag(false);
-        roomQueueService.update(roomQueue);
+        // Update playing flag
+        nowPlaying.setPlayingFlag(false);
+        roomQueueService.update(nowPlaying);
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException {
+        RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+
+        if (nowPlaying == null || nowPlaying.getPlayingFlag()) {
+            String err = String.format("Not playing any song in Room[%s]", roomUuid);
+            throw new PlayerException(err);
+        }
+
+        int currentMs = Math.toIntExact(nowPlaying.getCurrentMs());
+
+        // Resume playback
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().device_id(device).build(), spotifyTokenList, userDeviceList);
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().device_id(device).position_ms(currentMs).build(), spotifyTokenList, userDeviceList);
 
-        RoomQueue roomQueue = roomQueueService.getRoomQueueNowPlaying(roomUuid);
-        roomQueue.setPlayingFlag(true);
-        roomQueueService.update(roomQueue);
+        // Update playing flag
+        nowPlaying.setPlayingFlag(false);
+        roomQueueService.update(nowPlaying);
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
+    public List<RoomQueue> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
         RoomQueue next = roomQueueService.getRoomQueueNext(roomUuid);
         if (next == null) {
             throw new PlayerException("Next song is empty.");
         } else {
-            play(next);
+            play(next.getUuid());
         }
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
+    public List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
         RoomQueue previous = roomQueueService.getRoomQueuePrevious(roomUuid);
         if (previous == null) {
             throw new PlayerException("Previous song is empty.");
         } else {
-            play(previous);
+            play(previous.getUuid());
         }
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException {
+    public List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException {
+        RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+
+        if (nowPlaying == null) {
+            String err = String.format("Not playing any song in Room[%s]", roomUuid);
+            throw new PlayerException(err);
+        }
+
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenList, userDeviceList);
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
     @Override
-    public void repeat(String roomUuid) throws RequestException, DatabaseException {
+    public List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException {
+        RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+
+        if (nowPlaying == null) {
+            String err = String.format("Not playing any song in Room[%s]", roomUuid);
+            throw new PlayerException(err);
+        }
+
         List<SpotifyToken> spotifyTokenList = tokenService.getTokenListByRoomUuid(roomUuid);
         List<UserDevice> userDeviceList = userDeviceService.getUserDevicesByRoomUuid(roomUuid);
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).device_id(device).build(), spotifyTokenList, userDeviceList);
+
+        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
 }

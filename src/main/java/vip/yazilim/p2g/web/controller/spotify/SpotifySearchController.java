@@ -48,7 +48,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/spotify/search/{query}")
+    @GetMapping("/s/search/{query}")
     public List<SearchModel> search(@PathVariable String query) {
         try {
             return spotifySearchService.search(query, ModelObjectType.TRACK, ModelObjectType.ALBUM, ModelObjectType.PLAYLIST);
@@ -57,7 +57,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/spotify/song/{id}")
+    @GetMapping("/s/song/{id}")
     public SearchModel getSong(@PathVariable String id) {
         try {
             return spotifyTrackService.getTrack(id);
@@ -66,7 +66,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/spotify/songs/{ids}")
+    @GetMapping("/s/songs/{ids}")
     public List<SearchModel> getSongList(@PathVariable String[] ids) {
         List<SearchModel> searchModelList;
         try {
@@ -77,7 +77,7 @@ public class SpotifySearchController {
         return searchModelList;
     }
 
-    @GetMapping("/spotify/album/{albumId}/songs")
+    @GetMapping("/s/album/{albumId}/songs")
     public List<SearchModel> getAlbumSongList(@PathVariable String albumId) {
         try {
             return spotifyAlbumService.getSongs(albumId);
@@ -86,7 +86,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/spotify/playlist/{playlistId}/songs")
+    @GetMapping("/s/playlist/{playlistId}/songs")
     public List<SearchModel> getPlaylistSongList(@PathVariable String playlistId) {
         try {
             return spotifyPlaylistService.getSongs(playlistId);

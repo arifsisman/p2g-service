@@ -7,24 +7,26 @@ import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 
+import java.util.List;
+
 /**
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISpotifyPlayerService {
 
-    void play(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException;
+    List<RoomQueue> play(String roomQueueUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException;
 
-    void resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException;
+    List<RoomQueue> resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException;
 
-    void pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException;
+    List<RoomQueue> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException;
 
-    void next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
+    List<RoomQueue> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
-    void previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
+    List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException;
 
-    void seek(String roomUuid, Integer ms) throws RequestException, DatabaseException;
+    List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException;
 
-    void repeat(String roomUuid) throws RequestException, DatabaseException;
+    List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException;
 
 }

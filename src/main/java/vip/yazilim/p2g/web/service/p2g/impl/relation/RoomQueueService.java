@@ -157,7 +157,6 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
                     nextFlag = false;
                 } else {
                     updateRoomQueue(nextIter.next(), QueueStatus.IN_QUEUE);
-
                 }
             }
         } else if (roomQueueList.size() == 1) {

@@ -103,7 +103,8 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     //------------------------------------------------------
     private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) throws RequestException {
         if (async) {
-            return abstractDataRequest.executeAsync().join();
+            abstractDataRequest.executeAsync();
+            return null;
         } else {
             try {
                 return abstractDataRequest.execute();

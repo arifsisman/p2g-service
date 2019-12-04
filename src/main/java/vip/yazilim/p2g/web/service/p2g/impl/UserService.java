@@ -10,10 +10,7 @@ import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.exception.RoleException;
-import vip.yazilim.p2g.web.exception.TokenException;
-import vip.yazilim.p2g.web.exception.UserFriendsException;
+import vip.yazilim.p2g.web.exception.*;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
@@ -154,12 +151,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException {
+
+        String productType = spotifyUser.getProduct().getType();
 
         user.setSpotifyAccountId(spotifyUser.getId());
         user.setCountryCode(spotifyUser.getCountry().getName());
-        user.setSpotifyProductType(spotifyUser.getProduct().getType());
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+        user.setSpotifyProductType(productType);
 
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());
@@ -168,6 +167,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         spotifyUserService.updateUsersAvailableDevices(user.getUuid());
+
+        if (!productType.equals("premium"))
+            throw new AccountException("Product type must be premium!");
 
         return user;
     }

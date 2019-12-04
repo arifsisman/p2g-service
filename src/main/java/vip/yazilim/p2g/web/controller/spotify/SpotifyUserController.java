@@ -21,7 +21,7 @@ public class SpotifyUserController {
     @Autowired
     private ISpotifyUserService spotifyUserService;
 
-    @GetMapping("/spotify/user/{spotifyAccountId}")
+    @GetMapping("/s/user/{spotifyAccountId}")
     public com.wrapper.spotify.model_objects.specification.User getSpotifyUser(@PathVariable String spotifyAccountId) {
         try {
             return spotifyUserService.getSpotifyUser(spotifyAccountId);
@@ -30,7 +30,7 @@ public class SpotifyUserController {
         }
     }
 
-    @GetMapping("/spotify/user/current")
+    @GetMapping("/s/user/current")
     public com.wrapper.spotify.model_objects.specification.User getCurrentSpotifyUser() {
         try {
             return spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
@@ -39,7 +39,7 @@ public class SpotifyUserController {
         }
     }
 
-    @GetMapping("/spotify/user/devices")
+    @GetMapping("/s/user/devices")
     public List<UserDevice> getSpotifyUserDevices() {
         try {
             return spotifyUserService.getUsersAvailableDevices(SecurityHelper.getUserUuid());
