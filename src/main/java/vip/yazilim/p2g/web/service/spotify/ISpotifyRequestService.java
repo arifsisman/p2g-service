@@ -21,7 +21,7 @@ public interface ISpotifyRequestService {
     <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws RequestException;
 
     <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException;
-    <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException;
+    <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException;
 
     //-------------------------------
     <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, List<SpotifyToken> spotifyTokenList, List<UserDevice> userDeviceList) throws RequestException;

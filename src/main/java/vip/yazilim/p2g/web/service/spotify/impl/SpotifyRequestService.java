@@ -64,9 +64,9 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     }
 
     @Override
-    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
+    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, SpotifyToken token) throws RequestException {
         SpotifyApi spotifyApi = initAuthorizedApi(token);
-        return execRequest(dataRequestBuilder.apply(spotifyApi), true);
+        execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //------------------------------------------------------
