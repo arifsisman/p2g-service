@@ -2,9 +2,7 @@ package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 
 import java.util.List;
 
@@ -19,9 +17,5 @@ public class RoomModel {
     private List<User> userList;
     private List<User> invitedUserList;
 
-    private List<RoomQueue> roomQueue;
-    private List<Song> songList;
-
     private String chatUuid;
-
 }

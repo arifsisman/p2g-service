@@ -11,5 +11,5 @@ import java.util.Optional;
  */
 public interface ITokenRepo extends JpaRepository<SpotifyToken, String> {
 
-    Optional<SpotifyToken> findTokenByUserUuid(String userUuid);
+    Optional<SpotifyToken> findSpotifyTokenByUserUuid(String userUuid);
 }

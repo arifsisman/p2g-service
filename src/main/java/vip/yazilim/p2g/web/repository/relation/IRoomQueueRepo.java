@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -12,8 +11,12 @@ import java.util.Optional;
  */
 public interface IRoomQueueRepo extends JpaRepository<RoomQueue, String> {
 
-    Optional<RoomQueue> findByUuid(String uuid);
+    RoomQueue findByUuid(String queueUuid);
 
-    List<RoomQueue> findQueuesByRoomUuid(String roomUuid);
+    List<RoomQueue> findByRoomUuidOrderByQueuedTime(String roomUuid);
+
+    List<RoomQueue> findByRoomUuidAndQueueStatus(String roomUuid, String queueStatus);
+
+    RoomQueue findByRoomUuidAndQueueStatusIsContaining(String roomUuid, String queueStatusNowPlaying);
 
 }

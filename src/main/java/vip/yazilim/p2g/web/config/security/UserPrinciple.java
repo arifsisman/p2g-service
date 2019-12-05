@@ -1,13 +1,8 @@
 package vip.yazilim.p2g.web.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.exception.RoleException;
-import vip.yazilim.p2g.web.service.IRoleService;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import vip.yazilim.spring.utils.exception.DatabaseException;
 
 import java.util.ArrayList;
 import java.util.Collection;

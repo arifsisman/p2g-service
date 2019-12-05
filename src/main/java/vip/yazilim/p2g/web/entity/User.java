@@ -33,6 +33,9 @@ public class User implements Serializable {
     @Column(name = "online_status")
     private String onlineStatus;
 
+    @Column(name = "country_code")
+    private String countryCode;
+
     @Column(name = "image_url")
     private String imageUrl;
 
@@ -42,8 +45,8 @@ public class User implements Serializable {
     private String nowPlaying;
 
     // Spotify
-    @Column(name = "spotify_account_type")
-    private String spotifyAccountType;
+    @Column(name = "spotify_product_type")
+    private String spotifyProductType;
 
     @Column(name = "spotify_account_id")
     private String spotifyAccountId;
