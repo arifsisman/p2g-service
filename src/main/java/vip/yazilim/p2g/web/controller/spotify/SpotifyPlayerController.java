@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.util.List;
 

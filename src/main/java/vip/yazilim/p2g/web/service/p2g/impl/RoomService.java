@@ -18,8 +18,10 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -89,7 +91,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             room = getById(roomUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
 
         if (!room.isPresent()) {
@@ -101,7 +103,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException {
+    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;

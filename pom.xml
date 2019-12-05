@@ -37,9 +37,9 @@
     <dependencies>
 
         <dependency>
-            <groupId>vip.yazilim</groupId>
-            <artifactId>spring-utils</artifactId>
-            <version>1.0.00</version>
+            <groupId>vip.yazilim.spring</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>1.0.00-SNAPSHOT</version>
         </dependency>
 
         <!-- Core -->

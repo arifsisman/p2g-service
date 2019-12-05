@@ -13,7 +13,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.util.List;
 

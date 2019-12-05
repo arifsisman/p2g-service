@@ -6,8 +6,9 @@ import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.model.UserModel;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ICrudService;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,8 @@ public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByEmail(String email) throws DatabaseException;
     Optional<User> getUserByUuid(String uuid);
-    Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException;
-    List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException;
+    Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, InvalidArgumentException;
+    List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException;
 
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException;
 }

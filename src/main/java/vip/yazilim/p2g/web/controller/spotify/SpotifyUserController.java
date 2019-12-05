@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.util.List;
 

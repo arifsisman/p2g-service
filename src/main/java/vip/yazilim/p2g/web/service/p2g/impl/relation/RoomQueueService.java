@@ -13,9 +13,10 @@ import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -132,7 +133,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Update queue status
     /////////////////////////////
     @Override
-    public List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException {
+    public List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         String roomUuid = playing.getRoomUuid();
         List<RoomQueue> roomQueueList = getRoomQueueListByRoomUuid(roomUuid);
 
@@ -169,7 +170,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return roomQueueList;
     }
 
-    private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException {
+    private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
         update(roomQueue);
     }

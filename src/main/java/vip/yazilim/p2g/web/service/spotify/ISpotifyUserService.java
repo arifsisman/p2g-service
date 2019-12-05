@@ -6,7 +6,7 @@ import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
-import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import java.util.List;
 

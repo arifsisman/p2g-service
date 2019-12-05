@@ -11,9 +11,11 @@ import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.LinkedList;
@@ -60,7 +62,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
 
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
     }
 
@@ -70,12 +72,12 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
             return tokenRepo.findSpotifyTokenByUserUuid(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
     }
 
     @Override
-    public SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException {
+    public SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
 
         Optional<SpotifyToken> token = getTokenByUserUuid(userUuid);
 
@@ -94,7 +96,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     }
 
     @Override
-    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<SpotifyToken> spotifyTokenList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
@@ -104,7 +106,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
                 token.ifPresent(spotifyTokenList::add);
             }
         } catch (DatabaseException e) {
-            throw new DatabaseException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
+            throw new DatabaseReadException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
         }
 
         return spotifyTokenList;

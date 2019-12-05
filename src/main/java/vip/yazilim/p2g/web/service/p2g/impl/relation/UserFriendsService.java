@@ -14,9 +14,10 @@ import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
     }
 
     @Override
-    public boolean replyUserFriendRequest(String user1, String user2, String status) throws UserFriendsException {
+    public boolean replyUserFriendRequest(String user1, String user2, String status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         Optional<UserFriends> friendRequestOpt = Optional.empty();
 
 
@@ -149,18 +150,14 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
 
         UserFriends friendRequest = friendRequestOpt.get();
 
-        try {
-            if (status.equals(FriendRequestStatus.ACCEPTED.toString()) || status.equals(FriendRequestStatus.IGNORED.toString())) {
-                friendRequest.setRequestStatus(status);
-                update(friendRequest);
-            } else if (status.equals(FriendRequestStatus.REJECTED.toString())) {
-                delete(friendRequest);
-            } else {
-                friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
-                update(friendRequest);
-            }
-        } catch (DatabaseException | InvalidUpdateException exception) {
-            throw new UserFriendsException("Friend request cannot replied!", exception);
+        if (status.equals(FriendRequestStatus.ACCEPTED.toString()) || status.equals(FriendRequestStatus.IGNORED.toString())) {
+            friendRequest.setRequestStatus(status);
+            update(friendRequest);
+        } else if (status.equals(FriendRequestStatus.REJECTED.toString())) {
+            delete(friendRequest);
+        } else {
+            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
+            update(friendRequest);
         }
 
         return true;

@@ -12,7 +12,7 @@ import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import java.util.Date;
 

@@ -10,8 +10,10 @@ import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.repository.relation.IUserDeviceRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.LinkedList;
@@ -43,14 +45,14 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             userDeviceList = userDeviceRepo.findUserDevicesByUserUuidOrderByActiveFlagDesc(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting UserDevice with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
 
         return userDeviceList;
     }
 
     @Override
-    public List<UserDevice> getUserDevicesByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<UserDevice> getUserDevicesByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<UserDevice> userDeviceList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 

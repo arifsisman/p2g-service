@@ -9,8 +9,9 @@ import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -53,7 +54,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             return roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
-            throw new DatabaseException(errMsg, exception);
+            throw new DatabaseReadException(errMsg, exception);
         }
     }
 
@@ -63,7 +64,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
-            throw new DatabaseException(errMsg, exception);
+            throw new DatabaseReadException(errMsg, exception);
         }
     }
 
@@ -73,7 +74,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid,userUuid);
-            throw new DatabaseException(errMsg, exception);
+            throw new DatabaseReadException(errMsg, exception);
         }
     }
 

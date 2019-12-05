@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.relation;
 
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ICrudService;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;

@@ -5,9 +5,10 @@ import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ICrudService;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 
@@ -31,6 +32,6 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     RoomQueue getRoomQueueNext(String roomUuid);
     RoomQueue getRoomQueuePrevious(String roomUuid);
 
-    List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException;
+    List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
 
 }

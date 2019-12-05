@@ -19,8 +19,9 @@ import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;
@@ -140,7 +141,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<User> userList = new LinkedList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
@@ -158,7 +159,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         String productType = spotifyUser.getProduct().getType();
 
         user.setSpotifyAccountId(spotifyUser.getId());
-        user.setCountryCode(spotifyUser.getCountry().getName());
+        user.setCountryCode(spotifyUser.getCountry().name());
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setSpotifyProductType(productType);
 

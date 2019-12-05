@@ -3,8 +3,10 @@ package vip.yazilim.p2g.web.service.p2g;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
 import vip.yazilim.p2g.web.exception.UserFriendsException;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ICrudService;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,6 @@ public interface IUserFriendsService extends ICrudService<UserFriends, String> {
 
     boolean createUserFriendRequest(String user1, String user2) throws UserFriendsException;
 
-    boolean replyUserFriendRequest(String user1, String user2, String status) throws UserFriendsException;
+    boolean replyUserFriendRequest(String user1, String user2, String status) throws UserFriendsException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
 }

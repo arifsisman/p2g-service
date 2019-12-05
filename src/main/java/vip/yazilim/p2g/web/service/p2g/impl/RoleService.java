@@ -12,9 +12,10 @@ import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException {
+    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUser = roomUserService.getRoomUser(roomUuid, userUuid);
 
         if (!roomUser.isPresent()) {
@@ -60,7 +61,7 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public String changeUserRole(String roomUuid, String userUuid, boolean rank) throws DatabaseException, RoleException {
+    public String changeUserRole(String roomUuid, String userUuid, boolean rank) throws DatabaseException, RoleException, InvalidUpdateException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(roomUuid, userUuid);
         RoomUser roomUser;
 
@@ -95,17 +96,13 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
 
         roomUser.setRoleName(roleName);
 
-        try {
-            roomUserService.update(roomUser);
-        } catch (InvalidUpdateException e) {
-            e.printStackTrace();
-        }
+        roomUserService.update(roomUser);
 
         return roleName;
     }
 
     @Override
-    public Role getDefaultRole() throws DatabaseException, RoleException {
+    public Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException {
         Optional<Role> role = getById(Roles.USER.getRoleName());
 
         if (!role.isPresent()) {

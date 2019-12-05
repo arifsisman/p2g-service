@@ -20,8 +20,8 @@ import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class SpotifyAuthController {
         Optional<User> userOpt = userService.getUserByUuid(userUuid);
 
         if (!userOpt.isPresent()) {
-            throw new NotFoundException();
+            throw new NotFoundException("User not found");
         }
 
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();

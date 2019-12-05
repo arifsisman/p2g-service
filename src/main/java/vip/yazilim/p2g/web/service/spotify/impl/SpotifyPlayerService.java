@@ -20,8 +20,9 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -50,7 +51,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public List<RoomQueue> play(String roomQueueUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException {
+    public List<RoomQueue> play(String roomQueueUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
         RoomQueue nowPlaying = roomQueueService.getById(roomQueueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
 
         String songUri = nowPlaying.getSongUri();
@@ -79,7 +80,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException {
+    public List<RoomQueue> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
 
         if (nowPlaying == null || !(nowPlaying.getQueueStatus().equals(QueueStatus.PLAYING.getQueueStatus()))) {
@@ -99,7 +100,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException {
+    public List<RoomQueue> resume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException {
         RoomQueue paused = roomQueueService.getRoomQueuePaused(roomUuid);
 
         if (paused == null) {
@@ -120,7 +121,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
+    public List<RoomQueue> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException {
         RoomQueue next = roomQueueService.getRoomQueueNext(roomUuid);
         if (next == null) {
             throw new PlayerException("Next song is empty.");
@@ -132,7 +133,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException {
+    public List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException {
         RoomQueue previous = roomQueueService.getRoomQueuePrevious(roomUuid);
         if (previous == null) {
             throw new PlayerException("Previous song is empty.");
@@ -144,7 +145,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException {
+    public List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
         RoomQueue paused = roomQueueService.getRoomQueuePaused(roomUuid);
 
@@ -160,7 +161,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     //TODO: implement for off repeat mode
     @Override
-    public List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException {
+    public List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
 
         if (nowPlaying == null) {
@@ -173,7 +174,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
-    private PlayerModel getPlayerModel(String roomUuid) throws DatabaseException {
+    private PlayerModel getPlayerModel(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<String> spotifyTokenList = new LinkedList<>();
         List<String> userDeviceList = new LinkedList<>();
 
