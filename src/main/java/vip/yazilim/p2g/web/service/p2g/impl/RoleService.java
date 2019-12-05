@@ -16,12 +16,14 @@ import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoleService extends ACrudServiceImpl<Role, String> implements IRoleService {
 

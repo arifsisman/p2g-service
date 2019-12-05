@@ -3,8 +3,6 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import vip.yazilim.p2g.web.model.service.PlayerModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.RFunction;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,10 +23,9 @@ import java.util.function.Function;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)

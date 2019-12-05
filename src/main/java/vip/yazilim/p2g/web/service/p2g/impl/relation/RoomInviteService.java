@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> implements IRoomInviteService {
 

@@ -13,6 +13,7 @@ import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * @author mustafaarifsisman - 30.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 

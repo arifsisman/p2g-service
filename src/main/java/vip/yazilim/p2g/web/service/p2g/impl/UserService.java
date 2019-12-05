@@ -22,6 +22,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 

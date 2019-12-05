@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifySearchService implements ISpotifySearchService {
 

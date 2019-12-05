@@ -33,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         User arif = createUser("1", "arif", "arif", "0");
-        User emre = createUser("2", "emre", "emre", "0");
+//        User emre = createUser("2", "emre", "emre", "0");
 
         Room room = createRoom("Test Room", arif.getUuid());
 

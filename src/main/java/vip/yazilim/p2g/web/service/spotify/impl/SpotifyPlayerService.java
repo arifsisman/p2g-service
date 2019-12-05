@@ -23,12 +23,14 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.exception.InvalidUpdateException;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifyPlayerService implements ISpotifyPlayerService {
 
@@ -156,6 +158,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
     }
 
+    //TODO: implement for off repeat mode
     @Override
     public List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);

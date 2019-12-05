@@ -14,6 +14,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifyUserService implements ISpotifyUserService {
 

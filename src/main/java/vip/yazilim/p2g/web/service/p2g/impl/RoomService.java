@@ -21,6 +21,7 @@ import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.utils.exception.DatabaseException;
 import vip.yazilim.spring.utils.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ import java.util.Optional;
  *
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoomService extends ACrudServiceImpl<Room, String> implements IRoomService {
 
