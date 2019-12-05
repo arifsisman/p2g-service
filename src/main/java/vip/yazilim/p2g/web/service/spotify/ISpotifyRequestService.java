@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.spotify;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.model.service.PlayerModel;
+import vip.yazilim.p2g.web.service.spotify.model.PlayerModel;
 
 import java.util.function.Function;
 
