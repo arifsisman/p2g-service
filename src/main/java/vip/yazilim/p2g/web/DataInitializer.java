@@ -33,18 +33,18 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         User arif = createUser("1", "arif", "arif", "0");
-//        User emre = createUser("2", "emre", "emre", "0");
+        User emre = createUser("2", "emre", "emre", "0");
 
         Room room = createRoom("Test Room", arif.getUuid());
 
         roomService.joinRoom(room.getUuid(), arif.getUuid());
-//        roomService.joinRoom(room.getUuid(), emre.getUuid());
+        roomService.joinRoom(room.getUuid(), emre.getUuid());
 
-        createRoomQueue("1", "0R0o8uOkDz40XsR6uwThfQ", "spotify:track:0R0o8uOkDz40XsR6uwThfQ", "geceleeer", 1200000L);
-        createRoomQueue("1", "7MXVkk9YMctZqd1Srtv4MB", "spotify:track:7MXVkk9YMctZqd1Srtv4MB", "sitarboy", 1200000L);
-        createRoomQueue("1", "5CMjjywI0eZMixPeqNd75R", "spotify:track:5CMjjywI0eZMixPeqNd75R", "lusyorselftudens", 1200000L);
-        createRoomQueue("1", "5GXAXm5YOmYT0kL5jHvYBt", "spotify:track:5GXAXm5YOmYT0kL5jHvYBt", "ayfilitkaming", 1200000L);
-        createRoomQueue("1", "0DiWol3AO6WpXZgp0goxAV", "spotify:track:0DiWol3AO6WpXZgp0goxAV", "vanmortaym", 1200000L);
+        createRoomQueue("1", "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L);
+        createRoomQueue("1", "12Chz98pHFMPJEknJQMWvI", "spotify:artist:12Chz98pHFMPJEknJQMWvI", "Madness", 1200000L);
+        createRoomQueue("1", "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000L);
+        createRoomQueue("1", "12Chz98pHFMPJEknJQMWvI", "spotify:track:12Chz98pHFMPJEknJQMWvI", "Time Is Running Out", 1200000L);
+        createRoomQueue("1", "0eFHYz8NmK75zSplL5qlfM", "spotify:track:0eFHYz8NmK75zSplL5qlfM", "The Resistance", 1200000L);
 
     }
 

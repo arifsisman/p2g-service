@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
@@ -47,7 +48,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException {
+    public List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException {
         List<UserDevice> userDeviceList = new LinkedList<>();
 
         SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new TokenException("Token not found"));
@@ -67,11 +68,16 @@ public class SpotifyUserService implements ISpotifyUserService {
             userDeviceList.add(userDevice);
         }
 
+        if (userDeviceList.isEmpty()) {
+            String err = String.format("Can not found any device for userUuid[%s]", userUuid);
+            throw new AccountException(err);
+        }
+
         return userDeviceList;
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException {
+    public List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException {
         List<UserDevice> userDeviceList = getUsersAvailableDevices(userUuid);
 
         for (UserDevice userDevice : userDeviceList) {
