@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
@@ -31,7 +32,7 @@ public class DataInitializer implements CommandLineRunner {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws RoomException {
         User arif = createUser("1", "arif", "arif", "0");
         User emre = createUser("2", "emre", "emre", "0");
 

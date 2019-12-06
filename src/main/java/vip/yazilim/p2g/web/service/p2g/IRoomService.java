@@ -17,10 +17,10 @@ import java.util.Optional;
 public interface IRoomService extends ICrudService<Room, String> {
 
     Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException;
-    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, InvalidArgumentException;
+    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, RoomException, InvalidArgumentException;
 
     Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
                     Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException;
 
-    RoomUser joinRoom(String roomUuid, String userUuid);
+    RoomUser joinRoom(String roomUuid, String userUuid) throws RoomException;
 }

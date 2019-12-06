@@ -87,7 +87,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, InvalidArgumentException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, RoomException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;

@@ -15,7 +15,6 @@ import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -47,9 +46,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IRoomQueueService roomQueueService;
-
-    @Autowired
     private IUserService userService;
 
     @Autowired
@@ -78,7 +74,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         Optional<RoomUser> roomUser;
         String roomUuid;
 
-        roomUser = roomUserService.getRoomUserByUserUuid(userUuid);
+        roomUser = roomUserService.getRoomUser(userUuid);
 
         if (roomUser.isPresent()) {
             roomUuid = roomUser.get().getRoomUuid();
@@ -103,7 +99,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, RoomException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -116,8 +112,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         // Set Room
         room = getById(roomUuid);
         if (!room.isPresent()) {
-            LOGGER.error("Room[{}] is not present", roomUuid);
-            return Optional.empty();
+            String err = String.format("Room[%s] is not present", roomUuid);
+            throw new RoomException(err);
         } else {
             roomModel.setRoom(room.get());
         }
@@ -155,24 +151,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             room.setShowRoomActivityFlag(false);
         }
 
-        if (maxUsers == null) {
-            room.setMaxUsers(5);
-        } else {
-            room.setMaxUsers(maxUsers);
-        }
-
-        if (usersAllowedQueue == null) {
-            room.setUsersAllowedQueueFlag(usersAllowedQueue);
-        } else {
-            room.setUsersAllowedQueueFlag(false);
-        }
-
-        if (usersAllowedControl == null) {
-            room.setUsersAllowedControlFlag(usersAllowedControl);
-        } else {
-            room.setUsersAllowedControlFlag(false);
-        }
-
+        room.setMaxUsers(maxUsers == null ? Integer.valueOf(5) : maxUsers);
+        room.setUsersAllowedQueueFlag(usersAllowedQueue == null ? usersAllowedQueue : Boolean.valueOf(false));
+        room.setUsersAllowedControlFlag(usersAllowedControl == null ? usersAllowedControl : Boolean.valueOf(false));
         room.setActiveFlag(true);
         room.setChatUuid(chatUuid);
 
@@ -186,7 +167,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid) {
+    public RoomUser joinRoom(String roomUuid, String userUuid) throws RoomException {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomUuid(roomUuid);
@@ -197,7 +178,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         try {
             roomUserService.create(roomUser);
         } catch (DatabaseException e) {
-            LOGGER.error("An error occurred when joining roomUuid[{}], userUuid[{}]", roomUuid, userUuid);
+            String err = String.format("An error occurred when joining roomUuid[%s], userUuid[%s]", roomUuid, userUuid);
+            throw new RoomException(err, e);
         }
 
         return roomUser;

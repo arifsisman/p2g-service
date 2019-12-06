@@ -59,7 +59,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public Optional<RoomUser> getRoomUserByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException {
         try {
             return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {

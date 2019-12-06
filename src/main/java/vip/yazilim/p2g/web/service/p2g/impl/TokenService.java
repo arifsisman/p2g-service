@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -58,8 +59,7 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     public String getAccessTokenByUserUuid(String userUuid) throws DatabaseException {
         try {
             Optional<SpotifyToken> spotifyToken = tokenRepo.findSpotifyTokenByUserUuid(userUuid);
-            return spotifyToken.map(SpotifyToken::getAccessToken).orElse(null);
-
+            return spotifyToken.map(SpotifyToken::getAccessToken).orElseThrow(() -> new TokenException("Token can not found for userUuid:" + userUuid));
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseReadException(errorMessage, exception);
@@ -78,14 +78,14 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
 
     @Override
     public SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        Optional<SpotifyToken> spotifyToken = getTokenByUserUuid(userUuid);
 
-        Optional<SpotifyToken> token = getTokenByUserUuid(userUuid);
-
-        if (token.isPresent()) {
+        if (spotifyToken.isPresent()) {
+            SpotifyToken token = spotifyToken.get();
             LOGGER.debug("Updating token for userUuid:" + userUuid);
-            token.get().setAccessToken(accessToken);
-            token.get().setRefreshToken(refreshToken);
-            return update(token.get());
+            token.setAccessToken(accessToken);
+            token.setRefreshToken(refreshToken);
+            return update(token);
         }
 
         SpotifyToken entity = new SpotifyToken();
@@ -100,13 +100,9 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
         List<SpotifyToken> spotifyTokenList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
-        try {
-            for (User u : userList) {
-                Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
-                token.ifPresent(spotifyTokenList::add);
-            }
-        } catch (DatabaseException e) {
-            throw new DatabaseReadException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
+        for (User u : userList) {
+            Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
+            token.ifPresent(spotifyTokenList::add);
         }
 
         return spotifyTokenList;

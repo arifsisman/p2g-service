@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoleException;
+import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -49,66 +50,71 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
-        Optional<RoomUser> roomUser = roomUserService.getRoomUser(roomUuid, userUuid);
+    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException, RoomException, InvalidArgumentException {
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(roomUuid, userUuid);
 
-        if (!roomUser.isPresent()) {
-            return Optional.empty();
+        if (!roomUserOpt.isPresent()) {
+            String err = String.format("user[%s] not in room[%s]", userUuid, roomUuid);
+            throw new RoomException(err);
         }
 
-        String roleName = roomUser.get().getRoleName();
+        RoomUser roomUser = roomUserOpt.get();
+        String roleName = roomUser.getRoleName();
         return getById(roleName);
     }
 
     @Override
-    public String changeUserRole(String roomUuid, String userUuid, boolean rank) throws DatabaseException, RoleException, InvalidUpdateException, InvalidArgumentException {
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(roomUuid, userUuid);
-        RoomUser roomUser;
-
-        if (!roomUserOpt.isPresent()) {
-            LOGGER.warn("User[{}] not in Room[{}]", userUuid, roomUuid);
-            return getDefaultRole().getName();
-        }else{
-            roomUser = roomUserOpt.get();
-        }
-
+    public String promoteUserRole(String userUuid) throws DatabaseException, RoomException, InvalidUpdateException, InvalidArgumentException {
+        RoomUser roomUser = getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
 
-        if (rank) {
-            switch (roleName) {
-                case "USER":
-                    roleName = Roles.MODERATOR.getRoleName();
-                    break;
-                case "MODERATOR":
-                    roleName = Roles.ADMIN.getRoleName();
-                    break;
-            }
-        } else {
-            switch (roleName) {
-                case "MODERATOR":
-                    roleName = Roles.USER.getRoleName();
-                    break;
-                case "ADMIN":
-                    roleName = Roles.MODERATOR.getRoleName();
-                    break;
-            }
+        if (roleName.equals(Roles.USER.getRoleName())) {
+            roleName = Roles.MODERATOR.getRoleName();
+        } else if (roleName.equals(Roles.MODERATOR.getRoleName())) {
+            roleName = Roles.ADMIN.getRoleName();
         }
 
         roomUser.setRoleName(roleName);
-
         roomUserService.update(roomUser);
 
         return roleName;
     }
 
     @Override
-    public Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException {
-        Optional<Role> role = getById(Roles.USER.getRoleName());
+    public String demoteUserRole(String userUuid) throws DatabaseException, RoomException, InvalidUpdateException, InvalidArgumentException {
+        RoomUser roomUser = getRoomUser(userUuid);
+        String roleName = roomUser.getRoleName();
 
-        if (!role.isPresent()) {
-            throw new RoleException("Role not found!");
+        if (roleName.equals(Roles.MODERATOR.getRoleName())) {
+            roleName = Roles.USER.getRoleName();
+        } else if (roleName.equals(Roles.ADMIN.getRoleName())) {
+            roleName = Roles.MODERATOR.getRoleName();
         }
 
-        return role.get();
+        roomUser.setRoleName(roleName);
+        roomUserService.update(roomUser);
+
+        return roleName;
+    }
+
+    private RoomUser getRoomUser(String userUuid) throws DatabaseException, RoomException {
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+
+        if (roomUserOpt.isPresent()) {
+            return roomUserOpt.get();
+        } else {
+            String err = String.format("user[%s] not in any room.", userUuid);
+            throw new RoomException(err);
+        }
+    }
+
+    @Override
+    public Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException {
+        Optional<Role> role = getById(Roles.USER.getRoleName());
+        if (role.isPresent()) {
+            return role.get();
+        } else {
+            throw new RoleException("Role not found!");
+        }
     }
 }
