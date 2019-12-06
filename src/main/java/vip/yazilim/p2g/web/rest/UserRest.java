@@ -41,7 +41,7 @@ public class UserRest extends ARestCrud<User, String> {
     @GetMapping({"/{userUuid}/model"})
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid){
+    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
         Optional<UserModel> userModel;
 
         try {
@@ -55,5 +55,25 @@ public class UserRest extends ARestCrud<User, String> {
         } else {
             return RestResponseFactory.generateResponse(userModel.get(), HttpStatus.OK, request, response);
         }
+    }
+
+    @Override
+    @PostMapping("/")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<User> create(HttpServletRequest request, HttpServletResponse response, @RequestBody User user) {
+        User createdUser;
+
+        try {
+            String username = user.getDisplayName();
+            String email = user.getEmail();
+            String password = user.getPassword();
+
+            createdUser = userService.createUser(username, email, password);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(createdUser, HttpStatus.OK, request, response);
     }
 }

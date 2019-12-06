@@ -71,7 +71,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
     @DeleteMapping("/{roomQueueUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<Boolean> removeFromRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomQueueUuid) {
+    public RestResponse<Boolean> deleteFromRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomQueueUuid) {
         boolean roomQueue;
 
         try {

@@ -31,8 +31,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws RoomException, DatabaseException, InvalidArgumentException, UserException {
-        User arif = userService.createUser("1", "arif", "arif", "0");
-        User emre = userService.createUser("2", "emre", "emre", "0");
+        User arif = userService.createUser("arif", "arif", "0");
+        User emre = userService.createUser("emre", "emre", "0");
 
         Room room1 = roomService.createRoom("Test Room1", arif.getUuid(), "1", 5, false, false, null);
         String roomUuid = room1.getUuid();

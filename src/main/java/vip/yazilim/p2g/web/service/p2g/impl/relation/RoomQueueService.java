@@ -84,12 +84,6 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return roomQueueRepo.findByRoomUuidOrderByQueuedTime(roomUuid);
     }
 
-    @Override
-    public List<RoomQueue> getRoomQueueListByQueueUuid(String queueUuid) {
-        RoomQueue roomQueue = roomQueueRepo.findByUuid(queueUuid);
-        return roomQueueRepo.findByRoomUuidOrderByQueuedTime(roomQueue.getRoomUuid());
-    }
-
     /////////////////////////////
     // Control Queue
     /////////////////////////////
@@ -100,6 +94,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         return create(roomQueue);
     }
 
+    //TODO: delete method, this method is test purposes
     @Override
     public RoomQueue addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) throws DatabaseException {
         RoomQueue roomQueue = new RoomQueue();
@@ -112,7 +107,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
 
         roomQueue = create(roomQueue);
-        //TODO: delete log
+
         LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
 
         return roomQueue;

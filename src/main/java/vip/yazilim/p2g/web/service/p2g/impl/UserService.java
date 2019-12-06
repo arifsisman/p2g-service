@@ -154,9 +154,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String uuid, String email, String username, String password) throws UserException {
+    public User createUser(String email, String username, String password) throws UserException {
+        Optional<User> existingUser = getUserByEmail(email);
+
+        if (existingUser.isPresent()) {
+            throw new UserException("Email already exists.");
+        }
+
         User user = new User();
-        user.setUuid(uuid);
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
