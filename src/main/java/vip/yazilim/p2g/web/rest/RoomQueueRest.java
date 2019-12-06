@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -50,6 +51,21 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         }
 
         return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
+    }
+
+    @GetMapping("/{roomUuid}/model")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<RoomQueueModel> getRoomQueueModelByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        RoomQueueModel roomQueueModel;
+
+        try {
+            roomQueueModel = roomQueueService.getRoomQueueModelByRoomUuid(roomUuid);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(roomQueueModel, HttpStatus.OK, request, response);
     }
 
 

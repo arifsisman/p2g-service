@@ -18,16 +18,8 @@ import java.util.List;
  */
 public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
 
-    RoomQueueModel getRoomQueueModelByRoomUuid(String roomUuid);
-    List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) throws DatabaseException;
-
     List<RoomQueue> getRoomQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException;
-
-    RoomQueue addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException;
     RoomQueue addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) throws DatabaseException;
-
-    boolean removeFromRoomQueue(String roomQueueUuid) throws DatabaseException, InvalidArgumentException, QueueException;
-    boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
 
     RoomQueue getRoomQueuePaused(String roomUuid);
     RoomQueue getRoomQueueNowPlaying(String roomUuid);
@@ -35,5 +27,12 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     RoomQueue getRoomQueuePrevious(String roomUuid);
 
     List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
+
+    // Rest
+    RoomQueue addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException;
+    boolean removeFromRoomQueue(String roomQueueUuid) throws DatabaseException, InvalidArgumentException, QueueException;
+    boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
+    List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) throws DatabaseException;
+    RoomQueueModel getRoomQueueModelByRoomUuid(String roomUuid);
 
 }
