@@ -155,4 +155,15 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         return room;
     }
+
+    @Override
+    public boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
+        Optional<Room> roomOpt = getById(roomUuid);
+
+        if (roomOpt.isPresent()) {
+            return delete(roomOpt.get());
+        } else {
+            throw new RoomException("Room cannot deleted!");
+        }
+    }
 }

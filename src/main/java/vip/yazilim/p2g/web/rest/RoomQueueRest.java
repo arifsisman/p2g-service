@@ -37,7 +37,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return roomQueueService;
     }
 
-    @GetMapping("/{roomUuid}/model")
+    @GetMapping("/{roomUuid}/list")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<List<RoomQueue>> getRoomQueueListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
@@ -52,14 +52,30 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/{roomUuid}/{searchModel}")
+
+    @PostMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<RoomQueue> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable SearchModel searchModel) {
+    public RestResponse<RoomQueue> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
         RoomQueue roomQueue;
 
         try {
             roomQueue = roomQueueService.addToRoomQueue(roomUuid, searchModel);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(roomQueue, HttpStatus.OK, request, response);
+    }
+
+    @DeleteMapping("/{roomQueueUuid}")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<Boolean> removeFromRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomQueueUuid) {
+        boolean roomQueue;
+
+        try {
+            roomQueue = roomQueueService.removeFromRoomQueue(roomQueueUuid);
         } catch (Exception var7) {
             throw new ServiceException(var7);
         }

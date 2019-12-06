@@ -34,11 +34,13 @@ public class DataInitializer implements CommandLineRunner {
         User arif = userService.createUser("1", "arif", "arif", "0");
         User emre = userService.createUser("2", "emre", "emre", "0");
 
-        Room room = roomService.createRoom("Test Room", arif.getUuid(), null, 5, false, false, null);
-        String roomUuid = room.getUuid();
+        Room room1 = roomService.createRoom("Test Room1", arif.getUuid(), "1", 5, false, false, null);
+        String roomUuid = room1.getUuid();
 
-        roomUserService.joinRoom(roomUuid, arif.getUuid(), null);
-        roomUserService.joinRoom(roomUuid, emre.getUuid(), null);
+        Room room2 = roomService.createRoom("Test Room2", arif.getUuid(), "1", 5, false, false, null);
+
+        roomUserService.joinRoom(roomUuid, arif.getUuid(), "1");
+        roomUserService.joinRoom(roomUuid, emre.getUuid(), "1");
 
         roomQueueService.addToRoomQueue(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L);
         roomQueueService.addToRoomQueue(roomUuid, "12Chz98pHFMPJEknJQMWvI", "spotify:artist:12Chz98pHFMPJEknJQMWvI", "Madness", 1200000L);

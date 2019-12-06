@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
@@ -33,6 +34,9 @@ public class RoomRest extends ARestCrud<Room, String> {
     @Autowired
     private IRoomService roomService;
 
+    @Autowired
+    private IRoomQueueService roomQueueService;
+
     @Override
     protected ICrudService<Room, String> getService() {
         return roomService;
@@ -55,5 +59,24 @@ public class RoomRest extends ARestCrud<Room, String> {
         } else {
             return RestResponseFactory.generateResponse(roomModel.get(), HttpStatus.OK, request, response);
         }
+    }
+
+    @DeleteMapping("/{roomUuid}")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<Boolean> deleteRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        boolean status;
+
+        try {
+            //delete room
+            status = roomService.deleteRoom(roomUuid);
+
+            //delete roomQueue
+            roomQueueService.deleteRoomSongList(roomUuid);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 }

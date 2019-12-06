@@ -21,4 +21,6 @@ public interface IRoomService extends ICrudService<Room, String> {
     Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
                     Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException;
 
+    boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException;
+
 }
