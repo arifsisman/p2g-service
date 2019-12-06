@@ -1,13 +1,22 @@
 package vip.yazilim.p2g.web.rest.impl;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.rest.IRoomInviteRest;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
+import vip.yazilim.spring.core.rest.model.RestErrorResponse;
+import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 import vip.yazilim.spring.core.service.ICrudService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -25,5 +34,21 @@ public class RoomInviteRest extends ARestCrud<RoomInvite, String> implements IRo
     @Override
     protected ICrudService<RoomInvite, String> getService() {
         return roomInviteService;
+    }
+
+    @Override
+    @DeleteMapping("/{roomInviteUuid}")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomInviteUuid) {
+        boolean status;
+
+        try {
+            status = roomInviteService.reject(roomInviteUuid);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 }

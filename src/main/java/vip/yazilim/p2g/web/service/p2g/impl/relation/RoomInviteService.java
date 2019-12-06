@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
-import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -78,13 +78,14 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public void acceptInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException, InvalidArgumentException {
-        replyInviteByUuid(roomInviteUuid, true);
+    public RoomInvite accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        roomInvite.setAcceptedFlag(true);
+        return update(roomInvite);
     }
 
     @Override
-    public void rejectInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException, InvalidArgumentException {
-        replyInviteByUuid(roomInviteUuid, false);
+    public boolean reject(String roomInviteUuid) throws DatabaseException {
+        return deleteById(roomInviteUuid);
     }
 
     @Override
@@ -98,22 +99,5 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
         return true;
     }
 
-    private void replyInviteByUuid(String roomInviteUuid, boolean acceptedFlag) throws DatabaseException, InviteException, InvalidArgumentException {
-        Optional<RoomInvite> roomInvite = getById(roomInviteUuid);
-
-        if (!roomInvite.isPresent()) {
-            String exceptionMessage = String.format("Invitation cannot send with roomInviteUuid[%s]", roomInviteUuid);
-            throw new InviteException(exceptionMessage);
-        }
-
-        roomInvite.get().setAcceptedFlag(acceptedFlag);
-
-        try {
-            roomInviteRepo.save(roomInvite.get());
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomInviteUuid);
-            throw new DatabaseReadException(errorMessage, exception);
-        }
-    }
 
 }
