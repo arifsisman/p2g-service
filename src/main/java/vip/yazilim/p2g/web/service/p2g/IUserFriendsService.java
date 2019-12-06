@@ -18,13 +18,9 @@ import java.util.Optional;
 public interface IUserFriendsService extends ICrudService<UserFriends, String> {
 
     List<User> getUserFriendsByUserUuid(String userUuid) throws DatabaseException, UserFriendsException;
-
     List<User> getUserFriendRequestsByUserUuid(String userUuid) throws DatabaseException, UserFriendsException;
-
     Optional<UserFriends> getUserFriendRequestByUserAndFriendUuid(String user1, String user2) throws UserFriendsException;
-
     boolean createUserFriendRequest(String user1, String user2) throws UserFriendsException;
-
     boolean replyUserFriendRequest(String user1, String user2, String status) throws UserFriendsException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
 }

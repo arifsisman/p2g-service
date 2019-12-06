@@ -136,7 +136,6 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
     public boolean replyUserFriendRequest(String user1, String user2, String status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         Optional<UserFriends> friendRequestOpt = Optional.empty();
 
-
         try {
             friendRequestOpt = getUserFriendRequestByUserAndFriendUuid(user2, user1);
         } catch (UserFriendsException e) {
