@@ -19,6 +19,7 @@ import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -95,6 +96,24 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         RoomQueue roomQueue = SpotifyHelper.convertSearchModelToRoomQueue(searchModel);
         roomQueue.setRoomUuid(roomUuid);
         return create(roomQueue);
+    }
+
+    @Override
+    public RoomQueue addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) throws DatabaseException {
+        RoomQueue roomQueue = new RoomQueue();
+        roomQueue.setRoomUuid(roomUuid);
+        roomQueue.setSongId(songId);
+        roomQueue.setSongUri(songUri);
+        roomQueue.setSongName(songName);
+        roomQueue.setDurationMs(durationMs);
+        roomQueue.setQueuedTime(new Date());
+        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+
+        roomQueue = create(roomQueue);
+        //TODO: delete log
+        LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
+
+        return roomQueue;
     }
 
     @Override

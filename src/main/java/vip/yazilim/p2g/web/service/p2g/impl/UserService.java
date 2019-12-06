@@ -19,6 +19,7 @@ import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -69,12 +70,11 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return entity.getUuid();
     }
 
-    //TODO: uncomment
-//    @Override
-//    protected User preInsert(User entity) {
-//        entity.setUuid(DBHelper.getRandomUuid());
-//        return entity;
-//    }
+    @Override
+    protected User preInsert(User entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
@@ -151,6 +151,24 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         return userList;
+    }
+
+    @Override
+    public User createUser(String uuid, String email, String username, String password) throws UserException {
+        User user = new User();
+        user.setUuid(uuid);
+        user.setEmail(email);
+        user.setDisplayName(username);
+        user.setPassword(password);
+
+        try {
+            create(user);
+        } catch (DatabaseException e) {
+            String err = String.format("User with email [%s] can not created.", email);
+            throw new UserException(err, e);
+        }
+
+        return user;
     }
 
     @Override

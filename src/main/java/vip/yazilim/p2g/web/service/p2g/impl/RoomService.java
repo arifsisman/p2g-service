@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
@@ -59,12 +60,11 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return entity.getUuid();
     }
 
-    //TODO: uncomment
-//    @Override
-//    protected Room preInsert(Room entity) {
-//        entity.setUuid(DBHelper.getRandomUuid());
-//        return entity;
-//    }
+    @Override
+    protected Room preInsert(Room entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 
     @Override
     public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException {
