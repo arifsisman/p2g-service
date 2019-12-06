@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest;
+package vip.yazilim.p2g.web.rest.impl;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
+import vip.yazilim.p2g.web.rest.IRoomQueueRest;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
@@ -28,7 +29,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/queue")
-public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
+public class RoomQueueRest extends ARestCrud<RoomQueue, String> implements IRoomQueueRest {
 
     @Autowired
     private IRoomQueueService roomQueueService;
@@ -38,6 +39,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return roomQueueService;
     }
 
+    @Override
     @GetMapping("/{roomUuid}/list")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -53,6 +55,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
+    @Override
     @GetMapping("/{roomUuid}/model")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -68,7 +71,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return RestResponseFactory.generateResponse(roomQueueModel, HttpStatus.OK, request, response);
     }
 
-
+    @Override
     @PostMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -84,6 +87,7 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
         return RestResponseFactory.generateResponse(roomQueue, HttpStatus.OK, request, response);
     }
 
+    @Override
     @DeleteMapping("/{roomQueueUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})

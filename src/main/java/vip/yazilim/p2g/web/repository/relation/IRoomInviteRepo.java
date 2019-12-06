@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, String> {
 
-    List<RoomInvite> findRoomInvitesByRoomUuid(String roomUuid);
+    List<RoomInvite> findByRoomUuid(String roomUuid);
 
 }

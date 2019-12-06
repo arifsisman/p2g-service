@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest;
+package vip.yazilim.p2g.web.rest.impl;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.rest.IRoomRest;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
@@ -29,7 +32,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/room")
-public class RoomRest extends ARestCrud<Room, String> {
+public class RoomRest extends ARestCrud<Room, String> implements IRoomRest {
 
     @Autowired
     private IRoomService roomService;
@@ -37,11 +40,18 @@ public class RoomRest extends ARestCrud<Room, String> {
     @Autowired
     private IRoomQueueService roomQueueService;
 
+    @Autowired
+    private IRoomUserService roomUserService;
+
+    @Autowired
+    private IRoomInviteService roomInviteService;
+
     @Override
     protected ICrudService<Room, String> getService() {
         return roomService;
     }
 
+    @Override
     @GetMapping("/{roomUuid}/model")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -61,6 +71,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         }
     }
 
+    @Override
     @DeleteMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -71,8 +82,14 @@ public class RoomRest extends ARestCrud<Room, String> {
             //delete room
             status = roomService.deleteRoom(roomUuid);
 
-            //delete roomQueue
+            //delete roomQueues
             roomQueueService.deleteRoomSongList(roomUuid);
+
+            //delete roomUsers
+            roomUserService.deleteRoomUsers(roomUuid);
+
+            //delete roomInvites
+            roomInviteService.deleteRoomInvites(roomUuid);
         } catch (Exception var7) {
             throw new ServiceException(var7);
         }

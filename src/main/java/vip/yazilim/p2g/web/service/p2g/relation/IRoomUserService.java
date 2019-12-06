@@ -20,4 +20,6 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
 
     RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException;
 
+    // Rest
+    boolean deleteRoomUsers(String roomUuid) throws DatabaseException;
 }

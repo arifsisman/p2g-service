@@ -130,4 +130,15 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         return roomUser;
     }
 
+    @Override
+    public boolean deleteRoomUsers(String roomUuid) throws DatabaseException {
+        List<RoomUser> roomUserList = roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
+
+        for (RoomUser roomUser : roomUserList) {
+            delete(roomUser);
+        }
+
+        return true;
+    }
+
 }

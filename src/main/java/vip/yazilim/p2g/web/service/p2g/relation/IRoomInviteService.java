@@ -19,4 +19,6 @@ public interface IRoomInviteService extends ICrudService<RoomInvite, String> {
     void acceptInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException, InvalidArgumentException;
     void rejectInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException, InvalidArgumentException;
 
+    // Rest
+    boolean deleteRoomInvites(String roomUuid) throws DatabaseException;
 }

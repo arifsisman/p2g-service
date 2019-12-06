@@ -63,7 +63,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
         List<RoomInvite> roomInviteList;
 
         try {
-            roomInviteList = roomInviteRepo.findRoomInvitesByRoomUuid(roomUuid);
+            roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomUuid);
             throw new DatabaseReadException(errorMessage, exception);
@@ -85,6 +85,17 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     @Override
     public void rejectInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException, InvalidArgumentException {
         replyInviteByUuid(roomInviteUuid, false);
+    }
+
+    @Override
+    public boolean deleteRoomInvites(String roomUuid) throws DatabaseException {
+        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
+
+        for(RoomInvite roomInvite: roomInviteList){
+            delete(roomInvite);
+        }
+
+        return true;
     }
 
     private void replyInviteByUuid(String roomInviteUuid, boolean acceptedFlag) throws DatabaseException, InviteException, InvalidArgumentException {

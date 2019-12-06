@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest;
+package vip.yazilim.p2g.web.rest.impl;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
+import vip.yazilim.p2g.web.rest.IUserRest;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -28,7 +29,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/user")
-public class UserRest extends ARestCrud<User, String> {
+public class UserRest extends ARestCrud<User, String> implements IUserRest {
 
     @Autowired
     private IUserService userService;
@@ -38,6 +39,7 @@ public class UserRest extends ARestCrud<User, String> {
         return userService;
     }
 
+    @Override
     @GetMapping({"/{userUuid}/model"})
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
