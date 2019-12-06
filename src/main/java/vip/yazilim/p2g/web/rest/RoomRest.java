@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest.entity;
+package vip.yazilim.p2g.web.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +16,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/room")
-public class RoomRestController extends ARestCrud<Room, String> {
+public class RoomRest extends ARestCrud<Room, String> {
 
     @Autowired
     private IRoomService roomService;

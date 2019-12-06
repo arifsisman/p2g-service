@@ -13,6 +13,8 @@ import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import java.util.Date;
@@ -29,17 +31,20 @@ public class DataInitializer implements CommandLineRunner {
     private IRoomService roomService;
 
     @Autowired
+    private IRoomUserService roomUserService;
+
+    @Autowired
     private IRoomQueueService roomQueueService;
 
     @Override
-    public void run(String... args) throws RoomException {
+    public void run(String... args) throws RoomException, DatabaseException, InvalidArgumentException {
         User arif = createUser("1", "arif", "arif", "0");
         User emre = createUser("2", "emre", "emre", "0");
 
-        Room room = createRoom("Test Room", arif.getUuid());
+        Room room = createRoom("Test Room", arif.getUuid(), null);
 
-        roomService.joinRoom(room.getUuid(), arif.getUuid());
-        roomService.joinRoom(room.getUuid(), emre.getUuid());
+        roomUserService.joinRoom(room.getUuid(), arif.getUuid(), null);
+        roomUserService.joinRoom(room.getUuid(), emre.getUuid(), null);
 
         createRoomQueue("1", "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L);
         createRoomQueue("1", "12Chz98pHFMPJEknJQMWvI", "spotify:artist:12Chz98pHFMPJEknJQMWvI", "Madness", 1200000L);
@@ -65,12 +70,13 @@ public class DataInitializer implements CommandLineRunner {
         return user;
     }
 
-    private Room createRoom(String name, String owner) {
+    private Room createRoom(String name, String owner, String password) {
         Room room = new Room();
 
         room.setUuid("1");
         room.setName(name);
         room.setOwnerUuid(owner);
+        room.setPassword(password);
         room.setPrivateFlag(false);
 
         try {

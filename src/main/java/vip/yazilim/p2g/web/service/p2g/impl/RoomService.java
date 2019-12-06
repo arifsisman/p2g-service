@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -70,21 +69,12 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Override
     public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException {
         Optional<Room> room;
-        Optional<RoomUser> roomUser;
-        String roomUuid;
+        RoomUser roomUser;
 
         roomUser = roomUserService.getRoomUser(userUuid);
 
-        if (roomUser.isPresent()) {
-            roomUuid = roomUser.get().getRoomUuid();
-        } else {
-            LOGGER.warn("User[{}] not in any Room!", userUuid);
-            String err = String.format("User[%s] not in any Room!", userUuid);
-            throw new RoomException(err);
-        }
-
         try {
-            room = getById(roomUuid);
+            room = getById(roomUser.getRoomUuid());
         } catch (Exception exception) {
             String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
             throw new RoomException(err, exception);
@@ -164,24 +154,5 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         }
 
         return room;
-    }
-
-    @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid) throws RoomException {
-        RoomUser roomUser = new RoomUser();
-
-        roomUser.setRoomUuid(roomUuid);
-        roomUser.setUserUuid(userUuid);
-        roomUser.setRoleName(Roles.USER.getRoleName());
-        roomUser.setActiveFlag(true);
-
-        try {
-            roomUserService.create(roomUser);
-        } catch (DatabaseException e) {
-            String err = String.format("An error occurred when joining roomUuid[%s], userUuid[%s]", roomUuid, userUuid);
-            throw new RoomException(err, e);
-        }
-
-        return roomUser;
     }
 }
