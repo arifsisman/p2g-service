@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 

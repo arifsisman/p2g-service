@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;

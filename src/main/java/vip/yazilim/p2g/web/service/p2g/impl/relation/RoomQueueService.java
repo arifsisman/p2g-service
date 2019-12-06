@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
@@ -22,6 +23,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -117,8 +119,15 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     }
 
     @Override
-    public boolean removeFromRoomQueue(RoomQueue roomQueue) throws DatabaseException {
-        return delete(roomQueue);
+    public boolean removeFromRoomQueue(String roomQueueUuid) throws DatabaseException, InvalidArgumentException, QueueException {
+        Optional<RoomQueue> roomQueueOpt = getById(roomQueueUuid);
+
+        if (!roomQueueOpt.isPresent()) {
+            String err = String.format("Queue[%s] not found", roomQueueUuid);
+            throw new QueueException(err);
+        }
+
+        return delete(roomQueueOpt.get());
     }
 
     /////////////////////////////
@@ -148,6 +157,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     public RoomQueue getRoomQueuePaused(String roomUuid) {
         return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PAUSED.getQueueStatus());
     }
+
     /////////////////////////////
     // Update queue status
     /////////////////////////////

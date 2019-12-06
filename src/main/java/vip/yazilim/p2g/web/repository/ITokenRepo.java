@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 
 import java.util.Optional;
 

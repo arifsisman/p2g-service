@@ -1,20 +1,23 @@
 package vip.yazilim.p2g.web.rest;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.exception.RoleException;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
+import vip.yazilim.spring.core.rest.model.RestErrorResponse;
+import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 import vip.yazilim.spring.core.service.ICrudService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
@@ -35,8 +38,22 @@ public class UserRest extends ARestCrud<User, String> {
         return userService;
     }
 
-    @GetMapping("/model/{userUuid}")
-    public Optional<UserModel> getRoomModel(@PathVariable String userUuid) throws InvalidArgumentException, RoleException, RoomException, DatabaseException {
-        return userService.getUserModelByUserUuid(userUuid);
+    @GetMapping({"/{userUuid}/model"})
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid){
+        Optional<UserModel> userModel;
+
+        try {
+            userModel = userService.getUserModelByUserUuid(userUuid);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        if (!userModel.isPresent()) {
+            throw new NotFoundException("Model Not Found");
+        } else {
+            return RestResponseFactory.generateResponse(userModel.get(), HttpStatus.OK, request, response);
+        }
     }
 }
