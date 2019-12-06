@@ -19,7 +19,6 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -69,7 +68,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 //    }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException {
         Optional<Room> room;
         Optional<RoomUser> roomUser;
         String roomUuid;
@@ -80,19 +79,20 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             roomUuid = roomUser.get().getRoomUuid();
         } else {
             LOGGER.warn("User[{}] not in any Room!", userUuid);
-            return Optional.empty();
+            String err = String.format("User[%s] not in any Room!", userUuid);
+            throw new RoomException(err);
         }
 
         try {
             room = getById(roomUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
-            throw new DatabaseReadException(errorMessage, exception);
+            String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
+            throw new RoomException(err, exception);
         }
 
         if (!room.isPresent()) {
-            LOGGER.warn("Room[{}] is not present!", roomUuid);
-            return Optional.empty();
+            String err = String.format("Room[%s] is not present!", userUuid);
+            throw new RoomException(err);
         }
 
         return room;
@@ -160,9 +160,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         try {
             create(room);
         } catch (DatabaseException e) {
-            LOGGER.error("Room cannot created!");
             throw new RoomException("Room cannot created!", e);
         }
+
         return room;
     }
 
