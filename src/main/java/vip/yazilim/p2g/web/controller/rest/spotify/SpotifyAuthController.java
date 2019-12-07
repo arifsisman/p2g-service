@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.spotify;
+package vip.yazilim.p2g.web.controller.rest.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;

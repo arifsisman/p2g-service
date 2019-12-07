@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest;
+package vip.yazilim.p2g.web.controller.rest.p2g;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

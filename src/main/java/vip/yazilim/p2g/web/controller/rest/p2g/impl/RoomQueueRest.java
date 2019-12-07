@@ -1,14 +1,14 @@
-package vip.yazilim.p2g.web.rest.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g.impl;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.controller.rest.p2g.IRoomQueueRest;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.rest.IRoomQueueRest;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;

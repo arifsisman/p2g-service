@@ -1,10 +1,10 @@
-package vip.yazilim.p2g.web.rest.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.yazilim.p2g.web.controller.rest.p2g.IUserFriendsRest;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
-import vip.yazilim.p2g.web.rest.IUserFriendsRest;
 import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.service.ICrudService;

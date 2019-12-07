@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.rest;
+package vip.yazilim.p2g.web.controller.rest.p2g;
 
 /**
  * @author mustafaarifsisman - 07.12.2019

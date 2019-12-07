@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.spotify;
+package vip.yazilim.p2g.web.controller.rest.spotify;
 
 import com.wrapper.spotify.enums.ModelObjectType;
 import org.springframework.beans.factory.annotation.Autowired;

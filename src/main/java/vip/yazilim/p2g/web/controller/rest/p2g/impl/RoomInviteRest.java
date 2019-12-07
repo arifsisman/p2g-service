@@ -1,12 +1,12 @@
-package vip.yazilim.p2g.web.rest.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g.impl;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.controller.rest.p2g.IRoomInviteRest;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
-import vip.yazilim.p2g.web.rest.IRoomInviteRest;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
