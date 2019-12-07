@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         roomUserService.joinRoom(roomUuid, emre.getUuid(), "1");
 
         roomQueueService.addToRoomQueue(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L);
-        roomQueueService.addToRoomQueue(roomUuid, "12Chz98pHFMPJEknJQMWvI", "spotify:artist:12Chz98pHFMPJEknJQMWvI", "Madness", 1200000L);
+        roomQueueService.addToRoomQueue(roomUuid, "12Chz98pHFMPJEknJQMWvI", "spotify:track:12Chz98pHFMPJEknJQMWvI", "Madness", 1200000L);
         roomQueueService.addToRoomQueue(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000L);
         roomQueueService.addToRoomQueue(roomUuid, "12Chz98pHFMPJEknJQMWvI", "spotify:track:12Chz98pHFMPJEknJQMWvI", "Time Is Running Out", 1200000L);
     }

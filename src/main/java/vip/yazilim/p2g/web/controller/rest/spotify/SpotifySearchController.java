@@ -4,11 +4,10 @@ import com.wrapper.spotify.enums.ModelObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
@@ -17,11 +16,14 @@ import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.util.List;
 
+import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
+
 /**
  * @author mustafaarifsisman - 1.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
+@RequestMapping(API_SPOTIFY + "/search")
 public class SpotifySearchController {
 
     @Autowired
@@ -36,19 +38,7 @@ public class SpotifySearchController {
     @Autowired
     private ISpotifySearchService spotifySearchService;
 
-    @Autowired
-    private IRoomService roomService;
-
-    @GetMapping("/rooms")
-    public List<Room> rooms() {
-        try {
-            return roomService.getAll();
-        } catch (Exception e) {
-            throw new ServiceException("An error occurred while getting rooms.", e);
-        }
-    }
-
-    @GetMapping("/s/search/{query}")
+    @GetMapping("/{query}")
     public List<SearchModel> search(@PathVariable String query) {
         try {
             return spotifySearchService.search(query, ModelObjectType.TRACK, ModelObjectType.ALBUM, ModelObjectType.PLAYLIST);
@@ -57,7 +47,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/s/song/{id}")
+    @GetMapping("/song/{id}")
     public SearchModel getSong(@PathVariable String id) {
         try {
             return spotifyTrackService.getTrack(id);
@@ -66,7 +56,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/s/songs/{ids}")
+    @GetMapping("/songs/{ids}")
     public List<SearchModel> getSongList(@PathVariable String[] ids) {
         List<SearchModel> searchModelList;
         try {
@@ -77,7 +67,7 @@ public class SpotifySearchController {
         return searchModelList;
     }
 
-    @GetMapping("/s/album/{albumId}/songs")
+    @GetMapping("/album/{albumId}/songs")
     public List<SearchModel> getAlbumSongList(@PathVariable String albumId) {
         try {
             return spotifyAlbumService.getSongs(albumId);
@@ -86,7 +76,7 @@ public class SpotifySearchController {
         }
     }
 
-    @GetMapping("/s/playlist/{playlistId}/songs")
+    @GetMapping("/playlist/{playlistId}/songs")
     public List<SearchModel> getPlaylistSongList(@PathVariable String playlistId) {
         try {
             return spotifyPlaylistService.getSongs(playlistId);

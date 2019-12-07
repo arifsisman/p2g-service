@@ -1,11 +1,10 @@
-package vip.yazilim.p2g.web.controller.rest.p2g.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.controller.rest.p2g.IRoomInviteRest;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -26,7 +25,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/invite")
-public class RoomInviteRest extends ARestCrud<RoomInvite, String> implements IRoomInviteRest {
+public class RoomInviteRest extends ARestCrud<RoomInvite, String> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
@@ -36,7 +35,6 @@ public class RoomInviteRest extends ARestCrud<RoomInvite, String> implements IRo
         return roomInviteService;
     }
 
-    @Override
     @DeleteMapping("/{roomInviteUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})

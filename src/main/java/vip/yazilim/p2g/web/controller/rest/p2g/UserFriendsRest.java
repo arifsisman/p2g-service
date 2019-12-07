@@ -1,9 +1,8 @@
-package vip.yazilim.p2g.web.controller.rest.p2g.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vip.yazilim.p2g.web.controller.rest.p2g.IUserFriendsRest;
 import vip.yazilim.p2g.web.entity.relation.UserFriends;
 import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.spring.core.rest.ARestCrud;
@@ -17,7 +16,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/friends")
-public class UserFriendsRest extends ARestCrud<UserFriends, String> implements IUserFriendsRest {
+public class UserFriendsRest extends ARestCrud<UserFriends, String> {
 
     @Autowired
     private IUserFriendsService userFriendsService;

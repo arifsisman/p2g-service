@@ -1,11 +1,10 @@
-package vip.yazilim.p2g.web.controller.rest.p2g.impl;
+package vip.yazilim.p2g.web.controller.rest.p2g;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.controller.rest.p2g.IRoomRest;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -32,7 +31,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/room")
-public class RoomRest extends ARestCrud<Room, String> implements IRoomRest {
+public class RoomRest extends ARestCrud<Room, String> {
 
     @Autowired
     private IRoomService roomService;
@@ -51,7 +50,6 @@ public class RoomRest extends ARestCrud<Room, String> implements IRoomRest {
         return roomService;
     }
 
-    @Override
     @GetMapping("/{roomUuid}/model")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -71,7 +69,6 @@ public class RoomRest extends ARestCrud<Room, String> implements IRoomRest {
         }
     }
 
-    @Override
     @DeleteMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})

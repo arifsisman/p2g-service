@@ -7,10 +7,7 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -29,11 +26,14 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Optional;
 
+import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
+
 /**
  * @author mustafaarifsisman - 23.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
+@RequestMapping(API_SPOTIFY)
 public class SpotifyAuthController {
 
     @Autowired

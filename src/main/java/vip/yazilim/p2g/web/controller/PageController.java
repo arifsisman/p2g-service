@@ -8,12 +8,7 @@ public class PageController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:authorize";
-    }
-
-    @GetMapping("/profile")
-    public String profile() {
-        return "page_profile";
+        return "redirect:spotify/authorize";
     }
 
 }
