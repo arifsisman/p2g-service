@@ -24,7 +24,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY + "/search")
-public class SpotifySearchController {
+public class SearchRest {
 
     @Autowired
     private ISpotifyTrackService spotifyTrackService;

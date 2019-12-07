@@ -20,7 +20,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY + "/user")
-public class SpotifyUserController {
+public class SpotifyUserRest {
 
     @Autowired
     private ISpotifyUserService spotifyUserService;

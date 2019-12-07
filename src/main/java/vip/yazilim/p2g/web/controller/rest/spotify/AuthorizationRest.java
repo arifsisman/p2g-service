@@ -34,7 +34,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY)
-public class SpotifyAuthController {
+public class AuthorizationRest {
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
