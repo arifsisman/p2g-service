@@ -51,11 +51,17 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public List<RoomQueue> play(String roomQueueUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
-        RoomQueue nowPlaying = roomQueueService.getById(roomQueueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
+    public List<RoomQueue> playRoom(String roomUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
+        RoomQueue roomQueue = roomQueueService.getRoomQueueNext(roomUuid);
+        return playQueue(roomQueue);
+    }
 
-        String songUri = nowPlaying.getSongUri();
-        String roomUuid = nowPlaying.getRoomUuid();
+    @Override
+    public List<RoomQueue> playQueue(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
+//        RoomQueue nowPlaying = roomQueueService.getById(roomQueueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
+
+        String songUri = roomQueue.getSongUri();
+        String roomUuid = roomQueue.getRoomUuid();
 
         if (!songUri.contains(ModelObjectType.TRACK.getType())) {
             String err = String.format("URI[%s] does not match with an Track URI", songUri);
@@ -69,11 +75,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), getPlayerModel(roomUuid));
 
             // Update queue status
-            roomQueueService.updateRoomQueueStatus(nowPlaying);
+            roomQueueService.updateRoomQueueStatus(roomQueue);
 
             // Update nowPlaying
-            nowPlaying.setPlayingTime(new Date());
-            roomQueueService.update(nowPlaying);
+            roomQueue.setPlayingTime(new Date());
+            roomQueueService.update(roomQueue);
         }
 
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
@@ -126,7 +132,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         if (next == null) {
             throw new PlayerException("Next song is empty.");
         } else {
-            play(next.getUuid());
+            playQueue(next);
         }
 
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
@@ -138,7 +144,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         if (previous == null) {
             throw new PlayerException("Previous song is empty.");
         } else {
-            play(previous.getUuid());
+            playQueue(previous);
         }
 
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);

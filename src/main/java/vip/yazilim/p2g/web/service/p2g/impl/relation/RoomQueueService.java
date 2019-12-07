@@ -129,7 +129,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     public boolean deleteRoomSongList(String roomUuid) throws DatabaseException {
         List<RoomQueue> roomQueueList = roomQueueRepo.findByRoomUuid(roomUuid);
 
-        for(RoomQueue roomQueue: roomQueueList){
+        for (RoomQueue roomQueue : roomQueueList) {
             delete(roomQueue);
         }
 
@@ -151,7 +151,16 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public RoomQueue getRoomQueueNext(String roomUuid) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
+        RoomQueue next = roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
+
+        if (next == null) {
+            RoomQueue queued = roomQueueRepo.findFirstByRoomUuidOrderByQueuedTime(roomUuid);
+            if (queued != null) {
+                next = queued;
+            }
+        }
+
+        return next;
     }
 
     @Override

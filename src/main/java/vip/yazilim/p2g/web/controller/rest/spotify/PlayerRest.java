@@ -1,10 +1,7 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -24,10 +21,19 @@ public class PlayerRest {
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
 
-    @GetMapping("/{queueUuid}")
-    public List<RoomQueue> play(@PathVariable String queueUuid) {
+    @GetMapping("/{roomUuid}/play")
+    public List<RoomQueue> playRoom(@PathVariable String roomUuid) {
         try {
-            return spotifyPlayerService.play(queueUuid);
+            return spotifyPlayerService.playRoom(roomUuid);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @PutMapping("/play")
+    public List<RoomQueue> playQueue(@RequestBody RoomQueue roomQueue) {
+        try {
+            return spotifyPlayerService.playQueue(roomQueue);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -60,7 +66,7 @@ public class PlayerRest {
         }
     }
 
-    @GetMapping("/{roomUuid}/prev")
+    @GetMapping("/{roomUuid}/previous")
     public List<RoomQueue> previous(@PathVariable String roomUuid) {
         try {
             return spotifyPlayerService.previous(roomUuid);
