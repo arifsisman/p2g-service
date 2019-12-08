@@ -5,8 +5,11 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
+import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestErrorResponse;
@@ -30,9 +33,32 @@ public class RoomInviteRest extends ARestCrud<RoomInvite, String> {
     @Autowired
     private IRoomInviteService roomInviteService;
 
+    @Autowired
+    private IRoomUserService roomUserService;
+
     @Override
     protected ICrudService<RoomInvite, String> getService() {
         return roomInviteService;
+    }
+
+    @PostMapping("/")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
+        RoomUser roomUser = new RoomUser();
+
+        roomUser.setUserUuid(roomInvite.getUserUuid());
+        roomUser.setRoomUuid(roomInvite.getRoomUuid());
+        roomUser.setRoleName(Roles.USER.getRoleName());
+        roomUser.setActiveFlag(true);
+
+        try {
+            roomUser = roomUserService.create(roomUser);
+        } catch (Exception var7) {
+            throw new ServiceException(var7);
+        }
+
+        return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
     @DeleteMapping("/{roomInviteUuid}")
