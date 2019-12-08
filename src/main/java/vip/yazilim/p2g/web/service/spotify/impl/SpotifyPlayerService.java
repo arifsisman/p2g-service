@@ -51,15 +51,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public List<RoomQueue> playRoom(String roomUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
-        RoomQueue roomQueue = roomQueueService.getRoomQueueNext(roomUuid);
-        return playQueue(roomQueue);
-    }
-
-    @Override
     public List<RoomQueue> playQueue(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
-//        RoomQueue nowPlaying = roomQueueService.getById(roomQueueUuid).orElseThrow(() -> new PlayerException("Queued song not found"));
-
         String songUri = roomQueue.getSongUri();
         String roomUuid = roomQueue.getRoomUuid();
 
@@ -83,6 +75,12 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         }
 
         return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+    }
+
+    @Override
+    public List<RoomQueue> play(String roomUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
+        RoomQueue roomQueue = roomQueueService.getRoomQueueNext(roomUuid);
+        return playQueue(roomQueue);
     }
 
     @Override

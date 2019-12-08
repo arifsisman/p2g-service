@@ -1,10 +1,13 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
+import vip.yazilim.spring.core.rest.model.RestErrorResponse;
 
 import java.util.List;
 
@@ -21,19 +24,24 @@ public class PlayerRest {
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
 
-    @GetMapping("/{roomUuid}/play")
-    public List<RoomQueue> playRoom(@PathVariable String roomUuid) {
+    @PutMapping("/play")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class),
+            @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public List<RoomQueue> playQueue(@RequestBody RoomQueue roomQueue) {
         try {
-            return spotifyPlayerService.playRoom(roomUuid);
+            return spotifyPlayerService.playQueue(roomQueue);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServiceException(e);
         }
     }
 
-    @PutMapping("/play")
-    public List<RoomQueue> playQueue(@RequestBody RoomQueue roomQueue) {
+    @GetMapping("/{roomUuid}/play")
+    public List<RoomQueue> play(@PathVariable String roomUuid) {
         try {
-            return spotifyPlayerService.playQueue(roomQueue);
+            return spotifyPlayerService.play(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

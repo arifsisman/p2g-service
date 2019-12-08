@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface ISpotifyPlayerService {
 
-    List<RoomQueue> playRoom(String roomUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
+    List<RoomQueue> play(String roomUuid) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
 
     List<RoomQueue> playQueue(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
 

@@ -2,8 +2,9 @@ package vip.yazilim.p2g.web.constant;
 
 public class Constants {
 
-    public static final String API_P2G = "/p2g";
-    public static final String API_SPOTIFY = "/spotify";
+    public static final String API = "/api";
+    public static final String API_P2G = API;
+    public static final String API_SPOTIFY =  API + "/spotify";
 
     public static final String TABLE_PREFIX = "p2g_";
     public static final String RELATION_TABLE_PREFIX = "p2g_rel_";
