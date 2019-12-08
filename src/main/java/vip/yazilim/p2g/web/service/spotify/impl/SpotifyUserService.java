@@ -13,7 +13,7 @@ import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import javax.transaction.Transactional;
 import java.util.LinkedList;

@@ -11,10 +11,10 @@ import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;

@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
 

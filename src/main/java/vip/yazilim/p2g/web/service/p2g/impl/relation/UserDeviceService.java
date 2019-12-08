@@ -10,9 +10,9 @@ import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.repository.relation.IUserDeviceRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;

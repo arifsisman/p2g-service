@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.exception;
 
 
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.GeneralException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 
 /**

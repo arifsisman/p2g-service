@@ -14,9 +14,9 @@ import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -156,7 +156,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         if (next == null) {
             RoomQueue queued = roomQueueRepo.findFirstByRoomUuidOrderByQueuedTime(roomUuid);
             if (queued != null) {
-                next = queued;
+                return queued;
             }
         }
 

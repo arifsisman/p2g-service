@@ -4,9 +4,9 @@ import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package vip.yazilim.p2g.web.service.p2g.relation;
 
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;

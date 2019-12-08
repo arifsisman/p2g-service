@@ -1,12 +1,11 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-
 import com.wrapper.spotify.model_objects.specification.User;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.exception.TokenException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.List;
 

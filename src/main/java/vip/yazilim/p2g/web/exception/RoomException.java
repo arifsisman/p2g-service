@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.exception;
 
-import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.general.GeneralException;
 
 /**
  * @author mustafaarifsisman - 26.11.2019

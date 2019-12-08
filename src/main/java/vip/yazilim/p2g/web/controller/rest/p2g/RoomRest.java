@@ -16,8 +16,8 @@ import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestErrorResponse;
 import vip.yazilim.spring.core.rest.model.RestResponse;
-import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 import vip.yazilim.spring.core.service.ICrudService;
+import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

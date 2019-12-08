@@ -13,8 +13,8 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
     private IRoomQueueService roomQueueService;
 
     @Override
-    public void run(String... args) throws RoomException, DatabaseException, InvalidArgumentException, UserException {
+    public void run(String... args) throws DatabaseException, InvalidArgumentException, RoomException, UserException {
         User arif = userService.createUser("arif", "arif", "0");
         User emre = userService.createUser("emre", "emre", "0");
 
