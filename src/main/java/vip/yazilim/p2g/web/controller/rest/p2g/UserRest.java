@@ -46,8 +46,8 @@ public class UserRest extends ARestCrud<User, String> {
 
         try {
             userModel = userService.getUserModelByUserUuid(userUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         if (!userModel.isPresent()) {
@@ -70,8 +70,8 @@ public class UserRest extends ARestCrud<User, String> {
             String password = user.getPassword();
 
             createdUser = userService.createUser(username, email, password);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(createdUser, HttpStatus.OK, request, response);

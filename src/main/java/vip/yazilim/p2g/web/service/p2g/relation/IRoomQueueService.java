@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.service.p2g.relation;
 import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.exception.QueueException;
-import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -34,6 +33,5 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     boolean removeFromRoomQueue(String roomQueueUuid) throws DatabaseException, InvalidArgumentException, QueueException;
     boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
     List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) throws DatabaseException;
-    RoomQueueModel getRoomQueueModelByRoomUuid(String roomUuid);
 
 }
