@@ -152,16 +152,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public RoomQueue getRoomQueueNext(String roomUuid) {
-        RoomQueue next = roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
-
-        if (next == null) {
-            RoomQueue queued = roomQueueRepo.findFirstByRoomUuidOrderByQueuedTime(roomUuid);
-            if (queued != null) {
-                return queued;
-            }
-        }
-
-        return next;
+        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
     }
 
     @Override
@@ -172,6 +163,11 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     @Override
     public RoomQueue getRoomQueuePaused(String roomUuid) {
         return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PAUSED.getQueueStatus());
+    }
+
+    @Override
+    public RoomQueue getRoomQueueFirstQueued(String roomUuid) {
+        return roomQueueRepo.findFirstByRoomUuidOrderByQueuedTime(roomUuid);
     }
 
     /////////////////////////////

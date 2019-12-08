@@ -21,6 +21,7 @@ public interface IRoomQueueService extends ICrudService<RoomQueue, String> {
     List<RoomQueue> getRoomQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) throws DatabaseException;
     RoomQueue addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) throws DatabaseException;
 
+    RoomQueue getRoomQueueFirstQueued(String roomUuid);
     RoomQueue getRoomQueuePaused(String roomUuid);
     RoomQueue getRoomQueueNowPlaying(String roomUuid);
     RoomQueue getRoomQueueNext(String roomUuid);

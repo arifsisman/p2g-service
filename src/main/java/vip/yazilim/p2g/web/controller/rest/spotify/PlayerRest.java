@@ -1,14 +1,16 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
-import vip.yazilim.spring.core.rest.model.RestErrorResponse;
+import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.util.RestResponseFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
@@ -24,80 +26,94 @@ public class PlayerRest {
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
 
-    @PutMapping("/play")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({
-            @ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class),
-            @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public List<RoomQueue> playQueue(@RequestBody RoomQueue roomQueue) {
+    @PostMapping("/play")
+    public RestResponse<List<RoomQueue>> playQueue(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomQueue roomQueue) {
+        List<RoomQueue> roomQueueList;
+
         try {
-            return spotifyPlayerService.playQueue(roomQueue);
+            roomQueueList = spotifyPlayerService.play(roomQueue);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/play")
-    public List<RoomQueue> play(@PathVariable String roomUuid) {
+    @PostMapping("/{roomUuid}/play")
+    public RestResponse<List<RoomQueue>> startResume(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<RoomQueue> roomQueueList;
+
         try {
-            return spotifyPlayerService.play(roomUuid);
+            roomQueueList =  spotifyPlayerService.startResume(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/pause")
-    public List<RoomQueue> pause(@PathVariable String roomUuid) {
+    @PostMapping("/{roomUuid}/pause")
+    public RestResponse<List<RoomQueue>> pause(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<RoomQueue> roomQueueList;
+
         try {
-            return spotifyPlayerService.pause(roomUuid);
+            roomQueueList =  spotifyPlayerService.pause(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/resume")
-    public List<RoomQueue> resume(@PathVariable String roomUuid) {
+    @PostMapping("/{roomUuid}/next")
+    public RestResponse<List<RoomQueue>> next(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<RoomQueue> roomQueueList;
+
         try {
-            return spotifyPlayerService.resume(roomUuid);
+            roomQueueList =  spotifyPlayerService.next(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/next")
-    public List<RoomQueue> next(@PathVariable String roomUuid) {
+    @PostMapping("/{roomUuid}/previous")
+    public RestResponse<List<RoomQueue>> previous(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<RoomQueue> roomQueueList;
+
         try {
-            return spotifyPlayerService.next(roomUuid);
+            roomQueueList =  spotifyPlayerService.previous(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/previous")
-    public List<RoomQueue> previous(@PathVariable String roomUuid) {
+    @PostMapping("/{roomUuid}/seek/{ms}")
+    public RestResponse<Integer> seek(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable Integer ms) {
+        int currentMs;
+
         try {
-            return spotifyPlayerService.previous(roomUuid);
+            currentMs =  spotifyPlayerService.seek(roomUuid, ms);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(currentMs, HttpStatus.OK, request, response);
     }
 
-    @GetMapping("/{roomUuid}/seek/{ms}")
-    public int seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
-        try {
-            return spotifyPlayerService.seek(roomUuid, ms);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
+    @PostMapping("/{roomUuid}/repeat")
+    public RestResponse<Boolean> repeat(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        boolean repeat;
 
-    @GetMapping("/{roomUuid}/repeat")
-    public boolean repeat(@PathVariable String roomUuid) {
         try {
-            return spotifyPlayerService.repeat(roomUuid);
+            repeat =  spotifyPlayerService.repeat(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        return RestResponseFactory.generateResponse(repeat, HttpStatus.OK, request, response);
     }
 }
