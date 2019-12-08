@@ -5,13 +5,12 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
-import vip.yazilim.spring.core.rest.ARestCrud;
+import vip.yazilim.spring.core.rest.ARestRead;
 import vip.yazilim.spring.core.rest.model.RestErrorResponse;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.service.ICrudService;
@@ -28,7 +27,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/invite")
-public class RoomInviteRest extends ARestCrud<RoomInvite, String> {
+public class RoomInviteRest extends ARestRead<RoomInvite, String> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
@@ -41,21 +40,34 @@ public class RoomInviteRest extends ARestCrud<RoomInvite, String> {
         return roomInviteService;
     }
 
+    @PostMapping("/{roomUuid}/{userUuid}")
+    @CrossOrigin(origins = {"*"})
+    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
+    public RestResponse<RoomUser> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
+        RoomUser roomUser = new RoomUser();
+
+        roomUser.setRoomUuid(roomUuid);
+        roomUser.setUserUuid(userUuid);
+
+        try {
+            roomUser = roomUserService.create(roomUser);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
+    }
+
     @PostMapping("/")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
-        RoomUser roomUser = new RoomUser();
-
-        roomUser.setUserUuid(roomInvite.getUserUuid());
-        roomUser.setRoomUuid(roomInvite.getRoomUuid());
-        roomUser.setRoleName(Roles.USER.getRoleName());
-        roomUser.setActiveFlag(true);
+        RoomUser roomUser;
 
         try {
-            roomUser = roomUserService.create(roomUser);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+            roomUser = roomUserService.acceptRoomInvite(roomInvite);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
@@ -69,8 +81,8 @@ public class RoomInviteRest extends ARestCrud<RoomInvite, String> {
 
         try {
             status = roomInviteService.reject(roomInviteUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);

@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl.relation;
 
+import com.wrapper.spotify.enums.ModelObjectType;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +14,17 @@ import vip.yazilim.p2g.web.model.RoomQueueModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
+import vip.yazilim.p2g.web.service.spotify.impl.SpotifyAlbumService;
+import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -39,6 +40,12 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // injected dependencies
     @Autowired
     private IRoomQueueRepo roomQueueRepo;
+
+    @Autowired
+    private SpotifyAlbumService spotifyAlbumService;
+
+    @Autowired
+    private SpotifyPlaylistService spotifyPlaylistService;
 
     @Override
     protected JpaRepository<RoomQueue, String> getRepository() {
@@ -89,10 +96,8 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Control Queue
     /////////////////////////////
     @Override
-    public RoomQueue addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
-        RoomQueue roomQueue = SpotifyHelper.convertSearchModelToRoomQueue(searchModel);
-        roomQueue.setRoomUuid(roomUuid);
-        return create(roomQueue);
+    public List<RoomQueue> addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
+        return convertSearchModelToRoomQueue(searchModel);
     }
 
     //TODO: delete method, this method is test purposes
@@ -215,6 +220,52 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         roomQueue.setQueueStatus(queueStatus.getQueueStatus());
         update(roomQueue);
+    }
+
+    private List<RoomQueue> convertSearchModelToRoomQueue(SearchModel searchModel) throws DatabaseException {
+        List<RoomQueue> roomQueueList = new LinkedList<>();
+
+        if (searchModel.getType() == ModelObjectType.TRACK) {
+            roomQueueList.add(getRoomQueueFromTrack(searchModel));
+        } else if (searchModel.getType() == ModelObjectType.ALBUM) {
+            List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
+            for (SearchModel s : searchModelList) {
+                roomQueueList.add(getRoomQueueFromTrack(s));
+            }
+        } else {
+            List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(searchModel.getId());
+            for (SearchModel s : searchModelList) {
+                roomQueueList.add(getRoomQueueFromTrack(s));
+            }
+        }
+
+        return roomQueueList;
+    }
+
+    private RoomQueue getRoomQueueFromTrack(SearchModel searchModel) throws DatabaseException {
+        RoomQueue roomQueue = new RoomQueue();
+
+        roomQueue.setSongId(searchModel.getId());
+        roomQueue.setSongUri(searchModel.getUri());
+        roomQueue.setSongName(searchModel.getName());
+        roomQueue.setAlbumName(searchModel.getAlbumName());
+        roomQueue.setImageUrl(searchModel.getImageUrl());
+        roomQueue.setCurrentMs(0L);
+        roomQueue.setDurationMs(searchModel.getDurationMs());
+        roomQueue.setQueuedTime(TimeHelper.getCurrentDate());
+        roomQueue.setVotes(0);
+        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+
+        ArtistSimplified[] artists = searchModel.getArtists();
+        String[] roomQueueArtists = new String[artists.length];
+
+        for (int i = 0; i < artists.length; i++) {
+            roomQueueArtists[i] = artists[i].getName();
+        }
+
+        roomQueue.setArtists(roomQueueArtists);
+
+        return create(roomQueue);
     }
 
 }

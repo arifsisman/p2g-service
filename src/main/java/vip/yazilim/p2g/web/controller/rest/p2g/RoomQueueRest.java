@@ -46,8 +46,8 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
 
         try {
             roomQueueList = roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
@@ -61,8 +61,8 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
 
         try {
             roomQueueModel = roomQueueService.getRoomQueueModelByRoomUuid(roomUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(roomQueueModel, HttpStatus.OK, request, response);
@@ -71,16 +71,16 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
     @PostMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<RoomQueue> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
-        RoomQueue roomQueue;
+    public RestResponse<List<RoomQueue>> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
+        List<RoomQueue> roomQueueList;
 
         try {
-            roomQueue = roomQueueService.addToRoomQueue(roomUuid, searchModel);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+            roomQueueList = roomQueueService.addToRoomQueue(roomUuid, searchModel);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
-        return RestResponseFactory.generateResponse(roomQueue, HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
     }
 
     @DeleteMapping("/{roomQueueUuid}")
@@ -91,8 +91,8 @@ public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
 
         try {
             roomQueue = roomQueueService.removeFromRoomQueue(roomQueueUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(roomQueue, HttpStatus.OK, request, response);

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "user_friends")
@@ -27,5 +28,5 @@ public class UserFriends implements Serializable {
     private String requestStatus;
 
     @Column(name = "request_date")
-    private String requestDate;
+    private Date requestDate;
 }

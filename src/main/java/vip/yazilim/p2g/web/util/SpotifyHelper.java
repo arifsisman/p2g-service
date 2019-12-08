@@ -5,12 +5,9 @@ import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vip.yazilim.p2g.web.constant.QueueStatus;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,32 +49,6 @@ public class SpotifyHelper {
                 break;
         }
         return uri + id;
-    }
-
-    public static RoomQueue convertSearchModelToRoomQueue(SearchModel searchModel) {
-        RoomQueue roomQueue = new RoomQueue();
-
-        roomQueue.setSongId(searchModel.getId());
-        roomQueue.setSongUri(searchModel.getUri());
-        roomQueue.setSongName(searchModel.getName());
-        roomQueue.setAlbumName(searchModel.getAlbumName());
-        roomQueue.setImageUrl(searchModel.getImageUrl());
-        roomQueue.setCurrentMs(0L);
-        roomQueue.setDurationMs(searchModel.getDurationMs());
-        roomQueue.setQueuedTime(new Date());
-        roomQueue.setVotes(0);
-        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
-
-        ArtistSimplified[] artists = searchModel.getArtists();
-        String[] roomQueueArtists = new String[artists.length];
-
-        for (int i = 0; i < artists.length; i++) {
-            roomQueueArtists[i] = artists[i].getName();
-        }
-
-        roomQueue.setArtists(roomQueueArtists);
-
-        return roomQueue;
     }
 
 }

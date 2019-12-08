@@ -120,8 +120,7 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
 
         friendRequest.setUserUuid(user1);
         friendRequest.setFriendUuid(user2);
-        friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
-        friendRequest.setRequestDate(TimeHelper.getCurrentTime());
+        friendRequest.setRequestDate(TimeHelper.getCurrentDate());
 
         try {
             create(friendRequest);
@@ -133,30 +132,30 @@ public class UserFriendsService extends ACrudServiceImpl<UserFriends, String> im
     }
 
     @Override
-    public boolean replyUserFriendRequest(String user1, String user2, String status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        Optional<UserFriends> friendRequestOpt = Optional.empty();
+    public boolean acceptFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException, UserFriendsException {
+        return replyUserFriendRequest(friendRequestUuid, FriendRequestStatus.ACCEPTED);
+    }
 
-        try {
-            friendRequestOpt = getUserFriendRequestByUserAndFriendUuid(user2, user1);
-        } catch (UserFriendsException e) {
-            LOGGER.error("Friend request cannot found!");
-        }
+    @Override
+    public boolean ignoreFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException, UserFriendsException {
+        return replyUserFriendRequest(friendRequestUuid, FriendRequestStatus.IGNORED);
+    }
 
-        if (!friendRequestOpt.isPresent()) {
-            LOGGER.error("Friend request cannot found!");
-            return false;
-        }
+    @Override
+    public boolean rejectFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException, UserFriendsException {
+        return replyUserFriendRequest(friendRequestUuid, FriendRequestStatus.REJECTED);
+    }
 
-        UserFriends friendRequest = friendRequestOpt.get();
+    private boolean replyUserFriendRequest(String friendRequestUuid, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserFriendsException {
 
-        if (status.equals(FriendRequestStatus.ACCEPTED.toString()) || status.equals(FriendRequestStatus.IGNORED.toString())) {
-            friendRequest.setRequestStatus(status);
+        UserFriends friendRequest = getById(friendRequestUuid).orElseThrow(() -> new UserFriendsException("Friend request can not found"));
+
+
+        if (status == FriendRequestStatus.ACCEPTED || status == FriendRequestStatus.IGNORED) {
+            friendRequest.setRequestStatus(status.getFriendRequestStatus());
             update(friendRequest);
-        } else if (status.equals(FriendRequestStatus.REJECTED.toString())) {
-            delete(friendRequest);
         } else {
-            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.toString());
-            update(friendRequest);
+            delete(friendRequest);
         }
 
         return true;

@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -40,6 +43,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
     @Autowired
     private IRoomService roomService;
+
+    @Autowired
+    private IRoomInviteService roomInviteService;
 
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
@@ -128,6 +134,23 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         }
 
         return roomUser;
+    }
+
+    @Override
+    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException {
+        if (roomInviteService.existsById(roomInvite.getUuid())) {
+            RoomUser roomUser = new RoomUser();
+
+            roomUser.setRoomUuid(roomInvite.getRoomUuid());
+            roomUser.setUserUuid(roomInvite.getUserUuid());
+            roomUser.setRoleName(Roles.USER.getRoleName());
+            roomUser.setActiveFlag(true);
+
+            return create(roomUser);
+        } else {
+            String err = String.format("Room Invite[%s] cannot found.", roomInvite.getUuid());
+            throw new InviteException(err);
+        }
     }
 
     @Override

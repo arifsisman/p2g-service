@@ -69,7 +69,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
             throw new DatabaseReadException(errorMessage, exception);
         }
 
-        for (RoomInvite invite:roomInviteList) {
+        for (RoomInvite invite : roomInviteList) {
             Optional<User> user = userService.getUserByUuid(invite.getUuid());
             user.ifPresent(inviteList::add);
         }
@@ -92,12 +92,20 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     public boolean deleteRoomInvites(String roomUuid) throws DatabaseException {
         List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
 
-        for(RoomInvite roomInvite: roomInviteList){
+        for (RoomInvite roomInvite : roomInviteList) {
             delete(roomInvite);
         }
 
         return true;
     }
 
+    @Override
+    public boolean existsById(String roomInviteUuid) throws DatabaseReadException {
+        try {
+            return roomInviteRepo.existsById(roomInviteUuid);
+        } catch (Exception e) {
+            throw new DatabaseReadException(e);
+        }
+    }
 
 }

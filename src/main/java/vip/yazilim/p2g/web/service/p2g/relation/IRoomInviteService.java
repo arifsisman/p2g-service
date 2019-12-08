@@ -21,4 +21,5 @@ public interface IRoomInviteService extends ICrudService<RoomInvite, String> {
     RoomInvite accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     boolean reject(String roomInviteUuid) throws DatabaseException;
     boolean deleteRoomInvites(String roomUuid) throws DatabaseException;
+    boolean existsById(String roomInviteUuid) throws DatabaseException;
 }

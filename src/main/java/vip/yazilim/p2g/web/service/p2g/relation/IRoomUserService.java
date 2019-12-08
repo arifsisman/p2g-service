@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.relation;
 
+import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -19,6 +21,8 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     RoomUser getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
     RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException;
+
+    RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException;
 
     // Rest
     boolean deleteRoomUsers(String roomUuid) throws DatabaseException;

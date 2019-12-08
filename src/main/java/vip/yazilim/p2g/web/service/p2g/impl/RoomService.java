@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -43,6 +44,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Autowired
+    private IRoomQueueService roomQueueService;
 
     @Override
     protected JpaRepository<Room, String> getRepository() {
@@ -153,11 +157,23 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Override
     public boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
         Optional<Room> roomOpt = getById(roomUuid);
+        boolean status;
 
         if (roomOpt.isPresent()) {
-            return delete(roomOpt.get());
+             status = delete(roomOpt.get());
+
+            //delete roomQueues
+            roomQueueService.deleteRoomSongList(roomUuid);
+
+            //delete roomUsers
+            roomUserService.deleteRoomUsers(roomUuid);
+
+            //delete roomInvites
+            roomInviteService.deleteRoomInvites(roomUuid);
         } else {
             throw new RoomException("Room cannot deleted!");
         }
+
+        return status;
     }
 }
