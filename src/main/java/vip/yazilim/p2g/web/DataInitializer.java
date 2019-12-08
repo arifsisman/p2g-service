@@ -40,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Room room1 = roomService.createRoom("Test Room1", arif.getUuid(), "1", 5, false, false, null);
         String roomUuid = room1.getUuid();
-        LOGGER.info("========> testRoomUuid:" + roomUuid);
+        LOGGER.info("--------> testRoomUuid: " + roomUuid);
 
         Room room2 = roomService.createRoom("Test Room2", arif.getUuid(), "1", 5, false, false, null);
 

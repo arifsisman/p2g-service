@@ -44,7 +44,7 @@ public class PlayerRest {
         List<RoomQueue> roomQueueList;
 
         try {
-            roomQueueList =  spotifyPlayerService.startResume(roomUuid);
+            roomQueueList = spotifyPlayerService.startResume(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -57,7 +57,7 @@ public class PlayerRest {
         List<RoomQueue> roomQueueList;
 
         try {
-            roomQueueList =  spotifyPlayerService.pause(roomUuid);
+            roomQueueList = spotifyPlayerService.pause(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -70,7 +70,7 @@ public class PlayerRest {
         List<RoomQueue> roomQueueList;
 
         try {
-            roomQueueList =  spotifyPlayerService.next(roomUuid);
+            roomQueueList = spotifyPlayerService.next(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -83,7 +83,7 @@ public class PlayerRest {
         List<RoomQueue> roomQueueList;
 
         try {
-            roomQueueList =  spotifyPlayerService.previous(roomUuid);
+            roomQueueList = spotifyPlayerService.previous(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -96,7 +96,7 @@ public class PlayerRest {
         int currentMs;
 
         try {
-            currentMs =  spotifyPlayerService.seek(roomUuid, ms);
+            currentMs = spotifyPlayerService.seek(roomUuid, ms);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -109,7 +109,7 @@ public class PlayerRest {
         boolean repeat;
 
         try {
-            repeat =  spotifyPlayerService.repeat(roomUuid);
+            repeat = spotifyPlayerService.repeat(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

@@ -60,6 +60,7 @@ public class SpotifyUserService implements ISpotifyUserService {
 
             userDevice.setUserUuid(userUuid);
             userDevice.setDeviceId(d.getId());
+            userDevice.setSource("spotify");
             userDevice.setDeviceName(d.getName());
             userDevice.setDeviceName(d.getName());
             userDevice.setActiveFlag(d.getIs_active());

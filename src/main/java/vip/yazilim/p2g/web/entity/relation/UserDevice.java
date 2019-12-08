@@ -21,6 +21,8 @@ public class UserDevice {
     @Column(name = "device_id")
     private String deviceId;
 
+    private String source;
+
     @Column(name = "user_uuid")
     private String userUuid;
 
