@@ -28,8 +28,8 @@ public interface ISpotifyPlayerService {
 
     List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException;
 
-    List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException;
+    int seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException;
 
-    List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException;
+    boolean repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException, InvalidUpdateException;
 
 }

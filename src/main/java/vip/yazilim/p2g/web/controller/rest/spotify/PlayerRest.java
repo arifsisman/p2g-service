@@ -84,7 +84,7 @@ public class PlayerRest {
     }
 
     @GetMapping("/{roomUuid}/seek/{ms}")
-    public List<RoomQueue> seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
+    public int seek(@PathVariable String roomUuid, @PathVariable Integer ms) {
         try {
             return spotifyPlayerService.seek(roomUuid, ms);
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class PlayerRest {
     }
 
     @GetMapping("/{roomUuid}/repeat")
-    public List<RoomQueue> repeat(@PathVariable String roomUuid) {
+    public boolean repeat(@PathVariable String roomUuid) {
         try {
             return spotifyPlayerService.repeat(roomUuid);
         } catch (Exception e) {

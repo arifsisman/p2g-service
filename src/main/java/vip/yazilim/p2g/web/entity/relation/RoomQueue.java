@@ -56,6 +56,9 @@ public class RoomQueue implements Serializable {
     @Column(name = "current_ms")
     private Long currentMs;
 
+    @Column(name = "repeat_flag")
+    private Boolean repeatFlag;
+
     private Integer votes;
 
 }

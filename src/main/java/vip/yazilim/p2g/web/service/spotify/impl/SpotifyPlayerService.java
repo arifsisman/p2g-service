@@ -149,7 +149,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<RoomQueue> seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
+    public int seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
         RoomQueue paused = roomQueueService.getRoomQueuePaused(roomUuid);
 
@@ -160,22 +160,36 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getPlayerModel(roomUuid));
         }
 
-        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+        return ms;
     }
-
-    //TODO: implement for off repeat mode
+    
     @Override
-    public List<RoomQueue> repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
+    public boolean repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException, InvalidUpdateException {
         RoomQueue nowPlaying = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+        Boolean repeatFlag;
 
         if (nowPlaying == null) {
             String err = String.format("Not playing any song in Room[%s]", roomUuid);
             throw new PlayerException(err);
         } else {
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(ModelObjectType.TRACK.getType()).device_id(device).build(), getPlayerModel(roomUuid));
+            String repeatMode;
+            repeatFlag = nowPlaying.getRepeatFlag();
+
+            if (repeatFlag == null || !repeatFlag) {
+                repeatMode = ModelObjectType.TRACK.getType();
+                repeatFlag = true;
+            } else {
+                repeatMode = "off";
+                repeatFlag = false;
+            }
+
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), getPlayerModel(roomUuid));
+
+            nowPlaying.setRepeatFlag(repeatFlag);
+            roomQueueService.update(nowPlaying);
         }
 
-        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+        return repeatFlag;
     }
 
     private PlayerModel getPlayerModel(String roomUuid) throws DatabaseException, InvalidArgumentException {

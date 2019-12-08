@@ -81,6 +81,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     /////////////////////////////
     @Override
     public List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) {
+        // order by votes and queued time
         return roomQueueRepo.findByRoomUuidOrderByQueuedTime(roomUuid);
     }
 
