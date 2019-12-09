@@ -76,7 +76,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     /////////////////////////////
     @Override
     public List<RoomQueue> addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
-        return convertSearchModelToRoomQueue(searchModel);
+        return convertSearchModelToRoomQueue(roomUuid, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
@@ -137,6 +137,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public RoomQueue getRoomQueueNext(String roomUuid) {
+        // change with order by votes
         return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
     }
 
@@ -201,29 +202,30 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
         update(roomQueue);
     }
 
-    private List<RoomQueue> convertSearchModelToRoomQueue(SearchModel searchModel) throws DatabaseException {
+    private List<RoomQueue> convertSearchModelToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
         List<RoomQueue> roomQueueList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
-            roomQueueList.add(getRoomQueueFromTrack(searchModel));
+            roomQueueList.add(getRoomQueueFromTrack(roomUuid, searchModel));
         } else if (searchModel.getType() == ModelObjectType.ALBUM) {
             List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                roomQueueList.add(getRoomQueueFromTrack(s));
+                roomQueueList.add(getRoomQueueFromTrack(roomUuid, s));
             }
         } else {
             List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                roomQueueList.add(getRoomQueueFromTrack(s));
+                roomQueueList.add(getRoomQueueFromTrack(roomUuid, s));
             }
         }
 
         return roomQueueList;
     }
 
-    private RoomQueue getRoomQueueFromTrack(SearchModel searchModel) throws DatabaseException {
+    private RoomQueue getRoomQueueFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException {
         RoomQueue roomQueue = new RoomQueue();
 
+        roomQueue.setRoomUuid(roomUuid);
         roomQueue.setSongId(searchModel.getId());
         roomQueue.setSongUri(searchModel.getUri());
         roomQueue.setSongName(searchModel.getName());

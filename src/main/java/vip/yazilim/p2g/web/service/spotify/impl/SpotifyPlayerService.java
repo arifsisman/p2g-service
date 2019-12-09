@@ -70,6 +70,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             roomQueueService.updateRoomQueueStatus(roomQueue);
 
             // Update nowPlaying
+            roomQueue.setVotes(0);
             roomQueue.setPlayingTime(new Date());
             roomQueueService.update(roomQueue);
         }

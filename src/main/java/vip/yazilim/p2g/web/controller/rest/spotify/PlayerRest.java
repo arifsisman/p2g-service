@@ -67,6 +67,9 @@ public class PlayerRest {
 
     @PostMapping("/{roomUuid}/next")
     public RestResponse<List<RoomQueue>> next(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        // if room in queue mode, delete previous
+        // else, keep previous
+        // slm
         List<RoomQueue> roomQueueList;
 
         try {
