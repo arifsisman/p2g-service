@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.exception.PlayerException;
 import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.exception.RequestException;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 public interface ISpotifyPlayerService {
 
-    List<RoomQueue> play(RoomQueue roomQueue) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
-    List<RoomQueue> startResume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException, QueueException;
-    List<RoomQueue> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException;
-    List<RoomQueue> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException;
-    List<RoomQueue> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException;
+    List<Song> play(Song song) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
+    List<Song> startResume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException, QueueException;
+    List<Song> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException;
+    List<Song> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException;
+    List<Song> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException;
     int seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException;
     boolean repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException, InvalidUpdateException;
 

@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -27,44 +27,44 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/queue")
-public class RoomQueueRest extends ARestCrud<RoomQueue, String> {
+public class RoomQueueRest extends ARestCrud<Song, String> {
 
     @Autowired
     private IRoomQueueService roomQueueService;
 
     @Override
-    protected ICrudService<RoomQueue, String> getService() {
+    protected ICrudService<Song, String> getService() {
         return roomQueueService;
     }
 
     @GetMapping("/{roomUuid}/list")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<List<RoomQueue>> getRoomQueueListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
-        List<RoomQueue> roomQueueList;
+    public RestResponse<List<Song>> getRoomQueueListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<Song> songList;
 
         try {
-            roomQueueList = roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+            songList = roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
 
-        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
     @PostMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<List<RoomQueue>> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
-        List<RoomQueue> roomQueueList;
+    public RestResponse<List<Song>> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
+        List<Song> songList;
 
         try {
-            roomQueueList = roomQueueService.addToRoomQueue(roomUuid, searchModel);
+            songList = roomQueueService.addToRoomQueue(roomUuid, searchModel);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
 
-        return RestResponseFactory.generateResponse(roomQueueList, HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
     @DeleteMapping("/{roomQueueUuid}")

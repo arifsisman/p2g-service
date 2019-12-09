@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.QueueStatus;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.IRoomQueueRepo;
@@ -31,7 +31,7 @@ import java.util.*;
  */
 @Transactional
 @Service
-public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implements IRoomQueueService {
+public class RoomQueueService extends ACrudServiceImpl<Song, String> implements IRoomQueueService {
 
     // static fields
     private Logger LOGGER = LoggerFactory.getLogger(RoomQueueService.class);
@@ -47,17 +47,17 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     private SpotifyPlaylistService spotifyPlaylistService;
 
     @Override
-    protected JpaRepository<RoomQueue, String> getRepository() {
+    protected JpaRepository<Song, String> getRepository() {
         return roomQueueRepo;
     }
 
     @Override
-    protected String getId(RoomQueue entity) {
+    protected String getId(Song entity) {
         return entity.getUuid();
     }
 
     @Override
-    protected RoomQueue preInsert(RoomQueue entity) {
+    protected Song preInsert(Song entity) {
         entity.setUuid(DBHelper.getRandomUuid());
         return entity;
     }
@@ -66,7 +66,7 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Get Queue By Room or Queue Uuid
     /////////////////////////////
     @Override
-    public List<RoomQueue> getRoomQueueListByRoomUuid(String roomUuid) {
+    public List<Song> getRoomQueueListByRoomUuid(String roomUuid) {
         // order by votes and queued time
         return roomQueueRepo.findByRoomUuidOrderByVotesDescQueuedTime(roomUuid);
     }
@@ -75,33 +75,33 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Control Queue
     /////////////////////////////
     @Override
-    public List<RoomQueue> addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    public List<Song> addToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
         return convertSearchModelToRoomQueue(roomUuid, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
     @Override
-    public RoomQueue addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException {
-        RoomQueue roomQueue = new RoomQueue();
-        roomQueue.setRoomUuid(roomUuid);
-        roomQueue.setSongId(songId);
-        roomQueue.setSongUri(songUri);
-        roomQueue.setSongName(songName);
-        roomQueue.setDurationMs(durationMs);
-        roomQueue.setQueuedTime(new Date());
-        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
-        roomQueue.setVotes(votes);
+    public Song addToRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException {
+        Song song = new Song();
+        song.setRoomUuid(roomUuid);
+        song.setSongId(songId);
+        song.setSongUri(songUri);
+        song.setSongName(songName);
+        song.setDurationMs(durationMs);
+        song.setQueuedTime(new Date());
+        song.setQueueStatus(QueueStatus.NEXT.getQueueStatus());
+        song.setVotes(votes);
 
-        roomQueue = create(roomQueue);
+        song = create(song);
 
-        LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
+        LOGGER.info("queueUuid: {} - songName: {}", song.getUuid(), songName);
 
-        return roomQueue;
+        return song;
     }
 
     @Override
     public boolean removeFromRoomQueue(String roomQueueUuid) throws DatabaseException, InvalidArgumentException, QueueException {
-        Optional<RoomQueue> roomQueueOpt = getById(roomQueueUuid);
+        Optional<Song> roomQueueOpt = getById(roomQueueUuid);
 
         if (!roomQueueOpt.isPresent()) {
             String err = String.format("Queue[%s] not found", roomQueueUuid);
@@ -113,10 +113,10 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
     @Override
     public boolean deleteRoomSongList(String roomUuid) throws DatabaseException {
-        List<RoomQueue> roomQueueList = roomQueueRepo.findByRoomUuid(roomUuid);
+        List<Song> songList = roomQueueRepo.findByRoomUuid(roomUuid);
 
-        for (RoomQueue roomQueue : roomQueueList) {
-            delete(roomQueue);
+        for (Song song : songList) {
+            delete(song);
         }
 
         return true;
@@ -126,49 +126,55 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
     // Get Queue By status
     /////////////////////////////
     @Override
-    public List<RoomQueue> getRoomQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatus(roomUuid, queueStatus.getQueueStatus());
+    public List<Song> getRoomQueueListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
+        return roomQueueRepo.findByRoomUuidAndQueueStatusOrderByVotesDescQueuedTime(roomUuid, queueStatus.getQueueStatus());
+        //TODO: .. database exception
+    }
+
+    private Optional<Song> getSong(String roomUuid, QueueStatus queueStatus) {
+        List<Song> songList = getRoomQueueListByRoomUuidAndStatus(roomUuid, queueStatus);
+        if (!songList.isEmpty()) {
+            return Optional.of(songList.get(0));
+        }
+        return Optional.empty();
     }
 
     @Override
-    public RoomQueue getRoomQueueNowPlaying(String roomUuid) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PLAYING.getQueueStatus());
+    public Optional<Song> getRoomQueueNowPlaying(String roomUuid) {
+        return getSong(roomUuid, QueueStatus.PLAYING);
     }
 
     @Override
-    public RoomQueue getRoomQueueNext(String roomUuid) {
+    public Optional<Song> getRoomQueueNext(String roomUuid) {
+        // not get now playing
         // change with order by votes
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.NEXT.getQueueStatus());
+        return getSong(roomUuid, QueueStatus.NEXT);
     }
 
     @Override
-    public RoomQueue getRoomQueuePrevious(String roomUuid) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PREVIOUS.getQueueStatus());
+    public Optional<Song> getRoomQueuePrevious(String roomUuid) {
+        return getSong(roomUuid, QueueStatus.PREVIOUS);
     }
 
     @Override
-    public RoomQueue getRoomQueuePaused(String roomUuid) {
-        return roomQueueRepo.findByRoomUuidAndQueueStatusIsContaining(roomUuid, QueueStatus.PAUSED.getQueueStatus());
+    public Optional<Song> getRoomQueuePaused(String roomUuid) {
+        return getSong(roomUuid, QueueStatus.PAUSED);
     }
 
-    @Override
-    public RoomQueue getRoomQueueFirstQueued(String roomUuid) {
-        return roomQueueRepo.findFirstByRoomUuidOrderByVotesDescQueuedTime(roomUuid);
-    }
 
     /////////////////////////////
     // Update queue status
     /////////////////////////////
     @Override
-    public List<RoomQueue> updateRoomQueueStatus(RoomQueue playing) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> updateRoomQueueStatus(Song playing) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         String roomUuid = playing.getRoomUuid();
-        List<RoomQueue> roomQueueList = getRoomQueueListByRoomUuid(roomUuid);
+        List<Song> songList = getRoomQueueListByRoomUuid(roomUuid);
 
-        int playingIndex = roomQueueList.indexOf(playing);
+        int playingIndex = songList.indexOf(playing);
 
-        if (roomQueueList.size() > 1) {
+        if (songList.size() > 1) {
             boolean prevFlag = true;
-            ListIterator<RoomQueue> prevIter = roomQueueList.listIterator(playingIndex);
+            ListIterator<Song> prevIter = songList.listIterator(playingIndex);
             while (prevIter.hasPrevious()) {
                 if (prevFlag) {
                     updateRoomQueue(prevIter.previous(), QueueStatus.PREVIOUS);
@@ -180,62 +186,56 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
 
             updateRoomQueue(playing, QueueStatus.PLAYING);
 
-            boolean nextFlag = true;
-            ListIterator<RoomQueue> nextIter = roomQueueList.listIterator(playingIndex + 1);
+            ListIterator<Song> nextIter = songList.listIterator(playingIndex + 1);
             while (nextIter.hasNext()) {
-                if (nextFlag) {
-                    updateRoomQueue(nextIter.next(), QueueStatus.NEXT);
-                    nextFlag = false;
-                } else {
-                    updateRoomQueue(nextIter.next(), QueueStatus.IN_QUEUE);
-                }
+                updateRoomQueue(nextIter.next(), QueueStatus.NEXT);
             }
-        } else if (roomQueueList.size() == 1) {
+        } else if (songList.size() == 1) {
             updateRoomQueue(playing, QueueStatus.PLAYING);
         }
 
-        return roomQueueList;
+        return songList;
     }
 
-    private void updateRoomQueue(RoomQueue roomQueue, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        roomQueue.setQueueStatus(queueStatus.getQueueStatus());
-        update(roomQueue);
+    private void updateRoomQueue(Song song, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        song.setQueueStatus(queueStatus.getQueueStatus());
+        update(song);
     }
 
-    private List<RoomQueue> convertSearchModelToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
-        List<RoomQueue> roomQueueList = new LinkedList<>();
+    private List<Song> convertSearchModelToRoomQueue(String roomUuid, SearchModel searchModel) throws DatabaseException {
+        List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
-            roomQueueList.add(getRoomQueueFromTrack(roomUuid, searchModel));
+            songList.add(getRoomQueueFromTrack(roomUuid, searchModel));
         } else if (searchModel.getType() == ModelObjectType.ALBUM) {
             List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                roomQueueList.add(getRoomQueueFromTrack(roomUuid, s));
+                songList.add(getRoomQueueFromTrack(roomUuid, s));
             }
         } else {
             List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                roomQueueList.add(getRoomQueueFromTrack(roomUuid, s));
+                songList.add(getRoomQueueFromTrack(roomUuid, s));
             }
         }
 
-        return roomQueueList;
+        return songList;
     }
 
-    private RoomQueue getRoomQueueFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException {
-        RoomQueue roomQueue = new RoomQueue();
+    private Song getRoomQueueFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException {
+        Song song = new Song();
 
-        roomQueue.setRoomUuid(roomUuid);
-        roomQueue.setSongId(searchModel.getId());
-        roomQueue.setSongUri(searchModel.getUri());
-        roomQueue.setSongName(searchModel.getName());
-        roomQueue.setAlbumName(searchModel.getAlbumName());
-        roomQueue.setImageUrl(searchModel.getImageUrl());
-        roomQueue.setCurrentMs(0L);
-        roomQueue.setDurationMs(searchModel.getDurationMs());
-        roomQueue.setQueuedTime(TimeHelper.getCurrentDate());
-        roomQueue.setVotes(0);
-        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
+        song.setRoomUuid(roomUuid);
+        song.setSongId(searchModel.getId());
+        song.setSongUri(searchModel.getUri());
+        song.setSongName(searchModel.getName());
+        song.setAlbumName(searchModel.getAlbumName());
+        song.setImageUrl(searchModel.getImageUrl());
+        song.setCurrentMs(0L);
+        song.setDurationMs(searchModel.getDurationMs());
+        song.setQueuedTime(TimeHelper.getCurrentDate());
+        song.setVotes(0);
+        song.setQueueStatus(QueueStatus.NEXT.getQueueStatus());
 
         ArtistSimplified[] artists = searchModel.getArtists();
         String[] roomQueueArtists = new String[artists.length];
@@ -244,9 +244,9 @@ public class RoomQueueService extends ACrudServiceImpl<RoomQueue, String> implem
             roomQueueArtists[i] = artists[i].getName();
         }
 
-        roomQueue.setArtists(roomQueueArtists);
+        song.setArtists(roomQueueArtists);
 
-        return create(roomQueue);
+        return create(song);
     }
 
 }

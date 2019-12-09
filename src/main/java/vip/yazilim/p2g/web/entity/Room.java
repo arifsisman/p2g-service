@@ -34,8 +34,8 @@ public class Room implements Serializable {
     @Column(name = "max_users")
     private Integer maxUsers;
 
-    @Column(name = "room_mode")
-    private String roomMode;
+    @Column(name = "currently_playing_song_uuid")
+    private String currentlyPlayingSongUuid;
 
     @Column(name = "users_allowed_queue_flag")
     private Boolean usersAllowedQueueFlag;

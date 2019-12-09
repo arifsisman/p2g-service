@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "room_queue")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "song")
 @Data
-public class RoomQueue implements Serializable {
+public class Song implements Serializable {
 
     @Id
     private String uuid;

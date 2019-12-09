@@ -7,8 +7,7 @@ public enum QueueStatus {
     PREVIOUS("previous"),
     PLAYING("playing"),
     PAUSED("paused"),
-    NEXT("next"),
-    IN_QUEUE("in_queue");
+    NEXT("next");
 
     private final String queueStatus;
 
