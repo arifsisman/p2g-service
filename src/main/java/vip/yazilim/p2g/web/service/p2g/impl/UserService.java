@@ -15,8 +15,8 @@ import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
@@ -55,7 +55,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IUserFriendsService userFriendsService;
+    private IFriendRequestService friendRequestService;
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
@@ -128,16 +128,16 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         // Set Friends
         try {
-            friends = userFriendsService.getUserFriendsByUserUuid(userUuid);
-        } catch (UserFriendsException e) {
+            friends = friendRequestService.getFriendRequestByUserUuid(userUuid);
+        } catch (FriendRequestException e) {
             LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
         }
         userModel.setFriends(friends);
 
         // Set Friend Requests
         try {
-            friendRequests = userFriendsService.getUserFriendRequestsByUserUuid(userUuid);
-        } catch (UserFriendsException e) {
+            friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
+        } catch (FriendRequestException e) {
             LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
         }
         userModel.setFriendRequests(friendRequests);

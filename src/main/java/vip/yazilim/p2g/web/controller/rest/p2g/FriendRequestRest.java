@@ -5,8 +5,8 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.entity.relation.UserFriends;
-import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
+import vip.yazilim.p2g.web.entity.relation.FriendRequest;
+import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestRead;
@@ -26,14 +26,14 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/friends")
-public class UserFriendsRest extends ARestRead<UserFriends, String> {
+public class FriendRequestRest extends ARestRead<FriendRequest, String> {
 
     @Autowired
-    private IUserFriendsService userFriendsService;
+    private IFriendRequestService friendRequestService;
 
     @Override
-    protected ICrudService<UserFriends, String> getService() {
-        return userFriendsService;
+    protected ICrudService<FriendRequest, String> getService() {
+        return friendRequestService;
     }
 
     @PostMapping("/add/{userUuid}")
@@ -43,7 +43,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         boolean status;
 
         try {
-            status = userFriendsService.createUserFriendRequest(SecurityHelper.getUserUuid(), userUuid);
+            status = friendRequestService.createFriendRequest(SecurityHelper.getUserUuid(), userUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -58,7 +58,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         boolean status;
 
         try {
-            status = userFriendsService.acceptFriendRequest(friendRequestUuid);
+            status = friendRequestService.acceptFriendRequest(friendRequestUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -73,7 +73,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         boolean status;
 
         try {
-            status = userFriendsService.rejectFriendRequest(friendRequestUuid);
+            status = friendRequestService.rejectFriendRequest(friendRequestUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -88,7 +88,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         boolean status;
 
         try {
-            status = userFriendsService.ignoreFriendRequest(friendRequestUuid);
+            status = friendRequestService.ignoreFriendRequest(friendRequestUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
