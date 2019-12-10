@@ -15,7 +15,7 @@ import vip.yazilim.p2g.web.exception.QueueException;
 import vip.yazilim.p2g.web.exception.RequestException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -48,7 +48,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private IUserDeviceService userDeviceService;
 
     @Autowired
-    private IRoomQueueService roomQueueService;
+    private ISongService songService;
 
     @Override
     public List<Song> play(Song song) throws RequestException, PlayerException, DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException {
@@ -67,20 +67,20 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).device_id(device).build(), getPlayerModel(roomUuid));
 
             // Update queue status
-            roomQueueService.updateRoomQueueStatus(song);
+            songService.updateSongStatus(song);
 
             // Update nowPlaying
             song.setVotes(0);
             song.setPlayingTime(new Date());
-            roomQueueService.update(song);
+            songService.update(song);
         }
 
-        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+        return songService.getSongListByRoomUuid(roomUuid);
     }
 
     @Override
     public List<Song> startResume(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException, QueueException {
-        Optional<Song> pausedOpt = roomQueueService.getRoomQueuePaused(roomUuid);
+        Optional<Song> pausedOpt = songService.getPausedSong(roomUuid);
 
         if (pausedOpt.isPresent()) {
             Song paused = pausedOpt.get();
@@ -91,21 +91,21 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
             // Update nowPlaying
             paused.setQueueStatus(QueueStatus.PLAYING.getQueueStatus());
-            roomQueueService.update(paused);
+            songService.update(paused);
         } else {
             // Get first queued
-            Optional<Song> firstQueued = roomQueueService.getRoomQueueNext(roomUuid);
+            Optional<Song> firstQueued = songService.getNextSong(roomUuid);
 
             play(firstQueued.orElseThrow(() -> new PlayerException("Queue is empty.")));
 
         }
 
-        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+        return songService.getSongListByRoomUuid(roomUuid);
     }
 
     @Override
     public List<Song> pause(String roomUuid) throws RequestException, DatabaseException, InvalidUpdateException, PlayerException, InvalidArgumentException {
-        Optional<Song> nowPlayingOpt = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+        Optional<Song> nowPlayingOpt = songService.getNowPlayingSong(roomUuid);
 
         if (nowPlayingOpt.isPresent() && (nowPlayingOpt.get().getQueueStatus().equals(QueueStatus.PLAYING.getQueueStatus()))) {
             Song nowPlaying = nowPlayingOpt.get();
@@ -116,31 +116,31 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             // Update nowPlaying
             nowPlaying.setCurrentMs(System.currentTimeMillis() - nowPlaying.getPlayingTime().getTime());
             nowPlaying.setQueueStatus(QueueStatus.PAUSED.getQueueStatus());
-            roomQueueService.update(nowPlaying);
+            songService.update(nowPlaying);
         } else {
             String err = String.format("Not playing any song in Room[%s]", roomUuid);
             throw new PlayerException(err);
         }
 
-        return roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+        return songService.getSongListByRoomUuid(roomUuid);
     }
 
     @Override
     public List<Song> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException {
-        Optional<Song> next = roomQueueService.getRoomQueueNext(roomUuid);
+        Optional<Song> next = songService.getNextSong(roomUuid);
         return play(next.orElseThrow(() -> new PlayerException("Next song is empty.")));
     }
 
     @Override
     public List<Song> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, QueueException, InvalidUpdateException, InvalidArgumentException {
-        Optional<Song> previous = roomQueueService.getRoomQueueNext(roomUuid);
+        Optional<Song> previous = songService.getNextSong(roomUuid);
         return play(previous.orElseThrow(() -> new PlayerException("Previous song is empty.")));
     }
 
     @Override
     public int seek(String roomUuid, Integer ms) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException {
-        Optional<Song> nowPlayingOpt = roomQueueService.getRoomQueueNowPlaying(roomUuid);
-        Optional<Song> pausedOpt = roomQueueService.getRoomQueuePaused(roomUuid);
+        Optional<Song> nowPlayingOpt = songService.getNowPlayingSong(roomUuid);
+        Optional<Song> pausedOpt = songService.getPausedSong(roomUuid);
 
         if (nowPlayingOpt.isPresent() && pausedOpt.isPresent()) {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getPlayerModel(roomUuid));
@@ -154,7 +154,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public boolean repeat(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidArgumentException, InvalidUpdateException {
-        Optional<Song> nowPlayingOpt = roomQueueService.getRoomQueueNowPlaying(roomUuid);
+        Optional<Song> nowPlayingOpt = songService.getNowPlayingSong(roomUuid);
         Boolean repeatFlag;
 
         if (nowPlayingOpt.isPresent()) {
@@ -173,7 +173,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), getPlayerModel(roomUuid));
 
             nowPlaying.setRepeatFlag(repeatFlag);
-            roomQueueService.update(nowPlaying);
+            songService.update(nowPlaying);
         } else {
             String err = String.format("Not playing any song in Room[%s]", roomUuid);
             throw new PlayerException(err);

@@ -12,8 +12,8 @@ import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -46,7 +46,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private IRoomInviteService roomInviteService;
 
     @Autowired
-    private IRoomQueueService roomQueueService;
+    private ISongService songService;
 
     @Override
     protected JpaRepository<Room, String> getRepository() {
@@ -162,8 +162,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         if (roomOpt.isPresent()) {
              status = delete(roomOpt.get());
 
-            //delete roomQueues
-            roomQueueService.deleteRoomSongList(roomUuid);
+            //delete Songs
+            songService.deleteRoomSongList(roomUuid);
 
             //delete roomUsers
             roomUserService.deleteRoomUsers(roomUuid);

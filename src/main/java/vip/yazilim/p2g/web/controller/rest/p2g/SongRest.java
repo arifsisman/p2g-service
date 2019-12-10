@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
+import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestErrorResponse;
@@ -26,25 +26,25 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_P2G + "/queue")
-public class RoomQueueRest extends ARestCrud<Song, String> {
+@RequestMapping(API_P2G + "/song")
+public class SongRest extends ARestCrud<Song, String> {
 
     @Autowired
-    private IRoomQueueService roomQueueService;
+    private ISongService songService;
 
     @Override
     protected ICrudService<Song, String> getService() {
-        return roomQueueService;
+        return songService;
     }
 
     @GetMapping("/{roomUuid}/list")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<List<Song>> getRoomQueueListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+    public RestResponse<List<Song>> getSongListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<Song> songList;
 
         try {
-            songList = roomQueueService.getRoomQueueListByRoomUuid(roomUuid);
+            songList = songService.getSongListByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -55,11 +55,11 @@ public class RoomQueueRest extends ARestCrud<Song, String> {
     @PostMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<List<Song>> addToRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
+    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
         List<Song> songList;
 
         try {
-            songList = roomQueueService.addToRoomQueue(roomUuid, searchModel);
+            songList = songService.addSongToRoom(roomUuid, searchModel);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -67,18 +67,18 @@ public class RoomQueueRest extends ARestCrud<Song, String> {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
-    @DeleteMapping("/{roomQueueUuid}")
+    @DeleteMapping("/{songUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<Boolean> deleteFromRoomQueue(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomQueueUuid) {
-        boolean roomQueue;
+    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) {
+        boolean Song;
 
         try {
-            roomQueue = roomQueueService.removeFromRoomQueue(roomQueueUuid);
+            Song = songService.removeSongFromRoom(songUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
 
-        return RestResponseFactory.generateResponse(roomQueue, HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(Song, HttpStatus.OK, request, response);
     }
 }

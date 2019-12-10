@@ -69,11 +69,13 @@ public class SearchRest {
     }
 
     @GetMapping("/songs/{ids}")
-    public RestResponse<List<SearchModel>> getSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String[] ids) {
+    public RestResponse<List<SearchModel>> getSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String ids) {
         List<SearchModel> searchModelList;
 
+        String[] idArray = ids.split(",");
+
         try {
-            searchModelList = spotifyTrackService.getSeveralTracks(ids);
+            searchModelList = spotifyTrackService.getSeveralTracks(idArray);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

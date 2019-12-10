@@ -57,17 +57,18 @@ public class RoomRest extends ARestCrud<Room, String> {
         }
     }
 
+    @Override
     @DeleteMapping("/{roomUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Entity not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
-    public RestResponse<Boolean> deleteRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         boolean status;
 
         try {
             //delete room
             status = roomService.deleteRoom(roomUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);

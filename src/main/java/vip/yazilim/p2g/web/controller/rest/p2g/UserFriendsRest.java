@@ -51,7 +51,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/accept/{friendRequestUuid}")
+    @PutMapping("/accept/{friendRequestUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
@@ -66,7 +66,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/reject/{friendRequestUuid}")
+    @PutMapping("/reject/{friendRequestUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
@@ -81,7 +81,7 @@ public class UserFriendsRest extends ARestRead<UserFriends, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/ignore/{friendRequestUuid}")
+    @PutMapping("/ignore/{friendRequestUuid}")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
