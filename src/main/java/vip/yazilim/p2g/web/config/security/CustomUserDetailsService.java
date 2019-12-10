@@ -35,4 +35,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new UserPrinciple(user);
     }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Optional<User> userOptional = Optional.empty();
+//
+//        try {
+//            userOptional = userService.getUserByUsername(username);
+//        } catch (DatabaseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with name " + username + " not found"));
+//
+//        return new UserPrinciple(user);
+//    }
+
 }

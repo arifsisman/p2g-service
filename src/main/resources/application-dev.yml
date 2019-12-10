@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${db_ip}:5432/p2g_db
+    username: postgres
+    password: pos
+    initialization-mode: never
+
+  jpa:
+    hibernate.ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        jdbc.lob.non_contextual_creation: true

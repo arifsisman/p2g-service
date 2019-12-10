@@ -77,6 +77,11 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
+    public Optional<User> getUserByUsername(String username) {
+        return userRepo.findByDisplayName(username);
+    }
+
+    @Override
     public Optional<User> getUserByEmail(String email) {
         return userRepo.findByEmail(email);
     }
