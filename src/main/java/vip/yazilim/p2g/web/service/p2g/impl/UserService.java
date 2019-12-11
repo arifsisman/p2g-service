@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
@@ -170,6 +171,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
+        user.setRole(Roles.P2G_USER.getRoleName());
 
         try {
             create(user);

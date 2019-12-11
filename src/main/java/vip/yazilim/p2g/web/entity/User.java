@@ -21,14 +21,16 @@ public class User implements Serializable {
     @Id
     private String uuid;
 
+    @Column(name = "display_name", nullable = false)
+    private String displayName;
+
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "display_name", nullable = false)
-    private String displayName;
+    private String role;
 
     @Column(name = "online_status")
     private String onlineStatus;

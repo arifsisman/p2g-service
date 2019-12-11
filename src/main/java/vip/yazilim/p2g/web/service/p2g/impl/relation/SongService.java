@@ -130,7 +130,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         try {
             return songRepo.findByRoomUuidAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
         } catch (Exception e) {
-            String err = String.format("Songs cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            String err = String.format("Database error. Songs cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
             throw new DatabaseReadException(err, e);
         }
     }
@@ -138,9 +138,13 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     @Override
     public Optional<Song> getSongByRoomUuidAndStatus(String roomUuid, SongStatus songStatus) throws DatabaseReadException {
         try {
-            return songRepo.findFirstByRoomUuidAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+            if (songStatus.equals(SongStatus.PLAYED)) {
+                return songRepo.findFirstByRoomUuidAndSongStatusOrderByPlayingTimeDesc(roomUuid, songStatus.getSongStatus());
+            } else {
+                return songRepo.findFirstByRoomUuidAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+            }
         } catch (Exception e) {
-            String err = String.format("Song cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            String err = String.format("Database error. Song cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
             throw new DatabaseReadException(err, e);
         }
     }

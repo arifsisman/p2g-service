@@ -65,14 +65,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             // Start playback
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getPlayerModel(roomUuid));
 
-            // Set old playing as played if present
-            Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
-            if (playingOpt.isPresent()) {
-                Song playing = playingOpt.get();
-                playing.setVotes(0);
-                playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
-                songService.update(playing);
-            }
+
 
             // Update playing
             song.setPlayingTime(new Date());
@@ -97,10 +90,8 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             // Update playing
             paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
             songService.update(paused);
-        } else {
-            // Get first queued
+        } else if(!songService.getPlayingSong(roomUuid).isPresent()) {
             Optional<Song> firstQueued = songService.getNextSong(roomUuid);
-
             play(firstQueued.orElseThrow(() -> new PlayerException("Queue is empty.")), 0);
         }
 
@@ -131,12 +122,29 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public List<Song> next(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidUpdateException, InvalidArgumentException {
+        // Set old playing as played, if present
+        Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
+        if (playingOpt.isPresent()) {
+            Song playing = playingOpt.get();
+            playing.setVotes(0);
+            playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
+            songService.update(playing);
+        }
+
         Optional<Song> next = songService.getNextSong(roomUuid);
         return play(next.orElseThrow(() -> new PlayerException("Next song is empty.")), 0);
     }
 
     @Override
     public List<Song> previous(String roomUuid) throws RequestException, DatabaseException, PlayerException, InvalidUpdateException, InvalidArgumentException {
+        // Set old playing as next, if present
+        Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
+        if (playingOpt.isPresent()) {
+            Song playing = playingOpt.get();
+            playing.setSongStatus(SongStatus.NEXT.getSongStatus());
+            songService.update(playing);
+        }
+
         Optional<Song> previous = songService.getPreviousSong(roomUuid);
         return play(previous.orElseThrow(() -> new PlayerException("Previous song is empty.")), 0);
     }
