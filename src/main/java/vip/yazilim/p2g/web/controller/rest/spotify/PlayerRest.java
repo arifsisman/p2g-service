@@ -27,11 +27,11 @@ public class PlayerRest {
     private ISpotifyPlayerService spotifyPlayerService;
 
     @PostMapping("/play")
-    public RestResponse<List<Song>> playQueue(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) {
+    public RestResponse<List<Song>> playSong(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) {
         List<Song> songList;
 
         try {
-            songList = spotifyPlayerService.play(song);
+            songList = spotifyPlayerService.play(song, 0);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

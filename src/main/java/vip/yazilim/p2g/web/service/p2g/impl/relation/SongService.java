@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.QueueStatus;
+import vip.yazilim.p2g.web.constant.SongStatus;
 import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.exception.QueueException;
+import vip.yazilim.p2g.web.exception.SongException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
@@ -18,12 +18,15 @@ import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -89,23 +92,23 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         song.setSongName(songName);
         song.setDurationMs(durationMs);
         song.setQueuedTime(new Date());
-        song.setQueueStatus(QueueStatus.NEXT.getQueueStatus());
+        song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
 
         song = create(song);
 
-        LOGGER.info("queueUuid: {} - songName: {}", song.getUuid(), songName);
+        LOGGER.info("songUuid: {} - songName: {}", song.getUuid(), songName);
 
         return song;
     }
 
     @Override
-    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, QueueException {
+    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException {
         Optional<Song> SongOpt = getById(songUuid);
 
         if (!SongOpt.isPresent()) {
-            String err = String.format("Queue[%s] not found", songUuid);
-            throw new QueueException(err);
+            String err = String.format("Song[%s] not found", songUuid);
+            throw new SongException(err);
         }
 
         return delete(SongOpt.get());
@@ -122,84 +125,44 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return true;
     }
 
-    /////////////////////////////
-    // Get Queue By status
-    /////////////////////////////
     @Override
-    public List<Song> getSongListByRoomUuidAndStatus(String roomUuid, QueueStatus queueStatus) {
-        return songRepo.findByRoomUuidAndQueueStatusOrderByVotesDescQueuedTime(roomUuid, queueStatus.getQueueStatus());
-        //TODO: .. database exception
-    }
-
-    private Optional<Song> getSong(String roomUuid, QueueStatus queueStatus) {
-        List<Song> songList = getSongListByRoomUuidAndStatus(roomUuid, queueStatus);
-        if (!songList.isEmpty()) {
-            return Optional.of(songList.get(0));
+    public List<Song> getSongListByRoomUuidAndStatus(String roomUuid, SongStatus songStatus) throws DatabaseReadException {
+        try {
+            return songRepo.findByRoomUuidAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+        } catch (Exception e) {
+            String err = String.format("Songs cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            throw new DatabaseReadException(err, e);
         }
-        return Optional.empty();
     }
 
     @Override
-    public Optional<Song> getNowPlayingSong(String roomUuid) {
-        return getSong(roomUuid, QueueStatus.PLAYING);
-    }
-
-    @Override
-    public Optional<Song> getNextSong(String roomUuid) {
-        // not get now playing
-        // change with order by votes
-        return getSong(roomUuid, QueueStatus.NEXT);
-    }
-
-    @Override
-    public Optional<Song> getPreviousSong(String roomUuid) {
-        return getSong(roomUuid, QueueStatus.PREVIOUS);
-    }
-
-    @Override
-    public Optional<Song> getPausedSong(String roomUuid) {
-        return getSong(roomUuid, QueueStatus.PAUSED);
-    }
-
-
-    /////////////////////////////
-    // Update queue status
-    /////////////////////////////
-    @Override
-    public List<Song> updateSongStatus(Song playing) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        String roomUuid = playing.getRoomUuid();
-        List<Song> songList = getSongListByRoomUuid(roomUuid);
-
-        int playingIndex = songList.indexOf(playing);
-
-        if (songList.size() > 1) {
-            boolean prevFlag = true;
-            ListIterator<Song> prevIter = songList.listIterator(playingIndex);
-            while (prevIter.hasPrevious()) {
-                if (prevFlag) {
-                    updateSong(prevIter.previous(), QueueStatus.PREVIOUS);
-                    prevFlag = false;
-                } else {
-                    updateSong(prevIter.previous(), QueueStatus.PLAYED);
-                }
-            }
-
-            updateSong(playing, QueueStatus.PLAYING);
-
-            ListIterator<Song> nextIter = songList.listIterator(playingIndex + 1);
-            while (nextIter.hasNext()) {
-                updateSong(nextIter.next(), QueueStatus.NEXT);
-            }
-        } else if (songList.size() == 1) {
-            updateSong(playing, QueueStatus.PLAYING);
+    public Optional<Song> getSongByRoomUuidAndStatus(String roomUuid, SongStatus songStatus) throws DatabaseReadException {
+        try {
+            return songRepo.findFirstByRoomUuidAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+        } catch (Exception e) {
+            String err = String.format("Song cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            throw new DatabaseReadException(err, e);
         }
-
-        return songList;
     }
 
-    private void updateSong(Song song, QueueStatus queueStatus) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        song.setQueueStatus(queueStatus.getQueueStatus());
-        update(song);
+    @Override
+    public Optional<Song> getPlayingSong(String roomUuid) throws DatabaseReadException {
+        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PLAYING);
+    }
+
+    @Override
+    public Optional<Song> getNextSong(String roomUuid) throws DatabaseReadException {
+        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.NEXT);
+    }
+
+    @Override
+    public Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException {
+        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PLAYED);
+    }
+
+    @Override
+    public Optional<Song> getPausedSong(String roomUuid) throws DatabaseReadException {
+        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
     }
 
     private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException {
@@ -235,7 +198,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         song.setDurationMs(searchModel.getDurationMs());
         song.setQueuedTime(TimeHelper.getCurrentDate());
         song.setVotes(0);
-        song.setQueueStatus(QueueStatus.NEXT.getQueueStatus());
+        song.setSongStatus(SongStatus.NEXT.getSongStatus());
 
         ArtistSimplified[] artists = searchModel.getArtists();
         String[] SongArtists = new String[artists.length];
@@ -245,7 +208,6 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         }
 
         song.setArtists(SongArtists);
-
         return create(song);
     }
 

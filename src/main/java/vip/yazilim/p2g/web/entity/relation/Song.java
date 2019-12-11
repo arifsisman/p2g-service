@@ -44,8 +44,8 @@ public class Song implements Serializable {
     private Long durationMs;
 
     // Queue
-    @Column(name = "queue_status", nullable = false)
-    private String queueStatus;
+    @Column(name = "song_status", nullable = false)
+    private String songStatus;
 
     @Column(name = "queued_time")
     private Date queuedTime;

@@ -6,12 +6,12 @@ import vip.yazilim.spring.core.exception.general.GeneralException;
  * @author mustafaarifsisman - 02.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public class QueueException extends GeneralException {
-    public QueueException(String message, Throwable throwable) {
+public class SongException extends GeneralException {
+    public SongException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
-    public QueueException(String message) {
+    public SongException(String message) {
         super(message);
     }
 }
