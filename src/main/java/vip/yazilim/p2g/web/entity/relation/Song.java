@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "room_queue")
+@Table(name = Constants.RELATION_TABLE_PREFIX + "song")
 @Data
-public class RoomQueue implements Serializable {
+public class Song implements Serializable {
 
     @Id
     private String uuid;
@@ -44,8 +44,8 @@ public class RoomQueue implements Serializable {
     private Long durationMs;
 
     // Queue
-    @Column(name = "queue_status", nullable = false)
-    private String queueStatus;
+    @Column(name = "song_status", nullable = false)
+    private String songStatus;
 
     @Column(name = "queued_time")
     private Date queuedTime;
@@ -55,6 +55,9 @@ public class RoomQueue implements Serializable {
 
     @Column(name = "current_ms")
     private Long currentMs;
+
+    @Column(name = "repeat_flag")
+    private Boolean repeatFlag;
 
     private Integer votes;
 

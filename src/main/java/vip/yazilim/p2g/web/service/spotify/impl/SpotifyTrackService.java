@@ -9,12 +9,14 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * @author mustafaarifsisman - 29.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifyTrackService implements ISpotifyTrackService {
 

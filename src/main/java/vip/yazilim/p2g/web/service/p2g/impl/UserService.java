@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
@@ -15,13 +16,16 @@ import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IUserFriendsService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +35,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
@@ -51,7 +56,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IUserFriendsService userFriendsService;
+    private IFriendRequestService friendRequestService;
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
@@ -66,12 +71,16 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return entity.getUuid();
     }
 
-    //TODO: uncomment
-//    @Override
-//    protected User preInsert(User entity) {
-//        entity.setUuid(DBHelper.getRandomUuid());
-//        return entity;
-//    }
+    @Override
+    protected User preInsert(User entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
+    public Optional<User> getUserByUsername(String username) {
+        return userRepo.findByDisplayName(username);
+    }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
@@ -84,7 +93,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, RoomException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;
@@ -120,16 +129,16 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         // Set Friends
         try {
-            friends = userFriendsService.getUserFriendsByUserUuid(userUuid);
-        } catch (UserFriendsException e) {
+            friends = friendRequestService.getFriendRequestByUserUuid(userUuid);
+        } catch (FriendRequestException e) {
             LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
         }
         userModel.setFriends(friends);
 
         // Set Friend Requests
         try {
-            friendRequests = userFriendsService.getUserFriendRequestsByUserUuid(userUuid);
-        } catch (UserFriendsException e) {
+            friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
+        } catch (FriendRequestException e) {
             LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
         }
         userModel.setFriendRequests(friendRequests);
@@ -138,7 +147,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<User> userList = new LinkedList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
@@ -151,12 +160,36 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
+    public User createUser(String email, String username, String password) throws UserException {
+        Optional<User> existingUser = getUserByEmail(email);
+
+        if (existingUser.isPresent()) {
+            throw new UserException("Email already exists.");
+        }
+
+        User user = new User();
+        user.setEmail(email);
+        user.setDisplayName(username);
+        user.setPassword(password);
+        user.setRole(Roles.P2G_USER.getRoleName());
+
+        try {
+            create(user);
+        } catch (DatabaseException e) {
+            String err = String.format("User with email [%s] can not created.", email);
+            throw new UserException(err, e);
+        }
+
+        return user;
+    }
+
+    @Override
     public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException {
 
         String productType = spotifyUser.getProduct().getType();
 
         user.setSpotifyAccountId(spotifyUser.getId());
-        user.setCountryCode(spotifyUser.getCountry().getName());
+        user.setCountryCode(spotifyUser.getCountry().name());
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setSpotifyProductType(productType);
 

@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.model.service;
+package vip.yazilim.p2g.web.service.spotify.model;
 
 import lombok.Data;
 

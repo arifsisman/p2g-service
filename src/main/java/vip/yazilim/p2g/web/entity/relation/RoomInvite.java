@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "room_invite")
@@ -23,7 +24,7 @@ public class RoomInvite {
     private String userUuid;
 
     @Column(name = "invitation_date")
-    private String invitationDate;
+    private Date invitationDate;
 
     @Column(name = "accepted_flag")
     private Boolean acceptedFlag;

@@ -3,17 +3,16 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.model.service.PlayerModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
-import vip.yazilim.p2g.web.service.spotify.RFunction;
+import vip.yazilim.p2g.web.service.spotify.model.PlayerModel;
+import vip.yazilim.p2g.web.service.spotify.model.RequestFunction;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,10 +23,9 @@ import java.util.function.Function;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
@@ -47,8 +45,8 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     }
 
     @Override
-    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws RequestException {
-        return execRequest(dataRequestBuilder.apply(spotifyApi), true);
+    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws RequestException {
+        execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //////////////////////////////////////////
@@ -70,16 +68,16 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> void execRequestListSync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
+    public <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
         execRequestList(dataRequestBuilder, playerModel, false);
     }
 
     @Override
-    public <R> void execRequestListAsync(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
+    public <R> void execRequestListAsync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel) throws RequestException {
         execRequestList(dataRequestBuilder, playerModel, true);
     }
 
-    private <R> void execRequestList(RFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel, boolean async) throws RequestException {
+    private <R> void execRequestList(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, PlayerModel playerModel, boolean async) throws RequestException {
         List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
 
         List<String> spotifyTokenList = playerModel.getSpotifyTokenList();

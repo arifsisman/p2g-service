@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.spotify;
+package vip.yazilim.p2g.web.controller.rest.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -7,21 +7,18 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.utils.exception.runtime.NotFoundException;
-import vip.yazilim.spring.utils.exception.runtime.ServiceException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
+import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,12 +26,15 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Optional;
 
+import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
+
 /**
  * @author mustafaarifsisman - 23.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-public class SpotifyAuthController {
+@RequestMapping(API_SPOTIFY)
+public class AuthorizationRest {
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
@@ -73,7 +73,7 @@ public class SpotifyAuthController {
         Optional<User> userOpt = userService.getUserByUuid(userUuid);
 
         if (!userOpt.isPresent()) {
-            throw new NotFoundException();
+            throw new NotFoundException("User not found");
         }
 
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();

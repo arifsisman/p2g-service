@@ -5,16 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import vip.yazilim.p2g.web.constant.QueueStatus;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomQueue;
+import vip.yazilim.p2g.web.exception.RoomException;
+import vip.yazilim.p2g.web.exception.UserException;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-
-import java.util.Date;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -28,77 +28,31 @@ public class DataInitializer implements CommandLineRunner {
     private IRoomService roomService;
 
     @Autowired
-    private IRoomQueueService roomQueueService;
+    private IRoomUserService roomUserService;
+
+    @Autowired
+    private ISongService songService;
 
     @Override
-    public void run(String... args) {
-        User arif = createUser("1", "arif", "arif", "0");
-        User emre = createUser("2", "emre", "emre", "0");
+    public void run(String... args) throws DatabaseException, InvalidArgumentException, RoomException, UserException {
+        User arif = userService.createUser("arif", "arif", "0");
+        User emre = userService.createUser("emre", "emre", "0");
 
-        Room room = createRoom("Test Room", arif.getUuid());
+        Room room1 = roomService.createRoom("Test Room1", arif.getUuid(), "1", 5, false, false, null);
+        String roomUuid = room1.getUuid();
+        LOGGER.info("--------> testRoomUuid: " + roomUuid);
+        LOGGER.info("--------> arifUuid: " + arif.getUuid());
+        LOGGER.info("--------> emreUuid: " + emre.getUuid());
 
-        roomService.joinRoom(room.getUuid(), arif.getUuid());
-//        roomService.joinRoom(room.getUuid(), emre.getUuid());
+        Room room2 = roomService.createRoom("Test Room2", arif.getUuid(), "1", 5, false, false, null);
 
-        createRoomQueue("1", "0R0o8uOkDz40XsR6uwThfQ", "spotify:track:0R0o8uOkDz40XsR6uwThfQ", "geceleeer", 1200000L);
-        createRoomQueue("1", "7MXVkk9YMctZqd1Srtv4MB", "spotify:track:7MXVkk9YMctZqd1Srtv4MB", "sitarboy", 1200000L);
-        createRoomQueue("1", "5CMjjywI0eZMixPeqNd75R", "spotify:track:5CMjjywI0eZMixPeqNd75R", "lusyorselftudens", 1200000L);
-        createRoomQueue("1", "5GXAXm5YOmYT0kL5jHvYBt", "spotify:track:5GXAXm5YOmYT0kL5jHvYBt", "ayfilitkaming", 1200000L);
-        createRoomQueue("1", "0DiWol3AO6WpXZgp0goxAV", "spotify:track:0DiWol3AO6WpXZgp0goxAV", "vanmortaym", 1200000L);
+        roomUserService.joinRoom(roomUuid, arif.getUuid(), "1");
+        roomUserService.joinRoom(roomUuid, emre.getUuid(), "1");
 
-    }
-
-    private User createUser(String uuid, String email, String username, String password) {
-        User user = new User();
-        user.setUuid(uuid);
-        user.setEmail(email);
-        user.setDisplayName(username);
-        user.setPassword(password);
-
-        try {
-            userService.create(user);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
-
-        return user;
-    }
-
-    private Room createRoom(String name, String owner) {
-        Room room = new Room();
-
-        room.setUuid("1");
-        room.setName(name);
-        room.setOwnerUuid(owner);
-        room.setPrivateFlag(false);
-
-        try {
-            roomService.create(room);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
-
-        return room;
-    }
-
-    private RoomQueue createRoomQueue(String roomUuid, String songId, String songUri, String songName, Long durationMs) {
-        RoomQueue roomQueue = new RoomQueue();
-        roomQueue.setRoomUuid(roomUuid);
-        roomQueue.setSongId(songId);
-        roomQueue.setSongUri(songUri);
-        roomQueue.setSongName(songName);
-        roomQueue.setDurationMs(durationMs);
-        roomQueue.setQueuedTime(new Date());
-        roomQueue.setQueueStatus(QueueStatus.IN_QUEUE.getQueueStatus());
-
-        try {
-            roomQueue = roomQueueService.create(roomQueue);
-            LOGGER.info("queueUuid: {} - songName: {}", roomQueue.getUuid(), songName);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
-
-        return roomQueue;
+        songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L,0);
+        songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000L,1);
+        songService.addSongToRoom(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000L,2);
+        songService.addSongToRoom(roomUuid, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000L,0);
     }
 
 }

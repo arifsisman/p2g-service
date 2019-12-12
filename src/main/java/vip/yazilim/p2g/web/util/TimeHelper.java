@@ -16,4 +16,9 @@ public class TimeHelper {
         return new Timestamp(date.getTime()).toString();
     }
 
+    public static Date getCurrentDate() {
+        Date date = new Date();
+        return new Date();
+    }
+
 }

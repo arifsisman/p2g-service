@@ -5,9 +5,10 @@ import java.util.HashMap;
 public enum Roles {
     ADMIN("admin"),
     MODERATOR("moderator"),
-    USER("user");
+    USER("user"),
+    P2G_USER("p2g_user");
 
-    private final  String roleName;
+    private final String roleName;
 
     Roles(String roleName) {
         this.roleName = roleName;

@@ -7,14 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
-import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> implements IRoomInviteService {
 
@@ -59,13 +63,13 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
         List<RoomInvite> roomInviteList;
 
         try {
-            roomInviteList = roomInviteRepo.findRoomInvitesByRoomUuid(roomUuid);
+            roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
 
-        for (RoomInvite invite:roomInviteList) {
+        for (RoomInvite invite : roomInviteList) {
             Optional<User> user = userService.getUserByUuid(invite.getUuid());
             user.ifPresent(inviteList::add);
         }
@@ -74,30 +78,33 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public void acceptInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException {
-        replyInviteByUuid(roomInviteUuid, true);
+    public RoomInvite accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        roomInvite.setAcceptedFlag(true);
+        return update(roomInvite);
     }
 
     @Override
-    public void rejectInviteByUuid(String roomInviteUuid) throws DatabaseException, InviteException {
-        replyInviteByUuid(roomInviteUuid, false);
+    public boolean reject(String roomInviteUuid) throws DatabaseException {
+        return deleteById(roomInviteUuid);
     }
 
-    private void replyInviteByUuid(String roomInviteUuid, boolean acceptedFlag) throws DatabaseException, InviteException {
-        Optional<RoomInvite> roomInvite = getById(roomInviteUuid);
+    @Override
+    public boolean deleteRoomInvites(String roomUuid) throws DatabaseException {
+        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
 
-        if (!roomInvite.isPresent()) {
-            String exceptionMessage = String.format("Invitation cannot send with roomInviteUuid[%s]", roomInviteUuid);
-            throw new InviteException(exceptionMessage);
+        for (RoomInvite roomInvite : roomInviteList) {
+            delete(roomInvite);
         }
 
-        roomInvite.get().setAcceptedFlag(acceptedFlag);
+        return true;
+    }
 
+    @Override
+    public boolean existsById(String roomInviteUuid) throws DatabaseReadException {
         try {
-            roomInviteRepo.save(roomInvite.get());
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while relying invite with roomInviteUuid[%s]", roomInviteUuid);
-            throw new DatabaseException(errorMessage, exception);
+            return roomInviteRepo.existsById(roomInviteUuid);
+        } catch (Exception e) {
+            throw new DatabaseReadException(e);
         }
     }
 

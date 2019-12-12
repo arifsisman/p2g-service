@@ -1,11 +1,11 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ICrudService;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.Optional;
 
@@ -15,11 +15,11 @@ import java.util.Optional;
  */
 public interface IRoomService extends ICrudService<Room, String> {
 
-    Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException;
-    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException;
+    Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException;
 
-    Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
-                    Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException;
+    //Rest
+    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, RoomException, InvalidArgumentException;
+    Room createRoom(String name, String ownerUuid, String password, Integer maxUsers, Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException;
+    boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException;
 
-    RoomUser joinRoom(String roomUuid, String userUuid);
 }

@@ -3,12 +3,14 @@ package vip.yazilim.p2g.web.model;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
  * @author mustafaarifsisman - 29.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@AllArgsConstructor
 @Data
 public class SearchModel {
     private ModelObjectType type;
@@ -40,7 +42,11 @@ public class SearchModel {
         this.id = track.getId();
         this.uri = track.getUri();
         this.durationMs = track.getDurationMs().longValue();
-        this.imageUrl = track.getPreviewUrl();
+        Image[] images = track.getAlbum().getImages();
+
+        if (images.length > 0) {
+            this.imageUrl = images[0].getUrl();
+        }
     }
 
     private void init(TrackSimplified trackSimplified) {
@@ -62,7 +68,7 @@ public class SearchModel {
         Image[] images = playlistSimplified.getImages();
 
         if (images.length > 0) {
-            this.imageUrl = playlistSimplified.getImages()[0].getUrl();
+            this.imageUrl = images[0].getUrl();
         }
     }
 
@@ -75,7 +81,7 @@ public class SearchModel {
         Image[] images = albumSimplified.getImages();
 
         if (images.length > 0) {
-            this.imageUrl = albumSimplified.getImages()[0].getUrl();
+            this.imageUrl = images[0].getUrl();
         }
     }
 

@@ -1,11 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -15,12 +12,15 @@ import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomQueueService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,13 +29,10 @@ import java.util.Optional;
  *
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoomService extends ACrudServiceImpl<Room, String> implements IRoomService {
 
-    // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomService.class);
-
-    // injected dependencies
     @Autowired
     private IRoomRepo roomRepo;
 
@@ -43,13 +40,13 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private IRoomUserService roomUserService;
 
     @Autowired
-    private IRoomQueueService roomQueueService;
-
-    @Autowired
     private IUserService userService;
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Autowired
+    private ISongService songService;
 
     @Override
     protected JpaRepository<Room, String> getRepository() {
@@ -61,45 +58,36 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return entity.getUuid();
     }
 
-    //TODO: uncomment
-//    @Override
-//    protected Room preInsert(Room entity) {
-//        entity.setUuid(DBHelper.getRandomUuid());
-//        return entity;
-//    }
+    @Override
+    protected Room preInsert(Room entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException {
         Optional<Room> room;
-        Optional<RoomUser> roomUser;
-        String roomUuid;
+        RoomUser roomUser;
 
-        roomUser = roomUserService.getRoomUserByUserUuid(userUuid);
-
-        if (roomUser.isPresent()) {
-            roomUuid = roomUser.get().getRoomUuid();
-        } else {
-            LOGGER.warn("User[{}] not in any Room!", userUuid);
-            return Optional.empty();
-        }
+        roomUser = roomUserService.getRoomUser(userUuid);
 
         try {
-            room = getById(roomUuid);
+            room = getById(roomUser.getRoomUuid());
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
+            throw new RoomException(err, exception);
         }
 
         if (!room.isPresent()) {
-            LOGGER.warn("Room[{}] is not present!", roomUuid);
-            return Optional.empty();
+            String err = String.format("Room[%s] is not present!", userUuid);
+            throw new RoomException(err);
         }
 
         return room;
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException {
+    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, RoomException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -112,8 +100,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         // Set Room
         room = getById(roomUuid);
         if (!room.isPresent()) {
-            LOGGER.error("Room[{}] is not present", roomUuid);
-            return Optional.empty();
+            String err = String.format("Room[%s] is not present", roomUuid);
+            throw new RoomException(err);
         } else {
             roomModel.setRoom(room.get());
         }
@@ -151,51 +139,41 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             room.setShowRoomActivityFlag(false);
         }
 
-        if (maxUsers == null) {
-            room.setMaxUsers(5);
-        } else {
-            room.setMaxUsers(maxUsers);
-        }
-
-        if (usersAllowedQueue == null) {
-            room.setUsersAllowedQueueFlag(usersAllowedQueue);
-        } else {
-            room.setUsersAllowedQueueFlag(false);
-        }
-
-        if (usersAllowedControl == null) {
-            room.setUsersAllowedControlFlag(usersAllowedControl);
-        } else {
-            room.setUsersAllowedControlFlag(false);
-        }
-
+        room.setMaxUsers(maxUsers == null ? Integer.valueOf(5) : maxUsers);
+        room.setUsersAllowedQueueFlag(usersAllowedQueue == null ? usersAllowedQueue : Boolean.valueOf(false));
+        room.setUsersAllowedControlFlag(usersAllowedControl == null ? usersAllowedControl : Boolean.valueOf(false));
         room.setActiveFlag(true);
         room.setChatUuid(chatUuid);
 
         try {
             create(room);
         } catch (DatabaseException e) {
-            LOGGER.error("Room cannot created!");
             throw new RoomException("Room cannot created!", e);
         }
+
         return room;
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid) {
-        RoomUser roomUser = new RoomUser();
+    public boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
+        Optional<Room> roomOpt = getById(roomUuid);
+        boolean status;
 
-        roomUser.setRoomUuid(roomUuid);
-        roomUser.setUserUuid(userUuid);
-        roomUser.setRoleName(Roles.USER.getRoleName());
-        roomUser.setActiveFlag(true);
+        if (roomOpt.isPresent()) {
+             status = delete(roomOpt.get());
 
-        try {
-            roomUserService.create(roomUser);
-        } catch (DatabaseException e) {
-            LOGGER.error("An error occurred when joining roomUuid[{}], userUuid[{}]", roomUuid, userUuid);
+            //delete Songs
+            songService.deleteRoomSongList(roomUuid);
+
+            //delete roomUsers
+            roomUserService.deleteRoomUsers(roomUuid);
+
+            //delete roomInvites
+            roomInviteService.deleteRoomInvites(roomUuid);
+        } else {
+            throw new RoomException("Room cannot deleted!");
         }
 
-        return roomUser;
+        return status;
     }
 }

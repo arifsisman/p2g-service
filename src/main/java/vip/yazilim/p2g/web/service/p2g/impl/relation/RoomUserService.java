@@ -5,20 +5,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.InviteException;
+import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 2.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implements IRoomUserService {
 
@@ -28,6 +40,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     // injected dependencies
     @Autowired
     private IRoomUserRepo roomUserRepo;
+
+    @Autowired
+    private IRoomService roomService;
+
+    @Autowired
+    private IRoomInviteService roomInviteService;
 
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
@@ -51,28 +69,99 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             return roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
-            throw new DatabaseException(errMsg, exception);
+            throw new DatabaseReadException(errMsg, exception);
         }
     }
 
     @Override
-    public Optional<RoomUser> getRoomUserByUserUuid(String userUuid) throws DatabaseException {
+    public RoomUser getRoomUser(String userUuid) throws DatabaseException {
         try {
-            return roomUserRepo.findRoomUserByUserUuid(userUuid);
+            Optional<RoomUser> roomUserOpt = roomUserRepo.findRoomUserByUserUuid(userUuid);
+
+            if (roomUserOpt.isPresent()) {
+                return roomUserOpt.get();
+            } else {
+                String err = String.format("user[%s] not in any room.", userUuid);
+                throw new RoomException(err);
+            }
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
-            throw new DatabaseException(errMsg, exception);
+            throw new DatabaseReadException(errMsg, exception);
         }
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
+    public RoomUser getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
         try {
-            return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
+            Optional<RoomUser> roomUserOpt = roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
+
+            if (roomUserOpt.isPresent()) {
+                return roomUserOpt.get();
+            } else {
+                String err = String.format("user[%s] not in any room.", userUuid);
+                throw new RoomException(err);
+            }
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid,userUuid);
-            throw new DatabaseException(errMsg, exception);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid, userUuid);
+            throw new DatabaseReadException(errMsg, exception);
         }
+    }
+
+    @Override
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException {
+        Optional<Room> roomOpt = roomService.getById(roomUuid);
+
+        if (!roomOpt.isPresent()) {
+            String err = String.format("Room[%s] can not found", roomUuid);
+            throw new RoomException(err);
+        }
+
+        Room room = roomOpt.get();
+        RoomUser roomUser = new RoomUser();
+
+        if (Objects.equals(password, room.getPassword())) {
+            roomUser.setRoomUuid(roomUuid);
+            roomUser.setUserUuid(userUuid);
+            roomUser.setRoleName(Roles.USER.getRoleName());
+            roomUser.setActiveFlag(true);
+        }
+
+        try {
+            create(roomUser);
+        } catch (DatabaseException e) {
+            String err = String.format("An error occurred when joining roomUuid[%s], userUuid[%s]", roomUuid, userUuid);
+            throw new RoomException(err, e);
+        }
+
+        return roomUser;
+    }
+
+    @Override
+    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException {
+        if (roomInviteService.existsById(roomInvite.getUuid())) {
+            RoomUser roomUser = new RoomUser();
+
+            roomUser.setRoomUuid(roomInvite.getRoomUuid());
+            roomUser.setUserUuid(roomInvite.getUserUuid());
+            roomUser.setRoleName(Roles.USER.getRoleName());
+            roomUser.setActiveFlag(true);
+
+            return create(roomUser);
+        } else {
+            String err = String.format("Room Invite[%s] cannot found.", roomInvite.getUuid());
+            throw new InviteException(err);
+        }
+    }
+
+    @Override
+    public boolean deleteRoomUsers(String roomUuid) throws DatabaseException {
+        List<RoomUser> roomUserList = roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
+
+        for (RoomUser roomUser : roomUserList) {
+            delete(roomUser);
+        }
+
+        return true;
     }
 
 }

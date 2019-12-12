@@ -5,16 +5,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
+import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.spring.utils.exception.DatabaseException;
-import vip.yazilim.spring.utils.exception.InvalidUpdateException;
-import vip.yazilim.spring.utils.service.ACrudServiceImpl;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 31.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Transactional
 @Service
 public class TokenService extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
 
@@ -54,11 +59,10 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     public String getAccessTokenByUserUuid(String userUuid) throws DatabaseException {
         try {
             Optional<SpotifyToken> spotifyToken = tokenRepo.findSpotifyTokenByUserUuid(userUuid);
-            return spotifyToken.map(SpotifyToken::getAccessToken).orElse(null);
-
+            return spotifyToken.map(SpotifyToken::getAccessToken).orElseThrow(() -> new TokenException("Token can not found for userUuid:" + userUuid));
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
     }
 
@@ -68,20 +72,20 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
             return tokenRepo.findSpotifyTokenByUserUuid(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
-            throw new DatabaseException(errorMessage, exception);
+            throw new DatabaseReadException(errorMessage, exception);
         }
     }
 
     @Override
-    public SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException {
+    public SpotifyToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        Optional<SpotifyToken> spotifyToken = getTokenByUserUuid(userUuid);
 
-        Optional<SpotifyToken> token = getTokenByUserUuid(userUuid);
-
-        if (token.isPresent()) {
+        if (spotifyToken.isPresent()) {
+            SpotifyToken token = spotifyToken.get();
             LOGGER.debug("Updating token for userUuid:" + userUuid);
-            token.get().setAccessToken(accessToken);
-            token.get().setRefreshToken(refreshToken);
-            return update(token.get());
+            token.setAccessToken(accessToken);
+            token.setRefreshToken(refreshToken);
+            return update(token);
         }
 
         SpotifyToken entity = new SpotifyToken();
@@ -92,17 +96,13 @@ public class TokenService extends ACrudServiceImpl<SpotifyToken, String> impleme
     }
 
     @Override
-    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException {
+    public List<SpotifyToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         List<SpotifyToken> spotifyTokenList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
-        try {
-            for (User u : userList) {
-                Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
-                token.ifPresent(spotifyTokenList::add);
-            }
-        } catch (DatabaseException e) {
-            throw new DatabaseException("An error occurred while getting tokenList from roomUuid:" + roomUuid, e);
+        for (User u : userList) {
+            Optional<SpotifyToken> token = getTokenByUserUuid(u.getUuid());
+            token.ifPresent(spotifyTokenList::add);
         }
 
         return spotifyTokenList;

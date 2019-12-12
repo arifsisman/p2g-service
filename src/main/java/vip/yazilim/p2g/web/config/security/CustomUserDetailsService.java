@@ -1,13 +1,13 @@
 package vip.yazilim.p2g.web.config.security;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
-import vip.yazilim.p2g.web.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.utils.exception.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
 
@@ -35,4 +35,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new UserPrinciple(user);
     }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        Optional<User> userOptional = Optional.empty();
+//
+//        try {
+//            userOptional = userService.getUserByUsername(username);
+//        } catch (DatabaseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with name " + username + " not found"));
+//
+//        return new UserPrinciple(user);
+//    }
+
 }
