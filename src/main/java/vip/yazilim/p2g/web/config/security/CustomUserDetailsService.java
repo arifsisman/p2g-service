@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.entity.Privilege;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -34,9 +33,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private IUserService userService;
 
     @Autowired
-    private IRoleService roleService;
-
-    @Autowired
     private IPrivilegeService privilegeService;
 
     @Override
@@ -49,19 +45,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             e.printStackTrace();
         }
 
-        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
-
-        return new UserPrinciple(user);
+        return userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(
-            Collection<Role> roles) throws DatabaseReadException {
-
+    private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) throws DatabaseReadException {
         return getGrantedAuthorities(getPrivileges(roles));
     }
 
-    private List<String> getPrivileges(Collection<Role> roles) throws DatabaseReadException {
-
+    public List<String> getPrivileges(Collection<Role> roles) throws DatabaseReadException {
         List<String> privileges = new ArrayList<>();
         List<Privilege> collection = new ArrayList<>();
         for (Role role : roles) {
@@ -73,7 +64,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return privileges;
     }
 
-    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+    public List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (String privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));

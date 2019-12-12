@@ -23,7 +23,6 @@ public interface IRoleService extends ICrudService<Role, String> {
     String demoteUserRole(String userUuid) throws DatabaseException, RoomException, InvalidUpdateException, InvalidArgumentException;
 
     Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException;
-
     Role createRole(String roleName) throws DatabaseCreateException;
 
 }
