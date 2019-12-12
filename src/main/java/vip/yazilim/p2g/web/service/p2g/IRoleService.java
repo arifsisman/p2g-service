@@ -5,6 +5,7 @@ import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
@@ -22,5 +23,7 @@ public interface IRoleService extends ICrudService<Role, String> {
     String demoteUserRole(String userUuid) throws DatabaseException, RoomException, InvalidUpdateException, InvalidArgumentException;
 
     Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException;
+
+    Role createRole(String roleName) throws DatabaseCreateException;
 
 }

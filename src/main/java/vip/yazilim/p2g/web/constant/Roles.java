@@ -29,6 +29,5 @@ public enum Roles {
             map.put(roles.roleName, roles);
         }
     }
-
 }
 

@@ -14,6 +14,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
@@ -98,4 +99,17 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
             throw new RoleException("Role not found!");
         }
     }
+
+    @Override
+    public Role createRole(String roleName) throws DatabaseCreateException {
+        Role role = new Role();
+        role.setName(roleName);
+
+        try {
+            return create(role);
+        } catch (Exception e) {
+            throw new DatabaseCreateException(e);
+        }
+    }
+
 }
