@@ -3,12 +3,15 @@ package vip.yazilim.p2g.web.service.p2g.impl.relation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.entity.Privilege;
 import vip.yazilim.p2g.web.repository.IPrivilegeRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
+import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,11 +35,21 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public List<Privilege> setPrivilegeList(String roleName, List<Privilege> privilegeList) throws DatabaseReadException {
+    protected Privilege preInsert(Privilege entity) {
+        entity.setUuid(DBHelper.getRandomUuid());
+        return entity;
+    }
+
+    @Override
+    public List<Privilege> setPrivilegeList(String roleName, Privileges... privileges) throws DatabaseReadException {
+        List<Privilege> privilegeList = new LinkedList<>();
         try {
-            for (Privilege p : privilegeList) {
-                p.setRoleName(roleName);
-                create(p);
+            for (Privileges p : privileges) {
+                Privilege rolePrivilege = new Privilege();
+                rolePrivilege.setRoleName(roleName);
+                rolePrivilege.setPrivilegeName(p.getPrivilegeName());
+
+                privilegeList.add(create(rolePrivilege));
             }
         } catch (Exception e) {
             String err = String.format("Can not set privileges for role[%s]", roleName);
