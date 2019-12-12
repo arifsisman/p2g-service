@@ -20,8 +20,8 @@ public class Privilege {
     @Id
     private String uuid;
 
-    @Column(name = "privilege_name", nullable = false)
-    private String privilegeName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "role_name", nullable = false)
     private String roleName;

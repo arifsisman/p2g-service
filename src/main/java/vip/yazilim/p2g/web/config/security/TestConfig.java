@@ -37,6 +37,6 @@ public class TestConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         User test = userService.createUser("test", "test", "0");
-        auth.inMemoryAuthentication().withUser(test);
+        auth.inMemoryAuthentication().withUser(new CustomUserPrincipal(test));
     }
 }

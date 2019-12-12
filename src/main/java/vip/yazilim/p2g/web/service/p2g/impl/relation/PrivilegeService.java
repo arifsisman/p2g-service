@@ -31,7 +31,7 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
 
     @Override
     protected String getId(Privilege privilege) {
-        return privilege.getPrivilegeName();
+        return privilege.getName();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
             for (Privileges p : privileges) {
                 Privilege rolePrivilege = new Privilege();
                 rolePrivilege.setRoleName(roleName);
-                rolePrivilege.setPrivilegeName(p.getPrivilegeName());
+                rolePrivilege.setName(p.getPrivilegeName());
 
                 privilegeList.add(create(rolePrivilege));
             }
