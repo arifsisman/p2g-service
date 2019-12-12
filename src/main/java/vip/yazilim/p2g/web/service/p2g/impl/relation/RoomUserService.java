@@ -122,7 +122,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         if (Objects.equals(password, room.getPassword())) {
             roomUser.setRoomUuid(roomUuid);
             roomUser.setUserUuid(userUuid);
-            roomUser.setRoleName(Roles.USER.getRoleName());
+            roomUser.setRoleName(Roles.ROOM_USER.getRoleName());
             roomUser.setActiveFlag(true);
         }
 
@@ -143,7 +143,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
             roomUser.setRoomUuid(roomInvite.getRoomUuid());
             roomUser.setUserUuid(roomInvite.getUserUuid());
-            roomUser.setRoleName(Roles.USER.getRoleName());
+            roomUser.setRoleName(Roles.ROOM_USER.getRoleName());
             roomUser.setActiveFlag(true);
 
             return create(roomUser);

@@ -60,10 +60,10 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         RoomUser roomUser = roomUserService.getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
 
-        if (roleName.equals(Roles.USER.getRoleName())) {
-            roleName = Roles.MODERATOR.getRoleName();
-        } else if (roleName.equals(Roles.MODERATOR.getRoleName())) {
-            roleName = Roles.ADMIN.getRoleName();
+        if (roleName.equals(Roles.ROOM_USER.getRoleName())) {
+            roleName = Roles.ROOM_MODERATOR.getRoleName();
+        } else if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
+            roleName = Roles.ROOM_ADMIN.getRoleName();
         }
 
         roomUser.setRoleName(roleName);
@@ -77,10 +77,10 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         RoomUser roomUser = roomUserService.getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
 
-        if (roleName.equals(Roles.MODERATOR.getRoleName())) {
-            roleName = Roles.USER.getRoleName();
-        } else if (roleName.equals(Roles.ADMIN.getRoleName())) {
-            roleName = Roles.MODERATOR.getRoleName();
+        if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
+            roleName = Roles.ROOM_USER.getRoleName();
+        } else if (roleName.equals(Roles.ROOM_ADMIN.getRoleName())) {
+            roleName = Roles.ROOM_MODERATOR.getRoleName();
         }
 
         roomUser.setRoleName(roleName);
@@ -91,7 +91,7 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
 
     @Override
     public Role getDefaultRole() throws DatabaseException, RoleException, InvalidArgumentException {
-        Optional<Role> role = getById(Roles.USER.getRoleName());
+        Optional<Role> role = getById(Roles.ROOM_USER.getRoleName());
         if (role.isPresent()) {
             return role.get();
         } else {
