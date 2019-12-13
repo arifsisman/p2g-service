@@ -171,7 +171,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
-        user.setRole(Roles.P2G_USER.getRoleName());
+        user.setRoles(new String[]{Roles.P2G_USER.getRoleName()});
 
         try {
             create(user);

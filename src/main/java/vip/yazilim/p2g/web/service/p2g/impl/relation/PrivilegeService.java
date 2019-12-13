@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public List<Privilege> setPrivilegeList(String roleName, Privileges... privileges) throws DatabaseReadException {
+    public List<Privilege> setRolePrivileges(String roleName, Privileges... privileges) throws DatabaseReadException {
         List<Privilege> privilegeList = new LinkedList<>();
         try {
             for (Privileges p : privileges) {
@@ -60,11 +61,22 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public List<Privilege> getPrivilegeList(String roleName) throws DatabaseReadException {
+    public List<Privilege> getRolePrivileges(String roleName) throws DatabaseReadException {
         try {
             return privilegeRepo.findByRoleName(roleName);
         } catch (Exception e) {
             throw new DatabaseReadException("Can not get privileges", e);
         }
+    }
+
+    @Override
+    public String[] getUserPrivileges(String[] roles) throws DatabaseReadException {
+        List<String> authorities = new ArrayList<>();
+
+        for (String role: roles) {
+            getRolePrivileges(role).stream().map(Privilege::getName).forEach(authorities::add);
+        }
+
+        return authorities.toArray(new String[0]);
     }
 }

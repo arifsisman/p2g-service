@@ -13,7 +13,8 @@ import java.util.List;
  */
 public interface IPrivilegeService extends ICrudService<Privilege, String> {
 
-    List<Privilege> setPrivilegeList(String roleName, Privileges... privileges) throws DatabaseReadException;
-    List<Privilege> getPrivilegeList(String roleName) throws DatabaseReadException;
+    List<Privilege> setRolePrivileges(String roleName, Privileges... privileges) throws DatabaseReadException;
+    List<Privilege> getRolePrivileges(String roleName) throws DatabaseReadException;
 
+    String[] getUserPrivileges(String[] roles) throws DatabaseReadException;
 }

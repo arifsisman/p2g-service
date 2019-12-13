@@ -34,10 +34,10 @@ public class AuthorizationInitializer {
         Role roomAdminRole = roleService.createRole(Roles.ROOM_ADMIN.getRoleName());
 
         // Set privileges for roles
-        privilegeService.setPrivilegeList(Roles.P2G_USER.getRoleName(), Privileges.JOIN_ROOM, Privileges.CREATE_ROOM);
+        privilegeService.setRolePrivileges(Roles.P2G_USER.getRoleName(), Privileges.JOIN_ROOM, Privileges.CREATE_ROOM);
 
-        privilegeService.setPrivilegeList(Roles.ROOM_USER.getRoleName(), Privileges.LISTEN_SONG);
-        privilegeService.setPrivilegeList(Roles.ROOM_MODERATOR.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM);
-        privilegeService.setPrivilegeList(Roles.ROOM_ADMIN.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM, Privileges.ADD_SONG);
+        privilegeService.setRolePrivileges(Roles.ROOM_USER.getRoleName(), Privileges.LISTEN_SONG);
+        privilegeService.setRolePrivileges(Roles.ROOM_MODERATOR.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM);
+        privilegeService.setRolePrivileges(Roles.ROOM_ADMIN.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM, Privileges.ADD_SONG);
     }
 }
