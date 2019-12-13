@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
+import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -39,6 +41,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IRoomUserService roomUserService;
 
     @Override
     protected JpaRepository<RoomInvite, String> getRepository() {
@@ -78,8 +83,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public RoomInvite accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public RoomInvite accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, InviteException {
         roomInvite.setAcceptedFlag(true);
+        roomUserService.acceptRoomInvite(roomInvite);
         return update(roomInvite);
     }
 

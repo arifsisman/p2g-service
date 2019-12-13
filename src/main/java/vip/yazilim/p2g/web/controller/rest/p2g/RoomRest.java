@@ -39,9 +39,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
-//    @Secured("p2g_user")
-    @PreAuthorize("hasAuthority('create_room')")
-//    @PreAuthorize("hasAuthority('add_song')")
+    @PreAuthorize(value = "hasAuthority('join_room')")
     @GetMapping("/{roomUuid}/model")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
