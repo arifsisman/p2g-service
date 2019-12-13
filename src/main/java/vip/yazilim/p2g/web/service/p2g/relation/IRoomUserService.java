@@ -9,6 +9,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -17,8 +18,8 @@ import java.util.List;
 public interface IRoomUserService extends ICrudService<RoomUser, String> {
 
     List<RoomUser> getRoomUsersByRoomUuid(String roomUuid) throws DatabaseException;
-    RoomUser getRoomUser(String userUuid) throws DatabaseException;
-    RoomUser getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
+    Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException;
+    Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
     RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException;
 

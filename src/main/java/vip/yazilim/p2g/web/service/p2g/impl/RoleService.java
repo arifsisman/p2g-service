@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoleException;
+import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -50,15 +51,15 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
-        RoomUser roomUser = roomUserService.getRoomUser(roomUuid, userUuid);
+    public Optional<Role> getRoleByRoomAndUser(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException, RoomException {
+        RoomUser roomUser = getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
         return getById(roleName);
     }
 
     @Override
-    public String promoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        RoomUser roomUser = roomUserService.getRoomUser(userUuid);
+    public String promoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+        RoomUser roomUser = getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
 
         if (roleName.equals(Roles.ROOM_USER.getRoleName())) {
@@ -74,8 +75,8 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public String demoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        RoomUser roomUser = roomUserService.getRoomUser(userUuid);
+    public String demoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+        RoomUser roomUser = getRoomUser(userUuid);
         String roleName = roomUser.getRoleName();
 
         if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
@@ -109,6 +110,17 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
             return create(role);
         } catch (Exception e) {
             throw new DatabaseCreateException(e);
+        }
+    }
+
+    private RoomUser getRoomUser(String userUuid) throws RoomException, DatabaseException {
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+
+        if (roomUserOpt.isPresent()) {
+            return roomUserOpt.get();
+        } else {
+            String err = String.format("user[%s] not in any room.", userUuid);
+            throw new RoomException(err);
         }
     }
 

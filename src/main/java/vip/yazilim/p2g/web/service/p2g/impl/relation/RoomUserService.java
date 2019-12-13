@@ -74,16 +74,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser getRoomUser(String userUuid) throws DatabaseException {
+    public Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException {
         try {
-            Optional<RoomUser> roomUserOpt = roomUserRepo.findRoomUserByUserUuid(userUuid);
-
-            if (roomUserOpt.isPresent()) {
-                return roomUserOpt.get();
-            } else {
-                String err = String.format("user[%s] not in any room.", userUuid);
-                throw new RoomException(err);
-            }
+            return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
             throw new DatabaseReadException(errMsg, exception);
@@ -91,16 +84,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
+    public Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException {
         try {
-            Optional<RoomUser> roomUserOpt = roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
-
-            if (roomUserOpt.isPresent()) {
-                return roomUserOpt.get();
-            } else {
-                String err = String.format("user[%s] not in any room.", userUuid);
-                throw new RoomException(err);
-            }
+            return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
             String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid, userUuid);
             throw new DatabaseReadException(errMsg, exception);

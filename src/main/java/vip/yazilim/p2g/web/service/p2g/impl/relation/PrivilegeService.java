@@ -5,13 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.entity.Privilege;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.IPrivilegeRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
+import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
 
     @Autowired
     private IPrivilegeRepo privilegeRepo;
+
+    @Autowired
+    private IRoomUserService roomUserService;
 
     @Override
     protected JpaRepository<Privilege, String> getRepository() {
@@ -70,13 +75,17 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public String[] getUserPrivileges(String[] roles) throws DatabaseReadException {
-        List<String> authorities = new ArrayList<>();
+    public String[] getUserPrivileges(User user) throws DatabaseException {
+        List<String> roles = new LinkedList<>();
+        List<String> privileges = new LinkedList<>();
+
+        roles.add(user.getRole());
+        roomUserService.getRoomUser(user.getUuid()).ifPresent(role -> roles.add(role.getRoleName()));
 
         for (String role: roles) {
-            getRolePrivileges(role).stream().map(Privilege::getName).forEach(authorities::add);
+            getRolePrivileges(role).stream().map(Privilege::getName).forEach(privileges::add);
         }
 
-        return authorities.toArray(new String[0]);
+        return privileges.toArray(new String[0]);
     }
 }

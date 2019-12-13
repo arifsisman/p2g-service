@@ -69,7 +69,14 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         Optional<Room> room;
         RoomUser roomUser;
 
-        roomUser = roomUserService.getRoomUser(userUuid);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+
+        if (roomUserOpt.isPresent()) {
+            roomUser = roomUserOpt.get();
+        } else {
+            String err = String.format("user[%s] not in any room.", userUuid);
+            throw new RoomException(err);
+        }
 
         try {
             room = getById(roomUser.getRoomUuid());
@@ -160,7 +167,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         boolean status;
 
         if (roomOpt.isPresent()) {
-             status = delete(roomOpt.get());
+            status = delete(roomOpt.get());
 
             //delete Songs
             songService.deleteRoomSongList(roomUuid);
