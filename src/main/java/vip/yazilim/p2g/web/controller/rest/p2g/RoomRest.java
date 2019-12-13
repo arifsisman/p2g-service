@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -48,6 +49,21 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // Room
+    @Override
+    @PreAuthorize(value = "hasAuthority('create_room')")
+    @PostMapping("/")
+    public RestResponse<Room> create(HttpServletRequest request, HttpServletResponse response, @RequestBody Room room){
+        Room created;
+
+        try {
+            created = roomService.createRoom(room);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(created, HttpStatus.OK, request, response);
+    }
+
     @PreAuthorize(value = "hasAuthority('join_room')")
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
@@ -126,7 +142,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         RoomUser roomUser;
 
         try {
-            roomUser = roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid"), userUuidAndPassword.get("roomPassword"));
+            roomUser = roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid"), userUuidAndPassword.get("roomPassword"), Roles.ROOM_USER);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

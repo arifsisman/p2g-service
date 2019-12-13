@@ -94,7 +94,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws RoomException, DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -108,7 +108,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         if (Objects.equals(password, room.getPassword())) {
             roomUser.setRoomUuid(roomUuid);
             roomUser.setUserUuid(userUuid);
-            roomUser.setRoleName(Roles.ROOM_USER.getRoleName());
+            roomUser.setRoleName(role.getRoleName());
             roomUser.setActiveFlag(true);
         } else {
             throw new RoomException("Wrong password.");

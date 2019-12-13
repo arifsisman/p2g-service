@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -15,7 +16,6 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.p2g.web.util.DBHelper;
-import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -128,33 +128,29 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return Optional.of(roomModel);
     }
 
+    //TODO: for tests, delete later
     @Override
-    public Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
-                           Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException {
         Room room = new Room();
 
-        room.setName(name);
         room.setOwnerUuid(ownerUuid);
-        room.setCreationDate(TimeHelper.getCurrentTime());
+        room.setName(roomName);
+        room.setPassword(roomPassword);
 
-        if (password == null) {
-            room.setPrivateFlag(false);
-            room.setShowRoomActivityFlag(true);
-        } else {
-            room.setPassword(password);
-            room.setPrivateFlag(true);
-            room.setShowRoomActivityFlag(false);
-        }
+        room.setPrivateFlag(false);
 
-        room.setMaxUsers(maxUsers == null ? Integer.valueOf(5) : maxUsers);
-        room.setUsersAllowedQueueFlag(usersAllowedQueue == null ? usersAllowedQueue : Boolean.valueOf(false));
-        room.setUsersAllowedControlFlag(usersAllowedControl == null ? usersAllowedControl : Boolean.valueOf(false));
-        room.setActiveFlag(true);
-        room.setChatUuid(chatUuid);
+        return create(room);
+    }
+
+    @Override
+    public Room createRoom(Room room) throws RoomException {
+        //TODO: firebase chat uuid
+        room.setChatUuid("");
 
         try {
-            create(room);
-        } catch (DatabaseException e) {
+            Room createdRoom = create(room);
+            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_ADMIN);
+        } catch (DatabaseException | InvalidArgumentException e) {
             throw new RoomException("Room cannot created!", e);
         }
 

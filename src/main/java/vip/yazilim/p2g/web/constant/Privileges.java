@@ -9,10 +9,11 @@ import java.util.HashMap;
 public enum Privileges {
     JOIN_ROOM("join_room"),
     CREATE_ROOM("create_room"),
+    DELETE_ROOM("delete_room"),
+    INVITE_ROOM("invite_room"),
     LISTEN_SONG("listen_song"),
     CONTROL_SONG("control_song"),
-    ADD_SONG("add_song"),
-    INVITE_ROOM("invite");
+    ADD_SONG("add_song");
 
     private final String privilegeName;
 

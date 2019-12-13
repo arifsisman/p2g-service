@@ -38,6 +38,6 @@ public class AuthorizationInitializer {
 
         privilegeService.setRolePrivileges(Roles.ROOM_USER.getRoleName(), Privileges.LISTEN_SONG);
         privilegeService.setRolePrivileges(Roles.ROOM_MODERATOR.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM);
-        privilegeService.setRolePrivileges(Roles.ROOM_ADMIN.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM, Privileges.ADD_SONG);
+        privilegeService.setRolePrivileges(Roles.ROOM_ADMIN.getRoleName(), Privileges.LISTEN_SONG, Privileges.CONTROL_SONG, Privileges.INVITE_ROOM, Privileges.DELETE_ROOM, Privileges.ADD_SONG);
     }
 }
