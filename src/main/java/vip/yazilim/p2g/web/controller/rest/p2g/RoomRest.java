@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
@@ -38,6 +39,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
+    @Secured("p2g_user")
     @GetMapping("/{roomUuid}/model")
     @CrossOrigin(origins = {"*"})
     @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
@@ -46,8 +48,8 @@ public class RoomRest extends ARestCrud<Room, String> {
 
         try {
             roomModel = roomService.getRoomModelByRoomUuid(roomUuid);
-        } catch (Exception var7) {
-            throw new ServiceException(var7);
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
 
         if (!roomModel.isPresent()) {
