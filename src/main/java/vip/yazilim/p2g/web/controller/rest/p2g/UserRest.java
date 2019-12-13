@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.controller.rest.p2g;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +9,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
-import vip.yazilim.spring.core.rest.model.RestErrorResponse;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.service.ICrudService;
 import vip.yazilim.spring.core.util.RestResponseFactory;
@@ -39,8 +36,6 @@ public class UserRest extends ARestCrud<User, String> {
     }
 
     @GetMapping({"/{userUuid}/model"})
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 404, message = "Model not found", response = RestErrorResponse.class), @ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
         Optional<UserModel> userModel;
 
@@ -59,8 +54,6 @@ public class UserRest extends ARestCrud<User, String> {
 
     @Override
     @PostMapping("/")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<User> create(HttpServletRequest request, HttpServletResponse response, @RequestBody User user) {
         User createdUser;
 

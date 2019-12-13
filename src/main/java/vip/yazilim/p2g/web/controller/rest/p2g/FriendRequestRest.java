@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.controller.rest.p2g;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +8,6 @@ import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestRead;
-import vip.yazilim.spring.core.rest.model.RestErrorResponse;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.service.ICrudService;
 import vip.yazilim.spring.core.util.RestResponseFactory;
@@ -37,8 +34,6 @@ public class FriendRequestRest extends ARestRead<FriendRequest, String> {
     }
 
     @PostMapping("/add/{userUuid}")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
         boolean status;
 
@@ -52,8 +47,6 @@ public class FriendRequestRest extends ARestRead<FriendRequest, String> {
     }
 
     @PutMapping("/accept/{friendRequestUuid}")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
         boolean status;
 
@@ -67,8 +60,6 @@ public class FriendRequestRest extends ARestRead<FriendRequest, String> {
     }
 
     @PutMapping("/reject/{friendRequestUuid}")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
         boolean status;
 
@@ -82,8 +73,6 @@ public class FriendRequestRest extends ARestRead<FriendRequest, String> {
     }
 
     @PutMapping("/ignore/{friendRequestUuid}")
-    @CrossOrigin(origins = {"*"})
-    @ApiResponses({@ApiResponse(code = 500, message = "Internal Error", response = RestErrorResponse.class)})
     public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
         boolean status;
 

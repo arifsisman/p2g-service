@@ -37,12 +37,14 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws DatabaseException, InvalidArgumentException, RoomException, UserException {
         User arif = userService.createUser("arif", "arif", "0");
         User emre = userService.createUser("emre", "emre", "0");
+        User mert = userService.createUser("mert", "mert", "0");
 
         Room room1 = roomService.createRoom("Test Room1", arif.getUuid(), "1", 5, false, false, null);
         String roomUuid = room1.getUuid();
         LOGGER.info("--------> testRoomUuid: " + roomUuid);
         LOGGER.info("--------> arifUuid: " + arif.getUuid());
         LOGGER.info("--------> emreUuid: " + emre.getUuid());
+        LOGGER.info("--------> mertUuid: " + mert.getUuid());
 
         Room room2 = roomService.createRoom("Test Room2", arif.getUuid(), "1", 5, false, false, null);
 

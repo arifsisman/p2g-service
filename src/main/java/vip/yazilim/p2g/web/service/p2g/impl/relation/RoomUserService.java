@@ -110,6 +110,8 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             roomUser.setUserUuid(userUuid);
             roomUser.setRoleName(Roles.ROOM_USER.getRoleName());
             roomUser.setActiveFlag(true);
+        } else {
+            throw new RoomException("Wrong password.");
         }
 
         try {

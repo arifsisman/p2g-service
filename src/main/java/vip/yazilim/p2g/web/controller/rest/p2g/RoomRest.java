@@ -20,6 +20,7 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
@@ -71,7 +72,6 @@ public class RoomRest extends ARestCrud<Room, String> {
         boolean status;
 
         try {
-            //delete room
             status = roomService.deleteRoom(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -82,27 +82,24 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     // RoomInvite
     @PostMapping("/{roomUuid}/invite/{userUuid}")
-    public RestResponse<RoomUser> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
-        RoomUser roomUser = new RoomUser();
-
-        roomUser.setRoomUuid(roomUuid);
-        roomUser.setUserUuid(userUuid);
+    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
+        RoomInvite roomInvite;
 
         try {
-            roomUser = roomUserService.create(roomUser);
+            roomInvite = roomInviteService.invite(roomUuid, userUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
 
-        return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/invite")
+    @PostMapping("/invite/accept")
     public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
         RoomUser roomUser;
 
         try {
-            roomUser = roomUserService.acceptRoomInvite(roomInvite);
+            roomUser = roomInviteService.accept(roomInvite);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -110,7 +107,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
-    @DeleteMapping("/invite/{roomInviteUuid}")
+    @DeleteMapping("/invite/{roomInviteUuid}/reject")
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomInviteUuid) {
         boolean status;
 
@@ -124,5 +121,30 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // RoomUser
+    @PostMapping("/{roomUuid}/join")
+    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody Map<String, String> userUuidAndPassword) {
+        RoomUser roomUser;
+
+        try {
+            roomUser = roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid"), userUuidAndPassword.get("roomPassword"));
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
+    }
+
+    @DeleteMapping("/{roomUserUuid}/leave")
+    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
+        boolean status;
+
+        try {
+            status = roomUserService.deleteById(roomUserUuid);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
+    }
 
 }

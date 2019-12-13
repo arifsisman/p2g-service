@@ -22,7 +22,6 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
     RoomUser joinRoom(String roomUuid, String userUuid, String password) throws RoomException, DatabaseException, InvalidArgumentException;
-
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException;
 
     // Rest
