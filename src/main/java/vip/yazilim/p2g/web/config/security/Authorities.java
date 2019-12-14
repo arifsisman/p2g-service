@@ -11,6 +11,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseCreateExceptio
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class Authorities {
 
     @Autowired
     private IPrivilegeService privilegeService;
+
+    public static HashMap<String, List<Privileges>> rolePrivilegesList = new HashMap<>();
 
     @PostConstruct
     void init() throws DatabaseCreateException, DatabaseReadException {
@@ -62,5 +65,12 @@ public class Authorities {
         privilegeService.setRolePrivileges(Roles.ROOM_MODERATOR.getRoleName(), roomModeratorPrivileges);
         privilegeService.setRolePrivileges(Roles.ROOM_ADMIN.getRoleName(), roomAdminPrivileges);
         privilegeService.setRolePrivileges(Roles.ROOM_OWNER.getRoleName(), roomOwnerPrivileges);
+
+        // Set HashMap
+        rolePrivilegesList.put(Roles.P2G_USER.getRoleName(), p2gUserPrivileges);
+        rolePrivilegesList.put(Roles.ROOM_USER.getRoleName(), roomUserPrivileges);
+        rolePrivilegesList.put(Roles.ROOM_MODERATOR.getRoleName(), roomModeratorPrivileges);
+        rolePrivilegesList.put(Roles.ROOM_ADMIN.getRoleName(), roomAdminPrivileges);
+        rolePrivilegesList.put(Roles.ROOM_OWNER.getRoleName(), roomOwnerPrivileges);
     }
 }

@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl.relation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.Authorities;
 import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.entity.Privilege;
 import vip.yazilim.p2g.web.entity.User;
@@ -88,9 +89,14 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
         roles.add(user.getRole());
         roomUserService.getRoomUser(user.getUuid()).ifPresent(role -> roles.add(role.getRoleName()));
 
-        for (String role: roles) {
-            getRolePrivileges(role).stream().map(Privilege::getName).forEach(privilegeList::add);
-        }
+//        for (String role: roles) {
+//            List<Privileges> rolePrivileges = Authorities.rolePrivilegesList.get(role);
+//            for(Privileges p : rolePrivileges){
+//                privilegeList.add(p.getPrivilegeName());
+//            }
+//        }
+
+        roles.forEach((role) -> Authorities.rolePrivilegesList.get(role).forEach((priv) -> privilegeList.add(priv.getPrivilegeName())));
 
         String[] privileges = privilegeList.toArray(new String[0]);
         user.setPrivileges(privileges);
@@ -101,6 +107,6 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     @Override
     public String[] setUserPrivileges(String userUuid) throws DatabaseException, UserException {
         Optional<User> user = userService.getUserByUuid(userUuid);
-        return setUserPrivileges(user.orElseThrow(()-> new UserException("User not found")));
+        return setUserPrivileges(user.orElseThrow(() -> new UserException("User not found")));
     }
 }
