@@ -4,15 +4,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.RoleException;
 import vip.yazilim.p2g.web.exception.RoomException;
+import vip.yazilim.p2g.web.exception.UserException;
 import vip.yazilim.p2g.web.repository.IRoleRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoleService;
+import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
@@ -20,6 +28,8 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,6 +49,9 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
 
     @Autowired
     private IRoomUserService roomUserService;
+
+    @Autowired
+    private IPrivilegeService privilegeService;
 
     @Override
     protected JpaRepository<Role, String> getRepository() {
@@ -122,6 +135,19 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
             String err = String.format("user[%s] not in any room.", userUuid);
             throw new RoomException(err);
         }
+    }
+
+    private void updateUserPrivileges(String userUuid) throws DatabaseException, UserException {
+        List<GrantedAuthority> updatedAuthorities = new ArrayList<>();
+        String[] privileges = privilegeService.getUserPrivileges(userUuid);
+
+        for (String p : privileges) {
+            updatedAuthorities.add(new SimpleGrantedAuthority(p));
+        }
+
+        Authentication auth = SecurityHelper.getUserAuthentication();
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
 }

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.entity.Privilege;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.UserException;
 import vip.yazilim.p2g.web.repository.IPrivilegeRepo;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
@@ -16,6 +18,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 12.12.2019
@@ -29,6 +32,9 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
 
     @Autowired
     private IRoomUserService roomUserService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     protected JpaRepository<Privilege, String> getRepository() {
@@ -77,15 +83,24 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     @Override
     public String[] getUserPrivileges(User user) throws DatabaseException {
         List<String> roles = new LinkedList<>();
-        List<String> privileges = new LinkedList<>();
+        List<String> privilegeList = new LinkedList<>();
 
         roles.add(user.getRole());
         roomUserService.getRoomUser(user.getUuid()).ifPresent(role -> roles.add(role.getRoleName()));
 
         for (String role: roles) {
-            getRolePrivileges(role).stream().map(Privilege::getName).forEach(privileges::add);
+            getRolePrivileges(role).stream().map(Privilege::getName).forEach(privilegeList::add);
         }
 
-        return privileges.toArray(new String[0]);
+        String[] privileges = privilegeList.toArray(new String[0]);
+        user.setPrivileges(privileges);
+
+        return privileges;
+    }
+
+    @Override
+    public String[] getUserPrivileges(String userUuid) throws DatabaseException, UserException {
+        Optional<User> user = userService.getUserByUuid(userUuid);
+        return getUserPrivileges(user.orElseThrow(()-> new UserException("User not found")));
     }
 }

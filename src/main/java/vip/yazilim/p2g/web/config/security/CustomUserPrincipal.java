@@ -27,7 +27,7 @@ public class CustomUserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        String[] privileges = user.getPrivilegeList();
+        String[] privileges = user.getPrivileges();
 
         for (String p : privileges) {
             authorityList.add(new SimpleGrantedAuthority(p));

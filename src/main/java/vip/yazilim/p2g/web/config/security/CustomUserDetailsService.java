@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             userOptional = userService.getUserByEmail(email);
             user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
-            user.setPrivilegeList(privilegeService.getUserPrivileges(user));
+            user.setPrivileges(privilegeService.getUserPrivileges(user));
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
