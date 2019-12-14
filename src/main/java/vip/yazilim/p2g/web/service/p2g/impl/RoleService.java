@@ -71,7 +71,8 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public String[] promoteUserRole(RoomUser roomUser) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException {
+    public String[] promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException, RoomException {
+        RoomUser roomUser = getRoomUser(roomUserUuid);
         String roleName = roomUser.getRoleName();
 
         //todo: linkedhashmap get next
@@ -88,7 +89,8 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public String[] demoteUserRole(RoomUser roomUser) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException {
+    public String[] demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException, RoomException {
+        RoomUser roomUser = getRoomUser(roomUserUuid);
         String roleName = roomUser.getRoleName();
 
         if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
@@ -125,14 +127,13 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         }
     }
 
-    private RoomUser getRoomUser(String userUuid) throws RoomException, DatabaseException {
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+    private RoomUser getRoomUser(String roomUserUuid) throws RoomException, DatabaseException, InvalidArgumentException {
+        Optional<RoomUser> roomUserOpt = roomUserService.getById(roomUserUuid);
 
         if (roomUserOpt.isPresent()) {
             return roomUserOpt.get();
         } else {
-            String err = String.format("user[%s] not in any room.", userUuid);
-            throw new RoomException(err);
+            throw new RoomException("User not in any room.");
         }
     }
 

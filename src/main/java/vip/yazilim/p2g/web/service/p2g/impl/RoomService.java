@@ -130,7 +130,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, RoomException, InvalidArgumentException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);
@@ -139,7 +139,10 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         room.setPrivateFlag(false);
 
-        return create(room);
+        Room createdRoom = create(room);
+        roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_OWNER);
+
+        return createdRoom;
     }
 
     @Override
@@ -149,7 +152,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         try {
             Room createdRoom = create(room);
-            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_ADMIN);
+            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_OWNER);
         } catch (DatabaseException | InvalidArgumentException e) {
             throw new RoomException("Room cannot created!", e);
         }
@@ -158,7 +161,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
+    public boolean cascadeDeleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
         Optional<Room> roomOpt = getById(roomUuid);
         boolean status;
 

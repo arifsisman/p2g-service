@@ -7,6 +7,7 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum Privileges {
+    GET_ROOM("get_room"),
     JOIN_ROOM("join_room"),
     CREATE_ROOM("create_room"),
     DELETE_ROOM("delete_room"),

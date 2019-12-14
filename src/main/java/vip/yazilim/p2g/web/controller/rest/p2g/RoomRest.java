@@ -69,7 +69,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(created, HttpStatus.OK, request, response);
     }
 
-    @PreAuthorize(value = "hasAuthority('join_room')")
+    @PreAuthorize(value = "hasAuthority('get_room')")
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
@@ -93,7 +93,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         boolean status;
 
         try {
-            status = roomService.deleteRoom(roomUuid);
+            status = roomService.cascadeDeleteRoom(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -155,7 +155,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
-    @DeleteMapping("/{roomUserUuid}/leave")
+    @DeleteMapping("/user/{roomUserUuid}/leave")
     public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
         boolean status;
 
@@ -181,13 +181,13 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUserList, HttpStatus.OK, request, response);
     }
 
-    // Privileges (Promote & Demote)
-    @PostMapping("/promote")
-    public RestResponse<String[]> promote(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser){
+    // Authorities (Promote & Demote)
+    @PutMapping("/user/{roomUserUuid}/promote")
+    public RestResponse<String[]> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
         String[] privileges;
 
         try {
-            privileges = roleService.promoteUserRole(roomUser);
+            privileges = roleService.promoteUserRole(roomUserUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -195,12 +195,12 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(privileges, HttpStatus.OK, request, response);
     }
 
-    @PostMapping("/demote")
-    public RestResponse<String[]> demote(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser){
+    @PutMapping("/user/{roomUserUuid}/demote")
+    public RestResponse<String[]> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
         String[] privileges;
 
         try {
-            privileges = roleService.demoteUserRole(roomUser);
+            privileges = roleService.demoteUserRole(roomUserUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

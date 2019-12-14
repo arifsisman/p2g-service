@@ -53,7 +53,7 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public List<Privilege> setRolePrivileges(String roleName, Privileges... privileges) throws DatabaseReadException {
+    public List<Privilege> setRolePrivileges(String roleName, List<Privileges> privileges) throws DatabaseReadException {
         List<Privilege> privilegeList = new LinkedList<>();
         try {
             for (Privileges p : privileges) {
