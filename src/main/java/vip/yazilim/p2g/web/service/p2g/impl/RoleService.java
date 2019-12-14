@@ -73,16 +73,23 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     @Override
     public String[] promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException, RoomException {
         RoomUser roomUser = getRoomUser(roomUserUuid);
-        String roleName = roomUser.getRoleName();
 
-        //todo: linkedhashmap get next
-        if (roleName.equals(Roles.ROOM_USER.getRoleName())) {
-            roleName = Roles.ROOM_MODERATOR.getRoleName();
-        } else if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
-            roleName = Roles.ROOM_ADMIN.getRoleName();
+        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
+        Roles newRole;
+
+        switch (oldRole) {
+            case ROOM_USER:
+                newRole = Roles.ROOM_MODERATOR;
+                break;
+            case ROOM_MODERATOR:
+                newRole = Roles.ROOM_ADMIN;
+                break;
+            default:
+                newRole = oldRole;
+                break;
         }
 
-        roomUser.setRoleName(roleName);
+        roomUser.setRoleName(newRole.getRoleName());
         roomUserService.update(roomUser);
 
         return updateUserPrivileges(roomUser.getUserUuid());
@@ -91,15 +98,23 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     @Override
     public String[] demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException, RoomException {
         RoomUser roomUser = getRoomUser(roomUserUuid);
-        String roleName = roomUser.getRoleName();
 
-        if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
-            roleName = Roles.ROOM_USER.getRoleName();
-        } else if (roleName.equals(Roles.ROOM_ADMIN.getRoleName())) {
-            roleName = Roles.ROOM_MODERATOR.getRoleName();
+        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
+        Roles newRole;
+
+        switch (oldRole) {
+            case ROOM_MODERATOR:
+                newRole = Roles.ROOM_USER;
+                break;
+            case ROOM_ADMIN:
+                newRole = Roles.ROOM_MODERATOR;
+                break;
+            default:
+                newRole = oldRole;
+                break;
         }
 
-        roomUser.setRoleName(roleName);
+        roomUser.setRoleName(newRole.getRoleName());
         roomUserService.update(roomUser);
 
         return updateUserPrivileges(roomUser.getUserUuid());

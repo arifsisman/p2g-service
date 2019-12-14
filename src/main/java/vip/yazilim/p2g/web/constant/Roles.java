@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.constant;
 
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public enum Roles {
     P2G_USER("p2g_user"),
@@ -19,15 +20,27 @@ public enum Roles {
         return this.roleName;
     }
 
-    private static final HashMap<String, Roles> map = new HashMap<>();
+    private static final LinkedList<String> list = new LinkedList<>();
 
-    public static Object keyOf(String type) {
-        return map.get(type);
+    public static String getNextOf(String roleName) {
+        int index = list.indexOf(roleName);
+        ListIterator iterator = list.listIterator(index);
+
+        String nextRole = iterator.next().toString();
+        return (nextRole.equals(ROOM_OWNER.roleName)) ? ROOM_ADMIN.roleName : nextRole;
+    }
+
+    public static String getPreviousOf(String roleName) {
+        int index = list.indexOf(roleName);
+        ListIterator iterator = list.listIterator(index);
+
+        String previousRole = iterator.next().toString();
+        return (previousRole.equals(P2G_USER.roleName)) ? ROOM_USER.roleName : previousRole;
     }
 
     static {
         for (Roles roles : values()) {
-            map.put(roles.roleName, roles);
+            list.add(roles.roleName);
         }
     }
 }

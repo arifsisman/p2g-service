@@ -34,7 +34,9 @@ public class Authorities {
         Role roomUserRole = roleService.createRole(Roles.ROOM_USER.getRoleName());
         Role roomModeratorRole = roleService.createRole(Roles.ROOM_MODERATOR.getRoleName());
         Role roomAdminRole = roleService.createRole(Roles.ROOM_ADMIN.getRoleName());
+        Role roomOwnerRole = roleService.createRole(Roles.ROOM_OWNER.getRoleName());
 
+        //todo: make lists static
         // Init privilege lists
         List<Privileges> p2gUserPrivileges = new LinkedList<>();
         p2gUserPrivileges.add(Privileges.GET_ROOM);
