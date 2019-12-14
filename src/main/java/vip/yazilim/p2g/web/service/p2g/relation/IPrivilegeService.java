@@ -19,6 +19,6 @@ public interface IPrivilegeService extends ICrudService<Privilege, String> {
     List<Privilege> setRolePrivileges(String roleName, Privileges... privileges) throws DatabaseReadException;
     List<Privilege> getRolePrivileges(String roleName) throws DatabaseReadException;
 
-    String[] getUserPrivileges(User user) throws DatabaseException;
-    String[] getUserPrivileges(String userUuid) throws DatabaseException, UserException;
+    String[] setUserPrivileges(User user) throws DatabaseException;
+    String[] setUserPrivileges(String userUuid) throws DatabaseException, UserException;
 }

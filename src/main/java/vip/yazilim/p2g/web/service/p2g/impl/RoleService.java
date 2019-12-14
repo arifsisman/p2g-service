@@ -71,10 +71,10 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
     }
 
     @Override
-    public String promoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
-        RoomUser roomUser = getRoomUser(userUuid);
+    public String[] promoteUserRole(RoomUser roomUser) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException {
         String roleName = roomUser.getRoleName();
 
+        //todo: linkedhashmap get next
         if (roleName.equals(Roles.ROOM_USER.getRoleName())) {
             roleName = Roles.ROOM_MODERATOR.getRoleName();
         } else if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
@@ -84,12 +84,11 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         roomUser.setRoleName(roleName);
         roomUserService.update(roomUser);
 
-        return roleName;
+        return updateUserPrivileges(roomUser.getUserUuid());
     }
 
     @Override
-    public String demoteUserRole(String userUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
-        RoomUser roomUser = getRoomUser(userUuid);
+    public String[] demoteUserRole(RoomUser roomUser) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, UserException {
         String roleName = roomUser.getRoleName();
 
         if (roleName.equals(Roles.ROOM_MODERATOR.getRoleName())) {
@@ -101,7 +100,7 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         roomUser.setRoleName(roleName);
         roomUserService.update(roomUser);
 
-        return roleName;
+        return updateUserPrivileges(roomUser.getUserUuid());
     }
 
     @Override
@@ -137,9 +136,9 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         }
     }
 
-    private void updateUserPrivileges(String userUuid) throws DatabaseException, UserException {
+    private String[] updateUserPrivileges(String userUuid) throws DatabaseException, UserException {
         List<GrantedAuthority> updatedAuthorities = new ArrayList<>();
-        String[] privileges = privilegeService.getUserPrivileges(userUuid);
+        String[] privileges = privilegeService.setUserPrivileges(userUuid);
 
         for (String p : privileges) {
             updatedAuthorities.add(new SimpleGrantedAuthority(p));
@@ -148,6 +147,8 @@ public class RoleService extends ACrudServiceImpl<Role, String> implements IRole
         Authentication auth = SecurityHelper.getUserAuthentication();
         Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        return privileges;
     }
 
 }

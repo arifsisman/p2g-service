@@ -81,7 +81,7 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public String[] getUserPrivileges(User user) throws DatabaseException {
+    public String[] setUserPrivileges(User user) throws DatabaseException {
         List<String> roles = new LinkedList<>();
         List<String> privilegeList = new LinkedList<>();
 
@@ -99,8 +99,8 @@ public class PrivilegeService extends ACrudServiceImpl<Privilege, String> implem
     }
 
     @Override
-    public String[] getUserPrivileges(String userUuid) throws DatabaseException, UserException {
+    public String[] setUserPrivileges(String userUuid) throws DatabaseException, UserException {
         Optional<User> user = userService.getUserByUuid(userUuid);
-        return getUserPrivileges(user.orElseThrow(()-> new UserException("User not found")));
+        return setUserPrivileges(user.orElseThrow(()-> new UserException("User not found")));
     }
 }

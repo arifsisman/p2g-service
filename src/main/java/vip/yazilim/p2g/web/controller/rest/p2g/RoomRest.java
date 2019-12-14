@@ -9,6 +9,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -21,6 +22,7 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,12 +45,15 @@ public class RoomRest extends ARestCrud<Room, String> {
     @Autowired
     private IRoomInviteService roomInviteService;
 
+    @Autowired
+    private IRoleService roleService;
+
     @Override
     protected ICrudService<Room, String> getService() {
         return roomService;
     }
 
-    // Room
+    // Room (Create & Delete)
     @Override
     @PreAuthorize(value = "hasAuthority('create_room')")
     @PostMapping("/")
@@ -96,7 +101,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    // RoomInvite
+    // RoomInvite (Invite & Accept & Reject)
     @PostMapping("/{roomUuid}/invite/{userUuid}")
     public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
         RoomInvite roomInvite;
@@ -136,7 +141,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    // RoomUser
+    // RoomUser (Join & Leave & Get Users)
     @PostMapping("/{roomUuid}/join")
     public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody Map<String, String> userUuidAndPassword) {
         RoomUser roomUser;
@@ -163,4 +168,43 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
+    @GetMapping("/{roomUuid}/users")
+    public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
+        List<RoomUser> roomUserList;
+
+        try {
+            roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(roomUserList, HttpStatus.OK, request, response);
+    }
+
+    // Privileges (Promote & Demote)
+    @PostMapping("/promote")
+    public RestResponse<String[]> promote(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser){
+        String[] privileges;
+
+        try {
+            privileges = roleService.promoteUserRole(roomUser);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(privileges, HttpStatus.OK, request, response);
+    }
+
+    @PostMapping("/demote")
+    public RestResponse<String[]> demote(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser){
+        String[] privileges;
+
+        try {
+            privileges = roleService.demoteUserRole(roomUser);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(privileges, HttpStatus.OK, request, response);
+    }
 }
