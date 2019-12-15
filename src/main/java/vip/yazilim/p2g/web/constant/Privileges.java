@@ -7,14 +7,16 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum Privileges {
-    GET_ROOM("get_room"),
-    JOIN_ROOM("join_room"),
-    CREATE_ROOM("create_room"),
-    DELETE_ROOM("delete_room"),
-    INVITE_ROOM("invite_room"),
-    LISTEN_SONG("listen_song"),
-    CONTROL_SONG("control_song"),
-    ADD_SONG("add_song");
+    ROOM_GET("room_get"),
+    ROOM_JOIN("room_join"),
+    ROOM_INVITE_REPLY("room_invite_reply"),
+    ROOM_CREATE("room_create"),
+    ROOM_DELETE("room_delete"),
+    ROOM_INVITE("room_invite"),
+    ROOM_MANAGE_ROLES("room_manage_roles"),
+    SONG_LISTEN("song_listen"),
+    SONG_CONTROL("song_control"),
+    SONG_ADD("song_add");
 
     private final String privilegeName;
 

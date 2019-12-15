@@ -55,7 +55,7 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     // Room (Create & Delete)
     @Override
-    @PreAuthorize(value = "hasAuthority('create_room')")
+    @PreAuthorize(value = "hasAuthority('room_create')")
     @PostMapping("/")
     public RestResponse<Room> create(HttpServletRequest request, HttpServletResponse response, @RequestBody Room room){
         Room created;
@@ -69,7 +69,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(created, HttpStatus.OK, request, response);
     }
 
-    @PreAuthorize(value = "hasAuthority('get_room')")
+    @PreAuthorize(value = "hasAuthority('room_get')")
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
@@ -88,6 +88,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     @Override
+    @PreAuthorize(value = "hasAuthority('room_delete')")
     @DeleteMapping("/{roomUuid}")
     public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         boolean status;
@@ -102,6 +103,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // RoomInvite (Invite & Accept & Reject)
+    @PreAuthorize(value = "hasAuthority('room_invite')")
     @PostMapping("/{roomUuid}/invite/{userUuid}")
     public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
         RoomInvite roomInvite;
@@ -115,6 +117,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
     }
 
+    @PreAuthorize(value = "hasAuthority('room_invite_reply')")
     @PostMapping("/invite/accept")
     public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
         RoomUser roomUser;
@@ -128,6 +131,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
+    @PreAuthorize(value = "hasAuthority('room_invite_reply')")
     @DeleteMapping("/invite/{roomInviteUuid}/reject")
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomInviteUuid) {
         boolean status;
@@ -142,6 +146,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // RoomUser (Join & Leave & Get Users)
+    @PreAuthorize(value = "hasAuthority('room_join')")
     @PostMapping("/{roomUuid}/join")
     public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody Map<String, String> userUuidAndPassword) {
         RoomUser roomUser;
@@ -155,6 +160,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
+    @PreAuthorize(value = "hasAuthority('room_join')")
     @DeleteMapping("/user/{roomUserUuid}/leave")
     public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
         boolean status;
@@ -168,6 +174,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
+    @PreAuthorize(value = "hasAuthority('room_get')")
     @GetMapping("/{roomUuid}/users")
     public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<RoomUser> roomUserList;
@@ -182,6 +189,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // Authorities (Promote & Demote)
+    @PreAuthorize(value = "hasAuthority('room_manage_roles')")
     @PutMapping("/user/{roomUserUuid}/promote")
     public RestResponse<String[]> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
         String[] privileges;
@@ -195,6 +203,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(privileges, HttpStatus.OK, request, response);
     }
 
+    @PreAuthorize(value = "hasAuthority('room_manage_roles')")
     @PutMapping("/user/{roomUserUuid}/demote")
     public RestResponse<String[]> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
         String[] privileges;

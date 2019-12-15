@@ -39,25 +39,25 @@ public class Authorities {
         Role roomAdminRole = roleService.createRole(Roles.ROOM_ADMIN.getRoleName());
         Role roomOwnerRole = roleService.createRole(Roles.ROOM_OWNER.getRoleName());
 
-        //todo: make lists static
-        // Init privilege lists
         List<Privileges> p2gUserPrivileges = new LinkedList<>();
-        p2gUserPrivileges.add(Privileges.GET_ROOM);
-        p2gUserPrivileges.add(Privileges.JOIN_ROOM);
-        p2gUserPrivileges.add(Privileges.CREATE_ROOM);
+        p2gUserPrivileges.add(Privileges.ROOM_GET);
+        p2gUserPrivileges.add(Privileges.ROOM_JOIN);
+        p2gUserPrivileges.add(Privileges.ROOM_CREATE);
+        p2gUserPrivileges.add(Privileges.ROOM_INVITE_REPLY);
 
         List<Privileges> roomUserPrivileges = new LinkedList<>();
-        roomUserPrivileges.add(Privileges.LISTEN_SONG);
+        roomUserPrivileges.add(Privileges.SONG_LISTEN);
 
         List<Privileges> roomModeratorPrivileges = new LinkedList<>(roomUserPrivileges);
-        roomModeratorPrivileges.add(Privileges.CONTROL_SONG);
-        roomModeratorPrivileges.add(Privileges.INVITE_ROOM);
+        roomModeratorPrivileges.add(Privileges.SONG_CONTROL);
+        roomModeratorPrivileges.add(Privileges.ROOM_INVITE);
 
         List<Privileges> roomAdminPrivileges = new LinkedList<>(roomModeratorPrivileges);
-        roomAdminPrivileges.add(Privileges.ADD_SONG);
+        roomAdminPrivileges.add(Privileges.SONG_ADD);
+        roomAdminPrivileges.add(Privileges.ROOM_MANAGE_ROLES);
 
         List<Privileges> roomOwnerPrivileges = new LinkedList<>(roomAdminPrivileges);
-        roomOwnerPrivileges.add(Privileges.DELETE_ROOM);
+        roomOwnerPrivileges.add(Privileges.ROOM_DELETE);
 
         // Set privileges for roles
         privilegeService.setRolePrivileges(Roles.P2G_USER.getRoleName(), p2gUserPrivileges);
