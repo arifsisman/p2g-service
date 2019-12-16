@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.config.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,9 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 public class CustomUserPrincipal implements UserDetails {
+
+    private Logger LOGGER = LoggerFactory.getLogger(CustomUserPrincipal.class);
+
     private User user;
 
     CustomUserPrincipal(User user) {
@@ -29,8 +34,10 @@ public class CustomUserPrincipal implements UserDetails {
         List<GrantedAuthority> authorityList = new ArrayList<>();
         String[] privileges = user.getPrivileges();
 
+//        LOGGER.info("Privileges for user: " + user.getDisplayName());
         for (String p : privileges) {
             authorityList.add(new SimpleGrantedAuthority(p));
+//            LOGGER.info(p);
         }
         return authorityList;
     }

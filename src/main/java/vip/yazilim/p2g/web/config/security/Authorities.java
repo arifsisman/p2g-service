@@ -1,16 +1,9 @@
 package vip.yazilim.p2g.web.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.constant.Roles;
-import vip.yazilim.p2g.web.entity.Role;
-import vip.yazilim.p2g.web.service.p2g.IRoleService;
-import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
-import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,24 +13,12 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Component
-public class Authorities {
+public class Authorities extends AAuthorityProvider{
 
-    @Autowired
-    private IRoleService roleService;
+    @Override
+    protected HashMap<Roles, List<Privileges>> initAuthorities() {
 
-    @Autowired
-    private IPrivilegeService privilegeService;
-
-    public static HashMap<String, List<Privileges>> rolePrivilegesList = new HashMap<>();
-
-    @PostConstruct
-    void init() throws DatabaseCreateException, DatabaseReadException {
-        // Create roles
-        Role p2gUserRole = roleService.createRole(Roles.P2G_USER.getRoleName());
-        Role roomUserRole = roleService.createRole(Roles.ROOM_USER.getRoleName());
-        Role roomModeratorRole = roleService.createRole(Roles.ROOM_MODERATOR.getRoleName());
-        Role roomAdminRole = roleService.createRole(Roles.ROOM_ADMIN.getRoleName());
-        Role roomOwnerRole = roleService.createRole(Roles.ROOM_OWNER.getRoleName());
+        HashMap<Roles, List<Privileges>> rolePrivilegesMap = new HashMap<>();
 
         List<Privileges> p2gUserPrivileges = new LinkedList<>();
         p2gUserPrivileges.add(Privileges.ROOM_GET);
@@ -59,18 +40,13 @@ public class Authorities {
         List<Privileges> roomOwnerPrivileges = new LinkedList<>(roomAdminPrivileges);
         roomOwnerPrivileges.add(Privileges.ROOM_DELETE);
 
-        // Set privileges for roles
-        privilegeService.setRolePrivileges(Roles.P2G_USER.getRoleName(), p2gUserPrivileges);
-        privilegeService.setRolePrivileges(Roles.ROOM_USER.getRoleName(), roomUserPrivileges);
-        privilegeService.setRolePrivileges(Roles.ROOM_MODERATOR.getRoleName(), roomModeratorPrivileges);
-        privilegeService.setRolePrivileges(Roles.ROOM_ADMIN.getRoleName(), roomAdminPrivileges);
-        privilegeService.setRolePrivileges(Roles.ROOM_OWNER.getRoleName(), roomOwnerPrivileges);
-
         // Set HashMap
-        rolePrivilegesList.put(Roles.P2G_USER.getRoleName(), p2gUserPrivileges);
-        rolePrivilegesList.put(Roles.ROOM_USER.getRoleName(), roomUserPrivileges);
-        rolePrivilegesList.put(Roles.ROOM_MODERATOR.getRoleName(), roomModeratorPrivileges);
-        rolePrivilegesList.put(Roles.ROOM_ADMIN.getRoleName(), roomAdminPrivileges);
-        rolePrivilegesList.put(Roles.ROOM_OWNER.getRoleName(), roomOwnerPrivileges);
+        rolePrivilegesMap.put(Roles.P2G_USER, p2gUserPrivileges);
+        rolePrivilegesMap.put(Roles.ROOM_USER, roomUserPrivileges);
+        rolePrivilegesMap.put(Roles.ROOM_MODERATOR, roomModeratorPrivileges);
+        rolePrivilegesMap.put(Roles.ROOM_ADMIN, roomAdminPrivileges);
+        rolePrivilegesMap.put(Roles.ROOM_OWNER, roomOwnerPrivileges);
+
+        return rolePrivilegesMap;
     }
 }

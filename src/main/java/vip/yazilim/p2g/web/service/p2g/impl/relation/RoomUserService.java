@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.AAuthorityProvider;
+import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
@@ -17,6 +19,7 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -46,6 +49,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Autowired
+    private AAuthorityProvider authorityProvider;
 
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
@@ -142,6 +148,18 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
+    public Roles getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException {
+        Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
+
+        if(!roomUserOpt.isPresent()){
+            return Roles.UNDEFINED;
+        }
+
+        String roleName = roomUserOpt.get().getRoleName();
+        return Roles.keyOf(roleName);
+    }
+
+    @Override
     public boolean deleteRoomUsers(String roomUuid) throws DatabaseException {
         List<RoomUser> roomUserList = roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
 
@@ -151,5 +169,67 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
         return true;
     }
+
+    @Override
+    public List<Privileges> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+        RoomUser roomUser = getSafeRoomUser(roomUserUuid);
+
+        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
+        Roles newRole;
+
+        switch (oldRole) {
+            case ROOM_USER:
+                newRole = Roles.ROOM_MODERATOR;
+                break;
+            case ROOM_MODERATOR:
+                newRole = Roles.ROOM_ADMIN;
+                break;
+            default:
+                newRole = oldRole;
+                break;
+        }
+
+        roomUser.setRoleName(newRole.getRoleName());
+        update(roomUser);
+
+        return authorityProvider.getPrivilegeListByRoleName(newRole);
+    }
+
+    @Override
+    public List<Privileges> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+        RoomUser roomUser = getSafeRoomUser(roomUserUuid);
+
+        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
+        Roles newRole;
+
+        switch (oldRole) {
+            case ROOM_MODERATOR:
+                newRole = Roles.ROOM_USER;
+                break;
+            case ROOM_ADMIN:
+                newRole = Roles.ROOM_MODERATOR;
+                break;
+            default:
+                newRole = oldRole;
+                break;
+        }
+
+        roomUser.setRoleName(newRole.getRoleName());
+        update(roomUser);
+
+        return authorityProvider.getPrivilegeListByRoleName(newRole);
+    }
+
+    private RoomUser getSafeRoomUser(String roomUserUuid) throws RoomException, DatabaseException, InvalidArgumentException {
+        Optional<RoomUser> roomUserOpt = getById(roomUserUuid);
+
+        if (roomUserOpt.isPresent()) {
+            return roomUserOpt.get();
+        } else {
+            throw new RoomException("User not in any room.");
+        }
+    }
+
+
 
 }

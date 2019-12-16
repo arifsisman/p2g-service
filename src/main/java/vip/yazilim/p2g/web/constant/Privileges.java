@@ -30,7 +30,7 @@ public enum Privileges {
 
     private static final HashMap<String, Privileges> map = new HashMap<>();
 
-    public static Object keyOf(String type) {
+    public static Privileges keyOf(String type) {
         return map.get(type);
     }
 

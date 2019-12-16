@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IPrivilegeService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
@@ -24,9 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private IPrivilegeService privilegeService;
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userOptional;
@@ -35,7 +31,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             userOptional = userService.getUserByEmail(email);
             user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
-            privilegeService.setUserPrivileges(user);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }

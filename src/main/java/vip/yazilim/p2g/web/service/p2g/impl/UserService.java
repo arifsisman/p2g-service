@@ -7,14 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
 import vip.yazilim.p2g.web.constant.Roles;
-import vip.yazilim.p2g.web.entity.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.*;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
-import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
@@ -45,9 +43,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     // injected dependencies
     @Autowired
     private IUserRepo userRepo;
-
-    @Autowired
-    private IRoleService roleService;
 
     @Autowired
     private IRoomService roomService;
@@ -93,12 +88,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, RoomException, InvalidArgumentException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoomException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;
         Optional<Room> room;
-        Optional<Role> role;
+        Roles role;
         List<User> friends = new ArrayList<>();
         List<User> friendRequests = new ArrayList<>();
 
@@ -119,12 +114,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setRoom(room.get());
 
             String roomUuid = room.get().getUuid();
-            role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
+            role = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
 
-            role.ifPresent(userModel::setRole);
-        } else {
-            Role defaultRole = roleService.getDefaultRole();
-            userModel.setRole(defaultRole);
+            userModel.setRole(role);
         }
 
         // Set Friends

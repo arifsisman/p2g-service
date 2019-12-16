@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.model.RoomModel;
-import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -44,9 +44,6 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private IRoleService roleService;
 
     @Override
     protected ICrudService<Room, String> getService() {
@@ -190,12 +187,13 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     // Authorities (Promote & Demote)
     @PreAuthorize(value = "hasAuthority('room_manage_roles')")
+//    @Secured("room_admin")
     @PutMapping("/user/{roomUserUuid}/promote")
-    public RestResponse<String[]> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
-        String[] privileges;
+    public RestResponse<List<Privileges>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+        List<Privileges> privileges;
 
         try {
-            privileges = roleService.promoteUserRole(roomUserUuid);
+            privileges = roomUserService.promoteUserRole(roomUserUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -205,11 +203,11 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @PreAuthorize(value = "hasAuthority('room_manage_roles')")
     @PutMapping("/user/{roomUserUuid}/demote")
-    public RestResponse<String[]> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
-        String[] privileges;
+    public RestResponse<List<Privileges>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+        List<Privileges> privileges;
 
         try {
-            privileges = roleService.demoteUserRole(roomUserUuid);
+            privileges = roomUserService.demoteUserRole(roomUserUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
