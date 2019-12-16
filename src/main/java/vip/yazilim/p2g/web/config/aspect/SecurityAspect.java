@@ -52,51 +52,41 @@ public class SecurityAspect {
         MethodSignature signature = (MethodSignature) jpoint.getSignature();
         Method method = signature.getMethod();
         for (Annotation annotation : method.getDeclaredAnnotations()) {
-            if (annotation instanceof HasRoomRole) {
-                handle((HasRoomRole) annotation);
+            if (annotation instanceof HasRoomPrivilege) {
+                handle((HasRoomPrivilege) annotation);
             } else if (annotation instanceof HasSystemRole) {
                 handle((HasSystemRole) annotation);
-            } else if (annotation instanceof HasRoomPrivilege) {
-                handle((HasRoomPrivilege) annotation);
+            } else if (annotation instanceof HasRoomRole) {
+                handle((HasRoomRole) annotation);
             }
         }
     }
 
-    private void handle(HasRoomRole hasRoomRole) throws DatabaseException, ForbiddenException {
-        Role role = hasRoomRole.role();
-        String userUuid = SecurityHelper.getUserUuid();
-
-        boolean allowed = roomUserService.hasRoomRole(userUuid, role);
-
-        if (!allowed) {
-            throw new ForbiddenException("Operation not permitted.");
-        }
-
-        LOGGER.info("get roomUserService.hasRoomRole({}, {}}) if not throw forbidden", SecurityHelper.getUserUuid(), role);
-    }
-
-
-    private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException, ForbiddenException {
-        Role role = hasSystemRole.role();
-        String userUuid = SecurityHelper.getUserUuid();
-
-        boolean allowed = userService.hasRole(userUuid, role);
-
-        if (!allowed) {
-            throw new ForbiddenException("Operation not permitted.");
-        }
-        LOGGER.info("get userService.hasRole({}, {}) if not throw forbidden", SecurityHelper.getUserUuid(), role);
-    }
-
-    private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException, ForbiddenException {
+    private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
         String userUuid = SecurityHelper.getUserUuid();
 
-        boolean allowed = roomUserService.hasRoomPrivilege(userUuid, privilege);
-
-        if (!allowed) {
-            throw new ForbiddenException("Operation not permitted.");
+        if (!roomUserService.hasRoomPrivilege(userUuid, privilege)) {
+            throw new ForbiddenException("Insufficient Privileges");
         }
-        LOGGER.info("get userService.hasRole({}, {}) if not throw forbidden", SecurityHelper.getUserUuid(), privilege);
+    }
+
+    private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
+        Role role = hasRoomRole.role();
+        String userUuid = SecurityHelper.getUserUuid();
+
+        if (!roomUserService.hasRoomRole(userUuid, role)) {
+            throw new ForbiddenException("Insufficient Privileges");
+        }
+    }
+
+
+    private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
+        Role role = hasSystemRole.role();
+        String userUuid = SecurityHelper.getUserUuid();
+
+        if (!userService.hasRole(userUuid, role)) {
+            throw new ForbiddenException("Insufficient Privileges");
+        }
     }
 }

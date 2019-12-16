@@ -60,8 +60,6 @@ public class SongRest extends ARestCrud<Song, String> {
             throw new ServiceException(e);
         }
 
-//        return RestResponseFactory.generateResponse(null, HttpStatus.FORBIDDEN, request, response);
-
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
