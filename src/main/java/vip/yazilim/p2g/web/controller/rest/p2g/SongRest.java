@@ -36,6 +36,50 @@ public class SongRest extends ARestCrud<Song, String> {
         return songService;
     }
 
+    ///////////////////////////////
+    // Super class CRUD controllers
+    ///////////////////////////////
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
+    @PostMapping({"/"})
+    public RestResponse<Song> create(HttpServletRequest request, HttpServletResponse response, @RequestBody Song entity) {
+        return super.create(request, response, entity);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.SONG_GET)
+    @GetMapping({"/{id}"})
+    public RestResponse<Song> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+        return super.getById(request, response, id);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.SONG_GET)
+    @GetMapping({"/"})
+    public RestResponse<List<Song>> getAll(HttpServletRequest request, HttpServletResponse response) {
+        return super.getAll(request, response);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.SONG_UPDATE)
+    @PutMapping({"/"})
+    public RestResponse<Song> update(HttpServletRequest request, HttpServletResponse response, @RequestBody Song entity) {
+        return super.update(request, response, entity);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
+    @DeleteMapping({"/{id}"})
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+        return super.delete(request, response, id);
+    }
+
+    ///////////////////////////////
+    // Custom controllers
+    ///////////////////////////////
+
+    @HasRoomPrivilege(privilege = Privilege.SONG_GET)
     @GetMapping("/{roomUuid}/list")
     public RestResponse<List<Song>> getSongListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<Song> songList;
@@ -49,7 +93,7 @@ public class SongRest extends ARestCrud<Song, String> {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
-    @HasRoomPrivilege(privilege = Privilege.SONG_ADD)
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @PostMapping("/{roomUuid}")
     public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
         List<Song> songList;
@@ -63,6 +107,7 @@ public class SongRest extends ARestCrud<Song, String> {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @DeleteMapping("/{songUuid}")
     public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) {
         boolean Song;

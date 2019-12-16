@@ -21,10 +21,10 @@ public abstract class AAuthorityProvider {
     }
 
     /**
-     * P2G User       -> ROOM_GET, ROOM_JOIN, ROOM_CREATE, ROOM_INVITE_REPLY
-     * Room User      -> (P2G User) + SONG_LISTEN
-     * Room Moderator -> (Room User) + SONG_CONTROL, ROOM_INVITE
-     * Room Admin     -> (Room Moderator) + SONG_ADD, ROOM_MANAGE_ROLES
+     * P2G User       -> ROOM_GET, ROOM_JOIN_AND_LEAVE, ROOM_CREATE, ROOM_INVITE_REPLY
+     * Room User      -> (P2G User) + SONG_GET
+     * Room Moderator -> (Room User) + SONG_CONTROL, ROOM_INVITE, SONG_UPDATE
+     * Room Admin     -> (Room Moderator) + SONG_ADD_AND_REMOVE, ROOM_MANAGE_ROLES, ROOM_UPDATE
      * Room Owner     -> (Room Admin) + ROOM_DELETE
      * @return map of roles and privileges
      */
@@ -36,7 +36,7 @@ public abstract class AAuthorityProvider {
 
     public boolean hasPrivilege(Role role, Privilege privilege) {
         List<Privilege> privilegeList = getPrivilegeListByRoleName(role);
-        return privilegeList != null && privilegeList.contains(privilege);
+        return (privilegeList != null) && privilegeList.contains(privilege);
     }
 
     public boolean hasRole(Role role) {

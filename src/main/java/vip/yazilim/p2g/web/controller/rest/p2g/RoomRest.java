@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
@@ -50,13 +51,55 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
-    @HasRoomPrivilege(privilege = Privilege.ROOM_GET)
+    ///////////////////////////////
+    // Super class CRUD controllers
+    ///////////////////////////////
+
+    @Override
+    @HasSystemRole(role = Role.P2G_USER)
+    @PostMapping({"/"})
+    public RestResponse<Room> create(HttpServletRequest request, HttpServletResponse response, @RequestBody Room entity) {
+        return super.create(request, response, entity);
+    }
+
+    @Override
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/{id}"})
+    public RestResponse<Room> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+        return super.getById(request, response, id);
+    }
+
+    @Override
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/"})
+    public RestResponse<List<Room>> getAll(HttpServletRequest request, HttpServletResponse response) {
+        return super.getAll(request, response);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.ROOM_UPDATE)
+    @PutMapping({"/"})
+    public RestResponse<Room> update(HttpServletRequest request, HttpServletResponse response, @RequestBody Room entity) {
+        return super.update(request, response, entity);
+    }
+
+    @Override
+    @HasRoomPrivilege(privilege = Privilege.ROOM_DELETE)
+    @DeleteMapping({"/{id}"})
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+        return super.delete(request, response, id);
+    }
+
+    ///////////////////////////////
+    // Custom controllers
+    ///////////////////////////////
+
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
 
         try {
-
             roomModel = roomService.getRoomModelByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -84,7 +127,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
     }
 
-    @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE_REPLY)
+    @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/invite/accept")
     public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
         RoomUser roomUser;
@@ -98,7 +141,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
-    @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE_REPLY)
+    @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/invite/{roomInviteUuid}/reject")
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomInviteUuid) {
         boolean status;
@@ -113,7 +156,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // RoomUser (Join & Leave & Get Users)
-    @HasRoomPrivilege(privilege = Privilege.ROOM_JOIN)
+    @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/{roomUuid}/join")
     public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody Map<String, String> userUuidAndPassword) {
         RoomUser roomUser;
@@ -127,7 +170,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(roomUser, HttpStatus.OK, request, response);
     }
 
-    @HasRoomPrivilege(privilege = Privilege.ROOM_JOIN)
+    @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/user/{roomUserUuid}/leave")
     public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
         boolean status;
@@ -141,7 +184,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
-    @HasRoomPrivilege(privilege = Privilege.ROOM_GET)
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomUuid}/users")
     public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<RoomUser> roomUserList;
@@ -158,7 +201,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     // Authorities (Promote & Demote)
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserUuid}/promote")
-    public RestResponse<List<Privilege>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+    public RestResponse<List<Privilege>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
         List<Privilege> privileges;
 
         try {
@@ -172,7 +215,7 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserUuid}/demote")
-    public RestResponse<List<Privilege>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+    public RestResponse<List<Privilege>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) {
         List<Privilege> privileges;
 
         try {

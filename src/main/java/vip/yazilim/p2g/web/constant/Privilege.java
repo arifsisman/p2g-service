@@ -9,15 +9,17 @@ import java.util.HashMap;
 public enum Privilege {
     UNDEFINED("undefined"),
     ROOM_GET("room_get"),
-    ROOM_JOIN("room_join"),
+    ROOM_JOIN_AND_LEAVE("room_join"),
     ROOM_INVITE_REPLY("room_invite_reply"),
     ROOM_CREATE("room_create"),
     ROOM_DELETE("room_delete"),
+    ROOM_UPDATE("room_update"),
     ROOM_INVITE("room_invite"),
     ROOM_MANAGE_ROLES("room_manage_roles"),
-    SONG_LISTEN("song_listen"),
+    SONG_GET("song_get"),
     SONG_CONTROL("song_control"),
-    SONG_ADD("song_add");
+    SONG_UPDATE("song_update"),
+    SONG_ADD_AND_REMOVE("song_add_and_remove");
 
     private final String privilegeName;
 

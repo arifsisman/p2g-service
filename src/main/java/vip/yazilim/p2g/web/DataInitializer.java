@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.exception.UserException;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
@@ -34,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
     private ISongService songService;
 
     @Override
-    public void run(String... args) throws DatabaseException, InvalidArgumentException, UserException {
+    public void run(String... args) throws DatabaseException, InvalidArgumentException {
         User arif = userService.createUser("arif", "arif", "0");
         User emre = userService.createUser("emre", "emre", "0");
         User mert = userService.createUser("mert", "mert", "0");

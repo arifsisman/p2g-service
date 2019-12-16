@@ -69,6 +69,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     protected User preInsert(User entity) {
         entity.setUuid(DBHelper.getRandomUuid());
+
+//        Optional<User> existingUser = getUserByEmail(entity.getEmail());
+//
+//        if (existingUser.isPresent()) {
+//            throw new UserException("Email already exists.");
+//        }
+
+        entity.setRole(Role.P2G_USER.getRoleName());
         return entity;
     }
 
@@ -151,28 +159,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return userList;
     }
 
+    //todo: this method is for test purposes, delete later
     @Override
-    public User createUser(String email, String username, String password) throws UserException {
-        Optional<User> existingUser = getUserByEmail(email);
-
-        if (existingUser.isPresent()) {
-            throw new UserException("Email already exists.");
-        }
-
+    public User createUser(String email, String username, String password) throws DatabaseException {
         User user = new User();
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
-        user.setRole(Role.P2G_USER.getRoleName());
 
-        try {
-            create(user);
-        } catch (DatabaseException e) {
-            String err = String.format("User with email [%s] can not created.", email);
-            throw new UserException(err, e);
-        }
-
-        return user;
+        return create(user);
     }
 
     @Override

@@ -61,8 +61,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Override
     protected Room preInsert(Room entity) {
         //TODO: firebase chat uuid
-        entity.setChatUuid("");
         entity.setUuid(DBHelper.getRandomUuid());
+//        entity.setOwnerUuid(SecurityHelper.getUserUuid());
+        entity.setChatUuid("");
         return entity;
     }
 

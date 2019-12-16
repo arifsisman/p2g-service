@@ -32,8 +32,6 @@ public class User implements Serializable {
 
     private String role;
 
-    private String[] privileges;
-
     @Column(name = "online_status")
     private String onlineStatus;
 

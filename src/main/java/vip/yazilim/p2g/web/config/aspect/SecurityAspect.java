@@ -80,7 +80,6 @@ public class SecurityAspect {
         }
     }
 
-
     private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
         Role role = hasSystemRole.role();
         String userUuid = SecurityHelper.getUserUuid();
