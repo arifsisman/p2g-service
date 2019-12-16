@@ -120,4 +120,33 @@ public class SongRest extends ARestCrud<Song, String> {
 
         return RestResponseFactory.generateResponse(Song, HttpStatus.OK, request, response);
     }
+
+    @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
+    @PutMapping("/{songUuid}/upvote")
+    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) {
+        int vote;
+
+        try {
+            vote =  songService.upvote(songUuid);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(vote, HttpStatus.OK, request, response);
+    }
+
+    @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
+    @PutMapping("/{songUuid}/downvote")
+    public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) {
+        int vote;
+
+        try {
+            vote =  songService.downvote(songUuid);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return RestResponseFactory.generateResponse(vote, HttpStatus.OK, request, response);
+    }
+
 }

@@ -27,14 +27,15 @@ public class Authorities extends AAuthorityProvider {
 
         List<Privilege> roomUserPrivileges = new LinkedList<>(p2gUserPrivileges);
         roomUserPrivileges.add(Privilege.SONG_GET);
+        roomUserPrivileges.add(Privilege.SONG_VOTE);
 
         List<Privilege> roomModeratorPrivileges = new LinkedList<>(roomUserPrivileges);
+        roomModeratorPrivileges.add(Privilege.SONG_ADD_AND_REMOVE);
         roomModeratorPrivileges.add(Privilege.SONG_CONTROL);
         roomModeratorPrivileges.add(Privilege.SONG_UPDATE);
         roomModeratorPrivileges.add(Privilege.ROOM_INVITE);
 
         List<Privilege> roomAdminPrivileges = new LinkedList<>(roomModeratorPrivileges);
-        roomAdminPrivileges.add(Privilege.SONG_ADD_AND_REMOVE);
         roomAdminPrivileges.add(Privilege.ROOM_MANAGE_ROLES);
         roomAdminPrivileges.add(Privilege.ROOM_UPDATE);
 

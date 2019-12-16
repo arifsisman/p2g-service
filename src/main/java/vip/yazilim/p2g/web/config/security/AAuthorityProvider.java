@@ -30,8 +30,8 @@ public abstract class AAuthorityProvider {
      */
     protected abstract HashMap<Role, List<Privilege>> initPrivileges();
 
-    public List<Privilege> getPrivilegeListByRoleName(Role roleName) {
-        return rolePrivilegesMap.get(roleName);
+    public List<Privilege> getPrivilegeListByRoleName(Role role) {
+        return rolePrivilegesMap.get(role);
     }
 
     public boolean hasPrivilege(Role role, Privilege privilege) {

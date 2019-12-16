@@ -17,6 +17,7 @@ public enum Privilege {
     ROOM_INVITE("room_invite"),
     ROOM_MANAGE_ROLES("room_manage_roles"),
     SONG_GET("song_get"),
+    SONG_VOTE("song_vote"),
     SONG_CONTROL("song_control"),
     SONG_UPDATE("song_update"),
     SONG_ADD_AND_REMOVE("song_add_and_remove");

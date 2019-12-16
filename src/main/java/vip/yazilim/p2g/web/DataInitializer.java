@@ -54,5 +54,4 @@ public class DataInitializer implements CommandLineRunner {
         songService.addSongToRoom(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000L,2);
         songService.addSongToRoom(roomUuid, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000L,0);
     }
-
 }

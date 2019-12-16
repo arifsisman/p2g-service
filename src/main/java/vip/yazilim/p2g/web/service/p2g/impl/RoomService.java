@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -63,7 +64,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         //TODO: firebase chat uuid
         entity.setUuid(DBHelper.getRandomUuid());
 //        entity.setOwnerUuid(SecurityHelper.getUserUuid());
-        entity.setChatUuid("");
+        entity.setCreationDate(TimeHelper.getCurrentTime());
         return entity;
     }
 
