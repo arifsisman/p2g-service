@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -60,6 +60,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Override
     protected Room preInsert(Room entity) {
+        //TODO: firebase chat uuid
         entity.setChatUuid("");
         entity.setUuid(DBHelper.getRandomUuid());
         return entity;
@@ -131,7 +132,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, RoomException, InvalidArgumentException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);
@@ -140,21 +141,17 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
         room.setPrivateFlag(false);
 
-        Room createdRoom = create(room);
-        roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_OWNER);
-
-        return createdRoom;
+        return create(room);
     }
 
 
     @Override
-    public Room create(Room room) throws DatabaseException{
-        //TODO: firebase chat uuid
+    public Room create(Room room) throws DatabaseException {
         Room createdRoom = super.create(room);
 
         //todo: delete try catch after lib update
         try {
-            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_OWNER);
+            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Role.ROOM_OWNER);
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         }

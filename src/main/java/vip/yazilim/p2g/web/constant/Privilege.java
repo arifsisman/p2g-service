@@ -6,7 +6,7 @@ import java.util.HashMap;
  * @author mustafaarifsisman - 12.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public enum Privileges {
+public enum Privilege {
     ROOM_GET("room_get"),
     ROOM_JOIN("room_join"),
     ROOM_INVITE_REPLY("room_invite_reply"),
@@ -20,7 +20,7 @@ public enum Privileges {
 
     private final String privilegeName;
 
-    Privileges(String privilegeName) {
+    Privilege(String privilegeName) {
         this.privilegeName = privilegeName;
     }
 
@@ -28,15 +28,15 @@ public enum Privileges {
         return this.privilegeName;
     }
 
-    private static final HashMap<String, Privileges> map = new HashMap<>();
+    private static final HashMap<String, Privilege> map = new HashMap<>();
 
-    public static Privileges keyOf(String type) {
+    public static Privilege keyOf(String type) {
         return map.get(type);
     }
 
     static {
-        for (Privileges privileges : values()) {
-            map.put(privileges.getPrivilegeName(), privileges);
+        for (Privilege privilege : values()) {
+            map.put(privilege.getPrivilegeName(), privilege);
         }
     }
 }

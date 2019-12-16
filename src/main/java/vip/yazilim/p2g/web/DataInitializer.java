@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.exception.UserException;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -35,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
     private ISongService songService;
 
     @Override
-    public void run(String... args) throws DatabaseException, InvalidArgumentException, RoomException, UserException {
+    public void run(String... args) throws DatabaseException, InvalidArgumentException, UserException {
         User arif = userService.createUser("arif", "arif", "0");
         User emre = userService.createUser("emre", "emre", "0");
         User mert = userService.createUser("mert", "mert", "0");
@@ -49,7 +48,7 @@ public class DataInitializer implements CommandLineRunner {
         LOGGER.info("--------> mertUuid: " + mert.getUuid());
 
 
-        roomUserService.joinRoom(roomUuid, emre.getUuid(), "1", Roles.ROOM_USER);
+        roomUserService.joinRoom(roomUuid, emre.getUuid(), "1", Role.ROOM_USER);
 
         songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L,0);
         songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000L,1);

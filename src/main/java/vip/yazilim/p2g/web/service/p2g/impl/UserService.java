@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -93,7 +93,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         Optional<User> user;
         Optional<Room> room;
-        Roles role;
+        Role role;
         List<User> friends = new ArrayList<>();
         List<User> friendRequests = new ArrayList<>();
 
@@ -152,7 +152,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String email, String username, String password) throws UserException{
+    public User createUser(String email, String username, String password) throws UserException {
         Optional<User> existingUser = getUserByEmail(email);
 
         if (existingUser.isPresent()) {
@@ -163,7 +163,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
-        user.setRole(Roles.P2G_USER.getRoleName());
+        user.setRole(Role.P2G_USER.getRoleName());
 
         try {
             create(user);
@@ -199,4 +199,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return user;
     }
 
+    @Override
+    public boolean hasRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
+        Optional<User> userOpt = getById(userUuid);
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
+    }
 }

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.AAuthorityProvider;
-import vip.yazilim.p2g.web.constant.Privileges;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -100,7 +100,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -132,7 +132,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
             roomUser.setRoomUuid(roomInvite.getRoomUuid());
             roomUser.setUserUuid(roomInvite.getUserUuid());
-            roomUser.setRoleName(Roles.ROOM_USER.getRoleName());
+            roomUser.setRoleName(Role.ROOM_USER.getRoleName());
             roomUser.setActiveFlag(true);
 
             return create(roomUser);
@@ -143,15 +143,15 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public Roles getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException {
+    public Role getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
 
-        if(!roomUserOpt.isPresent()){
-            return Roles.UNDEFINED;
+        if (!roomUserOpt.isPresent()) {
+            return Role.UNDEFINED;
         }
 
         String roleName = roomUserOpt.get().getRoleName();
-        return Roles.keyOf(roleName);
+        return Role.getRole(roleName);
     }
 
     @Override
@@ -166,18 +166,18 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public List<Privileges> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+    public List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
-        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
-        Roles newRole;
+        Role oldRole = Role.valueOf(roomUser.getRoleName().toUpperCase());
+        Role newRole;
 
         switch (oldRole) {
             case ROOM_USER:
-                newRole = Roles.ROOM_MODERATOR;
+                newRole = Role.ROOM_MODERATOR;
                 break;
             case ROOM_MODERATOR:
-                newRole = Roles.ROOM_ADMIN;
+                newRole = Role.ROOM_ADMIN;
                 break;
             default:
                 newRole = oldRole;
@@ -191,18 +191,18 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public List<Privileges> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+    public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
-        Roles oldRole = Roles.valueOf(roomUser.getRoleName().toUpperCase());
-        Roles newRole;
+        Role oldRole = Role.valueOf(roomUser.getRoleName().toUpperCase());
+        Role newRole;
 
         switch (oldRole) {
             case ROOM_MODERATOR:
-                newRole = Roles.ROOM_USER;
+                newRole = Role.ROOM_USER;
                 break;
             case ROOM_ADMIN:
-                newRole = Roles.ROOM_MODERATOR;
+                newRole = Role.ROOM_MODERATOR;
                 break;
             default:
                 newRole = oldRole;
@@ -216,31 +216,23 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public boolean hasRoomPrivilege(String roomUuid, String userUuid, Privileges privileges) throws DatabaseException {
+    public boolean hasRoomPrivilege(String roomUuid, String userUuid, Privilege privilege) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
 
-        if(!roomUserOpt.isPresent()){
+        if (!roomUserOpt.isPresent()) {
             return false;
         }
 
         String roleName = roomUserOpt.get().getRoleName();
-        Roles roles = Roles.keyOf(roleName);
+        Role role = Role.getRole(roleName);
 
-        return authorityProvider.hasPrivilege(roles, privileges);
+        return authorityProvider.hasPrivilege(role, privilege);
     }
 
     @Override
-    public boolean hasRoomRole(String roomUuid, String userUuid) throws DatabaseException {
+    public boolean hasRoomRole(String userUuid, Role role) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
-
-        if(!roomUserOpt.isPresent()){
-            return false;
-        }
-
-        String roleName = roomUserOpt.get().getRoleName();
-        Roles roles = Roles.keyOf(roleName);
-
-        return authorityProvider.hasRole(roles);
+        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoleName()));
     }
 
     private RoomUser getSafeRoomUser(String roomUserUuid) throws RoomException, DatabaseException, InvalidArgumentException {

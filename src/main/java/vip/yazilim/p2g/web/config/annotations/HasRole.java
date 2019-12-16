@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.config.annotations;
 
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @interface HasRole {
-    Roles role() default Roles.UNDEFINED;
+    Role role() default Role.UNDEFINED;
     boolean isRoom();
 }

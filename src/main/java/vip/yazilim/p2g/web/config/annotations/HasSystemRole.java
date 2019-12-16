@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.config.annotations;
 
 import org.springframework.core.annotation.AliasFor;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,5 +19,5 @@ public @interface HasSystemRole {
     @AliasFor(
             annotation = HasRole.class
     )
-    Roles role();
+    Role role();
 }

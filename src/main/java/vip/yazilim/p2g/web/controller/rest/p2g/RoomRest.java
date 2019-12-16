@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.config.annotations.HasRoomRole;
 import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
-import vip.yazilim.p2g.web.constant.Privileges;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -51,7 +52,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
-    @HasSystemRole(role = Roles.P2G_USER)
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
@@ -71,7 +72,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     // RoomInvite (Invite & Accept & Reject)
-    @PreAuthorize(value = "hasAuthority('room_invite')")
+    @HasRoomRole(role = Role.ROOM_MODERATOR)
     @PostMapping("/{roomUuid}/invite/{userUuid}")
     public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) {
         RoomInvite roomInvite;
@@ -120,7 +121,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         RoomUser roomUser;
 
         try {
-            roomUser = roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid"), userUuidAndPassword.get("roomPassword"), Roles.ROOM_USER);
+            roomUser = roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid"), userUuidAndPassword.get("roomPassword"), Role.ROOM_USER);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -160,8 +161,8 @@ public class RoomRest extends ARestCrud<Room, String> {
     @PreAuthorize(value = "hasAuthority('room_manage_roles')")
 //    @Secured("room_admin")
     @PutMapping("/user/{roomUserUuid}/promote")
-    public RestResponse<List<Privileges>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
-        List<Privileges> privileges;
+    public RestResponse<List<Privilege>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+        List<Privilege> privileges;
 
         try {
             privileges = roomUserService.promoteUserRole(roomUserUuid);
@@ -174,8 +175,8 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @PreAuthorize(value = "hasAuthority('room_manage_roles')")
     @PutMapping("/user/{roomUserUuid}/demote")
-    public RestResponse<List<Privileges>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
-        List<Privileges> privileges;
+    public RestResponse<List<Privilege>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid){
+        List<Privilege> privileges;
 
         try {
             privileges = roomUserService.demoteUserRole(roomUserUuid);

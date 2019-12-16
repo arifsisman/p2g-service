@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.*;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -25,4 +26,6 @@ public interface IUserService extends ICrudService<User, String> {
 
     // Rest
     User createUser(String username, String email, String password) throws UserException;
+
+    boolean hasRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException;
 }

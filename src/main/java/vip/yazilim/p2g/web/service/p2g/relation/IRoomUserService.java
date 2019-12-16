@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.relation;
 
-import vip.yazilim.p2g.web.constant.Privileges;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.InviteException;
@@ -24,18 +24,18 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
-    RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws DatabaseException, InvalidArgumentException;
+    RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException;
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException;
 
-    Roles getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException;
+    Role getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException;
 
     // Rest
     boolean deleteRoomUsers(String roomUuid) throws DatabaseException;
 
-    List<Privileges> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
-    List<Privileges> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
+    List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
+    List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
 
-    boolean hasRoomPrivilege(String roomUuid, String userUuid, Privileges privileges) throws DatabaseException;
+    boolean hasRoomPrivilege(String roomUuid, String userUuid, Privilege privilege) throws DatabaseException;
 
-    boolean hasRoomRole(String roomUuid, String userUuid) throws DatabaseException;
+    boolean hasRoomRole(String userUuid, Role role) throws DatabaseException;
 }

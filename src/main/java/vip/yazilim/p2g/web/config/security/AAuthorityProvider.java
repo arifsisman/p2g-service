@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.config.security;
 
-import vip.yazilim.p2g.web.constant.Privileges;
-import vip.yazilim.p2g.web.constant.Roles;
+import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public abstract class AAuthorityProvider {
 
-    private HashMap<Roles, List<Privileges>> rolePrivilegesMap;
+    private HashMap<Role, List<Privilege>> rolePrivilegesMap;
 
     @PostConstruct
     void initMap() {
@@ -28,18 +28,18 @@ public abstract class AAuthorityProvider {
      * Room Owner     -> (Room Admin) + ROOM_DELETE
      * @return map of roles and privileges
      */
-    protected abstract HashMap<Roles, List<Privileges>> initPrivileges();
+    protected abstract HashMap<Role, List<Privilege>> initPrivileges();
 
-    public List<Privileges> getPrivilegeListByRoleName(Roles roleName) {
+    public List<Privilege> getPrivilegeListByRoleName(Role roleName) {
         return rolePrivilegesMap.get(roleName);
     }
 
-    public boolean hasPrivilege(Roles roles, Privileges privileges) {
-        List<Privileges> privilegesList = getPrivilegeListByRoleName(roles);
-        return privilegesList != null && privilegesList.contains(privileges);
+    public boolean hasPrivilege(Role role, Privilege privilege) {
+        List<Privilege> privilegeList = getPrivilegeListByRoleName(role);
+        return privilegeList != null && privilegeList.contains(privilege);
     }
 
-    public boolean hasRole(Roles roles) {
-        return rolePrivilegesMap.containsKey(roles);
+    public boolean hasRole(Role role) {
+        return rolePrivilegesMap.containsKey(role);
     }
 }
