@@ -20,7 +20,5 @@ public interface IRoomService extends ICrudService<Room, String> {
     //Rest
     Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, RoomException, InvalidArgumentException;
     Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, RoomException, InvalidArgumentException;
-    Room createRoom(Room room) throws RoomException;
-    boolean cascadeDeleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException;
 
 }

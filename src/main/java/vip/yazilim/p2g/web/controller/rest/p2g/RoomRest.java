@@ -50,28 +50,13 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
-    // Room (Create & Delete)
-    @Override
-    @PreAuthorize(value = "hasAuthority('room_create')")
-    @PostMapping("/")
-    public RestResponse<Room> create(HttpServletRequest request, HttpServletResponse response, @RequestBody Room room){
-        Room created;
-
-        try {
-            created = roomService.createRoom(room);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(created, HttpStatus.OK, request, response);
-    }
-
     @PreAuthorize(value = "hasAuthority('room_get')")
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
 
         try {
+
             roomModel = roomService.getRoomModelByRoomUuid(roomUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -82,21 +67,6 @@ public class RoomRest extends ARestCrud<Room, String> {
         } else {
             return RestResponseFactory.generateResponse(roomModel.get(), HttpStatus.OK, request, response);
         }
-    }
-
-    @Override
-    @PreAuthorize(value = "hasAuthority('room_delete')")
-    @DeleteMapping("/{roomUuid}")
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
-        boolean status;
-
-        try {
-            status = roomService.cascadeDeleteRoom(roomUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
     }
 
     // RoomInvite (Invite & Accept & Reject)

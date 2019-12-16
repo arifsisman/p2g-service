@@ -13,11 +13,10 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Component
-public class Authorities extends AAuthorityProvider{
+public class Authorities extends AAuthorityProvider {
 
     @Override
-    protected HashMap<Roles, List<Privileges>> initAuthorities() {
-
+    protected HashMap<Roles, List<Privileges>> initPrivileges() {
         HashMap<Roles, List<Privileges>> rolePrivilegesMap = new HashMap<>();
 
         List<Privileges> p2gUserPrivileges = new LinkedList<>();
@@ -26,7 +25,7 @@ public class Authorities extends AAuthorityProvider{
         p2gUserPrivileges.add(Privileges.ROOM_CREATE);
         p2gUserPrivileges.add(Privileges.ROOM_INVITE_REPLY);
 
-        List<Privileges> roomUserPrivileges = new LinkedList<>();
+        List<Privileges> roomUserPrivileges = new LinkedList<>(p2gUserPrivileges);
         roomUserPrivileges.add(Privileges.SONG_LISTEN);
 
         List<Privileges> roomModeratorPrivileges = new LinkedList<>(roomUserPrivileges);

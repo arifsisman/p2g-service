@@ -16,14 +16,30 @@ public abstract class AAuthorityProvider {
     private HashMap<Roles, List<Privileges>> rolePrivilegesMap;
 
     @PostConstruct
-    void initMap(){
-        rolePrivilegesMap = initAuthorities();
+    void initMap() {
+        rolePrivilegesMap = initPrivileges();
     }
 
-    protected abstract HashMap<Roles, List<Privileges>> initAuthorities();
+    /**
+     * P2G User       -> ROOM_GET, ROOM_JOIN, ROOM_CREATE, ROOM_INVITE_REPLY
+     * Room User      -> (P2G User) + SONG_LISTEN
+     * Room Moderator -> (Room User) + SONG_CONTROL, ROOM_INVITE
+     * Room Admin     -> (Room Moderator) + SONG_ADD, ROOM_MANAGE_ROLES
+     * Room Owner     -> (Room Admin) + ROOM_DELETE
+     * @return map of roles and privileges
+     */
+    protected abstract HashMap<Roles, List<Privileges>> initPrivileges();
 
-    public List<Privileges> getPrivilegeListByRoleName(Roles roleName){
+    public List<Privileges> getPrivilegeListByRoleName(Roles roleName) {
         return rolePrivilegesMap.get(roleName);
     }
 
+    public boolean hasPrivilege(Roles roles, Privileges privileges) {
+        List<Privileges> privilegesList = getPrivilegeListByRoleName(roles);
+        return privilegesList != null && privilegesList.contains(privileges);
+    }
+
+    public boolean hasRole(Roles roles) {
+        return rolePrivilegesMap.containsKey(roles);
+    }
 }

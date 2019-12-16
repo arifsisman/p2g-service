@@ -100,12 +100,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws RoomException, DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] can not found", roomUuid);
-            throw new RoomException(err);
+            throw new InvalidArgumentException(err);
         }
 
         Room room = roomOpt.get();
@@ -117,15 +117,10 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             roomUser.setRoleName(role.getRoleName());
             roomUser.setActiveFlag(true);
         } else {
-            throw new RoomException("Wrong password.");
+            throw new InvalidArgumentException("Wrong password.");
         }
 
-        try {
-            create(roomUser);
-        } catch (DatabaseException e) {
-            String err = String.format("An error occurred when joining roomUuid[%s], userUuid[%s]", roomUuid, userUuid);
-            throw new RoomException(err, e);
-        }
+        create(roomUser);
 
         return roomUser;
     }
@@ -220,6 +215,34 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         return authorityProvider.getPrivilegeListByRoleName(newRole);
     }
 
+    @Override
+    public boolean hasRoomPrivilege(String roomUuid, String userUuid, Privileges privileges) throws DatabaseException {
+        Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
+
+        if(!roomUserOpt.isPresent()){
+            return false;
+        }
+
+        String roleName = roomUserOpt.get().getRoleName();
+        Roles roles = Roles.keyOf(roleName);
+
+        return authorityProvider.hasPrivilege(roles, privileges);
+    }
+
+    @Override
+    public boolean hasRoomRole(String roomUuid, String userUuid) throws DatabaseException {
+        Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
+
+        if(!roomUserOpt.isPresent()){
+            return false;
+        }
+
+        String roleName = roomUserOpt.get().getRoleName();
+        Roles roles = Roles.keyOf(roleName);
+
+        return authorityProvider.hasRole(roles);
+    }
+
     private RoomUser getSafeRoomUser(String roomUserUuid) throws RoomException, DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = getById(roomUserUuid);
 
@@ -229,7 +252,4 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             throw new RoomException("User not in any room.");
         }
     }
-
-
-
 }

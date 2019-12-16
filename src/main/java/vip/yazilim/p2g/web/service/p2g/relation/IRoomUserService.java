@@ -24,7 +24,7 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String roomUuid, String userUuid) throws DatabaseException;
 
-    RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws RoomException, DatabaseException, InvalidArgumentException;
+    RoomUser joinRoom(String roomUuid, String userUuid, String password, Roles role) throws DatabaseException, InvalidArgumentException;
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException;
 
     Roles getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException;
@@ -34,4 +34,8 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
 
     List<Privileges> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
     List<Privileges> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
+
+    boolean hasRoomPrivilege(String roomUuid, String userUuid, Privileges privileges) throws DatabaseException;
+
+    boolean hasRoomRole(String roomUuid, String userUuid) throws DatabaseException;
 }

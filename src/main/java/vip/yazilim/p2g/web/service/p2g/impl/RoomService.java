@@ -60,6 +60,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Override
     protected Room preInsert(Room entity) {
+        entity.setChatUuid("");
         entity.setUuid(DBHelper.getRandomUuid());
         return entity;
     }
@@ -145,25 +146,34 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return createdRoom;
     }
 
-    @Override
-    public Room createRoom(Room room) throws RoomException {
-        //TODO: firebase chat uuid
-        room.setChatUuid("");
 
+    @Override
+    public Room create(Room room) throws DatabaseException{
+        //TODO: firebase chat uuid
+        Room createdRoom = super.create(room);
+
+        //todo: delete try catch after lib update
         try {
-            Room createdRoom = create(room);
             roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Roles.ROOM_OWNER);
-        } catch (DatabaseException | InvalidArgumentException e) {
-            throw new RoomException("Room cannot created!", e);
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
         }
 
         return room;
     }
 
     @Override
-    public boolean cascadeDeleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
-        Optional<Room> roomOpt = getById(roomUuid);
-        boolean status;
+    public boolean deleteById(String roomUuid) throws DatabaseException {
+        Optional<Room> roomOpt = Optional.empty();
+
+        //todo: delete try catch after lib update
+        try {
+            roomOpt = getById(roomUuid);
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
+
+        boolean status = false;
 
         if (roomOpt.isPresent()) {
             status = delete(roomOpt.get());
@@ -176,8 +186,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
             //delete roomInvites
             roomInviteService.deleteRoomInvites(roomUuid);
-        } else {
-            throw new RoomException("Room cannot deleted!");
         }
 
         return status;
