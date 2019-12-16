@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privileges;
 import vip.yazilim.p2g.web.constant.Roles;
 import vip.yazilim.p2g.web.entity.Room;
@@ -50,7 +51,7 @@ public class RoomRest extends ARestCrud<Room, String> {
         return roomService;
     }
 
-    @PreAuthorize(value = "hasAuthority('room_get')")
+    @HasSystemRole(role = Roles.P2G_USER)
     @GetMapping("/{roomUuid}/model")
     public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         Optional<RoomModel> roomModel;
