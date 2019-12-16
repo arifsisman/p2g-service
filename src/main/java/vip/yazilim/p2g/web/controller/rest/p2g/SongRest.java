@@ -2,8 +2,9 @@ package vip.yazilim.p2g.web.controller.rest.p2g;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
@@ -48,7 +49,7 @@ public class SongRest extends ARestCrud<Song, String> {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
-    @PreAuthorize(value = "hasAuthority('song_add')")
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD)
     @PostMapping("/{roomUuid}")
     public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody SearchModel searchModel) {
         List<Song> songList;
@@ -58,6 +59,8 @@ public class SongRest extends ARestCrud<Song, String> {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+//        return RestResponseFactory.generateResponse(null, HttpStatus.FORBIDDEN, request, response);
 
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }

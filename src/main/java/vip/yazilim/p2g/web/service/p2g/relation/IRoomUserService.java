@@ -35,7 +35,7 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
     List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
 
-    boolean hasRoomPrivilege(String roomUuid, String userUuid, Privilege privilege) throws DatabaseException;
+    boolean hasRoomPrivilege(String userUuid, Privilege privilege) throws DatabaseException;
 
     boolean hasRoomRole(String userUuid, Role role) throws DatabaseException;
 }

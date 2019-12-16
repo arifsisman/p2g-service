@@ -7,6 +7,7 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum Privilege {
+    UNDEFINED("undefined"),
     ROOM_GET("room_get"),
     ROOM_JOIN("room_join"),
     ROOM_INVITE_REPLY("room_invite_reply"),

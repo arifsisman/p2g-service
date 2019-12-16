@@ -8,8 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotations.HasRoomRole;
 import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.service.p2g.impl.UserService;
@@ -54,6 +56,8 @@ public class SecurityAspect {
                 handle((HasRoomRole) annotation);
             } else if (annotation instanceof HasSystemRole) {
                 handle((HasSystemRole) annotation);
+            } else if (annotation instanceof HasRoomPrivilege) {
+                handle((HasRoomPrivilege) annotation);
             }
         }
     }
@@ -81,7 +85,18 @@ public class SecurityAspect {
         if (!allowed) {
             throw new ForbiddenException("Operation not permitted.");
         }
-        // TODO: get userService.hasRole(userUuid, role) if not throw forbidden
         LOGGER.info("get userService.hasRole({}, {}) if not throw forbidden", SecurityHelper.getUserUuid(), role);
+    }
+
+    private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException, ForbiddenException {
+        Privilege privilege = hasRoomPrivilege.privilege();
+        String userUuid = SecurityHelper.getUserUuid();
+
+        boolean allowed = roomUserService.hasRoomPrivilege(userUuid, privilege);
+
+        if (!allowed) {
+            throw new ForbiddenException("Operation not permitted.");
+        }
+        LOGGER.info("get userService.hasRole({}, {}) if not throw forbidden", SecurityHelper.getUserUuid(), privilege);
     }
 }

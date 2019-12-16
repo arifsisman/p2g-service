@@ -169,7 +169,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     public List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
-        Role oldRole = Role.valueOf(roomUser.getRoleName().toUpperCase());
+        Role oldRole = Role.getRole(roomUser.getRoleName());
         Role newRole;
 
         switch (oldRole) {
@@ -194,7 +194,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
-        Role oldRole = Role.valueOf(roomUser.getRoleName().toUpperCase());
+        Role oldRole = Role.getRole(roomUser.getRoleName());
         Role newRole;
 
         switch (oldRole) {
@@ -216,17 +216,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public boolean hasRoomPrivilege(String roomUuid, String userUuid, Privilege privilege) throws DatabaseException {
+    public boolean hasRoomPrivilege(String userUuid, Privilege privilege) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
-
-        if (!roomUserOpt.isPresent()) {
-            return false;
-        }
-
-        String roleName = roomUserOpt.get().getRoleName();
-        Role role = Role.getRole(roleName);
-
-        return authorityProvider.hasPrivilege(role, privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
     }
 
     @Override
