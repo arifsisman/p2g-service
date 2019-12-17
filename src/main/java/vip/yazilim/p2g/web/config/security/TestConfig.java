@@ -14,9 +14,9 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
  * @author mustafaarifsisman - 10.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Order(3)
 @Profile("test")
 @Configuration
-@Order(3)
 public class TestConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired

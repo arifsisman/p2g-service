@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
@@ -44,6 +45,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     // injected dependencies
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private IUserRepo userRepo;
 
     @Autowired
@@ -81,7 +85,8 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 //            throw new UserException("Email already exists.");
 //        }
 
-        entity.setRole(Role.P2G_USER.getRoleName());
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setRoleName(Role.P2G_USER.getRoleName());
         return entity;
     }
 
@@ -202,12 +207,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
         Optional<User> userOpt = getById(userUuid);
-        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRoleName()));
     }
 
     @Override
     public boolean hasSystemPrivilege(String userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
         Optional<User> roomUserOpt = getById(userUuid);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
     }
 }

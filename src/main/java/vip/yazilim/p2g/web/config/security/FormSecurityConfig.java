@@ -7,10 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+@Order(1)
 @Profile("dev")
 @Configuration
 @EnableWebSecurity
-@Order(1)
 public class FormSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override

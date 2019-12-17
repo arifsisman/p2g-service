@@ -27,10 +27,11 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 60, nullable = false)
     private String password;
 
-    private String role;
+    @Column(name = "role_name", nullable = false)
+    private String roleName;
 
     @Column(name = "online_status")
     private String onlineStatus;

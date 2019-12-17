@@ -9,6 +9,7 @@ spring:
   devtools:
     restart:
       exclude: logs/**
+      enabled: false
 
 # Spotify-Play2Gether configuration
 spotify:
