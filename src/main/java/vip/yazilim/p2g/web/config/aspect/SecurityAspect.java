@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotations.HasRoomRole;
+import vip.yazilim.p2g.web.config.annotations.HasSystemPrivilege;
 import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
@@ -58,10 +59,13 @@ public class SecurityAspect {
                 handle((HasSystemRole) annotation);
             } else if (annotation instanceof HasRoomRole) {
                 handle((HasRoomRole) annotation);
+            } else if (annotation instanceof HasSystemPrivilege) {
+                handle((HasSystemPrivilege) annotation);
             }
         }
     }
 
+    // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
         String userUuid = SecurityHelper.getUserUuid();
@@ -71,6 +75,16 @@ public class SecurityAspect {
         }
     }
 
+    private void handle(HasSystemPrivilege hasRoomPrivilege) throws DatabaseException, InvalidArgumentException {
+        Privilege privilege = hasRoomPrivilege.privilege();
+        String userUuid = SecurityHelper.getUserUuid();
+
+        if (!userService.hasSystemPrivilege(userUuid, privilege)) {
+            throw new ForbiddenException("Insufficient Privileges");
+        }
+    }
+
+    // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
         Role role = hasRoomRole.role();
         String userUuid = SecurityHelper.getUserUuid();
@@ -84,7 +98,7 @@ public class SecurityAspect {
         Role role = hasSystemRole.role();
         String userUuid = SecurityHelper.getUserUuid();
 
-        if (!userService.hasRole(userUuid, role)) {
+        if (!userService.hasSystemRole(userUuid, role)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }

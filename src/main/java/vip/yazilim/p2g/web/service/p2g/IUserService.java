@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.AccountException;
@@ -31,5 +32,7 @@ public interface IUserService extends ICrudService<User, String> {
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException;
 
     // Rest
-    boolean hasRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException;
+    boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException;
+
+    boolean hasSystemPrivilege(String userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException;
 }

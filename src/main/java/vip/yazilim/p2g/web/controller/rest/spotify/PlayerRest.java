@@ -3,6 +3,8 @@ package vip.yazilim.p2g.web.controller.rest.spotify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.web.ServiceException;
@@ -26,6 +28,7 @@ public class PlayerRest {
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/play")
     public RestResponse<List<Song>> playSong(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) {
         List<Song> songList;
@@ -39,6 +42,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/play")
     public RestResponse<List<Song>> startResume(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<Song> songList;
@@ -52,6 +56,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/pause")
     public RestResponse<List<Song>> pause(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<Song> songList;
@@ -65,6 +70,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/next")
     public RestResponse<List<Song>> next(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         // if room in queue mode, delete previous
@@ -81,6 +87,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/previous")
     public RestResponse<List<Song>> previous(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         List<Song> songList;
@@ -94,6 +101,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(songList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/seek/{ms}")
     public RestResponse<Integer> seek(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable Integer ms) {
         int currentMs;
@@ -107,6 +115,7 @@ public class PlayerRest {
         return RestResponseFactory.generateResponse(currentMs, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomUuid}/repeat")
     public RestResponse<Boolean> repeat(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) {
         boolean repeat;

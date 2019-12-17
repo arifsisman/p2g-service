@@ -30,8 +30,6 @@ public interface ISongService extends ICrudService<Song, String> {
     Optional<Song> getNextSong(String roomUuid) throws DatabaseReadException;
     Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException;
 
-//    List<Song> updateSongStatus(Song playing) throws DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
-
     // Rest
     List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException;
     boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException;

@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
@@ -55,6 +57,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
+
+    @Autowired
+    private AAuthorityProvider authorityProvider;
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -195,8 +200,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public boolean hasRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
+    public boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
         Optional<User> userOpt = getById(userUuid);
         return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
+    }
+
+    @Override
+    public boolean hasSystemPrivilege(String userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
+        Optional<User> roomUserOpt = getById(userUuid);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
     }
 }

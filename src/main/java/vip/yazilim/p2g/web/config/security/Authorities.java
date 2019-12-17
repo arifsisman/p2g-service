@@ -24,10 +24,12 @@ public class Authorities extends AAuthorityProvider {
         p2gUserPrivileges.add(Privilege.ROOM_CREATE);
         p2gUserPrivileges.add(Privilege.ROOM_JOIN_AND_LEAVE);
         p2gUserPrivileges.add(Privilege.ROOM_INVITE_REPLY);
+        p2gUserPrivileges.add(Privilege.SPOTIFY_USER_SEARCH);
 
         List<Privilege> roomUserPrivileges = new LinkedList<>(p2gUserPrivileges);
         roomUserPrivileges.add(Privilege.SONG_GET);
         roomUserPrivileges.add(Privilege.SONG_VOTE);
+        roomUserPrivileges.add(Privilege.SONG_SEARCH);
 
         List<Privilege> roomModeratorPrivileges = new LinkedList<>(roomUserPrivileges);
         roomModeratorPrivileges.add(Privilege.SONG_ADD_AND_REMOVE);

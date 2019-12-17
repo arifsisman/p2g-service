@@ -16,11 +16,13 @@ public enum Privilege {
     ROOM_UPDATE("room_update"),
     ROOM_INVITE("room_invite"),
     ROOM_MANAGE_ROLES("room_manage_roles"),
+    SONG_SEARCH("song_search"),
     SONG_GET("song_get"),
     SONG_VOTE("song_vote"),
     SONG_CONTROL("song_control"),
     SONG_UPDATE("song_update"),
-    SONG_ADD_AND_REMOVE("song_add_and_remove");
+    SONG_ADD_AND_REMOVE("song_add_and_remove"),
+    SPOTIFY_USER_SEARCH("spotify_user_search");
 
     private final String privilegeName;
 
