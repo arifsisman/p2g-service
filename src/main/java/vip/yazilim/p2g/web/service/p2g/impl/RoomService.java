@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
@@ -49,6 +50,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Autowired
     private ISongService songService;
 
+    @Autowired
+    private SecurityConfig securityConfig;
+
     @Override
     protected JpaRepository<Room, String> getRepository() {
         return roomRepo;
@@ -64,6 +68,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         //TODO: firebase chat uuid
         entity.setUuid(DBHelper.getRandomUuid());
 //        entity.setOwnerUuid(SecurityHelper.getUserUuid());
+        entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
         entity.setCreationDate(TimeHelper.getCurrentTime());
         return entity;
     }
@@ -151,12 +156,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     public Room create(Room room) throws DatabaseException {
         Room createdRoom = super.create(room);
 
-        //todo: delete try catch after lib update
-        try {
-            roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), createdRoom.getPassword(), Role.ROOM_OWNER);
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        }
+        roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), Role.ROOM_OWNER);
 
         return room;
     }

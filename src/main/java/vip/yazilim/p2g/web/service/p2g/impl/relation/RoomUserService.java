@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.AAuthorityProvider;
+import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
@@ -26,7 +27,6 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -52,6 +52,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
     @Autowired
     private AAuthorityProvider authorityProvider;
+
+    @Autowired
+    private SecurityConfig securityConfig;
 
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
@@ -111,7 +114,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         Room room = roomOpt.get();
         RoomUser roomUser = new RoomUser();
 
-        if (Objects.equals(password, room.getPassword())) {
+        if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
             roomUser.setRoomUuid(roomUuid);
             roomUser.setUserUuid(userUuid);
             roomUser.setRoleName(role.getRoleName());
@@ -119,6 +122,20 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         } else {
             throw new InvalidArgumentException("Wrong password.");
         }
+
+        create(roomUser);
+
+        return roomUser;
+    }
+
+    @Override
+    public RoomUser joinRoom(String roomUuid, String userUuid, Role role) throws DatabaseException {
+        RoomUser roomUser = new RoomUser();
+
+        roomUser.setRoomUuid(roomUuid);
+        roomUser.setUserUuid(userUuid);
+        roomUser.setRoleName(role.getRoleName());
+        roomUser.setActiveFlag(true);
 
         create(roomUser);
 
