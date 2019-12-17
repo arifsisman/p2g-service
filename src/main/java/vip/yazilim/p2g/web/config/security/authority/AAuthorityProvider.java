@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.config.security;
+package vip.yazilim.p2g.web.config.security.authority;
 
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;

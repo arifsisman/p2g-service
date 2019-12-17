@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
+import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;

@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.config.security;
+package vip.yazilim.p2g.web.config.security.authority;
 
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.constant.Privilege;

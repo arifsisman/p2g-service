@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.config.annotations;
+package vip.yazilim.p2g.web.config.security.annotation;
 
 import vip.yazilim.p2g.web.constant.Role;
 

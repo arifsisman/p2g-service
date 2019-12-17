@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.config.aspect;
+package vip.yazilim.p2g.web.config.security.aspect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
-import vip.yazilim.p2g.web.config.annotations.HasRoomRole;
-import vip.yazilim.p2g.web.config.annotations.HasSystemPrivilege;
-import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
+import vip.yazilim.p2g.web.config.security.annotation.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.security.annotation.HasRoomRole;
+import vip.yazilim.p2g.web.config.security.annotation.HasSystemPrivilege;
+import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.exception.ForbiddenException;

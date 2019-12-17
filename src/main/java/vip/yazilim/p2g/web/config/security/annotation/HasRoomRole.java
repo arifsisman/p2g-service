@@ -1,7 +1,7 @@
-package vip.yazilim.p2g.web.config.annotations;
+package vip.yazilim.p2g.web.config.security.annotation;
 
 import org.springframework.core.annotation.AliasFor;
-import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@HasPrivilege(isRoom = false)
-public @interface HasSystemPrivilege {
+@HasRole(isRoom = true)
+public @interface HasRoomRole {
     @AliasFor(
-            annotation = HasPrivilege.class
+            annotation = HasRole.class
     )
-    Privilege privilege();
+    Role role();
 }

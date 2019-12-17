@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vip.yazilim.p2g.web.config.annotations.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.security.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;

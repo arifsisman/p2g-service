@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.controller.rest.p2g;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.config.annotations.HasSystemRole;
+import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.FriendRequest;
 import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
