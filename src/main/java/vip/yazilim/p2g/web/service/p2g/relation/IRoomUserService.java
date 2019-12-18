@@ -4,8 +4,6 @@ import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.InviteException;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -27,15 +25,15 @@ public interface IRoomUserService extends ICrudService<RoomUser, String> {
     RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException;
     RoomUser joinRoomOwner(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException;
 
-    RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException, InvalidArgumentException;
+    RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException;
 
     Role getRoleByRoomUuidAndUserUuid(String roomUuid, String userUuid) throws DatabaseException;
 
     // Rest
     boolean deleteRoomUsers(String roomUuid) throws DatabaseException;
 
-    List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
-    List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException;
+    List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
     boolean hasRoomPrivilege(String userUuid, Privilege privilege) throws DatabaseException;
 

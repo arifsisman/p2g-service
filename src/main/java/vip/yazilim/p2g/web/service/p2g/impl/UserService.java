@@ -13,7 +13,7 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.*;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -27,7 +27,6 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -106,14 +105,14 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoomException, InvalidArgumentException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;
         Optional<Room> room;
         Role role;
-        List<User> friends = new ArrayList<>();
-        List<User> friendRequests = new ArrayList<>();
+        List<User> friends;
+        List<User> friendRequests;
 
         // Set User
         user = getById(userUuid);
@@ -138,19 +137,11 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         // Set Friends
-        try {
-            friends = friendRequestService.getFriendRequestByUserUuid(userUuid);
-        } catch (FriendRequestException e) {
-            LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
-        }
+        friends = friendRequestService.getFriendsByUserUuid(userUuid);
         userModel.setFriends(friends);
 
         // Set Friend Requests
-        try {
-            friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
-        } catch (FriendRequestException e) {
-            LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
-        }
+        friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
         userModel.setFriendRequests(friendRequests);
 
         return Optional.of(userModel);
@@ -181,9 +172,13 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException {
 
         String productType = spotifyUser.getProduct().getType();
+
+        if (!productType.equals("premium")) {
+            throw new SpotifyException("Product type must be premium");
+        }
 
         user.setSpotifyAccountId(spotifyUser.getId());
         user.setCountryCode(spotifyUser.getCountry().name());
@@ -193,13 +188,10 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         try {
             user.setImageUrl(spotifyUser.getImages()[0].getUrl());
         } catch (RuntimeException e) {
-            LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
+            LOGGER.warn("Image not found for spotifyUserId[{}]", spotifyUser.getId());
         }
 
         spotifyUserService.updateUsersAvailableDevices(user.getUuid());
-
-        if (!productType.equals("premium"))
-            throw new AccountException("Product type must be premium!");
 
         return user;
     }

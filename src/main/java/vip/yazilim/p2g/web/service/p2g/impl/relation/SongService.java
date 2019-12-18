@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
 import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.exception.SongException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
@@ -112,12 +111,12 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     }
 
     @Override
-    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException {
+    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Song> SongOpt = getById(songUuid);
 
         if (!SongOpt.isPresent()) {
             String err = String.format("Song[%s] not found", songUuid);
-            throw new SongException(err);
+            throw new NotFoundException(err);
         }
 
         return delete(SongOpt.get());

@@ -6,15 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.exception.AccountException;
-import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.exception.TokenException;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.util.LinkedList;
@@ -38,23 +37,28 @@ public class SpotifyUserService implements ISpotifyUserService {
     private IUserDeviceService userDeviceService;
 
     @Override
-    public User getSpotifyUser(String spotifyAccountId) throws RequestException {
+    public User getSpotifyUser(String spotifyAccountId) {
         return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(spotifyAccountId).build());
     }
 
     @Override
-    public User getCurrentSpotifyUser(String userUuid) throws DatabaseException, TokenException, RequestException {
-        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new TokenException("Token not found!"));
+    public User getCurrentSpotifyUser(String userUuid) throws DatabaseException {
+        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
         return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), spotifyToken.getAccessToken());
     }
 
     @Override
-    public List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException {
+    public List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, SpotifyException {
         List<UserDevice> userDeviceList = new LinkedList<>();
 
-        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new TokenException("Token not found"));
+        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
 
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), spotifyToken.getAccessToken());
+
+        if (devices.length == 0) {
+            String err = String.format("Can not found any device for userUuid[%s]", userUuid);
+            throw new NotFoundException(err);
+        }
 
         for (Device d : devices) {
             UserDevice userDevice = new UserDevice();
@@ -70,16 +74,11 @@ public class SpotifyUserService implements ISpotifyUserService {
             userDeviceList.add(userDevice);
         }
 
-        if (userDeviceList.isEmpty()) {
-            String err = String.format("Can not found any device for userUuid[%s]", userUuid);
-            throw new AccountException(err);
-        }
-
         return userDeviceList;
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException {
+    public List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, SpotifyException, InvalidArgumentException {
         List<UserDevice> userDeviceList = getUsersAvailableDevices(userUuid);
 
         for (UserDevice userDevice : userDeviceList) {

@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.service.p2g.relation;
 
 import vip.yazilim.p2g.web.constant.SongStatus;
 import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.exception.SongException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -32,7 +31,7 @@ public interface ISongService extends ICrudService<Song, String> {
 
     // Rest
     List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException;
-    boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException;
+    boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException;
     boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
     List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;
 

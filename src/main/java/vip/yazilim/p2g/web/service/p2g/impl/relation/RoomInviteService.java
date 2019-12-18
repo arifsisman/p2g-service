@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.InviteException;
 import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
@@ -96,7 +95,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, InviteException {
+    public RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         roomInvite.setAcceptedFlag(true);
         update(roomInvite);
 

@@ -2,9 +2,7 @@ package vip.yazilim.p2g.web.service.spotify;
 
 import com.wrapper.spotify.model_objects.specification.User;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.exception.AccountException;
-import vip.yazilim.p2g.web.exception.RequestException;
-import vip.yazilim.p2g.web.exception.TokenException;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
@@ -16,9 +14,9 @@ import java.util.List;
  */
 public interface ISpotifyUserService {
 
-    User getSpotifyUser(String spotifyAccountId) throws RequestException;
-    User getCurrentSpotifyUser(String userUuid) throws DatabaseException, TokenException, RequestException;
+    User getSpotifyUser(String spotifyAccountId) throws SpotifyException;
+    User getCurrentSpotifyUser(String userUuid) throws DatabaseException, SpotifyException;
 
-    List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException;
-    List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException;
+    List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, SpotifyException;
+    List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, SpotifyException, InvalidArgumentException;
 }

@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -15,10 +14,10 @@ import java.util.Optional;
  */
 public interface IRoomService extends ICrudService<Room, String> {
 
-    Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException;
+    Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException;
 
     //Rest
-    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, RoomException, InvalidArgumentException;
+    Optional<RoomModel> getRoomModelByRoomUuid(String uuid) throws DatabaseException, InvalidArgumentException;
     Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
 
 }

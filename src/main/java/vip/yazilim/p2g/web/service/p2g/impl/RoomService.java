@@ -7,7 +7,6 @@ import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -19,6 +18,8 @@ import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -72,7 +73,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException, RoomException {
+    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
         Optional<Room> room;
         RoomUser roomUser;
 
@@ -81,27 +82,27 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         if (roomUserOpt.isPresent()) {
             roomUser = roomUserOpt.get();
         } else {
-            String err = String.format("user[%s] not in any room.", userUuid);
-            throw new RoomException(err);
+            String err = String.format("user[%s] not in any room", userUuid);
+            throw new NotFoundException(err);
         }
 
         try {
             room = getById(roomUser.getRoomUuid());
         } catch (Exception exception) {
             String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
-            throw new RoomException(err, exception);
+            throw new DatabaseReadException(err, exception);
         }
 
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] is not present!", userUuid);
-            throw new RoomException(err);
+            String err = String.format("Room[%s] not found", userUuid);
+            throw new NotFoundException(err);
         }
 
         return room;
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, RoomException, InvalidArgumentException {
+    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -114,8 +115,8 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         // Set Room
         room = getById(roomUuid);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] is not present", roomUuid);
-            throw new RoomException(err);
+            String err = String.format("Room[%s] not found", roomUuid);
+            throw new NotFoundException(err);
         } else {
             roomModel.setRoom(room.get());
         }
