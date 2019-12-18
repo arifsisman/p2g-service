@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.SecurityConfig;
-import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -67,7 +66,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     protected Room preInsert(Room entity) {
         //TODO: firebase chat uuid
         entity.setUuid(DBHelper.getRandomUuid());
-//        entity.setOwnerUuid(SecurityHelper.getUserUuid());
         entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
         entity.setCreationDate(TimeHelper.getCurrentTime());
         return entity;
@@ -139,7 +137,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);
@@ -153,35 +151,26 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
 
     @Override
-    public Room create(Room room) throws DatabaseException {
+    public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
-
-        roomUserService.joinRoom(createdRoom.getUuid(), createdRoom.getOwnerUuid(), Role.ROOM_OWNER);
-
+        roomUserService.joinRoomOwner(createdRoom.getUuid(), createdRoom.getOwnerUuid());
         return room;
     }
 
     @Override
-    public boolean deleteById(String roomUuid) throws DatabaseException {
-        Optional<Room> roomOpt = Optional.empty();
-
-        //todo: delete try catch after lib update
-        try {
-            roomOpt = getById(roomUuid);
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        }
+    public boolean deleteById(String roomUuid) throws DatabaseException, InvalidArgumentException {
+        Optional<Room> roomOpt = getById(roomUuid);
 
         boolean status = false;
 
         if (roomOpt.isPresent()) {
             status = delete(roomOpt.get());
 
-            //delete Songs
-            songService.deleteRoomSongList(roomUuid);
-
             //delete roomUsers
             roomUserService.deleteRoomUsers(roomUuid);
+
+            //delete Songs
+            songService.deleteRoomSongList(roomUuid);
 
             //delete roomInvites
             roomInviteService.deleteRoomInvites(roomUuid);

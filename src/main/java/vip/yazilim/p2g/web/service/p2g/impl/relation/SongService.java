@@ -67,9 +67,6 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return entity;
     }
 
-    /////////////////////////////
-    // Get Queue By Room or Queue Uuid
-    /////////////////////////////
     @Override
     public List<Song> getSongListByRoomUuid(String roomUuid) {
         // order by votes and queued time
@@ -90,13 +87,13 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     // Control Queue
     /////////////////////////////
     @Override
-    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         return convertSearchModelToSong(roomUuid, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException {
+    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomUuid(roomUuid);
         song.setSongId(songId);
@@ -181,7 +178,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
@@ -201,7 +198,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return songList;
     }
 
-    private Song getSongFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    private Song getSongFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
 
         song.setRoomUuid(roomUuid);

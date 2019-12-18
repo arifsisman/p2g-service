@@ -171,7 +171,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     //todo: this method is for test purposes, delete later
     @Override
-    public User createUser(String email, String username, String password) throws DatabaseException {
+    public User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException {
         User user = new User();
         user.setEmail(email);
         user.setDisplayName(username);
@@ -181,7 +181,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException {
 
         String productType = spotifyUser.getProduct().getType();
 

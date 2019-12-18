@@ -129,21 +129,19 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, Role role) throws DatabaseException {
+    public RoomUser joinRoomOwner(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomUuid(roomUuid);
         roomUser.setUserUuid(userUuid);
-        roomUser.setRoleName(role.getRoleName());
+        roomUser.setRoleName(Role.ROOM_OWNER.getRoleName());
         roomUser.setActiveFlag(true);
 
-        create(roomUser);
-
-        return roomUser;
+        return create(roomUser);
     }
 
     @Override
-    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException {
+    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException, InvalidArgumentException {
         if (roomInviteService.existsById(roomInvite.getUuid())) {
             RoomUser roomUser = new RoomUser();
 

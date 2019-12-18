@@ -85,7 +85,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public RoomInvite invite(String roomUuid, String userUuid) throws DatabaseException {
+    public RoomInvite invite(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = new RoomInvite();
         roomInvite.setRoomUuid(roomUuid);
         roomInvite.setUserUuid(userUuid);
@@ -104,7 +104,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     }
 
     @Override
-    public boolean reject(String roomInviteUuid) throws DatabaseException {
+    public boolean reject(String roomInviteUuid) throws DatabaseException, InvalidArgumentException {
         return deleteById(roomInviteUuid);
     }
 

@@ -19,7 +19,7 @@ import java.util.Optional;
  */
 public interface ISongService extends ICrudService<Song, String> {
 
-    Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException;
+    Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException;
 
     Optional<Song> getPausedSong(String roomUuid) throws DatabaseReadException;
 
@@ -31,7 +31,7 @@ public interface ISongService extends ICrudService<Song, String> {
     Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException;
 
     // Rest
-    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException;
+    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException;
     boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException;
     boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
     List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;
