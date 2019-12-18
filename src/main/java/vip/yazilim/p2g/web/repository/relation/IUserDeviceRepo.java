@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface IUserDeviceRepo extends JpaRepository<UserDevice, String> {
 
-    List<UserDevice> findUserDevicesByUserUuidOrderByActiveFlagDesc(String userUuid);
+    List<UserDevice> findByUserUuidOrderByActiveFlagDesc(String userUuid);
 
 }

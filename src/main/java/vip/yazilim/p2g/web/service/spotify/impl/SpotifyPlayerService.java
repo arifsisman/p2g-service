@@ -63,7 +63,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
             // Start playback
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getPlayerModel(roomUuid));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getTokenDeviceMap(roomUuid));
 
 
             // Update playing
@@ -105,7 +105,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Song playing = playingOpt.get();
 
             // Pause playback
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getPlayerModel(roomUuid));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getTokenDeviceMap(roomUuid));
 
             // Update playing
             playing.setCurrentMs(System.currentTimeMillis() - playing.getPlayingTime().getTime());
@@ -160,7 +160,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Optional<Song> pausedOpt = songService.getPausedSong(roomUuid);
 
         if (playingOpt.isPresent() || pausedOpt.isPresent()) {
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getPlayerModel(roomUuid));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getTokenDeviceMap(roomUuid));
         } else {
             String err = String.format("Not playing or paused any song in Room[%s]", roomUuid);
             throw new NotFoundException(err);
@@ -187,7 +187,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 repeatFlag = false;
             }
 
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), getPlayerModel(roomUuid));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), getTokenDeviceMap(roomUuid));
 
             playing.setRepeatFlag(repeatFlag);
             songService.update(playing);
@@ -222,6 +222,24 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         playerModel.setUserDeviceList(userDeviceList);
 
         return playerModel;
+    }
+
+    private HashMap<String, String> getTokenDeviceMap(String roomUuid) throws DatabaseException, InvalidArgumentException {
+        HashMap<String, String> map = new HashMap<>();
+
+        List<User> userList = userService.getUsersByRoomUuid(roomUuid);
+
+        for (User u : userList) {
+            String userUuid = u.getUuid();
+            Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+
+            if (token.isPresent() && !userDevices.isEmpty()) {
+                map.put(token.get().getAccessToken(), userDevices.get(0).getDeviceId());
+            }
+        }
+
+        return map;
     }
 
 }
