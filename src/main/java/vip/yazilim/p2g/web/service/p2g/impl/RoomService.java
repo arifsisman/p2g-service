@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -48,6 +49,9 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Autowired
     private ISongService songService;
 
+    @Autowired
+    private SecurityConfig securityConfig;
+
     @Override
     protected JpaRepository<Room, String> getRepository() {
         return roomRepo;
@@ -60,7 +64,10 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
 
     @Override
     protected Room preInsert(Room entity) {
+        //TODO: firebase chat uuid
         entity.setUuid(DBHelper.getRandomUuid());
+        entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
+        entity.setCreationDate(TimeHelper.getCurrentTime());
         return entity;
     }
 
@@ -69,7 +76,14 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         Optional<Room> room;
         RoomUser roomUser;
 
-        roomUser = roomUserService.getRoomUser(userUuid);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+
+        if (roomUserOpt.isPresent()) {
+            roomUser = roomUserOpt.get();
+        } else {
+            String err = String.format("user[%s] not in any room.", userUuid);
+            throw new RoomException(err);
+        }
 
         try {
             room = getById(roomUser.getRoomUuid());
@@ -121,57 +135,45 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return Optional.of(roomModel);
     }
 
+    //TODO: for tests, delete later
     @Override
-    public Room createRoom(String name, String ownerUuid, String password, Integer maxUsers,
-                           Boolean usersAllowedQueue, Boolean usersAllowedControl, String chatUuid) throws RoomException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
-        room.setName(name);
         room.setOwnerUuid(ownerUuid);
-        room.setCreationDate(TimeHelper.getCurrentTime());
+        room.setName(roomName);
+        room.setPassword(roomPassword);
 
-        if (password == null) {
-            room.setPrivateFlag(false);
-            room.setShowRoomActivityFlag(true);
-        } else {
-            room.setPassword(password);
-            room.setPrivateFlag(true);
-            room.setShowRoomActivityFlag(false);
-        }
+        room.setPrivateFlag(false);
 
-        room.setMaxUsers(maxUsers == null ? Integer.valueOf(5) : maxUsers);
-        room.setUsersAllowedQueueFlag(usersAllowedQueue == null ? usersAllowedQueue : Boolean.valueOf(false));
-        room.setUsersAllowedControlFlag(usersAllowedControl == null ? usersAllowedControl : Boolean.valueOf(false));
-        room.setActiveFlag(true);
-        room.setChatUuid(chatUuid);
+        return create(room);
+    }
 
-        try {
-            create(room);
-        } catch (DatabaseException e) {
-            throw new RoomException("Room cannot created!", e);
-        }
 
+    @Override
+    public Room create(Room room) throws DatabaseException, InvalidArgumentException {
+        Room createdRoom = super.create(room);
+        roomUserService.joinRoomOwner(createdRoom.getUuid(), createdRoom.getOwnerUuid());
         return room;
     }
 
     @Override
-    public boolean deleteRoom(String roomUuid) throws DatabaseException, InvalidArgumentException, RoomException {
+    public boolean deleteById(String roomUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = getById(roomUuid);
-        boolean status;
+
+        boolean status = false;
 
         if (roomOpt.isPresent()) {
-             status = delete(roomOpt.get());
-
-            //delete Songs
-            songService.deleteRoomSongList(roomUuid);
+            status = delete(roomOpt.get());
 
             //delete roomUsers
             roomUserService.deleteRoomUsers(roomUuid);
 
+            //delete Songs
+            songService.deleteRoomSongList(roomUuid);
+
             //delete roomInvites
             roomInviteService.deleteRoomInvites(roomUuid);
-        } else {
-            throw new RoomException("Room cannot deleted!");
         }
 
         return status;

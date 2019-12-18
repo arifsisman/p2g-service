@@ -1,22 +1,21 @@
-package vip.yazilim.p2g.web.config.security;
+package vip.yazilim.p2g.web.config.security.user;
 
-import vip.yazilim.p2g.web.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import vip.yazilim.p2g.web.entity.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * @author Emre Sen - 25.05.2019
- * @contact maemresen07@gmail.com
+ * @author mustafaarifsisman - 13.12.2019
+ * @contact mustafaarifsisman@gmail.com
  */
-public class UserPrinciple implements UserDetails {
+public class CustomUserPrincipal implements UserDetails {
 
-    private final User user;
+    private User user;
 
-    public UserPrinciple(User user) {
+    CustomUserPrincipal(User user) {
         this.user = user;
     }
 
@@ -26,8 +25,7 @@ public class UserPrinciple implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        return authorityList;
+        return new ArrayList<>();
     }
 
     @Override

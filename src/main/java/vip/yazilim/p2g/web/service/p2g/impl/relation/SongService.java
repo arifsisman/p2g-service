@@ -18,8 +18,10 @@ import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -65,26 +67,33 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return entity;
     }
 
-    /////////////////////////////
-    // Get Queue By Room or Queue Uuid
-    /////////////////////////////
     @Override
     public List<Song> getSongListByRoomUuid(String roomUuid) {
         // order by votes and queued time
         return songRepo.findByRoomUuidOrderByVotesDescQueuedTime(roomUuid);
     }
 
+    @Override
+    public int upvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        return updateVote(songUuid, true);
+    }
+
+    @Override
+    public int downvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        return updateVote(songUuid, false);
+    }
+
     /////////////////////////////
     // Control Queue
     /////////////////////////////
     @Override
-    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         return convertSearchModelToSong(roomUuid, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException {
+    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomUuid(roomUuid);
         song.setSongId(songId);
@@ -169,7 +178,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
@@ -189,7 +198,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return songList;
     }
 
-    private Song getSongFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException {
+    private Song getSongFromTrack(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
 
         song.setRoomUuid(roomUuid);
@@ -213,6 +222,23 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
 
         song.setArtists(SongArtists);
         return create(song);
+    }
+
+    private Song getSafeSong(String songUuid) throws DatabaseException, InvalidArgumentException {
+        Optional<Song> songOpt = getById(songUuid);
+        return songOpt.orElseThrow(() -> new NotFoundException("Song not found"));
+    }
+
+    private int updateVote(String songUuid, boolean upvote) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        Song song = getSafeSong(songUuid);
+        int votes = song.getVotes();
+
+        votes = (upvote) ? votes + 1 : votes - 1;
+
+        song.setVotes(votes);
+        update(song);
+
+        return votes;
     }
 
 }

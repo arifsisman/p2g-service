@@ -5,6 +5,7 @@ import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.exception.SongException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ICrudService;
@@ -18,7 +19,7 @@ import java.util.Optional;
  */
 public interface ISongService extends ICrudService<Song, String> {
 
-    Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException;
+    Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException;
 
     Optional<Song> getPausedSong(String roomUuid) throws DatabaseReadException;
 
@@ -29,12 +30,13 @@ public interface ISongService extends ICrudService<Song, String> {
     Optional<Song> getNextSong(String roomUuid) throws DatabaseReadException;
     Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException;
 
-//    List<Song> updateSongStatus(Song playing) throws DatabaseException, QueueException, InvalidUpdateException, InvalidArgumentException;
-
     // Rest
-    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException;
+    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException;
     boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException;
     boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
     List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;
+
+    int upvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
+    int downvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
 
 }

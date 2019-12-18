@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -31,6 +33,7 @@ public class SpotifyUserRest {
     @Autowired
     private ISpotifyUserService spotifyUserService;
 
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{spotifyAccountId}")
     public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String spotifyAccountId) {
         User spotifyUser;
@@ -45,6 +48,7 @@ public class SpotifyUserRest {
 
     }
 
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/current")
     public RestResponse<User> getCurrentSpotifyUser(HttpServletRequest request, HttpServletResponse response) {
         User spotifyUser;
@@ -58,6 +62,7 @@ public class SpotifyUserRest {
         return RestResponseFactory.generateResponse(spotifyUser, HttpStatus.OK, request, response);
     }
 
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{userUuid}/devices")
     public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
         List<UserDevice> userDeviceList;

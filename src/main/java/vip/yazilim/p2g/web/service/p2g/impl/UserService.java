@@ -4,17 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.OnlineStatus;
-import vip.yazilim.p2g.web.constant.Roles;
-import vip.yazilim.p2g.web.entity.Role;
+import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.exception.*;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
-import vip.yazilim.p2g.web.service.p2g.IRoleService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
@@ -44,10 +45,10 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     // injected dependencies
     @Autowired
-    private IUserRepo userRepo;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private IRoleService roleService;
+    private IUserRepo userRepo;
 
     @Autowired
     private IRoomService roomService;
@@ -60,6 +61,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
+
+    @Autowired
+    private AAuthorityProvider authorityProvider;
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -74,6 +78,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     protected User preInsert(User entity) {
         entity.setUuid(DBHelper.getRandomUuid());
+
+//        Optional<User> existingUser = getUserByEmail(entity.getEmail());
+//
+//        if (existingUser.isPresent()) {
+//            throw new UserException("Email already exists.");
+//        }
+
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setRoleName(Role.P2G_USER.getRoleName());
         return entity;
     }
 
@@ -93,12 +106,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoleException, RoomException, InvalidArgumentException {
+    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoomException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> user;
         Optional<Room> room;
-        Optional<Role> role;
+        Role role;
         List<User> friends = new ArrayList<>();
         List<User> friendRequests = new ArrayList<>();
 
@@ -119,12 +132,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setRoom(room.get());
 
             String roomUuid = room.get().getUuid();
-            role = roleService.getRoleByRoomAndUser(roomUuid, userUuid);
+            role = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
 
-            role.ifPresent(userModel::setRole);
-        } else {
-            Role defaultRole = roleService.getDefaultRole();
-            userModel.setRole(defaultRole);
+            userModel.setRole(role);
         }
 
         // Set Friends
@@ -159,32 +169,19 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return userList;
     }
 
+    //todo: this method is for test purposes, delete later
     @Override
-    public User createUser(String email, String username, String password) throws UserException {
-        Optional<User> existingUser = getUserByEmail(email);
-
-        if (existingUser.isPresent()) {
-            throw new UserException("Email already exists.");
-        }
-
+    public User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException {
         User user = new User();
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
-        user.setRole(Roles.P2G_USER.getRoleName());
 
-        try {
-            create(user);
-        } catch (DatabaseException e) {
-            String err = String.format("User with email [%s] can not created.", email);
-            throw new UserException(err, e);
-        }
-
-        return user;
+        return create(user);
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException {
 
         String productType = spotifyUser.getProduct().getType();
 
@@ -207,4 +204,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return user;
     }
 
+    @Override
+    public boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
+        Optional<User> userOpt = getById(userUuid);
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRoleName()));
+    }
+
+    @Override
+    public boolean hasSystemPrivilege(String userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
+        Optional<User> roomUserOpt = getById(userUuid);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
+    }
 }

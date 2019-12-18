@@ -6,9 +6,13 @@ server:
 spring:
   profiles:
     active: dev
+  devtools:
+    restart:
+      exclude: logs/**
+      enabled: false
 
 # Spotify-Play2Gether configuration
 spotify:
   clientId: 76f07bcdc1054c32884054e43a135480
   clientSecret: 9881b96bb7e24401a9162312598185ba
-  redirectUrl: http://192.168.1.38:8080/api/spotify/callback
+  redirectUrl: http://localhost:8080/api/spotify/callback

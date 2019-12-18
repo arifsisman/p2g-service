@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.yazilim.p2g.web.config.security.annotation.HasRoomPrivilege;
+import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
@@ -42,6 +44,7 @@ public class SearchRest {
     @Autowired
     private ISpotifySearchService spotifySearchService;
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/{query}")
     public RestResponse<List<SearchModel>> search(HttpServletRequest request, HttpServletResponse response, @PathVariable String query) {
         List<SearchModel> searchModelList;
@@ -55,6 +58,7 @@ public class SearchRest {
         return RestResponseFactory.generateResponse(searchModelList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/song/{id}")
     public RestResponse<SearchModel> getSong(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
         SearchModel searchModel;
@@ -68,6 +72,7 @@ public class SearchRest {
         return RestResponseFactory.generateResponse(searchModel, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/songs/{ids}")
     public RestResponse<List<SearchModel>> getSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String ids) {
         List<SearchModel> searchModelList;
@@ -83,6 +88,7 @@ public class SearchRest {
         return RestResponseFactory.generateResponse(searchModelList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/album/{albumId}/songs")
     public RestResponse<List<SearchModel>> getAlbumSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String albumId) {
         List<SearchModel> searchModelList;
@@ -96,6 +102,7 @@ public class SearchRest {
         return RestResponseFactory.generateResponse(searchModelList, HttpStatus.OK, request, response);
     }
 
+    @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/playlist/{playlistId}/songs")
     public RestResponse<List<SearchModel>> getPlaylistSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String playlistId) {
         List<SearchModel> searchModelList;

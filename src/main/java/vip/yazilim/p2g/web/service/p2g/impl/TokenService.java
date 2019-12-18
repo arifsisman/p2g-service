@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class TokenService extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
+public class  TokenService extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
 
     private Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
