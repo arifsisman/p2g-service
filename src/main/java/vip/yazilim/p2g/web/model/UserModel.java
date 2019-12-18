@@ -16,7 +16,7 @@ public class UserModel {
 
     private User user;
     private Room room;
-    private Role role;
+    private Role roomRole;
 
     private List<User> friends;
     private List<User> friendRequests;

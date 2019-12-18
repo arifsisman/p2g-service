@@ -161,7 +161,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
 
         if (!roomUserOpt.isPresent()) {
-            return Role.UNDEFINED;
+            return null;
         }
 
         String roleName = roomUserOpt.get().getRoleName();

@@ -10,6 +10,7 @@ import java.util.List;
  */
 @Data
 public class PlayerModel {
+    //todo: hashmap
     private String roomUuid;
     private List<String> spotifyTokenList;
     private List<String> userDeviceList;

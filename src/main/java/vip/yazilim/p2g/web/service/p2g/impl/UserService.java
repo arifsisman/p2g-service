@@ -108,32 +108,31 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
-        Optional<User> user;
-        Optional<Room> room;
-        Role role;
+        Optional<User> userOpt;
+        Optional<Room> roomOpt;
+        Role roomRole;
         List<User> friends;
         List<User> friendRequests;
 
         // Set User
-        user = getById(userUuid);
-        if (!user.isPresent()) {
+        userOpt = getById(userUuid);
+        if (!userOpt.isPresent()) {
             return Optional.empty();
         } else {
-            userModel.setUser(user.get());
+            userModel.setUser(userOpt.get());
         }
 
         // Set Room & Role
-        room = roomService.getRoomByUserUuid(userUuid);
+        roomOpt = roomService.getRoomByUserUuid(userUuid);
 
         // If user joined a room, user has got a room and role
-        // Else user is not in a room, user hasn't got a room and has got default role
-        if (room.isPresent()) {
-            userModel.setRoom(room.get());
+        // Else user is not in a room, user hasn't got a room and role
+        if (roomOpt.isPresent()) {
+            userModel.setRoom(roomOpt.get());
 
-            String roomUuid = room.get().getUuid();
-            role = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
-
-            userModel.setRole(role);
+            String roomUuid = roomOpt.get().getUuid();
+            roomRole = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
+            userModel.setRoomRole(roomRole);
         }
 
         // Set Friends
