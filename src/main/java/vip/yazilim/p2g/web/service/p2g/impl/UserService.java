@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import com.wrapper.spotify.enums.ProductType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +14,7 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
@@ -41,10 +42,6 @@ import java.util.Optional;
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
-    // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserService.class);
-
-    // injected dependencies
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -80,12 +77,10 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     protected User preInsert(User entity) {
         entity.setUuid(DBHelper.getRandomUuid());
 
-        //todo: check
-//        Optional<User> existingUser = getUserByEmail(entity.getEmail());
-//
-//        if (existingUser.isPresent()) {
-//            throw new UserException("Email already exists.");
-//        }
+        Optional<User> existingUser = getUserByEmail(entity.getEmail());
+        if (existingUser.isPresent()) {
+            throw new AccountException("Email already exists.");
+        }
 
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setRoleName(Role.P2G_USER.getRoleName());
@@ -178,7 +173,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         String productType = spotifyUser.getProduct().getType();
 
-        if (!productType.equals("premium")) {
+        if (!productType.equals(ProductType.PREMIUM.getType())) {
             throw new SpotifyAccountException("Product type must be premium");
         }
 
@@ -187,10 +182,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setSpotifyProductType(productType);
 
-        try {
-            user.setImageUrl(spotifyUser.getImages()[0].getUrl());
-        } catch (RuntimeException e) {
-            LOGGER.warn("Image not found for spotifyUserId[{}]", spotifyUser.getId());
+        Image[] images = spotifyUser.getImages();
+        if (images.length > 0) {
+            user.setImageUrl(images[0].getUrl());
         }
 
         spotifyUserService.updateUsersAvailableDevices(user.getUuid());
