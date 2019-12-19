@@ -102,7 +102,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -133,7 +133,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         chatUuid = room.get().getChatUuid();
         roomModel.setChatUuid(chatUuid);
 
-        return Optional.of(roomModel);
+        return roomModel;
     }
 
     //TODO: for tests, delete later

@@ -26,6 +26,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -103,7 +104,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
+    public UserModel getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> userOpt;
@@ -115,9 +116,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         // Set User
         userOpt = getById(userUuid);
         if (!userOpt.isPresent()) {
-            return Optional.empty();
-        } else {
-            userModel.setUser(userOpt.get());
+            throw new NotFoundException("User not found");
         }
 
         // Set Room & Role
@@ -141,7 +140,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
         userModel.setFriendRequests(friendRequests);
 
-        return Optional.of(userModel);
+        return userModel;
     }
 
     @Override

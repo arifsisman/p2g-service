@@ -37,11 +37,6 @@ public class ExceptionHandlerController {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
-        return error(NOT_FOUND, e);
-    }
-
     @ExceptionHandler({ForbiddenException.class})
     public ResponseEntity<String> handleForbiddenException(ForbiddenException e) {
         return error(FORBIDDEN, e);
@@ -75,6 +70,11 @@ public class ExceptionHandlerController {
     @ExceptionHandler({ServiceException.class})
     public ResponseEntity<String> handleServiceException(ServiceException e) {
         return error(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+        return error(NOT_FOUND, e);
     }
 
     @ExceptionHandler({MethodNotSupported.class})

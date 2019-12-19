@@ -8,7 +8,10 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.FriendRequest;
 import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.web.ServiceException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.rest.ARestRead;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.service.ICrudService;
@@ -60,57 +63,25 @@ public class FriendRequestRest extends ARestRead<FriendRequest, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/add/{userUuid}")
-    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
-        boolean status;
-
-        try {
-            status = friendRequestService.createFriendRequest(SecurityHelper.getUserUuid(), userUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
+    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) throws DatabaseCreateException {
+        return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserUuid(), userUuid), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @PutMapping("/accept/{friendRequestUuid}")
-    public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
-        boolean status;
-
-        try {
-            status = friendRequestService.acceptFriendRequest(friendRequestUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
+    public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.acceptFriendRequest(friendRequestUuid), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @PutMapping("/reject/{friendRequestUuid}")
-    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
-        boolean status;
-
-        try {
-            status = friendRequestService.rejectFriendRequest(friendRequestUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
+    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.rejectFriendRequest(friendRequestUuid), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @PutMapping("/ignore/{friendRequestUuid}")
-    public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) {
-        boolean status;
-
-        try {
-            status = friendRequestService.ignoreFriendRequest(friendRequestUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(status, HttpStatus.OK, request, response);
+    public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.ignoreFriendRequest(friendRequestUuid), HttpStatus.OK, request, response);
     }
 }
