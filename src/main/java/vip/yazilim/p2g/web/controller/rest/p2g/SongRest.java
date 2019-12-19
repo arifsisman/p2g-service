@@ -8,6 +8,9 @@ import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestResponse;
@@ -123,16 +126,8 @@ public class SongRest extends ARestCrud<Song, String> {
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @PutMapping("/{songUuid}/upvote")
-    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) {
-        int vote;
-
-        try {
-            vote =  songService.upvote(songUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(vote, HttpStatus.OK, request, response);
+    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable String songUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(songService.upvote(songUuid), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
@@ -141,7 +136,7 @@ public class SongRest extends ARestCrud<Song, String> {
         int vote;
 
         try {
-            vote =  songService.downvote(songUuid);
+            vote = songService.downvote(songUuid);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
