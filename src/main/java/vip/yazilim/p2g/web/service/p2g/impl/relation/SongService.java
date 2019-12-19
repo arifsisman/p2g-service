@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl.relation;
 
 import com.wrapper.spotify.enums.ModelObjectType;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +88,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     // Control Queue
     /////////////////////////////
     @Override
-    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
+    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         return convertSearchModelToSong(roomUuid, searchModel);
     }
 
@@ -177,7 +179,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
+    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {

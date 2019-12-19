@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.SpotifyException;
+import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -27,6 +28,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +80,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     protected User preInsert(User entity) {
         entity.setUuid(DBHelper.getRandomUuid());
 
+        //todo: check
 //        Optional<User> existingUser = getUserByEmail(entity.getEmail());
 //
 //        if (existingUser.isPresent()) {
@@ -171,12 +174,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
 
         String productType = spotifyUser.getProduct().getType();
 
         if (!productType.equals("premium")) {
-            throw new SpotifyException("Product type must be premium");
+            throw new SpotifyAccountException("Product type must be premium");
         }
 
         user.setSpotifyAccountId(spotifyUser.getId());

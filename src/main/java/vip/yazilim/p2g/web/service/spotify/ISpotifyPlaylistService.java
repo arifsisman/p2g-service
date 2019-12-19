@@ -1,8 +1,9 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import vip.yazilim.p2g.web.exception.SpotifyException;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.model.SearchModel;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,6 +12,6 @@ import java.util.List;
  */
 public interface ISpotifyPlaylistService {
 
-    List<SearchModel> getSongs(String playlistId) throws SpotifyException;
+    List<SearchModel> getSongs(String playlistId) throws IOException, SpotifyWebApiException;
 
 }

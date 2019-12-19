@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.relation;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.constant.SongStatus;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
@@ -9,6 +10,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ICrudService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +32,7 @@ public interface ISongService extends ICrudService<Song, String> {
     Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException;
 
     // Rest
-    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException;
+    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException;
     boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
     List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;

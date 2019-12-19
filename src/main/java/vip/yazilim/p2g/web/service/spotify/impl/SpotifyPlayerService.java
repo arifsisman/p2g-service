@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.wrapper.spotify.enums.ModelObjectType;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
@@ -10,7 +11,6 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
@@ -24,6 +24,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -50,7 +51,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private ISongService songService;
 
     @Override
-    public List<Song> play(Song song, int ms) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> play(Song song, int ms) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String songUri = song.getSongUri();
         String roomUuid = song.getRoomUuid();
 
@@ -76,7 +77,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> startResume(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> startResume(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> pausedOpt = songService.getPausedSong(roomUuid);
 
         if (pausedOpt.isPresent()) {
@@ -98,7 +99,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> pause(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> pause(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
 
         if (playingOpt.isPresent()) {
@@ -120,7 +121,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> next(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> next(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> next = songService.getNextSong(roomUuid);
 
         if (next.isPresent()) {
@@ -138,7 +139,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> previous(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public List<Song> previous(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> previous = songService.getPreviousSong(roomUuid);
 
         if (previous.isPresent()) {
@@ -155,7 +156,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public int seek(String roomUuid, Integer ms) throws SpotifyException, DatabaseException, InvalidArgumentException {
+    public int seek(String roomUuid, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
         Optional<Song> pausedOpt = songService.getPausedSong(roomUuid);
 
@@ -170,7 +171,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public boolean repeat(String roomUuid) throws SpotifyException, DatabaseException, InvalidArgumentException, InvalidUpdateException {
+    public boolean repeat(String roomUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomUuid);
         Boolean repeatFlag;
 

@@ -1,11 +1,12 @@
 package vip.yazilim.p2g.web.service.spotify;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -14,12 +15,12 @@ import java.util.List;
  */
 public interface ISpotifyPlayerService {
 
-    List<Song> play(Song song, int ms) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    List<Song> startResume(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    List<Song> pause(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    List<Song> next(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    List<Song> previous(String roomUuid) throws SpotifyException, DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    int seek(String roomUuid, Integer ms) throws SpotifyException, DatabaseException, InvalidArgumentException;
-    boolean repeat(String roomUuid) throws SpotifyException, DatabaseException, InvalidArgumentException, InvalidUpdateException;
+    List<Song> play(Song song, int ms) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> startResume(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> pause(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> next(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> previous(String roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    int seek(String roomUuid, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    boolean repeat(String roomUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException;
 
 }

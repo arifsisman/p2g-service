@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.User;
@@ -8,6 +9,7 @@ import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public interface IUserService extends ICrudService<User, String> {
 
     User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException;
 
-    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException;
+    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 
     // Rest
     boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException;
