@@ -179,6 +179,22 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
+    public boolean leaveRoom() throws DatabaseException, InvalidArgumentException {
+        String userUuid = SecurityHelper.getUserUuid();
+        Optional<RoomUser> roomUser = getRoomUser(userUuid);
+
+        if (roomUser.isPresent()) {
+            if (roomUser.get().getRoleName().equals(Role.ROOM_OWNER.getRoleName())) {
+                return roomService.deleteById(roomUser.get().getRoomUuid());
+            } else {
+                return deleteById(roomUser.get().getUuid());
+            }
+        } else {
+            throw new NotFoundException("User not in any room");
+        }
+    }
+
+    @Override
     public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException {
         if (roomInviteService.existsById(roomInvite.getUuid())) {
             RoomUser roomUser = new RoomUser();
@@ -244,7 +260,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException{
+    public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
         Role oldRole = Role.getRole(roomUser.getRoleName());

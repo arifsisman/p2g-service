@@ -128,9 +128,9 @@ public class RoomRest extends ARestCrud<Room, String> {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @DeleteMapping("/user/{roomUserUuid}/leave")
-    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.deleteById(roomUserUuid), HttpStatus.OK, request, response);
+    @DeleteMapping("/leave")
+    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

@@ -162,19 +162,19 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     public boolean deleteById(String roomUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = getById(roomUuid);
 
-        boolean status = false;
+        boolean status = true;
 
         if (roomOpt.isPresent()) {
             status = delete(roomOpt.get());
 
             //delete roomUsers
-            roomUserService.deleteRoomUsers(roomUuid);
+            status &= roomUserService.deleteRoomUsers(roomUuid);
 
             //delete Songs
-            songService.deleteRoomSongList(roomUuid);
+            status &= songService.deleteRoomSongList(roomUuid);
 
             //delete roomInvites
-            roomInviteService.deleteRoomInvites(roomUuid);
+            status &= roomInviteService.deleteRoomInvites(roomUuid);
         }
 
         return status;
