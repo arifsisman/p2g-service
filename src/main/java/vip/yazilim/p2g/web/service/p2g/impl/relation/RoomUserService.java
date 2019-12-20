@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl.relation;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -25,6 +27,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +58,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Autowired
     private SecurityConfig securityConfig;
 
+    @Autowired
+    private SpotifyPlayerService spotifyPlayerService;
+
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
         return roomUserRepo;
@@ -76,7 +82,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room[%s]", roomUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
@@ -86,7 +92,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with User[%s]", userUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
@@ -96,13 +102,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid, userUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room[%s], User[%s]", roomUuid, userUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -119,10 +125,11 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             roomUser.setRoleName(role.getRoleName());
             roomUser.setActiveFlag(true);
         } else {
-            throw new InvalidArgumentException("Wrong password.");
+            throw new InvalidArgumentException("Wrong password");
         }
 
-        create(roomUser);
+        RoomUser joinedUser = create(roomUser);
+        spotifyPlayerService.userSyncWithRoom(joinedUser);
 
         return roomUser;
     }
@@ -151,7 +158,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
             return create(roomUser);
         } else {
-            String err = String.format("Room Invite[%s] cannot found", roomInvite.getUuid());
+            String err = String.format("Room Invite[%s] not found", roomInvite.getUuid());
             throw new NotFoundException(err);
         }
     }
