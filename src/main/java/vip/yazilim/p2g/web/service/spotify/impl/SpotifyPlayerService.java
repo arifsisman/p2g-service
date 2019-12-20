@@ -27,6 +27,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -72,7 +73,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomUuid));
 
             // Update playing
-            song.setPlayingTime(new Date());
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
             song.setSongStatus(SongStatus.PLAYING.getSongStatus());
             songService.update(song);
         }
@@ -113,10 +114,10 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomUuid));
 
             // Update playing
-            long oldPassedMs = playing.getCurrentMs() == null ? 0 : playing.getCurrentMs();
-            long newPassedMs = System.currentTimeMillis() - playing.getPlayingTime().getTime();
+            long oldPassedMs = playing.getCurrentMs() == null ? 0L: playing.getCurrentMs();
+            long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
-            playing.setCurrentMs(oldPassedMs + newPassedMs);
+            playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
         } else {
@@ -231,7 +232,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userUuid = roomUser.getUserUuid();
-        int ms = Math.toIntExact(song.getCurrentMs() + TimeHelper.getCurrentTimeMs() - song.getPlayingTime().getTime());
+        int ms = Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
 
         Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);

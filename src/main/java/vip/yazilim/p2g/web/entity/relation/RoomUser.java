@@ -27,6 +27,9 @@ public class RoomUser implements Serializable {
     @Column(name = "role_name")
     private String roleName;
 
+    @Column(name = "join_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime joinDate;
+
     @Column(name = "active_flag")
     private Boolean activeFlag;
 }

@@ -1,7 +1,8 @@
 package vip.yazilim.p2g.web.util;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -9,19 +10,16 @@ import java.util.Date;
  */
 public class TimeHelper {
 
-//    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-
-    public static Long getCurrentTimeMs() {
-        return new Date().getTime();
+    public static Long getCurrentTimeMsLong() {
+        return ZonedDateTime.of(getLocalDateTimeNow(), ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    public static String getCurrentTimestamp() {
-        Date date = new Date();
-        return new Timestamp(date.getTime()).toString();
+    public static int getCurrentTimeMsInt() {
+        return (int) ZonedDateTime.of(getLocalDateTimeNow(), ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    public static Date getCurrentDate() {
-        return new Date();
+    public static LocalDateTime getLocalDateTimeNow() {
+        return LocalDateTime.now();
     }
 
 }

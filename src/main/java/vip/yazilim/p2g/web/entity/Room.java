@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room")
@@ -23,8 +24,8 @@ public class Room implements Serializable {
     @Column(name = "owner_uuid", nullable = false)
     private String ownerUuid;
 
-    @Column(name = "creation_date")
-    private String creationDate;
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime creationDate;
 
     @Column(name = "private_flag", nullable = false)
     private Boolean privateFlag;

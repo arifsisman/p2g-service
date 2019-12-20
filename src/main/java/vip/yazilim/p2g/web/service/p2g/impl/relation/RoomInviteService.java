@@ -88,7 +88,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
         RoomInvite roomInvite = new RoomInvite();
         roomInvite.setRoomUuid(roomUuid);
         roomInvite.setUserUuid(userUuid);
-        roomInvite.setInvitationDate(TimeHelper.getCurrentDate());
+        roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
         roomInvite.setAcceptedFlag(false);
 
         return create(roomInvite);

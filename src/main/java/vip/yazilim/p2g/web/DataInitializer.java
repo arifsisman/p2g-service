@@ -52,9 +52,9 @@ public class DataInitializer implements CommandLineRunner {
 
         roomUserService.joinRoom(roomUuid, emre.getUuid(), "1", Role.ROOM_USER);
 
-        songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000L,0);
-        songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000L,1);
-        songService.addSongToRoom(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000L,2);
-        songService.addSongToRoom(roomUuid, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000L,0);
+        songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
+        songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);
+        songService.addSongToRoom(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000,2);
+        songService.addSongToRoom(roomUuid, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000,0);
     }
 }

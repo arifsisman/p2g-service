@@ -26,7 +26,6 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -94,14 +93,14 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomUuid(roomUuid);
         song.setSongId(songId);
         song.setSongUri(songUri);
         song.setSongName(songName);
         song.setDurationMs(durationMs);
-        song.setQueuedTime(new Date());
+        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
 
@@ -208,9 +207,9 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         song.setSongName(searchModel.getName());
         song.setAlbumName(searchModel.getAlbumName());
         song.setImageUrl(searchModel.getImageUrl());
-        song.setCurrentMs(0L);
+        song.setCurrentMs(0);
         song.setDurationMs(searchModel.getDurationMs());
-        song.setQueuedTime(TimeHelper.getCurrentDate());
+        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setVotes(0);
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
 

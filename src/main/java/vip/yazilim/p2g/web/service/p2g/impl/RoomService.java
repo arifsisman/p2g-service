@@ -68,7 +68,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         //TODO: firebase chat uuid
         entity.setUuid(DBHelper.getRandomUuid());
         entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
-        entity.setCreationDate(TimeHelper.getCurrentTimestamp());
+        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }
 

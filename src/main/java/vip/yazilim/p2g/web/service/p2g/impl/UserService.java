@@ -24,6 +24,7 @@ import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
@@ -84,6 +85,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         entity.setRoleName(Role.P2G_USER.getRoleName());
         return entity;
     }
