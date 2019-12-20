@@ -1,7 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.wrapper.spotify.enums.ProductType;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +14,8 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.*;
+import vip.yazilim.p2g.web.exception.AccountException;
+import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -22,12 +24,14 @@ import vip.yazilim.p2g.web.service.p2g.relation.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -40,10 +44,6 @@ import java.util.Optional;
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
-    // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(UserService.class);
-
-    // injected dependencies
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -79,13 +79,13 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     protected User preInsert(User entity) {
         entity.setUuid(DBHelper.getRandomUuid());
 
-//        Optional<User> existingUser = getUserByEmail(entity.getEmail());
-//
-//        if (existingUser.isPresent()) {
-//            throw new UserException("Email already exists.");
-//        }
+        Optional<User> existingUser = getUserByEmail(entity.getEmail());
+        if (existingUser.isPresent()) {
+            throw new AccountException("Email already exists.");
+        }
 
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         entity.setRoleName(Role.P2G_USER.getRoleName());
         return entity;
     }
@@ -106,54 +106,43 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<UserModel> getUserModelByUserUuid(String userUuid) throws DatabaseException, RoomException, InvalidArgumentException {
+    public UserModel getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
-        Optional<User> user;
-        Optional<Room> room;
-        Role role;
-        List<User> friends = new ArrayList<>();
-        List<User> friendRequests = new ArrayList<>();
+        Optional<User> userOpt;
+        Optional<Room> roomOpt;
+        Role roomRole;
+        List<User> friends;
+        List<User> friendRequests;
 
         // Set User
-        user = getById(userUuid);
-        if (!user.isPresent()) {
-            return Optional.empty();
-        } else {
-            userModel.setUser(user.get());
+        userOpt = getById(userUuid);
+        if (!userOpt.isPresent()) {
+            throw new NotFoundException("User not found");
         }
 
         // Set Room & Role
-        room = roomService.getRoomByUserUuid(userUuid);
+        roomOpt = roomService.getRoomByUserUuid(userUuid);
 
         // If user joined a room, user has got a room and role
-        // Else user is not in a room, user hasn't got a room and has got default role
-        if (room.isPresent()) {
-            userModel.setRoom(room.get());
+        // Else user is not in a room, user hasn't got a room and role
+        if (roomOpt.isPresent()) {
+            userModel.setRoom(roomOpt.get());
 
-            String roomUuid = room.get().getUuid();
-            role = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
-
-            userModel.setRole(role);
+            String roomUuid = roomOpt.get().getUuid();
+            roomRole = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
+            userModel.setRoomRole(roomRole);
         }
 
         // Set Friends
-        try {
-            friends = friendRequestService.getFriendRequestByUserUuid(userUuid);
-        } catch (FriendRequestException e) {
-            LOGGER.error("An error occurred while getting Friends for User[{}]", userUuid);
-        }
+        friends = friendRequestService.getFriendsByUserUuid(userUuid);
         userModel.setFriends(friends);
 
         // Set Friend Requests
-        try {
-            friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
-        } catch (FriendRequestException e) {
-            LOGGER.error("An error occurred while getting Friend Requests for User[{}]", userUuid);
-        }
+        friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
         userModel.setFriendRequests(friendRequests);
 
-        return Optional.of(userModel);
+        return userModel;
     }
 
     @Override
@@ -181,25 +170,25 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, TokenException, RequestException, AccountException, InvalidArgumentException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
 
         String productType = spotifyUser.getProduct().getType();
+
+        if (!productType.equals(ProductType.PREMIUM.getType())) {
+            throw new SpotifyAccountException("Product type must be premium");
+        }
 
         user.setSpotifyAccountId(spotifyUser.getId());
         user.setCountryCode(spotifyUser.getCountry().name());
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setSpotifyProductType(productType);
 
-        try {
-            user.setImageUrl(spotifyUser.getImages()[0].getUrl());
-        } catch (RuntimeException e) {
-            LOGGER.warn("Image not found for Spotify user with userId[{}]", spotifyUser.getId());
+        Image[] images = spotifyUser.getImages();
+        if (images.length > 0) {
+            user.setImageUrl(images[0].getUrl());
         }
 
         spotifyUserService.updateUsersAvailableDevices(user.getUuid());
-
-        if (!productType.equals("premium"))
-            throw new AccountException("Product type must be premium!");
 
         return user;
     }

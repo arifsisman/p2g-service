@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "song")
@@ -41,20 +41,20 @@ public class Song implements Serializable {
     private String imageUrl;
 
     @Column(name = "duration_ms", nullable = false)
-    private Long durationMs;
+    private Integer durationMs;
 
     // Queue
     @Column(name = "song_status", nullable = false)
     private String songStatus;
 
-    @Column(name = "queued_time")
-    private Date queuedTime;
+    @Column(name = "queued_time", columnDefinition = "TIMESTAMP")
+    private LocalDateTime queuedTime;
 
-    @Column(name = "playing_time")
-    private Date playingTime;
+    @Column(name = "playing_time", columnDefinition = "TIMESTAMP")
+    private LocalDateTime playingTime;
 
     @Column(name = "current_ms")
-    private Long currentMs;
+    private Integer currentMs;
 
     @Column(name = "repeat_flag")
     private Boolean repeatFlag;

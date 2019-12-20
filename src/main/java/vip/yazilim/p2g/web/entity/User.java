@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -60,5 +61,9 @@ public class User implements Serializable {
 
     @Column(name = "show_friends_flag")
     private Boolean showFriendsFlag;
+
+    // Details
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime creationDate;
 
 }

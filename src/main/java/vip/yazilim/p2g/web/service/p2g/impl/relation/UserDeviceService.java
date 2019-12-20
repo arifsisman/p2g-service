@@ -37,7 +37,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
         List<UserDevice> userDeviceList;
 
         try {
-            userDeviceList = userDeviceRepo.findUserDevicesByUserUuidOrderByActiveFlagDesc(userUuid);
+            userDeviceList = userDeviceRepo.findByUserUuidOrderByActiveFlagDesc(userUuid);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting UserDevice with userUuid[%s]", userUuid);
             throw new DatabaseReadException(errorMessage, exception);

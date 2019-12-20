@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.RELATION_TABLE_PREFIX + "friend_request")
@@ -27,6 +27,7 @@ public class FriendRequest implements Serializable {
     @Column(name = "request_status")
     private String requestStatus;
 
-    @Column(name = "request_date")
-    private Date requestDate;
+    @Column(name = "request_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime requestDate;
+
 }

@@ -8,8 +8,8 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.exception.web.ServiceException;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.service.ICrudService;
@@ -18,7 +18,6 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -82,19 +81,7 @@ public class UserRest extends ARestCrud<User, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userUuid}/model"})
-    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
-        Optional<UserModel> userModel;
-
-        try {
-            userModel = userService.getUserModelByUserUuid(userUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        if (!userModel.isPresent()) {
-            throw new NotFoundException("Model Not Found");
-        } else {
-            return RestResponseFactory.generateResponse(userModel.get(), HttpStatus.OK, request, response);
-        }
+    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(userService.getUserModelByUserUuid(userUuid), HttpStatus.OK, request, response);
     }
 }

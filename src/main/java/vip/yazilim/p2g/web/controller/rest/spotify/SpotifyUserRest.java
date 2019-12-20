@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,12 +13,13 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.relation.UserDevice;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.web.ServiceException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
@@ -35,44 +37,19 @@ public class SpotifyUserRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{spotifyAccountId}")
-    public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String spotifyAccountId) {
-        User spotifyUser;
-
-        try {
-            spotifyUser = spotifyUserService.getSpotifyUser(spotifyAccountId);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(spotifyUser, HttpStatus.OK, request, response);
-
+    public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String spotifyAccountId) throws IOException, SpotifyWebApiException {
+        return RestResponseFactory.generateResponse(spotifyUserService.getSpotifyUser(spotifyAccountId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/current")
-    public RestResponse<User> getCurrentSpotifyUser(HttpServletRequest request, HttpServletResponse response) {
-        User spotifyUser;
-
-        try {
-            spotifyUser = spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserUuid());
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(spotifyUser, HttpStatus.OK, request, response);
+    public RestResponse<User> getCurrentSpotifyUser(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, IOException, SpotifyWebApiException {
+        return RestResponseFactory.generateResponse(spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserUuid()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{userUuid}/devices")
-    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) {
-        List<UserDevice> userDeviceList;
-
-        try {
-            userDeviceList = spotifyUserService.getUsersAvailableDevices(userUuid);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        return RestResponseFactory.generateResponse(userDeviceList, HttpStatus.OK, request, response);
+    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+        return RestResponseFactory.generateResponse(spotifyUserService.getUsersAvailableDevices(userUuid), HttpStatus.OK, request, response);
     }
 }

@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl.relation;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +13,23 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.exception.InviteException;
-import vip.yazilim.p2g.web.exception.RoomException;
 import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +60,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Autowired
     private SecurityConfig securityConfig;
 
+    @Autowired
+    private SpotifyPlayerService spotifyPlayerService;
+
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {
         return roomUserRepo;
@@ -69,6 +76,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     @Override
     protected RoomUser preInsert(RoomUser entity) {
         entity.setUuid(DBHelper.getRandomUuid());
+        entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }
 
@@ -77,7 +85,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByRoomUuidOrderByUuid(roomUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s]", roomUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room[%s]", roomUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
@@ -87,7 +95,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with User:[%s]", userUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with User[%s]", userUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
@@ -97,13 +105,14 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         try {
             return roomUserRepo.findRoomUserByRoomUuidAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
-            String errMsg = String.format("An error occurred while getting RoomUser with Room:[%s], User:[%s]", roomUuid, userUuid);
+            String errMsg = String.format("An error occurred while getting RoomUser with Room[%s], User[%s]", roomUuid, userUuid);
             throw new DatabaseReadException(errMsg, exception);
         }
     }
 
     @Override
-    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoom(String roomUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        String userUuid = SecurityHelper.getUserUuid();
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -120,10 +129,39 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
             roomUser.setRoleName(role.getRoleName());
             roomUser.setActiveFlag(true);
         } else {
-            throw new InvalidArgumentException("Wrong password.");
+            throw new InvalidArgumentException("Wrong password");
         }
 
-        create(roomUser);
+        RoomUser joinedUser = create(roomUser);
+        spotifyPlayerService.userSyncWithRoom(joinedUser);
+
+        return roomUser;
+    }
+
+    //todo: for tests, delete later
+    @Override
+    public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        Optional<Room> roomOpt = roomService.getById(roomUuid);
+
+        if (!roomOpt.isPresent()) {
+            String err = String.format("Room[%s] can not found", roomUuid);
+            throw new InvalidArgumentException(err);
+        }
+
+        Room room = roomOpt.get();
+        RoomUser roomUser = new RoomUser();
+
+        if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
+            roomUser.setRoomUuid(roomUuid);
+            roomUser.setUserUuid(userUuid);
+            roomUser.setRoleName(role.getRoleName());
+            roomUser.setActiveFlag(true);
+        } else {
+            throw new InvalidArgumentException("Wrong password");
+        }
+
+        RoomUser joinedUser = create(roomUser);
+        spotifyPlayerService.userSyncWithRoom(joinedUser);
 
         return roomUser;
     }
@@ -141,7 +179,23 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InviteException, InvalidArgumentException {
+    public boolean leaveRoom() throws DatabaseException, InvalidArgumentException {
+        String userUuid = SecurityHelper.getUserUuid();
+        Optional<RoomUser> roomUser = getRoomUser(userUuid);
+
+        if (roomUser.isPresent()) {
+            if (roomUser.get().getRoleName().equals(Role.ROOM_OWNER.getRoleName())) {
+                return roomService.deleteById(roomUser.get().getRoomUuid());
+            } else {
+                return deleteById(roomUser.get().getUuid());
+            }
+        } else {
+            throw new NotFoundException("User not in any room");
+        }
+    }
+
+    @Override
+    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException {
         if (roomInviteService.existsById(roomInvite.getUuid())) {
             RoomUser roomUser = new RoomUser();
 
@@ -152,8 +206,8 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
             return create(roomUser);
         } else {
-            String err = String.format("Room Invite[%s] cannot found.", roomInvite.getUuid());
-            throw new InviteException(err);
+            String err = String.format("Room Invite[%s] not found", roomInvite.getUuid());
+            throw new NotFoundException(err);
         }
     }
 
@@ -162,7 +216,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
 
         if (!roomUserOpt.isPresent()) {
-            return Role.UNDEFINED;
+            return null;
         }
 
         String roleName = roomUserOpt.get().getRoleName();
@@ -181,7 +235,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+    public List<Privilege> promoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
         Role oldRole = Role.getRole(roomUser.getRoleName());
@@ -206,7 +260,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     }
 
     @Override
-    public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, RoomException {
+    public List<Privilege> demoteUserRole(String roomUserUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserUuid);
 
         Role oldRole = Role.getRole(roomUser.getRoleName());
@@ -242,13 +296,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoleName()));
     }
 
-    private RoomUser getSafeRoomUser(String roomUserUuid) throws RoomException, DatabaseException, InvalidArgumentException {
+    private RoomUser getSafeRoomUser(String roomUserUuid) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = getById(roomUserUuid);
 
         if (roomUserOpt.isPresent()) {
             return roomUserOpt.get();
         } else {
-            throw new RoomException("User not in any room.");
+            throw new NotFoundException("Room user not found");
         }
     }
 }

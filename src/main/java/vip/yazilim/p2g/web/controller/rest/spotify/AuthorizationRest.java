@@ -17,8 +17,10 @@ import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -68,7 +70,7 @@ public class AuthorizationRest {
 
     @GetMapping("/callback")
     @ResponseBody
-    public SpotifyToken callback(@RequestParam String code) {
+    public SpotifyToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
         String userUuid = SecurityHelper.getUserUuid();
         Optional<User> userOpt = userService.getUserByUuid(userUuid);
 
@@ -77,13 +79,7 @@ public class AuthorizationRest {
         }
 
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-        final AuthorizationCodeCredentials authorizationCodeCredentials;
-
-        try {
-            authorizationCodeCredentials = authorizationCodeRequest.execute();
-        } catch (IOException | SpotifyWebApiException e) {
-            throw new ServiceException("Error while fetching tokens!", e);
-        }
+        final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
 
         String accessToken = authorizationCodeCredentials.getAccessToken();
         String refreshToken = authorizationCodeCredentials.getRefreshToken();
@@ -91,16 +87,10 @@ public class AuthorizationRest {
         spotifyApi.setAccessToken(accessToken);
         spotifyApi.setRefreshToken(refreshToken);
 
-        SpotifyToken token;
-
-        try {
-            // save users token
-            token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
-            // updates spotify infos every authorize
-            userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userUuid), userOpt.get());
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+        // save users token
+        SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        // updates spotify infos every authorize
+        userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userUuid), userOpt.get());
 
         // Set Token refresh scheduler
         int delayMs = 55 * 60 * 1000;

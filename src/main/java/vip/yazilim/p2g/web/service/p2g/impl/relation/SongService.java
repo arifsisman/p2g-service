@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl.relation;
 
 import com.wrapper.spotify.enums.ModelObjectType;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
 import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.exception.SongException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.relation.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
@@ -25,7 +25,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.Date;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -87,20 +87,20 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     // Control Queue
     /////////////////////////////
     @Override
-    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
+    public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         return convertSearchModelToSong(roomUuid, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Long durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    public Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomUuid(roomUuid);
         song.setSongId(songId);
         song.setSongUri(songUri);
         song.setSongName(songName);
         song.setDurationMs(durationMs);
-        song.setQueuedTime(new Date());
+        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
 
@@ -112,12 +112,12 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     }
 
     @Override
-    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException, SongException {
+    public boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Song> SongOpt = getById(songUuid);
 
         if (!SongOpt.isPresent()) {
             String err = String.format("Song[%s] not found", songUuid);
-            throw new SongException(err);
+            throw new NotFoundException(err);
         }
 
         return delete(SongOpt.get());
@@ -178,7 +178,7 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
+    private List<Song> convertSearchModelToSong(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
@@ -207,9 +207,9 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         song.setSongName(searchModel.getName());
         song.setAlbumName(searchModel.getAlbumName());
         song.setImageUrl(searchModel.getImageUrl());
-        song.setCurrentMs(0L);
+        song.setCurrentMs(0);
         song.setDurationMs(searchModel.getDurationMs());
-        song.setQueuedTime(TimeHelper.getCurrentDate());
+        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setVotes(0);
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
 

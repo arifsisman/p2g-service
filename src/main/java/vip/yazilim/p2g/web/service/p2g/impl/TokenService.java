@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.exception.TokenException;
 import vip.yazilim.p2g.web.repository.ITokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ITokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -16,6 +15,7 @@ import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -59,7 +59,7 @@ public class  TokenService extends ACrudServiceImpl<SpotifyToken, String> implem
     public String getAccessTokenByUserUuid(String userUuid) throws DatabaseException {
         try {
             Optional<SpotifyToken> spotifyToken = tokenRepo.findSpotifyTokenByUserUuid(userUuid);
-            return spotifyToken.map(SpotifyToken::getAccessToken).orElseThrow(() -> new TokenException("Token can not found for userUuid:" + userUuid));
+            return spotifyToken.map(SpotifyToken::getAccessToken).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userUuid[%s]", userUuid);
             throw new DatabaseReadException(errorMessage, exception);
