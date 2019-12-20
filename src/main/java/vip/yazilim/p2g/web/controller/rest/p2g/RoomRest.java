@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -124,9 +123,8 @@ public class RoomRest extends ARestCrud<Room, String> {
     // RoomUser (Join & Leave & Get Users)
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/{roomUuid}/join")
-    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody Map<String, String> userUuidAndPassword) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        return RestResponseFactory.generateResponse(roomUserService.joinRoom(roomUuid, userUuidAndPassword.get("userUuid")
-                , userUuidAndPassword.get("roomPassword"), Role.ROOM_USER), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody String password) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        return RestResponseFactory.generateResponse(roomUserService.joinRoom(roomUuid, password, Role.ROOM_USER), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

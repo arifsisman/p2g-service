@@ -19,6 +19,7 @@ import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -109,6 +110,35 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         }
     }
 
+    @Override
+    public RoomUser joinRoom(String roomUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        String userUuid = SecurityHelper.getUserUuid();
+        Optional<Room> roomOpt = roomService.getById(roomUuid);
+
+        if (!roomOpt.isPresent()) {
+            String err = String.format("Room[%s] can not found", roomUuid);
+            throw new InvalidArgumentException(err);
+        }
+
+        Room room = roomOpt.get();
+        RoomUser roomUser = new RoomUser();
+
+        if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
+            roomUser.setRoomUuid(roomUuid);
+            roomUser.setUserUuid(userUuid);
+            roomUser.setRoleName(role.getRoleName());
+            roomUser.setActiveFlag(true);
+        } else {
+            throw new InvalidArgumentException("Wrong password");
+        }
+
+        RoomUser joinedUser = create(roomUser);
+        spotifyPlayerService.userSyncWithRoom(joinedUser);
+
+        return roomUser;
+    }
+
+    //todo: for tests, delete later
     @Override
     public RoomUser joinRoom(String roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);

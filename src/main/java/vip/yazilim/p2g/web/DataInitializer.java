@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         User emre = userService.createUser("emre", "emre", "0");
         User mert = userService.createUser("mert", "mert", "0");
 
-        Room testRoom = roomService.createRoom(arif.getUuid(), "Test Room1", "1");
+        Room testRoom = roomService.createRoom(arif.getUuid(), "Test Room1", "0");
 
         String roomUuid = testRoom.getUuid();
         LOGGER.info("--------> testRoomUuid: " + roomUuid);
@@ -50,7 +50,7 @@ public class DataInitializer implements CommandLineRunner {
         LOGGER.info("--------> mertUuid: " + mert.getUuid());
 
 
-        roomUserService.joinRoom(roomUuid, emre.getUuid(), "1", Role.ROOM_USER);
+        roomUserService.joinRoom(roomUuid, emre.getUuid(), "0", Role.ROOM_USER);
 
         songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
         songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);

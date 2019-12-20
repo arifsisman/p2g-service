@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
  */
 public class TimeHelper {
 
-    public static Long getCurrentTimeMsLong() {
+    public static long getCurrentTimeMsLong() {
         return ZonedDateTime.of(getLocalDateTimeNow(), ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
