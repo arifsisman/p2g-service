@@ -18,8 +18,7 @@
         }
 
         function connect() {
-            var socket = new SockJS(pubUrl);
-            // var socket = new WebSocket('ws://' + document.location.host + pubUrl);
+            var socket = new WebSocket('ws://' + document.location.host + pubUrl);
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 setConnected(true);
@@ -53,15 +52,18 @@
                 + messageOutput.text + " (" + messageOutput.time + ")"));
             response.appendChild(p);
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            connect();
+        }, false);
+
     </script>
 </head>
 <body onload="disconnect()">
 <div>
     <div>
-        <input type="text" id="from" placeholder="Choose a nickname" th:value="${#authentication.getPrincipal().getUsername()}"/>
-    </div>
-    <br/>
-    <div>
+        <input disabled="true" type="text" id="from" placeholder="Choose a nickname"
+               th:value="${#authentication.getPrincipal().getUsername()}"/>
         <button id="connect" onclick="connect();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">
             Disconnect
