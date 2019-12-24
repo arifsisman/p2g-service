@@ -5,25 +5,24 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 
-import static vip.yazilim.p2g.web.constant.Constants.API;
-
-@Order(100)
+/**
+ * @author mustafaarifsisman - 24.12.2019
+ * @contact mustafaarifsisman@gmail.com
+ */
+@Order(300)
 @Profile("dev")
 @Configuration
-public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSocketSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and().csrf().disable()
-                .antMatcher(API + "/**")
-                .authorizeRequests().anyRequest()
-                .authenticated().and().httpBasic()
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .headers().frameOptions().disable()
+                .and().authorizeRequests()
+                .antMatchers("/ws/**", "/app/**", "/topic/**")
+                .permitAll();
     }
+
 }
-
-
-

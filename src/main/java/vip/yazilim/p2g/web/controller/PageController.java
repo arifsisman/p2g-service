@@ -13,4 +13,9 @@ public class PageController {
         return "redirect:" + API_SPOTIFY + "/authorize";
     }
 
+    @GetMapping("/ws")
+    public String ws() {
+        return "page_ws";
+    }
+
 }

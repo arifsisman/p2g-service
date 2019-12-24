@@ -49,4 +49,7 @@ public class Room implements Serializable {
 
     private String chatUuid;
 
+    @Column(name = "country_code")
+    private String countryCode;
+
 }

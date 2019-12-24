@@ -47,16 +47,18 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>vip.yazilim.spring</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>1.0.00</version>
-        </dependency>
-
         <!-- Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+
+        <!-- Spring-Core Lib for Services and REST Implementation -->
+        <dependency>
+            <groupId>vip.yazilim.spring</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>1.0.00</version>
         </dependency>
 
 
@@ -99,23 +101,26 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+
         <!-- Thymeleaf -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-thymeleaf</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>nz.net.ultraq.thymeleaf</groupId>-->
-        <!--            <artifactId>thymeleaf-layout-dialect</artifactId>-->
-        <!--            <version>2.3.0</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.thymeleaf.extras</groupId>-->
-        <!--            <artifactId>thymeleaf-extras-springsecurity5</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+        </dependency>
 
+
+        <!-- Developer Tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -135,7 +140,35 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spotify -->
+
+        <!-- WebSocket -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+
+        <!-- Spotify Web API -->
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>

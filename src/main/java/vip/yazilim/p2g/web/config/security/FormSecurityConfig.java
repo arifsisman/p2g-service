@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@Order(1)
+@Order(200)
 @Profile("dev")
 @Configuration
 @EnableWebSecurity
@@ -19,8 +19,7 @@ public class FormSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/**")
                 .authenticated()
-                .and()
-                .formLogin();
+                .and().formLogin();
     }
 
 }
