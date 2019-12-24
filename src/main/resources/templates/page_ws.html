@@ -7,8 +7,8 @@
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
         var stompClient = null;
-        var sockJSChatUrl = "/app/chat";
-        var sockJSTopicMessagesUrl = "/topic/messages";
+        var pubUrl = "/chat";
+        var subUrl = "/topic/messages";
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
@@ -18,12 +18,13 @@
         }
 
         function connect() {
-            var socket = new SockJS(sockJSChatUrl);
+            var socket = new SockJS(pubUrl);
+            // var socket = new WebSocket('ws://' + document.location.host + pubUrl);
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe(sockJSTopicMessagesUrl, function (messageOutput) {
+                stompClient.subscribe(subUrl, function (messageOutput) {
                     showMessageOutput(JSON.parse(messageOutput.body));
                 });
             });
@@ -40,7 +41,7 @@
         function sendMessage() {
             var from = document.getElementById('from').value;
             var text = document.getElementById('text').value;
-            stompClient.send(sockJSChatUrl, {},
+            stompClient.send(pubUrl, {},
                 JSON.stringify({'from': from, 'text': text}));
         }
 
@@ -57,7 +58,7 @@
 <body onload="disconnect()">
 <div>
     <div>
-        <input type="text" id="from" placeholder="Choose a nickname"/>
+        <input type="text" id="from" placeholder="Choose a nickname" th:value="${#authentication.getPrincipal().getUsername()}"/>
     </div>
     <br/>
     <div>

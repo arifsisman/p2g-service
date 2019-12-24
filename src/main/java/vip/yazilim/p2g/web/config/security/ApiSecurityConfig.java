@@ -7,8 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import static vip.yazilim.p2g.web.constant.Constants.API;
-
 @Order(100)
 @Profile("dev")
 @Configuration
@@ -17,8 +15,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and().csrf().disable()
-                .antMatcher(API + "/**")
-                .authorizeRequests().anyRequest()
+                .authorizeRequests().antMatchers("/**")
                 .authenticated().and().httpBasic()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

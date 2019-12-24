@@ -24,8 +24,7 @@ public class WebSocketController {
 
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
-    public OutputMessage send(Message message) throws Exception {
-        System.out.println(TimeHelper.getLocalDateTimeNow());
+    public OutputMessage send(Message message) {
         return new OutputMessage(message.getFrom(), message.getText(), TimeHelper.getLocalDateTimeNow());
     }
 

@@ -14,5 +14,5 @@ import java.time.LocalDateTime;
 public class OutputMessage {
     private String from;
     private String text;
-    private LocalDateTime localDateTime;
+    private LocalDateTime time;
 }

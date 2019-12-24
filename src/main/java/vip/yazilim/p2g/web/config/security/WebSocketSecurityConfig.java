@@ -19,7 +19,7 @@ public class WebSocketSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and().csrf().disable()
-                .headers().frameOptions().disable()
+                .headers().frameOptions().sameOrigin()
                 .and().authorizeRequests()
                 .antMatchers("/ws/**", "/app/**", "/topic/**")
                 .permitAll();
