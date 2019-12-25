@@ -1,10 +1,13 @@
 package vip.yazilim.p2g.web.controller.websocket;
 
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.model.websocket.Message;
@@ -17,37 +20,18 @@ import vip.yazilim.p2g.web.util.TimeHelper;
 @Controller
 public class WebSocketController {
 
-    @Autowired
-    private SimpMessageSendingOperations messagingTemplate;
+    private Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private Gson gson = new Gson();
 
-    @MessageMapping("/{roomUuid}/chat")
-    @SendTo("/room/messages")
-//    public ChatMessage send(@DestinationVariable String roomUuid, @Payload Message message) {
-    public ChatMessage send(Message message) {
-        ChatMessage chatMessage = new ChatMessage(message.getSender(), message.getContent(), TimeHelper.getLocalDateTimeNow());
-//        messagingTemplate.convertAndSend(format("/chat/%s", roomUuid), chatMessage);
-        return chatMessage;
+    @MessageMapping("/chat/{roomUuid}")
+    @SendTo("/room/{roomUuid}/messages")
+    public ChatMessage send(@DestinationVariable String roomUuid, @Payload Message message) {
+        return new ChatMessage(message.getSender(), message.getContent(), TimeHelper.getLocalDateTimeNow());
     }
 
-//    @MessageMapping("/chat/{roomUuid}/join}")
-//    public void join(@DestinationVariable String roomUuid, String userUuid) {
-////        String userDisplayName = SecurityHelper.getUserDisplayName();
-//
-//        ChatMessage chatMessage = new ChatMessage();
-//        chatMessage.setSender(userUuid);
-//        chatMessage.setTimestamp(TimeHelper.getLocalDateTimeNow());
-//        chatMessage.setContent(userUuid + " joined!");
-//
-////        String currentRoomUuid = (String) headerAccessor.getSessionAttributes().put("room_uuid", roomUuid);
-////        if (currentRoomUuid != null) {
-////            ChatMessage leaveMessage = new ChatMessage();
-////            leaveMessage.setChatMessageType(ChatMessage.ChatMessageType.LEAVE);
-////            leaveMessage.setSender(chatMessage.getSender());
-////            messagingTemplate.convertAndSend(format("/room/%s", currentRoomUuid), leaveMessage);
-////        }
-////        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-//        messagingTemplate.convertAndSend(format("/chat/%s", roomUuid), chatMessage);
-//    }
+    @SubscribeMapping("/room/{roomUuid}/messages")
+    public void subscribeToRouteLocation(@DestinationVariable String roomUuid) {
+        LOGGER.debug("New user subscribed to roomUuid[{}] chat", roomUuid);
+    }
 }

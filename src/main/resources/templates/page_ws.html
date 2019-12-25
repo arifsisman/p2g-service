@@ -3,7 +3,7 @@
 
 <head>
     <title>Chat WebSocket</title>
-    <script type="text/javascript" th:src="@{/js/sockjs.js}"></script>
+    <!--    <script type="text/javascript" th:src="@{/js/sockjs.js}"></script>-->
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
         var stompClient = null;
@@ -19,7 +19,7 @@
         }
 
         function connect() {
-            const roomUuid = document.getElementById("roomUuid").value;
+            var roomUuid = document.getElementById("roomUuid").value;
             pubUrl = "/chat/" + roomUuid;
             subUrl = "/room/" + roomUuid + "/messages";
 
@@ -45,8 +45,7 @@
         function sendMessage() {
             var sender = document.getElementById('sender').value;
             var content = document.getElementById('content').value;
-            stompClient.send(pubUrl, {},
-                JSON.stringify({'sender': sender, 'content': content}));
+            stompClient.send(pubUrl, {}, JSON.stringify({'roomUuid': roomUuid, 'sender': sender, 'content': content}));
         }
 
         function showMessageOutput(messageOutput) {
@@ -63,10 +62,10 @@
 
     </script>
 </head>
-<body onload="disconnect()">
+<!--<body onload="disconnect()">-->
 <div>
     <div>
-        <input disabled="disabled" type="text" id="roomUuid" th:value = "${roomUuid}"/>
+        <input disabled="disabled" type="text" id="roomUuid" th:value="${roomUuid}"/>
         <br/>
         <input disabled="disabled" type="text" id="sender" placeholder="Choose a nickname"
                th:value="${#authentication.getPrincipal().getUsername()}"/>
