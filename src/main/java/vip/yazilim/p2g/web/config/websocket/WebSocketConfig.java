@@ -16,44 +16,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/room");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat");
+        registry.addEndpoint("/chat/");
     }
 
-
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry config) {
-//        config.enableSimpleBroker("/topic/", "/queue/");
-//        config.setApplicationDestinationPrefixes("/app");
-//    }
-//
-//    @Override
-//    public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint("/greeting");
-//    }
-//
-//    @Override
-//    public void registerStompEndpoints(StompEndpointRegistry registry) {
-//
-//        registry
-//                .addEndpoint("/greeting")
-//                .setHandshakeHandler(new DefaultHandshakeHandler() {
-//
-//                    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-//                            WebSocketHandler wsHandler, Map attributes) throws Exception {
-//
-//                        if (request instanceof ServletServerHttpRequest) {
-//                            ServletServerHttpRequest servletRequest
-//                                    = (ServletServerHttpRequest) request;
-//                            HttpSession session = servletRequest
-//                                    .getServletRequest().getSession();
-//                            attributes.put("sessionId", session.getId());
-//                        }
-//                        return true;
-//                    }}).withSockJS();
-//    }
 }

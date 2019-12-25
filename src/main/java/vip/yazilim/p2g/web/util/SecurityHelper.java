@@ -23,4 +23,8 @@ public class SecurityHelper {
         return getUser().getUuid();
     }
 
+    public static String getUserDisplayName() {
+        return getUser().getDisplayName();
+    }
+
 }

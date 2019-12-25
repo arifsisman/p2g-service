@@ -7,8 +7,9 @@
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
         var stompClient = null;
-        var pubUrl = "/chat";
-        var subUrl = "/topic/messages";
+        var roomUuid = null;
+        var pubUrl = null;
+        var subUrl = null;
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
@@ -18,6 +19,10 @@
         }
 
         function connect() {
+            const roomUuid = document.getElementById("roomUuid").value;
+            pubUrl = "/chat/" + roomUuid;
+            subUrl = "/room/" + roomUuid + "/messages";
+
             var socket = new WebSocket('ws://' + document.location.host + pubUrl);
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
@@ -38,18 +43,17 @@
         }
 
         function sendMessage() {
-            var from = document.getElementById('from').value;
-            var text = document.getElementById('text').value;
+            var sender = document.getElementById('sender').value;
+            var content = document.getElementById('content').value;
             stompClient.send(pubUrl, {},
-                JSON.stringify({'from': from, 'text': text}));
+                JSON.stringify({'sender': sender, 'content': content}));
         }
 
         function showMessageOutput(messageOutput) {
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(messageOutput.from + ": "
-                + messageOutput.text + " (" + messageOutput.time + ")"));
+            p.appendChild(document.createTextNode(messageOutput.sender + ": " + messageOutput.content + " (" + messageOutput.timestamp + ")"));
             response.appendChild(p);
         }
 
@@ -62,16 +66,17 @@
 <body onload="disconnect()">
 <div>
     <div>
-        <input disabled="true" type="text" id="from" placeholder="Choose a nickname"
+        <input disabled="disabled" type="text" id="roomUuid" th:value = "${roomUuid}"/>
+        <br/>
+        <input disabled="disabled" type="text" id="sender" placeholder="Choose a nickname"
                th:value="${#authentication.getPrincipal().getUsername()}"/>
+        <br/>
         <button id="connect" onclick="connect();">Connect</button>
-        <button id="disconnect" disabled="disabled" onclick="disconnect();">
-            Disconnect
-        </button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
     <br/>
     <div id="conversationDiv">
-        <input type="text" id="text" placeholder="Write a message..."/>
+        <input type="text" id="content" placeholder="Write a message..."/>
         <button id="sendMessage" onclick="sendMessage();">Send</button>
         <p id="response"></p>
     </div>

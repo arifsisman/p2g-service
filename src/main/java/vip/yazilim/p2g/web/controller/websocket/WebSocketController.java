@@ -6,8 +6,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import vip.yazilim.p2g.web.model.Message;
-import vip.yazilim.p2g.web.model.OutputMessage;
+import vip.yazilim.p2g.web.model.websocket.ChatMessage;
+import vip.yazilim.p2g.web.model.websocket.Message;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 /**
@@ -22,27 +22,32 @@ public class WebSocketController {
 
     private Gson gson = new Gson();
 
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public OutputMessage send(Message message) {
-        return new OutputMessage(message.getFrom(), message.getText(), TimeHelper.getLocalDateTimeNow());
+    @MessageMapping("/{roomUuid}/chat")
+    @SendTo("/room/messages")
+//    public ChatMessage send(@DestinationVariable String roomUuid, @Payload Message message) {
+    public ChatMessage send(Message message) {
+        ChatMessage chatMessage = new ChatMessage(message.getSender(), message.getContent(), TimeHelper.getLocalDateTimeNow());
+//        messagingTemplate.convertAndSend(format("/chat/%s", roomUuid), chatMessage);
+        return chatMessage;
     }
 
-//    @MessageMapping("/chat")
-//    @SendToUser("/topic/messages")
-//    public String processMessageFromClient(@Payload String message, Principal principal) throws Exception {
-//        return gson.fromJson(message, Map.class).get("text").toString();
-//    }
-
-//    @MessageMapping("/message")
-//    @SendToUser("/queue/reply")
-//    public String processMessageFromClient(@Payload String message, Principal principal) throws Exception {
-//        return gson.fromJson(message, Map.class).get("name").toString();
-//    }
+//    @MessageMapping("/chat/{roomUuid}/join}")
+//    public void join(@DestinationVariable String roomUuid, String userUuid) {
+////        String userDisplayName = SecurityHelper.getUserDisplayName();
 //
-//    @MessageExceptionHandler
-//    @SendToUser("/queue/errors")
-//    public String handleException(Throwable exception) {
-//        return exception.getMessage();
+//        ChatMessage chatMessage = new ChatMessage();
+//        chatMessage.setSender(userUuid);
+//        chatMessage.setTimestamp(TimeHelper.getLocalDateTimeNow());
+//        chatMessage.setContent(userUuid + " joined!");
+//
+////        String currentRoomUuid = (String) headerAccessor.getSessionAttributes().put("room_uuid", roomUuid);
+////        if (currentRoomUuid != null) {
+////            ChatMessage leaveMessage = new ChatMessage();
+////            leaveMessage.setChatMessageType(ChatMessage.ChatMessageType.LEAVE);
+////            leaveMessage.setSender(chatMessage.getSender());
+////            messagingTemplate.convertAndSend(format("/room/%s", currentRoomUuid), leaveMessage);
+////        }
+////        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+//        messagingTemplate.convertAndSend(format("/chat/%s", roomUuid), chatMessage);
 //    }
 }

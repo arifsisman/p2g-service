@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.model;
+package vip.yazilim.p2g.web.model.websocket;
 
 import lombok.Data;
 
@@ -8,6 +8,6 @@ import lombok.Data;
  */
 @Data
 public class Message {
-    private String from;
-    private String text;
+    private String sender;
+    private String content;
 }
