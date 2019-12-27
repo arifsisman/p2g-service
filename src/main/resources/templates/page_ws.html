@@ -48,12 +48,15 @@
             var roomUuid = document.getElementById('roomUuid').value;
             var message = document.getElementById('message').value;
 
+            var now = new Date();
+            var timestamp = now.toISOString();
+
             stompClient.send(pubUrl, {}, JSON.stringify({
                 'userUuid': userUuid,
                 'userName': userName,
                 'roomUuid': roomUuid,
                 'message': message,
-                'timestamp': Date.now()
+                'timestamp': timestamp
             }));
         }
 
