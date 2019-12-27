@@ -20,7 +20,7 @@
 
         function connect() {
             var roomUuid = document.getElementById("roomUuid").value;
-            pubUrl = "/chat/" + roomUuid;
+            pubUrl = "/message/" + roomUuid;
             subUrl = "/room/" + roomUuid + "/messages";
 
             var socket = new WebSocket('ws://' + document.location.host + pubUrl);
