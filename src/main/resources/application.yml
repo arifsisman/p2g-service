@@ -6,10 +6,10 @@ server:
 spring:
   profiles:
     active: dev
-#  devtools:
-#    restart:
-#      exclude: logs/**
-#      enabled: false
+  devtools:
+    restart:
+      exclude: logs/**
+      enabled: false
 
 # Spotify-Play2Gether configuration
 spotify:

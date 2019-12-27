@@ -139,8 +139,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
         RoomUser joinedUser = create(roomUser);
         spotifyPlayerService.userSyncWithRoom(joinedUser);
 
-//        webSocketController.join(roomUuid, userUuid);
-
         return roomUser;
     }
 
@@ -168,8 +166,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
         RoomUser joinedUser = create(roomUser);
         spotifyPlayerService.userSyncWithRoom(joinedUser);
-
-//        webSocketController.join(roomUuid, userUuid);
 
         return roomUser;
     }

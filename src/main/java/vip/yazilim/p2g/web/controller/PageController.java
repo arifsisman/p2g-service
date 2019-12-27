@@ -28,6 +28,7 @@ public class PageController {
     public String ws(Model model) throws DatabaseException {
         Optional<RoomUser> roomUser = roomUserService.getRoomUser(SecurityHelper.getUserUuid());
         roomUser.ifPresent(user -> model.addAttribute("roomUuid", user.getRoomUuid()));
+        roomUser.ifPresent(user -> model.addAttribute("userUuid", user.getUserUuid()));
         return "page_ws";
     }
 
