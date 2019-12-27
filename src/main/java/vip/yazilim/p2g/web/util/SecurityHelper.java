@@ -23,8 +23,16 @@ public class SecurityHelper {
         return getUser().getUuid();
     }
 
+    public static String getUserUuid(Authentication authentication) {
+        return ((CustomUserPrincipal)authentication.getPrincipal()).getUser().getUuid();
+    }
+
     public static String getUserDisplayName() {
         return getUser().getDisplayName();
+    }
+
+    public static String getUserDisplayName(Authentication authentication) {
+        return ((CustomUserPrincipal)authentication.getPrincipal()).getUser().getDisplayName();
     }
 
 }

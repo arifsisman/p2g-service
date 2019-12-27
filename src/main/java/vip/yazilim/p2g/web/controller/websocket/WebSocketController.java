@@ -9,10 +9,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.service.p2g.impl.relation.RoomUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 /**
@@ -39,7 +41,10 @@ public class WebSocketController {
     }
 
     @SubscribeMapping("/room/{roomUuid}/messages")
-    public void subscribeToRoom(@DestinationVariable String roomUuid) {
-        LOGGER.info("New user subscribed to roomUuid[{}] chat", roomUuid);
+    public void subscribeToRoom(@DestinationVariable String roomUuid, Authentication authentication) {
+        String userUuid = SecurityHelper.getUserUuid(authentication);
+        String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
+        LOGGER.info("{}[{}] subscribed to roomUuid[{}] chat", userDisplayName, userUuid, roomUuid);
+//        new ChatMessage(userUuid, userDisplayName, roomUuid, userDisplayName +" joined!", new Date());
     }
 }
