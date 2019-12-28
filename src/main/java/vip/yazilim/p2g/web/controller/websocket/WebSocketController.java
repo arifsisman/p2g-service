@@ -70,8 +70,8 @@ public class WebSocketController {
     /////////////////////////////
     @MessageMapping("/song/{roomUuid}")
     @SendTo("/room/{roomUuid}/songs")
-    public List<Song> updateSongList(@Payload List<Song> songList) {
-        return songList;
+    public void updateSongList(@DestinationVariable String roomUuid, @Payload List<Song> songList) {
+        messagingTemplate.convertAndSend("/room/" + roomUuid + "/messages", songList);
     }
 
     private boolean isUserInRoom(String userUuid, String roomUuid) throws DatabaseException {

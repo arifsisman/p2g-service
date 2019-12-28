@@ -33,11 +33,11 @@
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe(subUrlSong, function (songListOutput) {
-                        showSongListOutput(JSON.parse(songListOutput.body));
-                    }),
+                    showSongListOutput(JSON.parse(songListOutput.body));
+                }),
                     stompClient.subscribe(subUrlMsg, function (messageOutput) {
-                    showMessageOutput(JSON.parse(messageOutput.body));
-                })
+                        showMessageOutput(JSON.parse(messageOutput.body));
+                    })
             });
         }
 
@@ -127,7 +127,9 @@
         <textarea rows="20" cols="50" id="songListJson" placeholder="Write song list as json..."/></textarea>
         <br/>
         <button id="updateSongList" onclick="updateSongList();">Update Song List</button>
-        <p id="songListResponse"></p>
+        <pre>
+            <p id="songListResponse"></p>
+        </pre>
     </div>
 </div>
 
