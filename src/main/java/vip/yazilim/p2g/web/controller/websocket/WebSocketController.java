@@ -13,11 +13,14 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.service.p2g.impl.relation.RoomUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+
+import java.util.List;
 
 /**
  * @author mustafaarifsisman - 24.12.2019
@@ -36,9 +39,9 @@ public class WebSocketController {
     @Autowired
     private RoomUserService roomUserService;
 
-    public WebSocketController() {
-    }
-
+    /////////////////////////////
+    // Message send and subscribe
+    /////////////////////////////
     @MessageMapping("/message/{roomUuid}")
     @SendTo("/room/{roomUuid}/messages")
     public ChatMessage send(@Payload ChatMessage chatMessage, Authentication authentication) throws DatabaseException {
@@ -54,11 +57,21 @@ public class WebSocketController {
         String userUuid = SecurityHelper.getUserUuid(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
+        //todo: bug: not working
         if(!isUserInRoom(userUuid, roomUuid)) return;
 
         LOGGER.info("{}[{}] subscribed to roomUuid[{}] chat", userDisplayName, userUuid, roomUuid);
         ChatMessage joinMessage = new ChatMessage("-1", "info", roomUuid, userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
         messagingTemplate.convertAndSend("/room/" + roomUuid + "/messages", joinMessage);
+    }
+
+    /////////////////////////////
+    // Song List send
+    /////////////////////////////
+    @MessageMapping("/song/{roomUuid}")
+    @SendTo("/room/{roomUuid}/songs")
+    public List<Song> updateSongList(@Payload List<Song> songList) {
+        return songList;
     }
 
     private boolean isUserInRoom(String userUuid, String roomUuid) throws DatabaseException {

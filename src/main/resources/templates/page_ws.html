@@ -9,28 +9,35 @@
         var roomUuid = null;
         var userUuid = null;
         var pubUrl = null;
-        var subUrl = null;
+        var subUrlMsg = null;
+        var subUrlSong = null;
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
             document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('response').innerHTML = '';
+            document.getElementById('songDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('messageResponse').innerHTML = '';
+            document.getElementById('songListResponse').innerHTML = '';
         }
 
         function connect() {
             var roomUuid = document.getElementById("roomUuid").value;
-            pubUrl = "/message/" + roomUuid;
-            subUrl = "/room/" + roomUuid + "/messages";
+            pubUrl = "/song/" + roomUuid;
+            subUrlMsg = "/room/" + roomUuid + "/messages";
+            subUrlSong = "/room/" + roomUuid + "/songs";
 
             var socket = new WebSocket('ws://' + document.location.host + pubUrl);
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe(subUrl, function (messageOutput) {
+                stompClient.subscribe(subUrlSong, function (songListOutput) {
+                        showSongListOutput(JSON.parse(songListOutput.body));
+                    }),
+                    stompClient.subscribe(subUrlMsg, function (messageOutput) {
                     showMessageOutput(JSON.parse(messageOutput.body));
-                });
+                })
             });
         }
 
@@ -43,6 +50,9 @@
         }
 
         function sendMessage() {
+            var roomUuid = document.getElementById("roomUuid").value;
+            pubUrl = "/message/" + roomUuid;
+
             var userUuid = document.getElementById("userUuid").value;
             var userName = document.getElementById('userName').value;
             var roomUuid = document.getElementById('roomUuid').value;
@@ -60,12 +70,30 @@
             }));
         }
 
+        function updateSongList() {
+            var roomUuid = document.getElementById("roomUuid").value;
+            pubUrl = "/song/" + roomUuid;
+
+            var songList = document.getElementById("songListJson").value;
+            stompClient.send(pubUrl, {}, songList);
+        }
+
         function showMessageOutput(messageOutput) {
-            var response = document.getElementById('response');
+            var messageResponse = document.getElementById('messageResponse');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
             p.appendChild(document.createTextNode(messageOutput.userName + ": " + messageOutput.message + " (" + messageOutput.timestamp + ")"));
-            response.appendChild(p);
+            messageResponse.appendChild(p);
+        }
+
+        function showSongListOutput(songListOutput) {
+            var songListResponse = document.getElementById('songListResponse');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+
+            var str = JSON.stringify(songListOutput, null, 2);
+            p.appendChild(document.createTextNode(str));
+            songListResponse.appendChild(p);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -79,15 +107,27 @@
     <div>
         roomUuid: <input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
         userUuid: <input disabled="disabled" type="text" id="userUuid" th:value="${userUuid}"/><br/>
-        userName: <input disabled="disabled" type="text" id="userName" th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
+        userName: <input disabled="disabled" type="text" id="userName"
+                         th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
         <button id="connect" onclick="connect();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
     <br/>
     <div id="conversationDiv">
         <input type="text" id="message" placeholder="Write a message..."/>
-        <button id="sendMessage" onclick="sendMessage();">Send</button>
-        <p id="response"></p>
+        <button id="sendMessage" onclick="sendMessage();">Send Message</button>
+        <p id="messageResponse"></p>
+    </div>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <div id="songDiv">
+        <textarea rows="20" cols="50" id="songListJson" placeholder="Write song list as json..."/></textarea>
+        <br/>
+        <button id="updateSongList" onclick="updateSongList();">Update Song List</button>
+        <p id="songListResponse"></p>
     </div>
 </div>
 
