@@ -11,6 +11,7 @@
         var pubUrl = null;
         var subUrlMsg = null;
         var subUrlSong = null;
+        var subUrlInvite = null;
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
@@ -21,7 +22,7 @@
             document.getElementById('songListResponse').innerHTML = '';
         }
 
-        function connect() {
+        function connectRoom() {
             var roomUuid = document.getElementById("roomUuid").value;
             pubUrl = "/song/" + roomUuid;
             subUrlMsg = "/room/" + roomUuid + "/messages";
@@ -41,6 +42,22 @@
             });
         }
 
+        function connectUser() {
+            userUuid = document.getElementById("userUuid").value;
+            pubUrl = "/invite/" + userUuid;
+            subUrlInvite = "/user/" + userUuid + "/invites";
+
+            var socket = new WebSocket('ws://' + document.location.host + pubUrl);
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe(subUrlInvite, function (inviteOutput) {
+                    showInviteOutput(JSON.parse(inviteOutput.body));
+                })
+            })
+        }
+
         function disconnect() {
             if (stompClient != null) {
                 stompClient.disconnect();
@@ -55,7 +72,6 @@
 
             var userUuid = document.getElementById("userUuid").value;
             var userName = document.getElementById('userName').value;
-            var roomUuid = document.getElementById('roomUuid').value;
             var message = document.getElementById('message').value;
 
             var now = new Date();
@@ -96,8 +112,19 @@
             songListResponse.appendChild(p);
         }
 
+        function showInviteOutput(inviteOutput) {
+            var messageResponse = document.getElementById('inviteResponse');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+
+            var str = JSON.stringify(inviteOutput, null, 2);
+            p.appendChild(document.createTextNode(str));
+            messageResponse.appendChild(p);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            connect();
+            connectUser();
+            // connectRoom();
         }, false);
 
     </script>
@@ -109,7 +136,7 @@
         userUuid: <input disabled="disabled" type="text" id="userUuid" th:value="${userUuid}"/><br/>
         userName: <input disabled="disabled" type="text" id="userName"
                          th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
-        <button id="connect" onclick="connect();">Connect</button>
+        <button id="connect" onclick="connectRoom();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
     <br/>
@@ -120,8 +147,6 @@
     </div>
 
     <br/>
-    <br/>
-    <br/>
 
     <div id="songDiv">
         <textarea rows="20" cols="50" id="songListJson" placeholder="Write song list as json..."/></textarea>
@@ -131,6 +156,14 @@
             <p id="songListResponse"></p>
         </pre>
     </div>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <pre id="inviteDiv">
+        <p id="inviteResponse"></p>
+    </pre>
 </div>
 
 </body>

@@ -10,7 +10,7 @@ import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -65,7 +65,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
     private SpotifyPlayerService spotifyPlayerService;
 
     @Autowired
-    private WebSocketController webSocketController;
+    private RoomWebSocketController roomWebSocketController;
 
     @Override
     protected JpaRepository<RoomUser, String> getRepository() {

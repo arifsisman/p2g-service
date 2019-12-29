@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
@@ -50,7 +50,7 @@ public class RestAspect {
     private SongService songService;
 
     @Autowired
-    private WebSocketController webSocketController;
+    private RoomWebSocketController roomWebSocketController;
 
     /**
      * to be executed before invoking methods which matches given pattern before
@@ -88,7 +88,7 @@ public class RestAspect {
         Method method = signature.getMethod();
         for (Annotation annotation : method.getDeclaredAnnotations()) {
             if (annotation instanceof UpdateRoomSongs) {
-                handleUpdateRoomSocketSongs();
+                handleUpdateRoomSongs();
             }
         }
     }
@@ -131,14 +131,14 @@ public class RestAspect {
         }
     }
 
-    private void handleUpdateRoomSocketSongs() throws DatabaseException {
+    private void handleUpdateRoomSongs() throws DatabaseException {
         String userUuid = SecurityHelper.getUserUuid();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
 
         if (roomUserOpt.isPresent()) {
             String roomUuid = roomUserOpt.get().getRoomUuid();
             List<Song> songList = songService.getSongListByRoomUuid(roomUuid);
-            webSocketController.updateSongList(roomUuid, songList);
+            roomWebSocketController.updateSongList(roomUuid, songList);
         } else {
             throw new NotFoundException("Room not found.");
         }

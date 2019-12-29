@@ -17,6 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
         brokerRegistry.enableSimpleBroker("/room");
+        brokerRegistry.enableSimpleBroker("/user");
         brokerRegistry.setApplicationDestinationPrefixes("/");
     }
 
@@ -24,6 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/message/{roomUuid}");
         registry.addEndpoint("/song/{roomUuid}");
+        registry.addEndpoint("/invite/{userUuid}");
     }
 
 }

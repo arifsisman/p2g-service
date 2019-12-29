@@ -28,9 +28,9 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Controller
-public class WebSocketController {
+public class RoomWebSocketController {
 
-    private Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RoomWebSocketController.class);
 
     private Gson gson = new Gson();
 
@@ -48,7 +48,7 @@ public class WebSocketController {
     /////////////////////////////
     @MessageMapping("/message/{roomUuid}")
     @SendTo("/room/{roomUuid}/messages")
-    public ChatMessage send(@Payload ChatMessage chatMessage, Authentication authentication) throws DatabaseException {
+    public ChatMessage sendMessage(@Payload ChatMessage chatMessage, Authentication authentication) throws DatabaseException {
         if (roomUserService.hasRoomPrivilege(SecurityHelper.getUserUuid(authentication), Privilege.ROOM_CHAT)) {
             return chatMessage;
         }

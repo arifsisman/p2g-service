@@ -8,6 +8,7 @@ import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.controller.websocket.UserWebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.relation.RoomInvite;
 import vip.yazilim.p2g.web.entity.relation.RoomUser;
@@ -46,6 +47,9 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Autowired
+    private UserWebSocketController userWebSocketController;
 
     @Override
     protected ICrudService<Room, String> getService() {
@@ -105,7 +109,9 @@ public class RoomRest extends ARestCrud<Room, String> {
     @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE)
     @PostMapping("/{roomUuid}/invite/{userUuid}")
     public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomInviteService.invite(roomUuid, userUuid), HttpStatus.OK, request, response);
+        RoomInvite roomInvite = roomInviteService.invite(roomUuid, userUuid);
+        userWebSocketController.sendRoomInvite(roomInvite);
+        return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
