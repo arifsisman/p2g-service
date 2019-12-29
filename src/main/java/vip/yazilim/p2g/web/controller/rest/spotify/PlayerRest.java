@@ -4,7 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.config.security.annotation.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;

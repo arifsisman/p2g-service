@@ -83,9 +83,6 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
         return updateVote(songUuid, false);
     }
 
-    /////////////////////////////
-    // Control Queue
-    /////////////////////////////
     @Override
     public List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         return convertSearchModelToSong(roomUuid, searchModel);

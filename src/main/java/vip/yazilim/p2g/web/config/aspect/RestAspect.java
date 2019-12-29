@@ -1,6 +1,7 @@
-package vip.yazilim.p2g.web.config.security.aspect;
+package vip.yazilim.p2g.web.config.aspect;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -8,21 +9,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.p2g.web.config.security.annotation.HasRoomPrivilege;
-import vip.yazilim.p2g.web.config.security.annotation.HasRoomRole;
-import vip.yazilim.p2g.web.config.security.annotation.HasSystemPrivilege;
-import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.entity.relation.RoomUser;
+import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.service.p2g.impl.UserService;
 import vip.yazilim.p2g.web.service.p2g.impl.relation.RoomUserService;
+import vip.yazilim.p2g.web.service.p2g.impl.relation.SongService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 16.12.2019
@@ -30,16 +35,22 @@ import java.lang.reflect.Method;
  */
 @Configuration
 @Aspect
-public class SecurityAspect {
+public class RestAspect {
 
     private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.controller.rest.*.*.*(..))";
-    private final Logger LOGGER = LoggerFactory.getLogger(SecurityAspect.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(RestAspect.class);
 
     @Autowired
     private RoomUserService roomUserService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SongService songService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     /**
      * to be executed before invoking methods which matches given pattern before
@@ -61,6 +72,23 @@ public class SecurityAspect {
                 handle((HasRoomRole) annotation);
             } else if (annotation instanceof HasSystemPrivilege) {
                 handle((HasSystemPrivilege) annotation);
+            }
+        }
+    }
+
+    /**
+     * to be executed after invoking methods which matches given pattern before
+     * executed
+     *
+     * @param jpoint point where aspect joins
+     */
+    @After(ASPECT_PACKAGE_PATTERN)
+    public void after(JoinPoint jpoint) throws DatabaseException {
+        MethodSignature signature = (MethodSignature) jpoint.getSignature();
+        Method method = signature.getMethod();
+        for (Annotation annotation : method.getDeclaredAnnotations()) {
+            if (annotation instanceof UpdateRoomSongs) {
+                handleUpdateRoomSocketSongs();
             }
         }
     }
@@ -100,6 +128,19 @@ public class SecurityAspect {
 
         if (!userService.hasSystemRole(userUuid, role)) {
             throw new ForbiddenException("Insufficient Privileges");
+        }
+    }
+
+    private void handleUpdateRoomSocketSongs() throws DatabaseException {
+        String userUuid = SecurityHelper.getUserUuid();
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+
+        if (roomUserOpt.isPresent()) {
+            String roomUuid = roomUserOpt.get().getRoomUuid();
+            List<Song> songList = songService.getSongListByRoomUuid(roomUuid);
+            webSocketController.updateSongList(roomUuid, songList);
+        } else {
+            throw new NotFoundException("Room not found.");
         }
     }
 }

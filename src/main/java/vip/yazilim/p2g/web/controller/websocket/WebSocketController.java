@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.relation.Song;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.service.p2g.impl.relation.RoomUserService;
+import vip.yazilim.p2g.web.service.p2g.impl.relation.SongService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -39,6 +40,9 @@ public class WebSocketController {
     @Autowired
     private RoomUserService roomUserService;
 
+    @Autowired
+    private SongService songService;
+
     /////////////////////////////
     // Message send and subscribe
     /////////////////////////////
@@ -53,14 +57,14 @@ public class WebSocketController {
 
     //triggers after subscribe request
     @SubscribeMapping("/room/{roomUuid}/messages")
-    public void subscribeToRoom(@DestinationVariable String roomUuid, Authentication authentication) throws DatabaseException {
+    public void subscribeToRoomMessages(@DestinationVariable String roomUuid, Authentication authentication) throws DatabaseException {
         String userUuid = SecurityHelper.getUserUuid(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
         //todo: bug: not working
         if(!isUserInRoom(userUuid, roomUuid)) return;
 
-        LOGGER.info("{}[{}] subscribed to roomUuid[{}] chat", userDisplayName, userUuid, roomUuid);
+        LOGGER.info("{}[{}] subscribed to roomUuid[{}] messages", userDisplayName, userUuid, roomUuid);
         ChatMessage joinMessage = new ChatMessage("-1", "info", roomUuid, userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
         messagingTemplate.convertAndSend("/room/" + roomUuid + "/messages", joinMessage);
     }
@@ -71,7 +75,7 @@ public class WebSocketController {
     @MessageMapping("/song/{roomUuid}")
     @SendTo("/room/{roomUuid}/songs")
     public void updateSongList(@DestinationVariable String roomUuid, @Payload List<Song> songList) {
-        messagingTemplate.convertAndSend("/room/" + roomUuid + "/messages", songList);
+        messagingTemplate.convertAndSend("/room/" + roomUuid + "/songs", songList);
     }
 
     private boolean isUserInRoom(String userUuid, String roomUuid) throws DatabaseException {
