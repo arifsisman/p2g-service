@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ChatMessage {
     private UUID userUuid;
     private String userName;
-    private Long roomUuid;
+    private Long roomId;
     private String message;
     private LocalDateTime timestamp;
 }

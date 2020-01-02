@@ -29,7 +29,7 @@ public class PageController {
         model.addAttribute("userUuid", SecurityHelper.getUserUuid());
 
         Optional<RoomUser> roomUser = roomUserService.getRoomUser(SecurityHelper.getUserUuid());
-        roomUser.ifPresent(user -> model.addAttribute("roomUuid", user.getRoomId()));
+        roomUser.ifPresent(user -> model.addAttribute("roomId", user.getRoomId()));
 
         return "page_ws";
     }

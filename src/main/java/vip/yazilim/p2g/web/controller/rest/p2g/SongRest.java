@@ -88,37 +88,37 @@ public class SongRest extends ARestCrud<Song, Long> {
     ///////////////////////////////
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
-    @GetMapping("/{roomUuid}/list")
-    public RestResponse<List<Song>> getSongListByRoomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid) throws DatabaseException {
-        return RestResponseFactory.generateResponse(songService.getSongListByRoomUuid(roomUuid), HttpStatus.OK, request, response);
+    @GetMapping("/{roomId}/list")
+    public RestResponse<List<Song>> getSongListByroomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(songService.getSongListByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
-    @PostMapping("/{roomUuid}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid, @RequestBody SearchModel searchModel) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomUuid, searchModel), HttpStatus.OK, request, response);
+    @PostMapping("/{roomId}")
+    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody SearchModel searchModel) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModel), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
-    @DeleteMapping("/{songUuid}")
-    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.removeSongFromRoom(songUuid), HttpStatus.OK, request, response);
+    @DeleteMapping("/{songId}")
+    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(songService.removeSongFromRoom(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
-    @PutMapping("/{songUuid}/upvote")
-    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.upvote(songUuid), HttpStatus.OK, request, response);
+    @PutMapping("/{songId}/upvote")
+    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(songService.upvote(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
-    @PutMapping("/{songUuid}/downvote")
-    public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.downvote(songUuid), HttpStatus.OK, request, response);
+    @PutMapping("/{songId}/downvote")
+    public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(songService.downvote(songId), HttpStatus.OK, request, response);
     }
 
 }

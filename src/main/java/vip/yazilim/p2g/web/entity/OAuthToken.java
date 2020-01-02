@@ -19,10 +19,10 @@ public class OAuthToken implements Serializable {
     @Column(name = "user_uuid", columnDefinition = "uuid")
     private UUID userUuid;
 
-    @Column(name = "access_token", length = 64)
+    @Column(name = "access_token")
     private String accessToken;
 
-    @Column(name = "refresh_token", length = 64)
+    @Column(name = "refresh_token")
     private String refreshToken;
 
 }

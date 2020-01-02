@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -30,8 +28,6 @@ import java.util.UUID;
 @Transactional
 @Service
 public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, UUID> implements ISpotifyTokenService {
-
-    private Logger LOGGER = LoggerFactory.getLogger(SpotifyTokenService.class);
 
     @Autowired
     private ISpotifyTokenRepo tokenRepo;
@@ -76,7 +72,6 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, UUID> impl
 
         if (spotifyToken.isPresent()) {
             OAuthToken token = spotifyToken.get();
-            LOGGER.debug("Updating token for userUuid:" + userUuid);
             token.setAccessToken(accessToken);
             token.setRefreshToken(refreshToken);
             return update(token);
@@ -90,9 +85,9 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, UUID> impl
     }
 
     @Override
-    public List<OAuthToken> getTokenListByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<OAuthToken> getTokenListByroomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<OAuthToken> OAuthTokenList = new LinkedList<>();
-        List<User> userList = userService.getUsersByRoomUuid(roomUuid);
+        List<User> userList = userService.getUsersByroomId(roomId);
 
         for (User u : userList) {
             Optional<OAuthToken> token = getTokenByUserUuid(u.getUuid());

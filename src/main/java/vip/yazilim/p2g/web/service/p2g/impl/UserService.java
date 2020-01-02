@@ -122,8 +122,8 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
         if (roomOpt.isPresent()) {
             userModel.setRoom(roomOpt.get());
 
-            Long roomUuid = roomOpt.get().getId();
-            roomRole = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
+            Long roomId = roomOpt.get().getId();
+            roomRole = roomUserService.getRoleByRoomIdAndUserUuid(roomId, userUuid);
             userModel.setRoomRole(roomRole);
         }
 
@@ -139,9 +139,9 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
     }
 
     @Override
-    public List<User> getUsersByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<User> userList = new LinkedList<>();
-        List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
+        List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomId(roomId);
 
         for (RoomUser roomUser : roomUserList) {
             UUID userUuid = roomUser.getUserUuid();

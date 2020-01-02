@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -34,10 +32,6 @@ import java.util.UUID;
 @Service
 public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> implements IFriendRequestService {
 
-    // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(FriendRequestService.class);
-
-    // injected dependencies
     @Autowired
     private IFriendRequestRepo friendRequestRepo;
 
@@ -128,23 +122,22 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean acceptFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return replyFriendRequest(friendRequestUuid, FriendRequestStatus.ACCEPTED);
+    public boolean acceptFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return replyFriendRequest(friendRequestId, FriendRequestStatus.ACCEPTED);
     }
 
     @Override
-    public boolean ignoreFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return replyFriendRequest(friendRequestUuid, FriendRequestStatus.IGNORED);
+    public boolean ignoreFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return replyFriendRequest(friendRequestId, FriendRequestStatus.IGNORED);
     }
 
     @Override
-    public boolean rejectFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return replyFriendRequest(friendRequestUuid, FriendRequestStatus.REJECTED);
+    public boolean rejectFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        return replyFriendRequest(friendRequestId, FriendRequestStatus.REJECTED);
     }
 
-    private boolean replyFriendRequest(Long friendRequestUuid, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-
-        FriendRequest friendRequest = getById(friendRequestUuid).orElseThrow(() -> new NotFoundException("Friend request can not found"));
+    private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NotFoundException("Friend request can not found"));
 
         if (status == FriendRequestStatus.ACCEPTED || status == FriendRequestStatus.IGNORED) {
             friendRequest.setRequestStatus(status.getFriendRequestStatus());

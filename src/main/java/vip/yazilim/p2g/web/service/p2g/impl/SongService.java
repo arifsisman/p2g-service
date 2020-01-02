@@ -61,31 +61,31 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> getSongListByRoomUuid(Long roomUuid) {
+    public List<Song> getSongListByRoomId(Long roomId) {
         // order by votes and queued time
-        return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomUuid);
+        return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
     }
 
     @Override
-    public int upvote(Long songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
-        return updateVote(songUuid, true);
+    public int upvote(Long songId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        return updateVote(songId, true);
     }
 
     @Override
-    public int downvote(Long songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
-        return updateVote(songUuid, false);
+    public int downvote(Long songId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        return updateVote(songId, false);
     }
 
     @Override
-    public List<Song> addSongToRoom(Long roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        return convertSearchModelToSong(roomUuid, searchModel);
+    public List<Song> addSongToRoom(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        return convertSearchModelToSong(roomId, searchModel);
     }
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(Long roomUuid, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    public Song addSongToRoom(Long roomId, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
-        song.setRoomId(roomUuid);
+        song.setRoomId(roomId);
         song.setSongId(songId);
         song.setSongUri(songUri);
         song.setSongName(songName);
@@ -96,17 +96,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         song = create(song);
 
-        LOGGER.info("songUuid: {} - songName: {}", song.getId(), songName);
+        LOGGER.info("songId: {} - songName: {}", song.getId(), songName);
 
         return song;
     }
 
     @Override
-    public boolean removeSongFromRoom(Long songUuid) throws DatabaseException, InvalidArgumentException {
-        Optional<Song> SongOpt = getById(songUuid);
+    public boolean removeSongFromRoom(Long songId) throws DatabaseException, InvalidArgumentException {
+        Optional<Song> SongOpt = getById(songId);
 
         if (!SongOpt.isPresent()) {
-            String err = String.format("Song[%s] not found", songUuid);
+            String err = String.format("Song[%s] not found", songId);
             throw new NotFoundException(err);
         }
 
@@ -114,8 +114,8 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean deleteRoomSongList(Long roomUuid) throws DatabaseException {
-        List<Song> songList = songRepo.findByRoomId(roomUuid);
+    public boolean deleteRoomSongList(Long roomId) throws DatabaseException {
+        List<Song> songList = songRepo.findByRoomId(roomId);
 
         for (Song song : songList) {
             delete(song);
@@ -125,73 +125,73 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> getSongListByRoomUuidAndStatus(Long roomUuid, SongStatus songStatus) throws DatabaseReadException {
+    public List<Song> getSongListByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
         try {
-            return songRepo.findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+            return songRepo.findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
         } catch (Exception e) {
-            String err = String.format("Database error. Songs cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            String err = String.format("Database error. Songs cannot found with roomId[%s] and status[%s]", roomId, songStatus);
             throw new DatabaseReadException(err, e);
         }
     }
 
     @Override
-    public Optional<Song> getSongByRoomUuidAndStatus(Long roomUuid, SongStatus songStatus) throws DatabaseReadException {
+    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
         try {
             if (songStatus.equals(SongStatus.PLAYED)) {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomUuid, songStatus.getSongStatus());
+                return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, songStatus.getSongStatus());
             } else {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomUuid, songStatus.getSongStatus());
+                return songRepo.findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
             }
         } catch (Exception e) {
-            String err = String.format("Database error. Song cannot found with roomUuid[%s] and status[%s]", roomUuid, songStatus);
+            String err = String.format("Database error. Song cannot found with roomId[%s] and status[%s]", roomId, songStatus);
             throw new DatabaseReadException(err, e);
         }
     }
 
     @Override
-    public Optional<Song> getPlayingSong(Long roomUuid) throws DatabaseReadException {
-        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PLAYING);
+    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
     }
 
     @Override
-    public Optional<Song> getNextSong(Long roomUuid) throws DatabaseReadException {
-        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.NEXT);
+    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }
 
     @Override
-    public Optional<Song> getPreviousSong(Long roomUuid) throws DatabaseReadException {
-        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PLAYED);
+    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYED);
     }
 
     @Override
-    public Optional<Song> getPausedSong(Long roomUuid) throws DatabaseReadException {
-        return getSongByRoomUuidAndStatus(roomUuid, SongStatus.PAUSED);
+    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(Long roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    private List<Song> convertSearchModelToSong(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
 
         if (searchModel.getType() == ModelObjectType.TRACK) {
-            songList.add(getSongFromTrack(roomUuid, searchModel));
+            songList.add(getSongFromTrack(roomId, searchModel));
         } else if (searchModel.getType() == ModelObjectType.ALBUM) {
             List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                songList.add(getSongFromTrack(roomUuid, s));
+                songList.add(getSongFromTrack(roomId, s));
             }
         } else {
             List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
-                songList.add(getSongFromTrack(roomUuid, s));
+                songList.add(getSongFromTrack(roomId, s));
             }
         }
 
         return songList;
     }
 
-    private Song getSongFromTrack(Long roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
+    private Song getSongFromTrack(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
 
-        song.setRoomId(roomUuid);
+        song.setRoomId(roomId);
         song.setSongId(searchModel.getId());
         song.setSongUri(searchModel.getUri());
         song.setSongName(searchModel.getName());
@@ -214,13 +214,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return create(song);
     }
 
-    private Song getSafeSong(Long songUuid) throws DatabaseException, InvalidArgumentException {
-        Optional<Song> songOpt = getById(songUuid);
+    private Song getSafeSong(Long songId) throws DatabaseException, InvalidArgumentException {
+        Optional<Song> songOpt = getById(songId);
         return songOpt.orElseThrow(() -> new NotFoundException("Song not found"));
     }
 
-    private int updateVote(Long songUuid, boolean upvote) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
-        Song song = getSafeSong(songUuid);
+    private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        Song song = getSafeSong(songId);
         int votes = song.getVotes();
 
         votes = (upvote) ? votes + 1 : votes - 1;

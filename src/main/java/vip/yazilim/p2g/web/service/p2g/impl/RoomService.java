@@ -96,7 +96,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModel getRoomModelByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -107,20 +107,20 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         String chatUuid;
 
         // Set Room
-        room = getById(roomUuid);
+        room = getById(roomId);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", roomUuid);
+            String err = String.format("Room[%s] not found", roomId);
             throw new NotFoundException(err);
         } else {
             roomModel.setRoom(room.get());
         }
 
         // Set User List
-        userList = userService.getUsersByRoomUuid(roomUuid);
+        userList = userService.getUsersByroomId(roomId);
         roomModel.setUserList(userList);
 
         // Set Invited User List
-        invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
+        invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
         roomModel.setInvitedUserList(invitedUserList);
 
         return roomModel;
@@ -149,8 +149,8 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public boolean deleteById(Long roomUuid) throws DatabaseException, InvalidArgumentException {
-        Optional<Room> roomOpt = getById(roomUuid);
+    public boolean deleteById(Long roomId) throws DatabaseException, InvalidArgumentException {
+        Optional<Room> roomOpt = getById(roomId);
 
         boolean status = true;
 
@@ -158,13 +158,13 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             status = delete(roomOpt.get());
 
             //delete roomUsers
-            status &= roomUserService.deleteRoomUsers(roomUuid);
+            status &= roomUserService.deleteRoomUsers(roomId);
 
             //delete Songs
-            status &= songService.deleteRoomSongList(roomUuid);
+            status &= songService.deleteRoomSongList(roomId);
 
             //delete roomInvites
-            status &= roomInviteService.deleteRoomInvites(roomUuid);
+            status &= roomInviteService.deleteRoomInvites(roomId);
         }
 
         return status;

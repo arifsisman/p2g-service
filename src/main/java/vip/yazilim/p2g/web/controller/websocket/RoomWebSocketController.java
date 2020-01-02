@@ -16,7 +16,6 @@ import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.service.p2g.impl.RoomUserService;
-import vip.yazilim.p2g.web.service.p2g.impl.SongService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -41,14 +40,19 @@ public class RoomWebSocketController {
     @Autowired
     private RoomUserService roomUserService;
 
-    @Autowired
-    private SongService songService;
+    //triggers after subscribe request
+    @SubscribeMapping("/room/{roomId}/messages")
+    public void subscribeToRoomMessages(@DestinationVariable Long roomId, Authentication authentication) {
+        UUID userUuid = SecurityHelper.getUserUuid(authentication);
+        String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
-    /////////////////////////////
-    // Message send and subscribe
-    /////////////////////////////
-    @MessageMapping("/message/{roomUuid}")
-    @SendTo("/room/{roomUuid}/messages")
+        LOGGER.info("{}[{}] subscribed to roomId[{}] messages", userDisplayName, userUuid, roomId);
+        ChatMessage joinMessage = new ChatMessage(UUID.fromString("00000000-0000-0000-0000-000000000000"), "info", roomId, userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
+        messagingTemplate.convertAndSend("/room/" + roomId + "/messages", joinMessage);
+    }
+
+    @MessageMapping("/message/{roomId}")
+    @SendTo("/room/{roomId}/messages")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage, Authentication authentication) throws DatabaseException {
         if (roomUserService.hasRoomPrivilege(SecurityHelper.getUserUuid(authentication), Privilege.ROOM_CHAT)) {
             return chatMessage;
@@ -56,30 +60,14 @@ public class RoomWebSocketController {
         return null;
     }
 
-    //triggers after subscribe request
-    @SubscribeMapping("/room/{roomUuid}/messages")
-    public void subscribeToRoomMessages(@DestinationVariable Long roomUuid, Authentication authentication) throws DatabaseException {
-        UUID userUuid = SecurityHelper.getUserUuid(authentication);
-        String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
-
-        //todo: bug: not working
-        if(!isUserInRoom(userUuid, roomUuid)) return;
-
-        LOGGER.info("{}[{}] subscribed to roomUuid[{}] messages", userDisplayName, userUuid, roomUuid);
-        ChatMessage joinMessage = new ChatMessage(UUID.fromString("-1"), "info", roomUuid, userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
-        messagingTemplate.convertAndSend("/room/" + roomUuid + "/messages", joinMessage);
+    @MessageMapping("/song/{roomId}")
+    @SendTo("/room/{roomId}/songs")
+    public void updateSongList(@DestinationVariable Long roomId, @Payload List<Song> songList) {
+        messagingTemplate.convertAndSend("/room/" + roomId + "/songs", songList);
     }
 
-    /////////////////////////////
-    // Song List send
-    /////////////////////////////
-    @MessageMapping("/song/{roomUuid}")
-    @SendTo("/room/{roomUuid}/songs")
-    public void updateSongList(@DestinationVariable Long roomUuid, @Payload List<Song> songList) {
-        messagingTemplate.convertAndSend("/room/" + roomUuid + "/songs", songList);
+    private boolean isUserInRoom(UUID userUuid, Long roomId) throws DatabaseException {
+        return roomUserService.getRoomUser(roomId , userUuid).isPresent();
     }
 
-    private boolean isUserInRoom(UUID userUuid, Long roomUuid) throws DatabaseException {
-        return roomUserService.getRoomUser(roomUuid , userUuid).isPresent();
-    }
 }

@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -33,10 +31,6 @@ import java.util.UUID;
 @Service
 public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implements IRoomInviteService {
 
-    // static fields
-    private Logger LOGGER = LoggerFactory.getLogger(RoomInviteService.class);
-
-    // injected dependencies
     @Autowired
     private IRoomInviteRepo roomInviteRepo;
 
@@ -57,15 +51,15 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<User> getInvitedUserListByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
 
         List<User> inviteList = new ArrayList<>();
         List<RoomInvite> roomInviteList;
 
         try {
-            roomInviteList = roomInviteRepo.findByRoomId(roomUuid);
+            roomInviteList = roomInviteRepo.findByRoomId(roomId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomUuid);
+            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
@@ -78,9 +72,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(Long roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomInvite invite(Long roomId, UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = new RoomInvite();
-        roomInvite.setRoomId(roomUuid);
+        roomInvite.setRoomId(roomId);
         roomInvite.setUserUuid(userUuid);
         roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
         roomInvite.setAcceptedFlag(false);
@@ -97,13 +91,13 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean reject(Long roomInviteUuid) throws DatabaseException, InvalidArgumentException {
-        return deleteById(roomInviteUuid);
+    public boolean reject(Long roomInviteId) throws DatabaseException, InvalidArgumentException {
+        return deleteById(roomInviteId);
     }
 
     @Override
-    public boolean deleteRoomInvites(Long roomUuid) throws DatabaseException {
-        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomId(roomUuid);
+    public boolean deleteRoomInvites(Long roomId) throws DatabaseException {
+        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomId(roomId);
 
         for (RoomInvite roomInvite : roomInviteList) {
             delete(roomInvite);
@@ -113,9 +107,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean existsById(Long roomInviteUuid) throws DatabaseReadException {
+    public boolean existsById(Long roomInviteId) throws DatabaseReadException {
         try {
-            return roomInviteRepo.existsById(roomInviteUuid);
+            return roomInviteRepo.existsById(roomInviteId);
         } catch (Exception e) {
             throw new DatabaseReadException(e);
         }

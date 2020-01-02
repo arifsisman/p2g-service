@@ -13,8 +13,8 @@ import java.util.UUID;
  */
 public interface IRoomUserRepo extends JpaRepository<RoomUser, Long> {
 
-    List<RoomUser> findRoomUserByRoomIdOrderById(Long roomUuid);
-    Optional<RoomUser> findRoomUserByRoomIdAndUserUuid(Long roomUuid, UUID userUuid);
+    List<RoomUser> findRoomUserByRoomIdOrderById(Long roomId);
+    Optional<RoomUser> findRoomUserByRoomIdAndUserUuid(Long roomId, UUID userUuid);
     Optional<RoomUser> findRoomUserByUserUuid(UUID userUuid);
 
 }

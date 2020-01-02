@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Data
 public class PlayerModel {
-    private Long roomUuid;
+    private Long roomId;
     private List<String> spotifyTokenList;
     private List<String> userDeviceList;
 }

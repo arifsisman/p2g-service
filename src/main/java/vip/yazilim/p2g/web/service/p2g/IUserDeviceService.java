@@ -16,6 +16,6 @@ public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
     List<UserDevice> getUserDevicesByUserUuid(UUID userUuid) throws DatabaseException;
 
-    List<UserDevice> getUserDevicesByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException;
+    List<UserDevice> getUserDevicesByroomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
 }

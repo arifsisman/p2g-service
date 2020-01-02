@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, Long> {
 
-    List<RoomInvite> findByRoomId(Long roomUuid);
+    List<RoomInvite> findByRoomId(Long roomId);
 
 }

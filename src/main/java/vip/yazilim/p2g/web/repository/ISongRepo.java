@@ -12,10 +12,10 @@ import java.util.Optional;
  */
 public interface ISongRepo extends JpaRepository<Song, Long> {
 
-    List<Song> findByRoomId(Long roomUuid);
-    List<Song> findByRoomIdOrderByVotesDescQueuedTime(Long roomUuid);
-    List<Song> findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(Long roomUuid, String queueStatus);
-    Optional<Song> findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(Long roomUuid, String queueStatus);
-    Optional<Song> findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(Long roomUuid, String queueStatus);
+    List<Song> findByRoomId(Long roomId);
+    List<Song> findByRoomIdOrderByVotesDescQueuedTime(Long roomId);
+    List<Song> findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(Long roomId, String queueStatus);
+    Optional<Song> findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(Long roomId, String queueStatus);
+    Optional<Song> findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(Long roomId, String queueStatus);
 
 }

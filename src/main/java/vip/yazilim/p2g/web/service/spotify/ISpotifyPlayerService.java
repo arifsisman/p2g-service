@@ -17,12 +17,12 @@ import java.util.List;
 public interface ISpotifyPlayerService {
 
     List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    List<Song> roomStartResume(Long roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    List<Song> roomPause(Long roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    List<Song> roomNext(Long roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    List<Song> roomPrevious(Long roomUuid) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    int roomSeek(Long roomUuid, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    boolean roomRepeat(Long roomUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException;
+    List<Song> roomStartResume(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> roomPause(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> roomNext(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<Song> roomPrevious(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    int roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    boolean roomRepeat(Long roomId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException;
 
     boolean userSyncWithRoom(RoomUser roomUser) throws DatabaseException, IOException, SpotifyWebApiException;
 }
