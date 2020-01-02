@@ -1,17 +1,17 @@
-package vip.yazilim.p2g.web.service.p2g.impl.relation;
+package vip.yazilim.p2g.web.service.p2g.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.RoomInvite;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomInvite;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.repository.relation.IRoomInviteRepo;
+import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;

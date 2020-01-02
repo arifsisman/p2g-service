@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.controller.websocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import vip.yazilim.p2g.web.entity.relation.RoomInvite;
+import vip.yazilim.p2g.web.entity.RoomInvite;
 
 /**
  * @author mustafaarifsisman - 29.12.2019

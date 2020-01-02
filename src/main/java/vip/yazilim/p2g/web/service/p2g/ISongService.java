@@ -1,8 +1,8 @@
-package vip.yazilim.p2g.web.service.p2g.relation;
+package vip.yazilim.p2g.web.service.p2g;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.constant.SongStatus;
-import vip.yazilim.p2g.web.entity.relation.Song;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;

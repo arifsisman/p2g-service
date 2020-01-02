@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.service.p2g.impl.relation;
+package vip.yazilim.p2g.web.service.p2g.impl;
 
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
-import vip.yazilim.p2g.web.entity.relation.Song;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.repository.relation.ISongRepo;
-import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
+import vip.yazilim.p2g.web.repository.ISongRepo;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.DBHelper;

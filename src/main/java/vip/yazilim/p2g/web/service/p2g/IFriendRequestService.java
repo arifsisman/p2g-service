@@ -1,7 +1,7 @@
-package vip.yazilim.p2g.web.service.p2g.relation;
+package vip.yazilim.p2g.web.service.p2g;
 
+import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.FriendRequest;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;

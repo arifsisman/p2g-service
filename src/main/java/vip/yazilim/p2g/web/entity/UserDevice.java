@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.entity.relation;
+package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @contact mustafaarifsisman@gmail.com
  */
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "user_device")
+@Table(name = Constants.TABLE_PREFIX + "user_device")
 @Data
 public class UserDevice {
 

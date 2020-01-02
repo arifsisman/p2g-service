@@ -1,7 +1,7 @@
-package vip.yazilim.p2g.web.repository.relation;
+package vip.yazilim.p2g.web.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vip.yazilim.p2g.web.entity.relation.FriendRequest;
+import vip.yazilim.p2g.web.entity.FriendRequest;
 
 import java.util.List;
 import java.util.Optional;

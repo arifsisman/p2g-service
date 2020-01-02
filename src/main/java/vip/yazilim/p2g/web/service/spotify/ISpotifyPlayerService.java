@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.entity.relation.Song;
+import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;

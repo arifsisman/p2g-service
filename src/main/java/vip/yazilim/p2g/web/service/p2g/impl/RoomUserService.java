@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.service.p2g.impl.relation;
+package vip.yazilim.p2g.web.service.p2g.impl;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.relation.RoomInvite;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.repository.relation.IRoomUserRepo;
+import vip.yazilim.p2g.web.entity.RoomInvite;
+import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.repository.IRoomUserRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;

@@ -1,13 +1,13 @@
-package vip.yazilim.p2g.web.service.p2g.impl.relation;
+package vip.yazilim.p2g.web.service.p2g.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.repository.relation.IUserDeviceRepo;
+import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;

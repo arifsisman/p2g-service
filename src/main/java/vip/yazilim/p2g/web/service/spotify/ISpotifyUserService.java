@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.service.spotify;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.User;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 

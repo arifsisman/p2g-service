@@ -5,10 +5,10 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
-import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
+import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -32,7 +32,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     private ISpotifyRequestService spotifyRequest;
 
     @Autowired
-    private ITokenService tokenService;
+    private ISpotifyTokenService tokenService;
 
     @Autowired
     private IUserDeviceService userDeviceService;

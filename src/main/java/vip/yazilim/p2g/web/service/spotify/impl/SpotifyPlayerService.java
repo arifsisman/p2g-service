@@ -7,15 +7,11 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
-import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
-import vip.yazilim.p2g.web.entity.relation.Song;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.entity.*;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
-import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.model.PlayerModel;
@@ -39,7 +35,7 @@ import java.util.*;
 public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Autowired
-    private ITokenService tokenService;
+    private ISpotifyTokenService tokenService;
 
     @Autowired
     private ISpotifyRequestService spotifyRequest;

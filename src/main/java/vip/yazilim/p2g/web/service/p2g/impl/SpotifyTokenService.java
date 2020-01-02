@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.SpotifyToken;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.repository.ITokenRepo;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -29,12 +29,12 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class  TokenService extends ACrudServiceImpl<SpotifyToken, String> implements ITokenService {
+public class SpotifyTokenService extends ACrudServiceImpl<SpotifyToken, String> implements ISpotifyTokenService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SpotifyTokenService.class);
 
     @Autowired
-    private ITokenRepo tokenRepo;
+    private ISpotifyTokenRepo tokenRepo;
 
     @Autowired
     private IUserService userService;

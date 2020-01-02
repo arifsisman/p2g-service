@@ -1,7 +1,7 @@
-package vip.yazilim.p2g.web.repository.relation;
+package vip.yazilim.p2g.web.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vip.yazilim.p2g.web.entity.relation.RoomInvite;
+import vip.yazilim.p2g.web.entity.RoomInvite;
 
 import java.util.List;
 

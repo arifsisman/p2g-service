@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.entity.relation;
+package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = Constants.RELATION_TABLE_PREFIX + "friend_request")
+@Table(name = Constants.TABLE_PREFIX + "friend_request")
 @Data
 public class FriendRequest implements Serializable {
 
