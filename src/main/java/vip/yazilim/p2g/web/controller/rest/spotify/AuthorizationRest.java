@@ -72,7 +72,7 @@ public class AuthorizationRest {
     @ResponseBody
     public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
         String userUuid = SecurityHelper.getUserUuid();
-        Optional<User> userOpt = userService.getUserByUuid(userUuid);
+        Optional<User> userOpt = userService.getById(userUuid);
 
         if (!userOpt.isPresent()) {
             throw new NotFoundException("User not found");

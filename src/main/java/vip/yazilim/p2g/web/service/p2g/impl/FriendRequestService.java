@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String> implements IFriendRequestService {
+public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> implements IFriendRequestService {
 
     // static fields
     private Logger LOGGER = LoggerFactory.getLogger(FriendRequestService.class);
@@ -44,17 +44,17 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
     private IUserService userService;
 
     @Override
-    protected JpaRepository<FriendRequest, String> getRepository() {
+    protected JpaRepository<FriendRequest, Long> getRepository() {
         return friendRequestRepo;
     }
 
     @Override
-    protected String getId(FriendRequest entity) {
-        return entity.getUuid();
+    protected Long getId(FriendRequest entity) {
+        return entity.getId();
     }
 
     @Override
-    public List<User> getFriendsByUserUuid(String userUuid) throws DatabaseReadException {
+    public List<User> getFriendsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
         }
 
         for (FriendRequest uf : friendRequestList) {
-            Optional<User> user = userService.getUserByUuid(uf.getUserUuid());
+            Optional<User> user = userService.getById(uf.getUserUuid());
             user.ifPresent(users::add);
         }
 
@@ -74,7 +74,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
     }
 
     @Override
-    public List<User> getFriendRequestsByUserUuid(String userUuid) throws DatabaseReadException {
+    public List<User> getFriendRequestsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
@@ -87,7 +87,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
 
         for (FriendRequest uf : friendRequestList) {
             if (uf.getRequestStatus().equals(FriendRequestStatus.WAITING.toString())) {
-                Optional<User> user = userService.getUserByUuid(uf.getUserUuid());
+                Optional<User> user = userService.getById(uf.getUserUuid());
                 user.ifPresent(users::add);
             }
         }
@@ -127,21 +127,21 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
     }
 
     @Override
-    public boolean acceptFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean acceptFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestUuid, FriendRequestStatus.ACCEPTED);
     }
 
     @Override
-    public boolean ignoreFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean ignoreFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestUuid, FriendRequestStatus.IGNORED);
     }
 
     @Override
-    public boolean rejectFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean rejectFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestUuid, FriendRequestStatus.REJECTED);
     }
 
-    private boolean replyFriendRequest(String friendRequestUuid, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    private boolean replyFriendRequest(Long friendRequestUuid, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
 
         FriendRequest friendRequest = getById(friendRequestUuid).orElseThrow(() -> new NotFoundException("Friend request can not found"));
 

@@ -16,13 +16,13 @@ import java.util.Optional;
  * @author mustafaarifsisman - 2.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IFriendRequestService extends ICrudService<FriendRequest, String> {
+public interface IFriendRequestService extends ICrudService<FriendRequest, Long> {
 
-    List<User> getFriendsByUserUuid(String userUuid) throws DatabaseException;
-    List<User> getFriendRequestsByUserUuid(String userUuid) throws DatabaseException;
+    List<User> getFriendsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException;
+    List<User> getFriendRequestsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException;
     Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(String user1, String user2) throws DatabaseReadException;
     boolean createFriendRequest(String user1, String user2) throws DatabaseCreateException;
-    boolean acceptFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
-    boolean ignoreFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
-    boolean rejectFriendRequest(String friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
+    boolean acceptFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
+    boolean ignoreFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
+    boolean rejectFriendRequest(Long friendRequestUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
 }

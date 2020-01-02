@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class RoomService extends ACrudServiceImpl<Room, String> implements IRoomService {
+public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
 
     @Autowired
     private IRoomRepo roomRepo;
@@ -49,13 +49,13 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     private SecurityConfig securityConfig;
 
     @Override
-    protected JpaRepository<Room, String> getRepository() {
+    protected JpaRepository<Room, Long> getRepository() {
         return roomRepo;
     }
 
     @Override
-    protected String getId(Room entity) {
-        return entity.getUuid();
+    protected Long getId(Room entity) {
+        return entity.getId();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         }
 
         try {
-            room = getById(roomUser.getRoomUuid());
+            room = getById(roomUser.getRoomId());
         } catch (Exception exception) {
             String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
             throw new DatabaseReadException(err, exception);
@@ -95,7 +95,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public RoomModel getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -147,12 +147,12 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
-        roomUserService.joinRoomOwner(createdRoom.getUuid(), createdRoom.getOwnerUuid());
+        roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerUuid());
         return room;
     }
 
     @Override
-    public boolean deleteById(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public boolean deleteById(Long roomUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = getById(roomUuid);
 
         boolean status = true;

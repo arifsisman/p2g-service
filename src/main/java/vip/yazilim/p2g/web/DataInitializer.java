@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Room testRoom = roomService.createRoom(arif.getUuid(), "Test Room1", "0");
 
-        String roomUuid = testRoom.getUuid();
+        Long roomUuid = testRoom.getId();
         LOGGER.info("--------> testRoomUuid: " + roomUuid);
         LOGGER.info("--------> arifUuid: " + arif.getUuid());
         LOGGER.info("--------> emreUuid: " + emre.getUuid());

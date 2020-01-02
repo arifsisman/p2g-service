@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class ChatMessage {
     private String userUuid;
     private String userName;
-    private String roomUuid;
+    private Long roomUuid;
     private String message;
     private LocalDateTime timestamp;
 }

@@ -21,9 +21,8 @@ public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserByEmail(String email) throws DatabaseException;
-    Optional<User> getUserByUuid(String uuid);
     UserModel getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException;
-    List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException;
+    List<User> getUsersByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException;
 
     User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException;
 

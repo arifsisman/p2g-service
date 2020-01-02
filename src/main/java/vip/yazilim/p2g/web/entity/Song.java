@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -14,12 +13,12 @@ import java.time.LocalDateTime;
 public class Song implements Serializable {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String uuid;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-    @Column(name = "room_uuid", nullable = false)
-    private String roomUuid;
+    @Column(name = "room_id", nullable = false)
+    private Long roomId;
 
     // Song
     @Column(name = "song_id", nullable = false)

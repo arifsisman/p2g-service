@@ -57,7 +57,7 @@ public class RoomWebSocketController {
 
     //triggers after subscribe request
     @SubscribeMapping("/room/{roomUuid}/messages")
-    public void subscribeToRoomMessages(@DestinationVariable String roomUuid, Authentication authentication) throws DatabaseException {
+    public void subscribeToRoomMessages(@DestinationVariable Long roomUuid, Authentication authentication) throws DatabaseException {
         String userUuid = SecurityHelper.getUserUuid(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
@@ -74,11 +74,11 @@ public class RoomWebSocketController {
     /////////////////////////////
     @MessageMapping("/song/{roomUuid}")
     @SendTo("/room/{roomUuid}/songs")
-    public void updateSongList(@DestinationVariable String roomUuid, @Payload List<Song> songList) {
+    public void updateSongList(@DestinationVariable Long roomUuid, @Payload List<Song> songList) {
         messagingTemplate.convertAndSend("/room/" + roomUuid + "/songs", songList);
     }
 
-    private boolean isUserInRoom(String userUuid, String roomUuid) throws DatabaseException {
+    private boolean isUserInRoom(String userUuid, Long roomUuid) throws DatabaseException {
         return roomUserService.getRoomUser(roomUuid , userUuid).isPresent();
     }
 }

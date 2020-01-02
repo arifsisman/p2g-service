@@ -18,26 +18,26 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISongService extends ICrudService<Song, String> {
+public interface ISongService extends ICrudService<Song, Long> {
 
-    Song addSongToRoom(String roomUuid, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
+    Song addSongToRoom(Long roomUuid, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
 
-    Optional<Song> getPausedSong(String roomUuid) throws DatabaseReadException;
+    Optional<Song> getPausedSong(Long roomUuid) throws DatabaseReadException;
 
-    Optional<Song> getSongByRoomUuidAndStatus(String roomUuid, SongStatus songStatus) throws DatabaseReadException;
-    List<Song> getSongListByRoomUuidAndStatus(String roomUuid, SongStatus songStatus) throws DatabaseException;
+    Optional<Song> getSongByRoomUuidAndStatus(Long roomUuid, SongStatus songStatus) throws DatabaseReadException;
+    List<Song> getSongListByRoomUuidAndStatus(Long roomUuid, SongStatus songStatus) throws DatabaseException;
 
-    Optional<Song> getPlayingSong(String roomUuid) throws DatabaseReadException;
-    Optional<Song> getNextSong(String roomUuid) throws DatabaseReadException;
-    Optional<Song> getPreviousSong(String roomUuid) throws DatabaseReadException;
+    Optional<Song> getPlayingSong(Long roomUuid) throws DatabaseReadException;
+    Optional<Song> getNextSong(Long roomUuid) throws DatabaseReadException;
+    Optional<Song> getPreviousSong(Long roomUuid) throws DatabaseReadException;
 
     // Rest
-    List<Song> addSongToRoom(String roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    boolean removeSongFromRoom(String songUuid) throws DatabaseException, InvalidArgumentException;
-    boolean deleteRoomSongList(String roomUuid) throws DatabaseException;
-    List<Song> getSongListByRoomUuid(String roomUuid) throws DatabaseException;
+    List<Song> addSongToRoom(Long roomUuid, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    boolean removeSongFromRoom(Long songUuid) throws DatabaseException, InvalidArgumentException;
+    boolean deleteRoomSongList(Long roomUuid) throws DatabaseException;
+    List<Song> getSongListByRoomUuid(Long roomUuid) throws DatabaseException;
 
-    int upvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
-    int downvote(String songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
+    int upvote(Long songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
+    int downvote(Long songUuid) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
 
 }

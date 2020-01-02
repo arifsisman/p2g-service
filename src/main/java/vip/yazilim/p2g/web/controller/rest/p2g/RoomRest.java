@@ -37,7 +37,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/room")
-public class RoomRest extends ARestCrud<Room, String> {
+public class RoomRest extends ARestCrud<Room, Long> {
 
     @Autowired
     private IRoomService roomService;
@@ -52,7 +52,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     private UserWebSocketController userWebSocketController;
 
     @Override
-    protected ICrudService<Room, String> getService() {
+    protected ICrudService<Room, Long> getService() {
         return roomService;
     }
 
@@ -70,7 +70,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     @Override
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{id}"})
-    public RestResponse<Room> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+    public RestResponse<Room> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
         return super.getById(request, response, id);
     }
 
@@ -91,7 +91,7 @@ public class RoomRest extends ARestCrud<Room, String> {
     @Override
     @HasRoomPrivilege(privilege = Privilege.ROOM_DELETE)
     @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
         return super.delete(request, response, id);
     }
 
@@ -101,14 +101,14 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomUuid}/model")
-    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(roomService.getRoomModelByRoomUuid(roomUuid), HttpStatus.OK, request, response);
     }
 
     // RoomInvite (Invite & Accept & Reject)
     @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE)
     @PostMapping("/{roomUuid}/invite/{userUuid}")
-    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = roomInviteService.invite(roomUuid, userUuid);
         userWebSocketController.sendRoomInvite(roomInvite);
         return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
@@ -122,14 +122,14 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/invite/{roomInviteUuid}/reject")
-    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomInviteUuid) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomInviteUuid) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(roomInviteService.reject(roomInviteUuid), HttpStatus.OK, request, response);
     }
 
     // RoomUser (Join & Leave & Get Users)
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/{roomUuid}/join")
-    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid, @RequestBody String password) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid, @RequestBody String password) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         return RestResponseFactory.generateResponse(roomUserService.joinRoom(roomUuid, password, Role.ROOM_USER), HttpStatus.OK, request, response);
     }
 
@@ -141,7 +141,7 @@ public class RoomRest extends ARestCrud<Room, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomUuid}/users")
-    public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUuid) throws DatabaseException {
+    public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid) throws DatabaseException {
         return RestResponseFactory.generateResponse(roomUserService.getRoomUsersByRoomUuid(roomUuid), HttpStatus.OK, request, response);
     }
 
@@ -149,12 +149,12 @@ public class RoomRest extends ARestCrud<Room, String> {
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserUuid}/promote")
     public RestResponse<List<Privilege>> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(roomUserUuid), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(Long.valueOf(roomUserUuid)), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserUuid}/demote")
     public RestResponse<List<Privilege>> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserUuid) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(roomUserUuid), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(Long.valueOf(roomUserUuid)), HttpStatus.OK, request, response);
     }
 }

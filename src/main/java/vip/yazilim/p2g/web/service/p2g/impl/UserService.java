@@ -98,11 +98,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public Optional<User> getUserByUuid(String uuid) {
-        return userRepo.findByUuid(uuid);
-    }
-
-    @Override
     public UserModel getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
@@ -126,7 +121,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         if (roomOpt.isPresent()) {
             userModel.setRoom(roomOpt.get());
 
-            String roomUuid = roomOpt.get().getUuid();
+            Long roomUuid = roomOpt.get().getId();
             roomRole = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
             userModel.setRoomRole(roomRole);
         }
@@ -143,7 +138,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public List<User> getUsersByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getUsersByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException {
         List<User> userList = new LinkedList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 

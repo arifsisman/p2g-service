@@ -14,14 +14,14 @@ import java.util.List;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoomInviteService extends ICrudService<RoomInvite, String> {
+public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
-    List<User> getInvitedUserListByRoomUuid(String roomUuid) throws DatabaseException;
+    List<User> getInvitedUserListByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException;
 
     // Rest
-    RoomInvite invite(String roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException;
+    RoomInvite invite(Long roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException;
     RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    boolean reject(String roomInviteUuid) throws DatabaseException, InvalidArgumentException;
-    boolean deleteRoomInvites(String roomUuid) throws DatabaseException;
-    boolean existsById(String roomInviteUuid) throws DatabaseException;
+    boolean reject(Long roomInviteUuid) throws DatabaseException, InvalidArgumentException;
+    boolean deleteRoomInvites(Long roomUuid) throws DatabaseException;
+    boolean existsById(Long roomInviteUuid) throws DatabaseException;
 }

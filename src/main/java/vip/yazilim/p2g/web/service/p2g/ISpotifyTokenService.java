@@ -20,6 +20,6 @@ public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
 
     OAuthToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
-    List<OAuthToken> getTokenListByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException;
+    List<OAuthToken> getTokenListByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException;
 
 }
