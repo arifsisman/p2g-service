@@ -15,7 +15,6 @@ import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -59,12 +58,6 @@ public class SongService extends ACrudServiceImpl<Song, String> implements ISong
     @Override
     protected String getId(Song entity) {
         return entity.getUuid();
-    }
-
-    @Override
-    protected Song preInsert(Song entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
     }
 
     @Override

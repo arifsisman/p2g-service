@@ -1,12 +1,10 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -18,6 +16,8 @@ import javax.persistence.Table;
 public class UserDevice {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "device_id")
     private String deviceId;
 

@@ -19,7 +19,6 @@ import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -79,7 +78,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, String> implemen
 
     @Override
     protected RoomUser preInsert(RoomUser entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
         entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }

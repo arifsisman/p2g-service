@@ -1,12 +1,10 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,6 +13,8 @@ import java.time.LocalDateTime;
 public class RoomInvite {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String uuid;
 
     @Column(name = "room_uuid")

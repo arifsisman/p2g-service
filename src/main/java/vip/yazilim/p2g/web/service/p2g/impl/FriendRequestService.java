@@ -11,7 +11,6 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -52,12 +51,6 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, String
     @Override
     protected String getId(FriendRequest entity) {
         return entity.getUuid();
-    }
-
-    @Override
-    protected FriendRequest preInsert(FriendRequest entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
     }
 
     @Override

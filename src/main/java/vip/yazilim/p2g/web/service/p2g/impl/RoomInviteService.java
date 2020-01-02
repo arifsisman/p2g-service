@@ -12,7 +12,6 @@ import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -54,12 +53,6 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, String> impl
     @Override
     protected String getId(RoomInvite roomInvite) {
         return roomInvite.getUuid();
-    }
-
-    @Override
-    protected RoomInvite preInsert(RoomInvite entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
     }
 
     @Override

@@ -23,7 +23,6 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -77,8 +76,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Override
     protected User preInsert(User entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-
         Optional<User> existingUser = getUserByEmail(entity.getEmail());
         if (existingUser.isPresent()) {
             throw new AccountException("Email already exists.");

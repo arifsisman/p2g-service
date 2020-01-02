@@ -10,7 +10,6 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.util.DBHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -47,12 +46,6 @@ public class SpotifyTokenService extends ACrudServiceImpl<SpotifyToken, String> 
     @Override
     protected String getId(SpotifyToken entity) {
         return entity.getUuid();
-    }
-
-    @Override
-    protected SpotifyToken preInsert(SpotifyToken entity) {
-        entity.setUuid(DBHelper.getRandomUuid());
-        return entity;
     }
 
     @Override
