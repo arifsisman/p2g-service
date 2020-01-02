@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -70,7 +70,7 @@ public class AuthorizationRest {
 
     @GetMapping("/callback")
     @ResponseBody
-    public SpotifyToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
         String userUuid = SecurityHelper.getUserUuid();
         Optional<User> userOpt = userService.getUserByUuid(userUuid);
 
@@ -88,7 +88,7 @@ public class AuthorizationRest {
         spotifyApi.setRefreshToken(refreshToken);
 
         // save users token
-        SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        OAuthToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
         // updates spotify infos every authorize
         userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userUuid), userOpt.get());
 

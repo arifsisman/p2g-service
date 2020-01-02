@@ -230,7 +230,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         String userUuid = roomUser.getUserUuid();
         int ms = Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
 
-        Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
 
         if (token.isPresent() && !userDevices.isEmpty()) {
@@ -251,7 +251,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         String userUuid = roomUser.getUserUuid();
         int ms = Math.toIntExact(song.getCurrentMs());
 
-        Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
 
         if (token.isPresent() && !userDevices.isEmpty()) {
@@ -276,7 +276,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
         for (User u : userList) {
             String userUuid = u.getUuid();
-            Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+            Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
 
             token.ifPresent(spotifyToken -> spotifyTokenList.add(spotifyToken.getAccessToken()));
 
@@ -300,7 +300,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
         for (User u : userList) {
             String userUuid = u.getUuid();
-            Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+            Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
             List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
 
             if (token.isPresent() && !userDevices.isEmpty()) {
@@ -314,7 +314,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private HashMap<String, String> getUserTokenDeviceMap(String userUuid) throws DatabaseException {
         HashMap<String, String> map = new HashMap<>();
 
-        Optional<SpotifyToken> token = tokenService.getTokenByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
 
         if (token.isPresent() && !userDevices.isEmpty()) {

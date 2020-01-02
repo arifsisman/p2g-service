@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.p2g.web.entity.SpotifyToken;
+import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
@@ -32,8 +32,8 @@ public class TokenRefresher {
     private ISpotifyTokenService tokenService;
 
     public void refreshToken(String userUuid){
-        Optional<SpotifyToken> tokenOptional;
-        SpotifyToken token;
+        Optional<OAuthToken> tokenOptional;
+        OAuthToken token;
 
         try {
             tokenOptional = tokenService.getTokenByUserUuid(userUuid);

@@ -1,22 +1,20 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "spotify_token")
+@Table(name = Constants.TABLE_PREFIX + "oauth_token")
 @Data
-public class SpotifyToken implements Serializable {
+public class OAuthToken implements Serializable {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String uuid;
-
     @Column(name = "user_uuid")
     private String userUuid;
 
@@ -25,4 +23,5 @@ public class SpotifyToken implements Serializable {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
 }
