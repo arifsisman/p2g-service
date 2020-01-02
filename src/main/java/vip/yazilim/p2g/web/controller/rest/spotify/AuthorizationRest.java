@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 
@@ -71,7 +72,7 @@ public class AuthorizationRest {
     @GetMapping("/callback")
     @ResponseBody
     public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
         Optional<User> userOpt = userService.getById(userUuid);
 
         if (!userOpt.isPresent()) {

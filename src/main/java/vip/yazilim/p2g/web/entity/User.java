@@ -7,6 +7,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -20,39 +21,36 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String uuid;
+    private UUID uuid;
 
-    @Column(name = "display_name", nullable = false)
+    @Column(name = "display_name", nullable = false, length = 64)
     private String displayName;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 64)
     private String email;
 
-    @Column(length = 60, nullable = false)
+    @Column(nullable = false, length = 64)
     private String password;
 
-    @Column(name = "role_name", nullable = false)
+    @Column(name = "role_name", nullable = false, length = 20)
     private String roleName;
 
-    @Column(name = "online_status")
+    @Column(name = "online_status", length = 20)
     private String onlineStatus;
 
-    @Column(name = "country_code")
+    @Column(name = "country_code", length = 3)
     private String countryCode;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 128)
     private String imageUrl;
 
     private String anthem;
 
-    @Column(name = "now_playing")
-    private String nowPlaying;
-
     // Spotify
-    @Column(name = "spotify_product_type")
+    @Column(name = "spotify_product_type", length = 20)
     private String spotifyProductType;
 
-    @Column(name = "spotify_account_id")
+    @Column(name = "spotify_account_id", length = 64)
     private String spotifyAccountId;
 
     // Settings

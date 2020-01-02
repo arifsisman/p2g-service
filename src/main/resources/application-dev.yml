@@ -3,10 +3,10 @@ spring:
     url: jdbc:postgresql://${db_ip}:5432/p2g_db
     username: postgres
     password: pos
-    initialization-mode: never
+    initialization-mode: always
 
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: create
     properties:
       hibernate:
         show_sql: false

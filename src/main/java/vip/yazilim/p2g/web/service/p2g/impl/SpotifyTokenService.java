@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 31.10.2019
@@ -28,7 +29,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> implements ISpotifyTokenService {
+public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, UUID> implements ISpotifyTokenService {
 
     private Logger LOGGER = LoggerFactory.getLogger(SpotifyTokenService.class);
 
@@ -39,17 +40,17 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     private IUserService userService;
 
     @Override
-    protected JpaRepository<OAuthToken, String> getRepository() {
+    protected JpaRepository<OAuthToken, UUID> getRepository() {
         return tokenRepo;
     }
 
     @Override
-    protected String getId(OAuthToken entity) {
+    protected UUID getId(OAuthToken entity) {
         return entity.getUserUuid();
     }
 
     @Override
-    public String getAccessTokenByUserUuid(String userUuid) throws DatabaseException {
+    public String getAccessTokenByUserUuid(UUID userUuid) throws DatabaseException {
         try {
             Optional<OAuthToken> spotifyToken = tokenRepo.findSpotifyTokenByUserUuid(userUuid);
             return spotifyToken.map(OAuthToken::getAccessToken).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
@@ -60,7 +61,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public Optional<OAuthToken> getTokenByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<OAuthToken> getTokenByUserUuid(UUID userUuid) throws DatabaseException {
         try {
             return tokenRepo.findSpotifyTokenByUserUuid(userUuid);
         } catch (Exception exception) {
@@ -70,7 +71,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public OAuthToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public OAuthToken saveUserToken(UUID userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         Optional<OAuthToken> spotifyToken = getTokenByUserUuid(userUuid);
 
         if (spotifyToken.isPresent()) {

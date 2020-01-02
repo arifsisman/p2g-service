@@ -6,6 +6,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room")
@@ -17,11 +18,11 @@ public class Room implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 32)
     private String name;
 
-    @Column(name = "owner_uuid", nullable = false)
-    private String ownerUuid;
+    @Column(name = "owner_uuid", nullable = false, columnDefinition = "uuid")
+    private UUID ownerUuid;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;
@@ -29,6 +30,7 @@ public class Room implements Serializable {
     @Column(name = "private_flag", nullable = false)
     private Boolean privateFlag;
 
+    @Column(length = 64)
     private String password;
 
     @Column(name = "max_users")
@@ -46,9 +48,7 @@ public class Room implements Serializable {
     @Column(name = "active_flag")
     private Boolean activeFlag;
 
-    private String chatUuid;
-
-    @Column(name = "country_code")
+    @Column(name = "country_code", length = 3)
     private String countryCode;
 
 }

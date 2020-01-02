@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -41,7 +42,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
+public class UserService extends ACrudServiceImpl<User, UUID> implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -65,12 +66,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     private AAuthorityProvider authorityProvider;
 
     @Override
-    protected JpaRepository<User, String> getRepository() {
+    protected JpaRepository<User, UUID> getRepository() {
         return userRepo;
     }
 
     @Override
-    protected String getId(User entity) {
+    protected UUID getId(User entity) {
         return entity.getUuid();
     }
 
@@ -98,7 +99,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public UserModel getUserModelByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
+    public UserModel getUserModelByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> userOpt;
@@ -143,7 +144,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
         for (RoomUser roomUser : roomUserList) {
-            String userUuid = roomUser.getUserUuid();
+            UUID userUuid = roomUser.getUserUuid();
             getById(userUuid).ifPresent(userList::add);
         }
 
@@ -186,13 +187,13 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public boolean hasSystemRole(String userUuid, Role role) throws DatabaseException, InvalidArgumentException {
+    public boolean hasSystemRole(UUID userUuid, Role role) throws DatabaseException, InvalidArgumentException {
         Optional<User> userOpt = getById(userUuid);
         return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRoleName()));
     }
 
     @Override
-    public boolean hasSystemPrivilege(String userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
+    public boolean hasSystemPrivilege(UUID userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
         Optional<User> roomUserOpt = getById(userUuid);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
     }

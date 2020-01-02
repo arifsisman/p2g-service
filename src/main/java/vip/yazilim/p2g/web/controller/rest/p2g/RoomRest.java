@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -108,7 +109,7 @@ public class RoomRest extends ARestCrud<Room, Long> {
     // RoomInvite (Invite & Accept & Reject)
     @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE)
     @PostMapping("/{roomUuid}/invite/{userUuid}")
-    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUuid, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = roomInviteService.invite(roomUuid, userUuid);
         userWebSocketController.sendRoomInvite(roomInvite);
         return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);

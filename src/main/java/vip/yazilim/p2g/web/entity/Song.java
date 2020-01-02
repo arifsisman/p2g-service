@@ -17,26 +17,26 @@ public class Song implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "room_id", nullable = false)
+    @Column(name = "room_id", nullable = false, length = 64)
     private Long roomId;
 
     // Song
-    @Column(name = "song_id", nullable = false)
+    @Column(name = "song_id", nullable = false, length = 64)
     private String songId;
 
-    @Column(name = "song_uri")
+    @Column(name = "song_uri", length = 64)
     private String songUri;
 
-    @Column(name = "song_name", nullable = false)
+    @Column(name = "song_name", nullable = false, length = 64)
     private String songName;
 
-    @Column(name = "album_name")
+    @Column(name = "album_name", length = 64)
     private String albumName;
 
     @Column(name = "artists")
     private String[] artists;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 128)
     private String imageUrl;
 
     @Column(name = "duration_ms", nullable = false)

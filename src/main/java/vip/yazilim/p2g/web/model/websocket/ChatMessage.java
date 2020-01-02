@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 24.12.2019
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class ChatMessage {
-    private String userUuid;
+    private UUID userUuid;
     private String userName;
     private Long roomUuid;
     private String message;

@@ -20,6 +20,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * * @author mustafaarifsisman - 31.10.2019
@@ -66,7 +67,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserUuid(UUID userUuid) throws DatabaseException {
         Optional<Room> room;
         RoomUser roomUser;
 
@@ -122,16 +123,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
         roomModel.setInvitedUserList(invitedUserList);
 
-        // Set Room Chat Uuid
-        chatUuid = room.get().getChatUuid();
-        roomModel.setChatUuid(chatUuid);
-
         return roomModel;
     }
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
+    public Room createRoom(UUID ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);

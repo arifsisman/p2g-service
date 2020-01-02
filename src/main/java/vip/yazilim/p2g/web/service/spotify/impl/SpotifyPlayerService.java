@@ -227,7 +227,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
-        String userUuid = roomUser.getUserUuid();
+        UUID userUuid = roomUser.getUserUuid();
         int ms = Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
 
         Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
@@ -248,7 +248,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     private boolean seek(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
-        String userUuid = roomUser.getUserUuid();
+        UUID userUuid = roomUser.getUserUuid();
         int ms = Math.toIntExact(song.getCurrentMs());
 
         Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
@@ -275,7 +275,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
         for (User u : userList) {
-            String userUuid = u.getUuid();
+            UUID userUuid = u.getUuid();
             Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
 
             token.ifPresent(spotifyToken -> spotifyTokenList.add(spotifyToken.getAccessToken()));
@@ -299,7 +299,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<User> userList = userService.getUsersByRoomUuid(roomUuid);
 
         for (User u : userList) {
-            String userUuid = u.getUuid();
+            UUID userUuid = u.getUuid();
             Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
             List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
 
@@ -311,7 +311,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return map;
     }
 
-    private HashMap<String, String> getUserTokenDeviceMap(String userUuid) throws DatabaseException {
+    private HashMap<String, String> getUserTokenDeviceMap(UUID userUuid) throws DatabaseException {
         HashMap<String, String> map = new HashMap<>();
 
         Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);

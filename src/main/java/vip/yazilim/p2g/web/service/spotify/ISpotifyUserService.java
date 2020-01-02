@@ -8,6 +8,7 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -16,8 +17,8 @@ import java.util.List;
 public interface ISpotifyUserService {
 
     User getSpotifyUser(String spotifyAccountId) throws IOException, SpotifyWebApiException;
-    User getCurrentSpotifyUser(String userUuid) throws DatabaseException, IOException, SpotifyWebApiException;
+    User getCurrentSpotifyUser(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException;
 
-    List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, IOException, SpotifyWebApiException;
-    List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    List<UserDevice> getUsersAvailableDevices(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException;
+    List<UserDevice> updateUsersAvailableDevices(UUID userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 }

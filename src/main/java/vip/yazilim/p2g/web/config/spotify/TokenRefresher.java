@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -31,7 +32,7 @@ public class TokenRefresher {
     @Autowired
     private ISpotifyTokenService tokenService;
 
-    public void refreshToken(String userUuid){
+    public void refreshToken(UUID userUuid){
         Optional<OAuthToken> tokenOptional;
         OAuthToken token;
 
@@ -69,8 +70,8 @@ public class TokenRefresher {
 
             tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
-//                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
-//                LOGGER.info("Access Token: " + accessToken);
+//                LOGGER.debug("Access token updated for userUuid[{}]", userUuid);
+//                LOGGER.debug("Access Token: " + accessToken);
         } catch (Exception e) {
             LOGGER.error("Error while getting new access token!");
         }

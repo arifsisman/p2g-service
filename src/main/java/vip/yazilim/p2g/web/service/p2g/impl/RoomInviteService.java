@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -77,7 +78,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(Long roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomInvite invite(Long roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = new RoomInvite();
         roomInvite.setRoomId(roomUuid);
         roomInvite.setUserUuid(userUuid);

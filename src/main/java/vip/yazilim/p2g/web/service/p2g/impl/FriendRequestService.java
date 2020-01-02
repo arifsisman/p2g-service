@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -54,7 +55,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getFriendsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
@@ -74,7 +75,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendRequestsByUserUuid(String userUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getFriendRequestsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
@@ -96,7 +97,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(String user1, String user2) throws DatabaseReadException {
+    public Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(UUID user1, UUID user2) throws DatabaseReadException {
         FriendRequest friendRequest;
 
         try {
@@ -110,7 +111,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(String user1, String user2) throws DatabaseCreateException {
+    public boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseCreateException {
         FriendRequest friendRequest = new FriendRequest();
 
         friendRequest.setUserUuid(user1);

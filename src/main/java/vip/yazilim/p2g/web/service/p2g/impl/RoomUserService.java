@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 2.11.2019
@@ -93,7 +94,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(String userUuid) throws DatabaseException {
+    public Optional<RoomUser> getRoomUser(UUID userUuid) throws DatabaseException {
         try {
             return roomUserRepo.findRoomUserByUserUuid(userUuid);
         } catch (Exception exception) {
@@ -103,7 +104,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(Long roomUuid, String userUuid) throws DatabaseException {
+    public Optional<RoomUser> getRoomUser(Long roomUuid, UUID userUuid) throws DatabaseException {
         try {
             return roomUserRepo.findRoomUserByRoomIdAndUserUuid(roomUuid, userUuid);
         } catch (Exception exception) {
@@ -114,7 +115,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public RoomUser joinRoom(Long roomUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -142,7 +143,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     //todo: for tests, delete later
     @Override
-    public RoomUser joinRoom(Long roomUuid, String userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public RoomUser joinRoom(Long roomUuid, UUID userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomUuid);
 
         if (!roomOpt.isPresent()) {
@@ -169,7 +170,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser joinRoomOwner(Long roomUuid, String userUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomUser joinRoomOwner(Long roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomId(roomUuid);
@@ -182,7 +183,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public boolean leaveRoom() throws DatabaseException, InvalidArgumentException {
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
         Optional<RoomUser> roomUser = getRoomUser(userUuid);
 
         if (roomUser.isPresent()) {
@@ -214,7 +215,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Role getRoleByRoomUuidAndUserUuid(Long roomUuid, String userUuid) throws DatabaseException {
+    public Role getRoleByRoomUuidAndUserUuid(Long roomUuid, UUID userUuid) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
 
         if (!roomUserOpt.isPresent()) {
@@ -287,13 +288,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public boolean hasRoomPrivilege(String userUuid, Privilege privilege) throws DatabaseException {
+    public boolean hasRoomPrivilege(UUID userUuid, Privilege privilege) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
     }
 
     @Override
-    public boolean hasRoomRole(String userUuid, Role role) throws DatabaseException {
+    public boolean hasRoomRole(UUID userUuid, Role role) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userUuid);
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoleName()));
     }

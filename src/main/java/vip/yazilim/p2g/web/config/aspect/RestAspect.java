@@ -28,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 16.12.2019
@@ -96,7 +97,7 @@ public class RestAspect {
     // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
 
         if (!roomUserService.hasRoomPrivilege(userUuid, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
@@ -105,7 +106,7 @@ public class RestAspect {
 
     private void handle(HasSystemPrivilege hasRoomPrivilege) throws DatabaseException, InvalidArgumentException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
 
         if (!userService.hasSystemPrivilege(userUuid, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
@@ -115,7 +116,7 @@ public class RestAspect {
     // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
         Role role = hasRoomRole.role();
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
 
         if (!roomUserService.hasRoomRole(userUuid, role)) {
             throw new ForbiddenException("Insufficient Privileges");
@@ -124,7 +125,7 @@ public class RestAspect {
 
     private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
         Role role = hasSystemRole.role();
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
 
         if (!userService.hasSystemRole(userUuid, role)) {
             throw new ForbiddenException("Insufficient Privileges");
@@ -132,7 +133,7 @@ public class RestAspect {
     }
 
     private void handleUpdateRoomSongs() throws DatabaseException {
-        String userUuid = SecurityHelper.getUserUuid();
+        UUID userUuid = SecurityHelper.getUserUuid();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
 
         if (roomUserOpt.isPresent()) {

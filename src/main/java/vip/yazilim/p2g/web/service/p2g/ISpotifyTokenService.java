@@ -8,17 +8,18 @@ import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
+public interface ISpotifyTokenService extends ICrudService<OAuthToken, UUID> {
 
-    String getAccessTokenByUserUuid(String userUuid) throws DatabaseException;
-    Optional<OAuthToken> getTokenByUserUuid(String userUuid) throws DatabaseException;
+    String getAccessTokenByUserUuid(UUID userUuid) throws DatabaseException;
+    Optional<OAuthToken> getTokenByUserUuid(UUID userUuid) throws DatabaseException;
 
-    OAuthToken saveUserToken(String userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    OAuthToken saveUserToken(UUID userUuid, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
     List<OAuthToken> getTokenListByRoomUuid(Long roomUuid) throws DatabaseException, InvalidArgumentException;
 
