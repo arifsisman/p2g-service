@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.SecurityConfig;
+import vip.yazilim.p2g.web.constant.RoomStatus;
+import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
@@ -12,6 +14,7 @@ import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
@@ -48,6 +51,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Autowired
     private SecurityConfig securityConfig;
+
+    @Autowired
+    private RoomWebSocketController roomWebSocketController;
 
     @Override
     protected JpaRepository<Room, Long> getRepository() {
@@ -104,8 +110,6 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         List<User> userList;
         List<User> invitedUserList;
 
-        String chatUuid;
-
         // Set Room
         room = getById(roomId);
         if (!room.isPresent()) {
@@ -140,7 +144,6 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         return create(room);
     }
 
-
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
@@ -167,6 +170,14 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             status &= roomInviteService.deleteRoomInvites(roomId);
         }
 
+        roomWebSocketController.updateRoomStatus(roomId, RoomStatus.CLOSED);
         return status;
+    }
+
+    @Override
+    public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        room = super.update(room);
+        roomWebSocketController.updateRoomStatus(room.getId(), RoomStatus.UPDATED);
+        return room;
     }
 }

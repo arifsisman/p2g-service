@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.RoomStatus;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.service.p2g.impl.RoomUserService;
@@ -60,10 +61,12 @@ public class RoomWebSocketController {
         return null;
     }
 
-    @MessageMapping("/song/{roomId}")
-    @SendTo("/room/{roomId}/songs")
     public void updateSongList(@DestinationVariable Long roomId, @Payload List<Song> songList) {
         messagingTemplate.convertAndSend("/room/" + roomId + "/songs", songList);
+    }
+
+    public void updateRoomStatus(@DestinationVariable Long roomId, @Payload RoomStatus roomStatus) {
+        messagingTemplate.convertAndSend("/room/" + roomId + "/status", roomStatus);
     }
 
     private boolean isUserInRoom(UUID userUuid, Long roomId) throws DatabaseException {

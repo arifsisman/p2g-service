@@ -25,6 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/message/{roomId}");
         registry.addEndpoint("/song/{roomId}");
+        registry.addEndpoint("/status/roomId}");
         registry.addEndpoint("/invite/{userUuid}");
     }
 
