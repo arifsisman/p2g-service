@@ -19,12 +19,13 @@ import java.util.UUID;
 public class UserDevice {
 
     @Id
-    @Column(name = "id", length = 64)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 64)
     private String id;
 
-    private String source;
+    @Column(name = "platform", updatable = false, nullable = false, length = 16)
+    private String platform;
 
-    @Column(name = "user_uuid", columnDefinition = "uuid")
+    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;
 
     @Column(name = "device_name", length = 64)

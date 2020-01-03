@@ -16,7 +16,7 @@ import java.util.UUID;
 public class OAuthToken implements Serializable {
 
     @Id
-    @Column(name = "user_uuid", columnDefinition = "uuid")
+    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;
 
     @Column(name = "access_token")

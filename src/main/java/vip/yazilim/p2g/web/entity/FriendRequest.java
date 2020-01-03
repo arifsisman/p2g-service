@@ -14,14 +14,15 @@ import java.util.UUID;
 public class FriendRequest implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
+    @SequenceGenerator(name = "friend_request_id_seq", sequenceName = "friend_request_id_seq", allocationSize = 7)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "friend_request_id_seq")
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "user_uuid", columnDefinition = "uuid")
+    @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;
 
-    @Column(name = "friend_uuid", columnDefinition = "uuid")
+    @Column(name = "friend_uuid", unique = true, updatable = false, nullable = false)
     private UUID friendUuid;
 
     @Column(name = "request_status", length = 16)

@@ -21,6 +21,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
     private UUID uuid;
 
     @Column(name = "display_name", nullable = false, length = 64)

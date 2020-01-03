@@ -6,7 +6,7 @@ import java.util.HashMap;
  * @author mustafaarifsisman - 1.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public enum SpotifyScopes {
+public enum SpotifyScope {
     MODIFY_PLAYBACK("user-modify-playback-state"),
     READ_EMAIL("user-read-email"),
     READ_PLAYBACK("user-read-playback-state"),
@@ -14,28 +14,28 @@ public enum SpotifyScopes {
 
     private final String scopeName;
 
-    SpotifyScopes(String scopeName) {
+    SpotifyScope(String scopeName) {
         this.scopeName = scopeName;
     }
 
     public static String getAll() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (SpotifyScopes s : values())
+        for (SpotifyScope s : values())
             stringBuilder.append(s.scopeName).append(",");
 
         return stringBuilder.toString();
     }
 
-    private static final HashMap<String, SpotifyScopes> map = new HashMap<>();
+    private static final HashMap<String, SpotifyScope> map = new HashMap<>();
 
     public static Object keyOf(String type) {
         return map.get(type);
     }
 
     static {
-        for (SpotifyScopes spotifyScopes : values()) {
-            map.put(spotifyScopes.scopeName, spotifyScopes);
+        for (SpotifyScope spotifyScope : values()) {
+            map.put(spotifyScope.scopeName, spotifyScope);
         }
     }
 

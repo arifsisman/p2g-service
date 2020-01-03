@@ -5,6 +5,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Platform;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
@@ -67,7 +68,7 @@ public class SpotifyUserService implements ISpotifyUserService {
 
             userDevice.setUserUuid(userUuid);
             userDevice.setId(d.getId());
-            userDevice.setSource("spotify");
+            userDevice.setPlatform(Platform.SPOTIFY.getName());
             userDevice.setDeviceName(d.getName());
             userDevice.setDeviceName(d.getName());
             userDevice.setActiveFlag(d.getIs_active());

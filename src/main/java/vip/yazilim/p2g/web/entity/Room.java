@@ -14,14 +14,15 @@ import java.util.UUID;
 public class Room implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
+    @SequenceGenerator(name = "room_id_seq", sequenceName = "room_id_seq", allocationSize = 7)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_seq")
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
     private Long id;
 
     @Column(nullable = false, length = 32)
     private String name;
 
-    @Column(name = "owner_uuid", nullable = false, columnDefinition = "uuid")
+    @Column(name = "owner_uuid", unique = true, updatable = false, nullable = false)
     private UUID ownerUuid;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")

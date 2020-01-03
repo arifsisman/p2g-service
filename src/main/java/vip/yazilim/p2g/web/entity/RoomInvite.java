@@ -13,14 +13,15 @@ import java.util.UUID;
 public class RoomInvite {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
+    @SequenceGenerator(name = "room_invite_id_seq", sequenceName = "room_invite_id_seq", allocationSize = 7)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_invite_id_seq")
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
     private Long id;
 
     @Column(name = "room_id", length = 64)
     private Long roomId;
 
-    @Column(name = "user_uuid", columnDefinition = "uuid")
+    @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;
 
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")
