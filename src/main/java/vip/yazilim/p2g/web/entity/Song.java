@@ -15,7 +15,7 @@ public class Song implements Serializable {
     @Id
     @SequenceGenerator(name = "song_id_seq", sequenceName = "song_id_seq", allocationSize = 7)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "song_id_seq")
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
     @Column(name = "room_id", nullable = false, length = 64)

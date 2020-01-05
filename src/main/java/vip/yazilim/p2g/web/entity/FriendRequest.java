@@ -16,7 +16,7 @@ public class FriendRequest implements Serializable {
     @Id
     @SequenceGenerator(name = "friend_request_id_seq", sequenceName = "friend_request_id_seq", allocationSize = 7)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "friend_request_id_seq")
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
     @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)

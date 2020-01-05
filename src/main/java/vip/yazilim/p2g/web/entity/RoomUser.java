@@ -25,7 +25,7 @@ public class RoomUser implements Serializable {
     @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;
 
-    @Column(name = "role_name", length = 15)
+    @Column(name = "role_name", length = 16)
     private String roleName;
 
     @Column(name = "join_date", columnDefinition = "TIMESTAMP")

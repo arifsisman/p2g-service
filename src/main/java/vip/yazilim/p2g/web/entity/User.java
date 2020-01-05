@@ -33,35 +33,33 @@ public class User implements Serializable {
     @Column(nullable = false, length = 64)
     private String password;
 
-    @Column(name = "role_name", nullable = false, length = 20)
+    @Column(name = "role_name", nullable = false, length = 16)
     private String roleName;
 
-    @Column(name = "online_status", length = 20)
+    @Column(name = "online_status", length = 16)
     private String onlineStatus;
 
-    @Column(name = "country_code", length = 3)
+    @Column(name = "country_code", length = 4)
     private String countryCode;
 
     @Column(name = "image_url", length = 128)
     private String imageUrl;
 
+    @Column(length = 64)
     private String anthem;
 
-    // Spotify
-    @Column(name = "spotify_product_type", length = 20)
+    @Column(name = "spotify_product_type", length = 16)
     private String spotifyProductType;
 
     @Column(name = "spotify_account_id", length = 64)
     private String spotifyAccountId;
 
-    // Settings
     @Column(name = "show_activity_flag")
     private Boolean showActivityFlag;
 
     @Column(name = "show_friends_flag")
     private Boolean showFriendsFlag;
 
-    // Details
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;
 

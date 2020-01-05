@@ -16,7 +16,7 @@ public class Room implements Serializable {
     @Id
     @SequenceGenerator(name = "room_id_seq", sequenceName = "room_id_seq", allocationSize = 7)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_seq")
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
     @Column(nullable = false, length = 32)
@@ -49,7 +49,7 @@ public class Room implements Serializable {
     @Column(name = "active_flag")
     private Boolean activeFlag;
 
-    @Column(name = "country_code", length = 3)
+    @Column(name = "country_code", length = 4)
     private String countryCode;
 
 }
