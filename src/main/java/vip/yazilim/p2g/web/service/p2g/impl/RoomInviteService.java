@@ -51,15 +51,15 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public List<User> getInvitedUserListByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
 
         List<User> inviteList = new ArrayList<>();
         List<RoomInvite> roomInviteList;
 
         try {
-            roomInviteList = roomInviteRepo.findByRoomId(roomId);
+            roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomId);
+            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomUuid);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
@@ -72,9 +72,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(Long roomId, UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomInvite invite(UUID roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = new RoomInvite();
-        roomInvite.setRoomId(roomId);
+        roomInvite.setRoomUuid(roomUuid);
         roomInvite.setUserUuid(userUuid);
         roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
         roomInvite.setAcceptedFlag(false);
@@ -96,8 +96,8 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean deleteRoomInvites(Long roomId) throws DatabaseException {
-        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomId(roomId);
+    public boolean deleteRoomInvites(UUID roomUuid) throws DatabaseException {
+        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
 
         for (RoomInvite roomInvite : roomInviteList) {
             delete(roomInvite);

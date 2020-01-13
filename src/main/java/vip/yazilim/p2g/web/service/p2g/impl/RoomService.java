@@ -32,7 +32,7 @@ import java.util.UUID;
  */
 @Transactional
 @Service
-public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
+public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomService {
 
     @Autowired
     private IRoomRepo roomRepo;
@@ -56,13 +56,13 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     private RoomWebSocketController roomWebSocketController;
 
     @Override
-    protected JpaRepository<Room, Long> getRepository() {
+    protected JpaRepository<Room, UUID> getRepository() {
         return roomRepo;
     }
 
     @Override
-    protected Long getId(Room entity) {
-        return entity.getId();
+    protected UUID getId(Room entity) {
+        return entity.getUuid();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         try {
-            room = getById(roomUser.getRoomId());
+            room = getById(roomUser.getRoomUuid());
         } catch (Exception exception) {
             String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
             throw new DatabaseReadException(err, exception);
@@ -102,7 +102,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
@@ -111,20 +111,20 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         List<User> invitedUserList;
 
         // Set Room
-        room = getById(roomId);
+        room = getById(roomUuid);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", roomId);
+            String err = String.format("Room[%s] not found", roomUuid);
             throw new NotFoundException(err);
         } else {
             roomModel.setRoom(room.get());
         }
 
         // Set User List
-        userList = userService.getUsersByroomId(roomId);
+        userList = userService.getUsersByroomUuid(roomUuid);
         roomModel.setUserList(userList);
 
         // Set Invited User List
-        invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
+        invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
         roomModel.setInvitedUserList(invitedUserList);
 
         return roomModel;
@@ -147,13 +147,13 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
-        roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerUuid());
+        roomUserService.joinRoomOwner(createdRoom.getUuid(), createdRoom.getOwnerUuid());
         return room;
     }
 
     @Override
-    public boolean deleteById(Long roomId) throws DatabaseException, InvalidArgumentException {
-        Optional<Room> roomOpt = getById(roomId);
+    public boolean deleteById(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
+        Optional<Room> roomOpt = getById(roomUuid);
 
         boolean status = true;
 
@@ -161,23 +161,23 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             status = delete(roomOpt.get());
 
             //delete roomUsers
-            status &= roomUserService.deleteRoomUsers(roomId);
+            status &= roomUserService.deleteRoomUsers(roomUuid);
 
             //delete Songs
-            status &= songService.deleteRoomSongList(roomId);
+            status &= songService.deleteRoomSongList(roomUuid);
 
             //delete roomInvites
-            status &= roomInviteService.deleteRoomInvites(roomId);
+            status &= roomInviteService.deleteRoomInvites(roomUuid);
         }
 
-        roomWebSocketController.updateRoomStatus(roomId, RoomStatus.CLOSED);
+        roomWebSocketController.sendRoomStatus(roomUuid, RoomStatus.CLOSED);
         return status;
     }
 
     @Override
     public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         room = super.update(room);
-        roomWebSocketController.updateRoomStatus(room.getId(), RoomStatus.UPDATED);
+        roomWebSocketController.sendRoomStatus(room.getUuid(), RoomStatus.UPDATED);
         return room;
     }
 }

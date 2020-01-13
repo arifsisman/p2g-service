@@ -5,174 +5,88 @@
     <title>Chat WebSocket</title>
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
-
-        let stompClient = null;
-
-        const roomBase = "/room";
+        var stompClient = null;
+        var roomUuid = null;
+        var userUuid = null;
+        var pubUrl = null;
+        var subUrl = null;
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('response').innerHTML = '';
+        }
 
-            document.getElementById('messageResponse').innerHTML = '';
-            document.getElementById('songListResponse').innerHTML = '';
-            document.getElementById('statusResponse').innerHTML = '';
+        function connect() {
+            var roomUuid = document.getElementById("roomUuid").value;
+            pubUrl = "/message/" + roomUuid;
+            subUrl = "/room/" + roomUuid + "/messages";
+
+            var socket = new WebSocket('ws://' + document.location.host + pubUrl);
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe(subUrl, function (messageOutput) {
+                    showMessageOutput(JSON.parse(messageOutput.body));
+                });
+            });
         }
 
         function disconnect() {
             if (stompClient != null) {
                 stompClient.disconnect();
-                setConnected(false);
-                console.log("Disconnected");
             }
-        }
-
-        function connectRoom() {
-            const socket = new WebSocket('ws://' + document.location.host + '/message/1');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (frame) {
-                setConnected(true);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe("/room/1/messages", function (messageOutput) {
-                    console.log(messageOutput.body);
-                    showMessageOutput(JSON.parse(messageOutput.body));
-                });
-                // stompClient.subscribe("/room/1/status", function (songListOutput) {
-                //     console.log(songListOutput.body);
-                //     showSongListOutput(JSON.parse(songListOutput.body));
-                // });
-                // stompClient.subscribe("/room/1/songs", function (statusOutput) {
-                //     console.log(statusOutput.body);
-                //     showStatusOutput(JSON.parse(statusOutput.body));
-            })
-        }
-
-        function connectUser() {
-            let userUuid = document.getElementById("userUuid").value;
-
-            const socket = new WebSocket('ws://' + document.location.host + '/invite/' + userUuid);
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (frame) {
-                setConnected(true);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe("/user/" + userUuid + "/invites", function (inviteOutput) {
-                    showInviteOutput(JSON.parse(inviteOutput.body));
-                })
-            })
+            setConnected(false);
+            console.log("Disconnected");
         }
 
         function sendMessage() {
-            let roomId = document.getElementById("roomId").value;
-            let userUuid = document.getElementById("userUuid").value;
-            let userName = document.getElementById('userName').value;
-            let message = document.getElementById('message').value;
-            let now = new Date();
-            let timestamp = now.toISOString();
+            var userUuid = document.getElementById("userUuid").value;
+            var userName = document.getElementById('userName').value;
+            var roomUuid = document.getElementById('roomUuid').value;
+            var message = document.getElementById('message').value;
 
-            stompClient.send("/message/1", {}, JSON.stringify({
+            stompClient.send(pubUrl, {}, JSON.stringify({
                 'userUuid': userUuid,
                 'userName': userName,
-                'roomId': roomId,
+                'roomUuid': roomUuid,
                 'message': message,
-                'timestamp': timestamp
+                'timestamp': new Date().toISOString()
             }));
         }
 
-        function updateSongList() {
-            let roomId = document.getElementById("roomId").value;
-            let songList = document.getElementById("songListJson").value;
-            stompClient.send("/song/" + roomId, {}, songList);
-        }
-
         function showMessageOutput(messageOutput) {
-            let messageResponse = document.getElementById('messageResponse');
-            let p = document.createElement('p');
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
             p.appendChild(document.createTextNode(messageOutput.userName + ": " + messageOutput.message + " (" + messageOutput.timestamp + ")"));
-            messageResponse.appendChild(p);
-        }
-
-        function showSongListOutput(songListOutput) {
-            let songListResponse = document.getElementById('songListResponse');
-            let p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-
-            let str = JSON.stringify(songListOutput, null, 2);
-            p.appendChild(document.createTextNode(str));
-            songListResponse.appendChild(p);
-        }
-
-        function showStatusOutput(statusOutput) {
-            let statusResponse = document.getElementById('statusResponse');
-            let p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-
-            let str = JSON.stringify(statusOutput, null, 2);
-            p.appendChild(document.createTextNode(str));
-            statusResponse.appendChild(p);
-        }
-
-        function showInviteOutput(inviteOutput) {
-            let messageResponse = document.getElementById('inviteResponse');
-            let p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-
-            let str = JSON.stringify(inviteOutput, null, 2);
-            p.appendChild(document.createTextNode(str));
-            messageResponse.appendChild(p);
+            response.appendChild(p);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            connectRoom();
-            // connectUser();
+            connect();
         }, false);
 
     </script>
 </head>
-
+<!--<body onload="disconnect()">-->
 <div>
     <div>
-        roomId: <label for="roomId"></label><input type="text" id="roomId" value="1"/><br/>
-        userUuid: <label for="userUuid"></label><input disabled="disabled" type="text" id="userUuid"
-                                                       th:value="${userUuid}"/><br/>
-        userName: <label for="userName"></label><input disabled="disabled" type="text" id="userName"
-                                                       th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
-        <button id="connect" onclick="connectRoom();">Connect</button>
+        roomUuid: <input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
+        userUuid: <input disabled="disabled" type="text" id="userUuid" th:value="${userUuid}"/><br/>
+        userName: <input disabled="disabled" type="text" id="userName" th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
+        <button id="connect" onclick="connect();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
-
     <br/>
-
     <div id="conversationDiv">
-        <label for="message"></label><input type="text" id="message" placeholder="Write a message..."/>
-        <button id="sendMessage" onclick="sendMessage();">Send Message</button>
-        <p id="messageResponse"></p>
+        <input type="text" id="message" placeholder="Write a message..."/>
+        <button id="sendMessage" onclick="sendMessage();">Send</button>
+        <p id="response"></p>
     </div>
-
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <div id="songDiv">
-        <label for="songListJson"></label><textarea rows="20" cols="50" id="songListJson"
-                                                    placeholder="Write song list as json..."></textarea>
-        <button id="updateSongList" onclick="updateSongList();">Update Song List</button>
-        <pre>
-            <p id="songListResponse"></p>
-            <p id="statusResponse"></p>
-        </pre>
-    </div>
-
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <pre id="inviteDiv">
-        <p id="inviteResponse"></p>
-    </pre>
 </div>
+
+</body>
 </html>

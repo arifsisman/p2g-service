@@ -17,12 +17,12 @@ import java.util.UUID;
  */
 public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
-    List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    List<User> getInvitedUserListByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
 
     // Rest
-    RoomInvite invite(Long roomId, UUID userUuid) throws DatabaseException, InvalidArgumentException;
+    RoomInvite invite(UUID roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException;
     RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     boolean reject(Long roomInviteId) throws DatabaseException, InvalidArgumentException;
-    boolean deleteRoomInvites(Long roomId) throws DatabaseException;
+    boolean deleteRoomInvites(UUID roomUuid) throws DatabaseException;
     boolean existsById(Long roomInviteId) throws DatabaseException;
 }

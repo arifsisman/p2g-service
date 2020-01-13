@@ -18,8 +18,8 @@ public class RoomInvite {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_id", length = 64)
-    private Long roomId;
+    @Column(name = "room_uuid", length = 64)
+    private UUID roomUuid;
 
     @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
     private UUID userUuid;

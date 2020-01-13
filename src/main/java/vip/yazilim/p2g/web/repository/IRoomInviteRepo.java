@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -11,6 +12,6 @@ import java.util.List;
  */
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, Long> {
 
-    List<RoomInvite> findByRoomId(Long roomId);
+    List<RoomInvite> findByRoomUuid(UUID roomUuid);
 
 }

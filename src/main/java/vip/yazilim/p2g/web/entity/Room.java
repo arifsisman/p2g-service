@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -14,10 +15,10 @@ import java.util.UUID;
 public class Room implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "room_id_seq", sequenceName = "room_id_seq", allocationSize = 7)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_seq")
-    @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
+    private UUID uuid;
 
     @Column(nullable = false, length = 32)
     private String name;
