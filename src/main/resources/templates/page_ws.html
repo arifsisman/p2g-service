@@ -5,88 +5,106 @@
     <title>Chat WebSocket</title>
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
-        var stompClient = null;
-        var roomUuid = null;
-        var userUuid = null;
-        var pubUrl = null;
-        var subUrl = null;
+
+        let roomStompClient = null;
+        let userStompClient = null;
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
-            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('response').innerHTML = '';
         }
 
-        function connect() {
-            var roomUuid = document.getElementById("roomUuid").value;
-            pubUrl = "/message/" + roomUuid;
-            subUrl = "/room/" + roomUuid + "/messages";
+        function disconnect() {
+            if (roomStompClient != null) {
+                roomStompClient.disconnect();
+                setConnected(false);
+                console.log("Disconnected");
+            }
+        }
 
-            var socket = new WebSocket('ws://' + document.location.host + pubUrl);
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (frame) {
+        function connectRoom() {
+            let roomUuid = document.getElementById("roomUuid").value;
+            const socket = new WebSocket('ws://' + document.location.host + '/room/' + roomUuid);
+            roomStompClient = Stomp.over(socket);
+            roomStompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe(subUrl, function (messageOutput) {
-                    showMessageOutput(JSON.parse(messageOutput.body));
+                roomStompClient.subscribe("/room/" + roomUuid, function (output) {
+                    console.log(output.body);
+                    showOutput(JSON.parse(output.body));
                 });
             });
         }
 
-        function disconnect() {
-            if (stompClient != null) {
-                stompClient.disconnect();
-            }
-            setConnected(false);
-            console.log("Disconnected");
+        function connectUser() {
+            let userUuid = document.getElementById("userUuid").value;
+
+            const socket = new WebSocket('ws://' + document.location.host + '/user/' + userUuid);
+            userStompClient = Stomp.over(socket);
+            userStompClient.connect({}, function (frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                userStompClient.subscribe("/user/" + userUuid, function (output) {
+                    showOutput(JSON.parse(output.body));
+                })
+            })
         }
 
         function sendMessage() {
-            var userUuid = document.getElementById("userUuid").value;
-            var userName = document.getElementById('userName').value;
-            var roomUuid = document.getElementById('roomUuid').value;
-            var message = document.getElementById('message').value;
+            let roomUuid = document.getElementById("roomUuid").value;
+            let userUuid = document.getElementById("userUuid").value;
+            let userName = document.getElementById('userName').value;
+            let message = document.getElementById('message').value;
+            let now = new Date();
+            let timestamp = now.toISOString();
 
-            stompClient.send(pubUrl, {}, JSON.stringify({
+            stompClient.send("/room/" + roomUuid, {}, JSON.stringify({
                 'userUuid': userUuid,
                 'userName': userName,
                 'roomUuid': roomUuid,
                 'message': message,
-                'timestamp': new Date().toISOString()
+                'timestamp': timestamp
             }));
         }
 
-        function showMessageOutput(messageOutput) {
-            var response = document.getElementById('response');
-            var p = document.createElement('p');
+        function showOutput(inviteOutput) {
+            let outputResponse = document.getElementById('outputResponse');
+            let p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(messageOutput.userName + ": " + messageOutput.message + " (" + messageOutput.timestamp + ")"));
-            response.appendChild(p);
+
+            let str = JSON.stringify(inviteOutput, null, 2);
+            p.appendChild(document.createTextNode(str));
+            outputResponse.appendChild(p);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            connect();
+            connectRoom();
+            connectUser();
         }, false);
 
     </script>
 </head>
-<!--<body onload="disconnect()">-->
+
 <div>
     <div>
-        roomUuid: <input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
-        userUuid: <input disabled="disabled" type="text" id="userUuid" th:value="${userUuid}"/><br/>
-        userName: <input disabled="disabled" type="text" id="userName" th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
-        <button id="connect" onclick="connect();">Connect</button>
+        roomUuid: <label for="roomUuid"></label><input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
+        userUuid: <label for="userUuid"></label><input disabled="disabled" type="text" id="userUuid"
+                                                       th:value="${userUuid}"/><br/>
+        userName: <label for="userName"></label><input disabled="disabled" type="text" id="userName"
+                                                       th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
+        <button id="connect" onclick="connectRoom();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
-    <br/>
-    <div id="conversationDiv">
-        <input type="text" id="message" placeholder="Write a message..."/>
-        <button id="sendMessage" onclick="sendMessage();">Send</button>
-        <p id="response"></p>
-    </div>
-</div>
 
-</body>
+    <br/>
+
+    <div id="inputDiv">
+        <label for="message"></label><input type="text" id="message" placeholder="Write a message..."/>
+        <button id="sendMessage" onclick="sendMessage();">Send Message</button>
+    </div>
+
+    <pre id="outputDiv">
+        <p id="outputResponse"></p>
+    </pre>
+</div>
 </html>

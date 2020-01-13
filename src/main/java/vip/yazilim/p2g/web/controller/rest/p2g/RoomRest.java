@@ -8,7 +8,6 @@ import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
-import vip.yazilim.p2g.web.controller.websocket.UserWebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -48,9 +47,6 @@ public class RoomRest extends ARestCrud<Room, UUID> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private UserWebSocketController userWebSocketController;
 
     @Override
     protected ICrudService<Room, UUID> getService() {
@@ -111,7 +107,6 @@ public class RoomRest extends ARestCrud<Room, UUID> {
     @PostMapping("/{roomUuid}/invite/{userUuid}")
     public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID roomUuid, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite = roomInviteService.invite(roomUuid, userUuid);
-        userWebSocketController.sendRoomInvite(roomInvite);
         return RestResponseFactory.generateResponse(roomInvite, HttpStatus.OK, request, response);
     }
 

@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vip.yazilim.p2g.web.config.security.user.CustomUserDetailsService;
 
+import static vip.yazilim.p2g.web.constant.Constants.API;
+
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -42,6 +44,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().and().csrf().disable()
+                .authorizeRequests()
+                .antMatchers(API + "/**").authenticated().and().httpBasic()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and()
+
                 .authorizeRequests()
                 .antMatchers("/**").authenticated().and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
-import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
@@ -51,7 +51,7 @@ public class RestAspect {
     private SongService songService;
 
     @Autowired
-    private RoomWebSocketController roomWebSocketController;
+    private WebSocketController webSocketController;
 
     /**
      * to be executed before invoking methods which matches given pattern before
@@ -139,7 +139,7 @@ public class RestAspect {
         if (roomUserOpt.isPresent()) {
             UUID roomUuid = roomUserOpt.get().getRoomUuid();
             List<Song> songList = songService.getSongListByRoomUuid(roomUuid);
-            roomWebSocketController.sendRoomSongList(roomUuid, songList);
+            webSocketController.sendToRoom(roomUuid, songList);
         } else {
             throw new NotFoundException("Room not found.");
         }

@@ -23,11 +23,11 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        LOGGER.info("Received a new web socket connection.");
+        LOGGER.debug("Received a new web socket connection.");
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        LOGGER.info("Disconnecting...");
+        LOGGER.debug("Disconnecting...");
     }
 }

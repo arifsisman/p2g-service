@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.SecurityConfig;
 import vip.yazilim.p2g.web.constant.RoomStatus;
-import vip.yazilim.p2g.web.controller.websocket.RoomWebSocketController;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
@@ -53,7 +53,7 @@ public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomSe
     private SecurityConfig securityConfig;
 
     @Autowired
-    private RoomWebSocketController roomWebSocketController;
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<Room, UUID> getRepository() {
@@ -170,14 +170,14 @@ public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomSe
             status &= roomInviteService.deleteRoomInvites(roomUuid);
         }
 
-        roomWebSocketController.sendRoomStatus(roomUuid, RoomStatus.CLOSED);
+        webSocketController.sendToRoom(roomUuid, RoomStatus.CLOSED);
         return status;
     }
 
     @Override
     public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         room = super.update(room);
-        roomWebSocketController.sendRoomStatus(room.getUuid(), RoomStatus.UPDATED);
+        webSocketController.sendToRoom(room.getUuid(), RoomStatus.UPDATED);
         return room;
     }
 }
