@@ -21,7 +21,7 @@ public class RoomInvite {
     @Column(name = "room_uuid", length = 64)
     private UUID roomUuid;
 
-    @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
+    @Column(name = "user_uuid", updatable = false, nullable = false)
     private UUID userUuid;
 
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")

@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.config.websocket;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -16,14 +17,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
-        brokerRegistry.enableSimpleBroker("/room", "/user");
+        brokerRegistry.enableSimpleBroker("/p2g/room", "/p2g/user");
         brokerRegistry.setApplicationDestinationPrefixes("/");
+
+        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(10);
+        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(100);
+    }
+
+    @Override
+    public void configureClientOutboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor().corePoolSize(10);
+        registration.taskExecutor().maxPoolSize(100);
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/room/{roomUuid}");
-        registry.addEndpoint("/user/{userUuid}");
+        registry.addEndpoint("/p2g/room/{roomUuid}");
+        registry.addEndpoint("/p2g/user/{userUuid}");
     }
 
 }

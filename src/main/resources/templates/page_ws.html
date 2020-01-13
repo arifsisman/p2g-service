@@ -24,12 +24,12 @@
 
         function connectRoom() {
             let roomUuid = document.getElementById("roomUuid").value;
-            const socket = new WebSocket('ws://' + document.location.host + '/room/' + roomUuid);
+            const socket = new WebSocket('ws://' + document.location.host + '/p2g/room/' + roomUuid);
             roomStompClient = Stomp.over(socket);
             roomStompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                roomStompClient.subscribe("/room/" + roomUuid, function (output) {
+                roomStompClient.subscribe("/p2g/room/" + roomUuid, function (output) {
                     console.log(output.body);
                     showOutput(JSON.parse(output.body));
                 });
@@ -39,12 +39,12 @@
         function connectUser() {
             let userUuid = document.getElementById("userUuid").value;
 
-            const socket = new WebSocket('ws://' + document.location.host + '/user/' + userUuid);
+            const socket = new WebSocket('ws://' + document.location.host + '/p2g/user/' + userUuid);
             userStompClient = Stomp.over(socket);
             userStompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                userStompClient.subscribe("/user/" + userUuid, function (output) {
+                userStompClient.subscribe("/p2g/user/" + userUuid, function (output) {
                     showOutput(JSON.parse(output.body));
                 })
             })
