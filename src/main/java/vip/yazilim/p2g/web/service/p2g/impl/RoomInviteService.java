@@ -7,6 +7,7 @@ import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
@@ -77,16 +78,21 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
     @Override
     public RoomInvite invite(UUID roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        RoomInvite roomInvite = new RoomInvite();
-        roomInvite.setRoomUuid(roomUuid);
-        roomInvite.setUserUuid(userUuid);
-        roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInvite.setAcceptedFlag(false);
+        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);
 
-        RoomInvite createdRoomInvite = create(roomInvite);
-        webSocketController.sendToUser(userUuid, createdRoomInvite);
+        if (!existingInvite.isPresent()) {
+            RoomInvite roomInvite = new RoomInvite();
+            roomInvite.setRoomUuid(roomUuid);
+            roomInvite.setUserUuid(userUuid);
+            roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+            roomInvite.setAcceptedFlag(false);
 
-        return createdRoomInvite;
+            RoomInvite createdRoomInvite = create(roomInvite);
+            webSocketController.sendToUser(userUuid, createdRoomInvite);
+            return createdRoomInvite;
+        } else {
+            throw new ConstraintViolationException("Invite already exists");
+        }
     }
 
     @Override

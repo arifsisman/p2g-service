@@ -58,7 +58,7 @@
             let now = new Date();
             let timestamp = now.toISOString();
 
-            stompClient.send("/room/" + roomUuid, {}, JSON.stringify({
+            roomStompClient.send("/p2g/room/" + roomUuid, {}, JSON.stringify({
                 'userUuid': userUuid,
                 'userName': userName,
                 'roomUuid': roomUuid,

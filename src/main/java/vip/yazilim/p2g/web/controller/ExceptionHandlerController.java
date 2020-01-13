@@ -4,6 +4,7 @@ import com.wrapper.spotify.exceptions.detailed.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +55,16 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return error(CONFLICT, e);
+    }
+
+    @ExceptionHandler({vip.yazilim.p2g.web.exception.ConstraintViolationException.class})
+    public ResponseEntity<String> handleConstraintViolationException(vip.yazilim.p2g.web.exception.ConstraintViolationException e) {
+        return error(CONFLICT, e);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return error(CONFLICT, e);
     }
 

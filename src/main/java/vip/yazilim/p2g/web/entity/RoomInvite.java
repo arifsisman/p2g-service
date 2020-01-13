@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "room_invite")
+@Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_uuid", "user_uuid"}))
 @Data
 public class RoomInvite {
 

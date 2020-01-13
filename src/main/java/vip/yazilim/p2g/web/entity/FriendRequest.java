@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "friend_request")
+@Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"user_uuid", "friend_uuid"}))
 @Data
 public class FriendRequest implements Serializable {
 

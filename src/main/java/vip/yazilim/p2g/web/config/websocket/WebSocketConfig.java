@@ -20,14 +20,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         brokerRegistry.enableSimpleBroker("/p2g/room", "/p2g/user");
         brokerRegistry.setApplicationDestinationPrefixes("/");
 
-        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(10);
-        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(100);
+        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(1000);
+        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(10000);
     }
 
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor().corePoolSize(10);
-        registration.taskExecutor().maxPoolSize(100);
+        registration.taskExecutor().corePoolSize(1000);
+        registration.taskExecutor().maxPoolSize(10000);
     }
 
     @Override

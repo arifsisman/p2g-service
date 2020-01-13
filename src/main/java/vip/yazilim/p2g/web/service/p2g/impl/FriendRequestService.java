@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseCreateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
@@ -92,33 +92,32 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     @Override
     public Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(UUID user1, UUID user2) throws DatabaseReadException {
-        FriendRequest friendRequest;
-
         try {
-            friendRequest = friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
+            return friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", user1, user2);
             throw new DatabaseReadException(errorMessage, exception);
         }
-
-        return Optional.of(friendRequest);
     }
 
     @Override
-    public boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseCreateException {
-        FriendRequest friendRequest = new FriendRequest();
+    public boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseException, InvalidArgumentException {
+        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
 
-        friendRequest.setUserUuid(user1);
-        friendRequest.setFriendUuid(user2);
-        friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
+        if (!existingFriendRequest.isPresent()) {
+            FriendRequest friendRequest = new FriendRequest();
 
-        try {
+            friendRequest.setUserUuid(user1);
+            friendRequest.setFriendUuid(user2);
+            friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
+
             create(friendRequest);
-        } catch (Exception exception) {
-            throw new DatabaseCreateException(exception);
+
+            return true;
+        } else {
+            throw new ConstraintViolationException("Friend request already exists");
         }
 
-        return true;
     }
 
     @Override
