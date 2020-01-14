@@ -16,11 +16,4 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                 .simpDestMatchers("/**").authenticated();
     }
 
-//    @Override
-//    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-//        messages
-//                .simpDestMatchers("/p2g/**").hasRole("USER")
-//                .anyMessage().denyAll();
-//    }
-
 }

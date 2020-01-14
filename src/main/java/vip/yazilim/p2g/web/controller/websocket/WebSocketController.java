@@ -31,7 +31,7 @@ public class WebSocketController {
         UUID userUuid = SecurityHelper.getUserUuid(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
-        LOGGER.info("{}[{}] subscribed to /p2g/room/[{}]", userDisplayName, userUuid, roomUuid);
+        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userUuid, roomUuid);
         ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomUuid.toString()
                 , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
         sendToRoom(roomUuid, joinMessage);
@@ -40,7 +40,7 @@ public class WebSocketController {
     @SubscribeMapping("/p2g/user/{userUuid}")
     public void subscribeToUserWebSocket(@DestinationVariable UUID userUuid, Authentication authentication) {
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
-        LOGGER.info("{}[{}] subscribed to /p2g/user/[{}]", userDisplayName, userUuid, userUuid);
+        LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userUuid, userUuid);
     }
 
     public void sendToRoom(UUID roomUuid, Object payload) {

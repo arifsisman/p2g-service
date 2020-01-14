@@ -7,6 +7,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import static vip.yazilim.p2g.web.constant.Constants.WEBSOCKET_THREAD_POOL_SIZE;
+import static vip.yazilim.p2g.web.constant.Constants.WEBSOCKET_THREAD_POOL_SIZE_MAX;
+
 /**
  * @author mustafaarifsisman - 24.12.2019
  * @contact mustafaarifsisman@gmail.com
@@ -20,14 +23,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         brokerRegistry.enableSimpleBroker("/p2g/room", "/p2g/user");
         brokerRegistry.setApplicationDestinationPrefixes("/");
 
-        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(1000);
-        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(10000);
+        brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(WEBSOCKET_THREAD_POOL_SIZE);
+        brokerRegistry.configureBrokerChannel().taskExecutor().maxPoolSize(WEBSOCKET_THREAD_POOL_SIZE_MAX);
     }
 
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor().corePoolSize(1000);
-        registration.taskExecutor().maxPoolSize(10000);
+        registration.taskExecutor().corePoolSize(WEBSOCKET_THREAD_POOL_SIZE);
+        registration.taskExecutor().maxPoolSize(WEBSOCKET_THREAD_POOL_SIZE_MAX);
     }
 
     @Override
