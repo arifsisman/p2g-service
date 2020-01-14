@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}" />
     <title>Chat WebSocket</title>
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
@@ -24,9 +25,15 @@
 
         function connectRoom() {
             let roomUuid = document.getElementById("roomUuid").value;
+
+            let headerName = "X-XSRF-TOKEN";
+            let token = getCookieValue("XSRF-TOKEN");
+            let headers = {};
+            headers[headerName] = token;
+
             const socket = new WebSocket('ws://' + document.location.host + '/p2g/room/' + roomUuid);
             roomStompClient = Stomp.over(socket);
-            roomStompClient.connect({}, function (frame) {
+            roomStompClient.connect(headers, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 roomStompClient.subscribe("/p2g/room/" + roomUuid, function (output) {
@@ -39,9 +46,14 @@
         function connectUser() {
             let userUuid = document.getElementById("userUuid").value;
 
+            let headerName = "X-XSRF-TOKEN";
+            let token = getCookieValue("XSRF-TOKEN");
+            let headers = {};
+            headers[headerName] = token;
+
             const socket = new WebSocket('ws://' + document.location.host + '/p2g/user/' + userUuid);
             userStompClient = Stomp.over(socket);
-            userStompClient.connect({}, function (frame) {
+            userStompClient.connect(headers, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 userStompClient.subscribe("/p2g/user/" + userUuid, function (output) {
@@ -77,6 +89,11 @@
             outputResponse.appendChild(p);
         }
 
+        function getCookieValue(a) {
+            let b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
+            return b ? b.pop() : '';
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             connectRoom();
             connectUser();
@@ -86,6 +103,7 @@
 </head>
 
 <div>
+    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     <div>
         roomUuid: <label for="roomUuid"></label><input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
         userUuid: <label for="userUuid"></label><input disabled="disabled" type="text" id="userUuid"

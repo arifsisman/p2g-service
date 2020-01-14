@@ -36,4 +36,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/p2g/user/{userUuid}");
     }
 
+
 }
