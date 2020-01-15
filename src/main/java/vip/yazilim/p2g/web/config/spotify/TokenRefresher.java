@@ -7,11 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -29,11 +30,11 @@ public class TokenRefresher {
     private String clientSecret;
 
     @Autowired
-    private ITokenService tokenService;
+    private ISpotifyTokenService tokenService;
 
-    public void refreshToken(String userUuid){
-        Optional<SpotifyToken> tokenOptional;
-        SpotifyToken token;
+    public void refreshToken(UUID userUuid){
+        Optional<OAuthToken> tokenOptional;
+        OAuthToken token;
 
         try {
             tokenOptional = tokenService.getTokenByUserUuid(userUuid);
@@ -69,8 +70,8 @@ public class TokenRefresher {
 
             tokenService.saveUserToken(userUuid, accessToken, refreshToken);
 
-//                LOGGER.info("Access token updated for userUuid[{}]", userUuid);
-//                LOGGER.info("Access Token: " + accessToken);
+//                LOGGER.debug("Access token updated for userUuid[{}]", userUuid);
+//                LOGGER.debug("Access Token: " + accessToken);
         } catch (Exception e) {
             LOGGER.error("Error while getting new access token!");
         }

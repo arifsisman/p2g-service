@@ -7,9 +7,11 @@ public class Constants {
     public static final String API_SPOTIFY =  API + "/spotify";
 
     public static final String TABLE_PREFIX = "p2g_";
-    public static final String RELATION_TABLE_PREFIX = "p2g_rel_";
 
     public static final String BEAN_NAME_AUTHORIZATION_CODE = "authorizationCodeApi";
     public static final String BEAN_NAME_CLIENT_CREDENTIALS = "clientCredentialsApi";
+
+    public static final Integer WEBSOCKET_THREAD_POOL_SIZE = 100;
+    public static final Integer WEBSOCKET_THREAD_POOL_SIZE_MAX = 1000;
 
 }

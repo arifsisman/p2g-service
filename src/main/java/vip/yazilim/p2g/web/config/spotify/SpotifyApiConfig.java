@@ -6,15 +6,13 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.constant.SpotifyScopes;
+import vip.yazilim.p2g.web.constant.SpotifyScope;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -26,8 +24,6 @@ import java.net.URI;
  */
 @Configuration
 public class SpotifyApiConfig {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(SpotifyApiConfig.class);
 
     @Value("${spotify.clientId}")
     private String clientId;
@@ -55,7 +51,7 @@ public class SpotifyApiConfig {
     public AuthorizationCodeUriRequest getUri() {
         return spotifyApiAuthorizationCode()
                 .authorizationCodeUri()
-                .scope(SpotifyScopes.getAll())
+                .scope(SpotifyScope.getAll())
                 .build();
     }
 
@@ -63,7 +59,7 @@ public class SpotifyApiConfig {
     @Bean(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     @PostConstruct
-    public SpotifyApi spotifyApiClientCredentials() {
+    public SpotifyApi spotifyApiClientCredentials() throws IOException, SpotifyWebApiException {
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setClientId(clientId)
@@ -72,14 +68,10 @@ public class SpotifyApiConfig {
 
         final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
 
-        try {
-            final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
+        final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
 
-            // Set access token for further "spotifyApi" object usage
-            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
-        } catch (IOException | SpotifyWebApiException e) {
-            LOGGER.error("Error: " + e.getMessage());
-        }
+        // Set access token for further "spotifyApi" object usage
+        spotifyApi.setAccessToken(clientCredentials.getAccessToken());
 
         return spotifyApi;
     }

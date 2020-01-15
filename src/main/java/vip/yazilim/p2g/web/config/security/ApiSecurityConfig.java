@@ -9,24 +9,23 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import static vip.yazilim.p2g.web.constant.Constants.API;
 
+/**
+ * @author mustafaarifsisman - 14.01.2020
+ * @contact mustafaarifsisman@gmail.com
+ */
+@Order(0)
 @Profile("dev")
 @Configuration
-@Order(0)
 public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .cors().and().csrf().disable()
                 .antMatcher(API + "/**")
-                .authorizeRequests().anyRequest().authenticated()
-                .and()
-                .httpBasic()
-                .and()
-                .sessionManagement()
+                .authorizeRequests().anyRequest()
+                .authenticated().and().httpBasic()
+                .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
     }
 }
-
-
 

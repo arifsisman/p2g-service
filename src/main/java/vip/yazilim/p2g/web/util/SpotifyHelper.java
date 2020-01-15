@@ -3,8 +3,6 @@ package vip.yazilim.p2g.web.util;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.ArrayList;
@@ -15,8 +13,6 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 public class SpotifyHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyHelper.class);
 
     public static List<String> artistsToArtistNameList(ArtistSimplified[] artists) {
         List<String> artistList = new ArrayList<>();

@@ -5,10 +5,11 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
-import vip.yazilim.p2g.web.service.p2g.relation.IUserDeviceService;
+import vip.yazilim.p2g.web.constant.Platform;
+import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -19,6 +20,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -32,7 +34,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     private ISpotifyRequestService spotifyRequest;
 
     @Autowired
-    private ITokenService tokenService;
+    private ISpotifyTokenService tokenService;
 
     @Autowired
     private IUserDeviceService userDeviceService;
@@ -43,18 +45,18 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public User getCurrentSpotifyUser(String userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
-        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), spotifyToken.getAccessToken());
+    public User getCurrentSpotifyUser(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), OAuthToken.getAccessToken());
     }
 
     @Override
-    public List<UserDevice> getUsersAvailableDevices(String userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+    public List<UserDevice> getUsersAvailableDevices(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = new LinkedList<>();
 
-        SpotifyToken spotifyToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
+        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
 
-        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), spotifyToken.getAccessToken());
+        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), OAuthToken.getAccessToken());
 
         if (devices.length == 0) {
             String err = String.format("Can not found any device for userUuid[%s]", userUuid);
@@ -65,8 +67,8 @@ public class SpotifyUserService implements ISpotifyUserService {
             UserDevice userDevice = new UserDevice();
 
             userDevice.setUserUuid(userUuid);
-            userDevice.setDeviceId(d.getId());
-            userDevice.setSource("spotify");
+            userDevice.setId(d.getId());
+            userDevice.setPlatform(Platform.SPOTIFY.getName());
             userDevice.setDeviceName(d.getName());
             userDevice.setDeviceName(d.getName());
             userDevice.setActiveFlag(d.getIs_active());
@@ -79,7 +81,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(String userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<UserDevice> updateUsersAvailableDevices(UUID userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = getUsersAvailableDevices(userUuid);
 
         for (UserDevice userDevice : userDeviceList) {

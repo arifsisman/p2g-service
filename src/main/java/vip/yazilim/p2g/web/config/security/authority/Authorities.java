@@ -27,6 +27,7 @@ public class Authorities extends AAuthorityProvider {
         p2gUserPrivileges.add(Privilege.SPOTIFY_USER_SEARCH);
 
         List<Privilege> roomUserPrivileges = new LinkedList<>(p2gUserPrivileges);
+        roomUserPrivileges.add(Privilege.ROOM_CHAT);
         roomUserPrivileges.add(Privilege.SONG_GET);
         roomUserPrivileges.add(Privilege.SONG_VOTE);
         roomUserPrivileges.add(Privilege.SONG_SEARCH);

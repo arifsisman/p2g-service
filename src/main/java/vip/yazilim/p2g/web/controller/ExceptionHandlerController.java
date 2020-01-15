@@ -4,8 +4,13 @@ import com.wrapper.spotify.exceptions.detailed.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.NestedRuntimeException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessageDeliveryException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import vip.yazilim.p2g.web.exception.AccountException;
@@ -32,8 +37,18 @@ public class ExceptionHandlerController {
 
     private Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);
 
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<String> handleException(Exception e) {
+        return error(INTERNAL_SERVER_ERROR, e);
+    }
+
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<String> handleRunTimeException(RuntimeException e) {
+        return error(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler({NestedRuntimeException.class})
+    public ResponseEntity<String> handleNestedRuntimeException(NestedRuntimeException e) {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
@@ -57,6 +72,30 @@ public class ExceptionHandlerController {
         return error(CONFLICT, e);
     }
 
+    @ExceptionHandler({vip.yazilim.p2g.web.exception.ConstraintViolationException.class})
+    public ResponseEntity<String> handleConstraintViolationException(vip.yazilim.p2g.web.exception.ConstraintViolationException e) {
+        return error(CONFLICT, e);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return error(CONFLICT, e);
+    }
+
+    @ExceptionHandler({MessageDeliveryException.class})
+    public ResponseEntity<String> handleMessageDeliveryException(MessageDeliveryException e) {
+        return error(FORBIDDEN, e);
+    }
+
+    @ExceptionHandler({InvalidCsrfTokenException.class})
+    public ResponseEntity<String> handleInvalidCsrfTokenException(InvalidCsrfTokenException e) {
+        return error(FORBIDDEN, e);
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
+        return error(FORBIDDEN, e);
+    }
 
     /////////////////////////////
     // Spring Core Lib Exceptions

@@ -4,19 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.SecurityConfig;
+import vip.yazilim.p2g.web.constant.RoomStatus;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.RoomUser;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
-import vip.yazilim.p2g.web.util.DBHelper;
+import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
@@ -25,6 +23,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * * @author mustafaarifsisman - 31.10.2019
@@ -33,7 +32,7 @@ import java.util.Optional;
  */
 @Transactional
 @Service
-public class RoomService extends ACrudServiceImpl<Room, String> implements IRoomService {
+public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomService {
 
     @Autowired
     private IRoomRepo roomRepo;
@@ -53,27 +52,28 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     @Autowired
     private SecurityConfig securityConfig;
 
+    @Autowired
+    private WebSocketController webSocketController;
+
     @Override
-    protected JpaRepository<Room, String> getRepository() {
+    protected JpaRepository<Room, UUID> getRepository() {
         return roomRepo;
     }
 
     @Override
-    protected String getId(Room entity) {
+    protected UUID getId(Room entity) {
         return entity.getUuid();
     }
 
     @Override
     protected Room preInsert(Room entity) {
-        //TODO: firebase chat uuid
-        entity.setUuid(DBHelper.getRandomUuid());
         entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(String userUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserUuid(UUID userUuid) throws DatabaseException {
         Optional<Room> room;
         RoomUser roomUser;
 
@@ -102,15 +102,13 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public RoomModel getRoomModelByRoomUuid(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
 
         List<User> userList;
         List<User> invitedUserList;
-
-        String chatUuid;
 
         // Set Room
         room = getById(roomUuid);
@@ -122,23 +120,19 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         }
 
         // Set User List
-        userList = userService.getUsersByRoomUuid(roomUuid);
+        userList = userService.getUsersByroomUuid(roomUuid);
         roomModel.setUserList(userList);
 
         // Set Invited User List
         invitedUserList = roomInviteService.getInvitedUserListByRoomUuid(roomUuid);
         roomModel.setInvitedUserList(invitedUserList);
 
-        // Set Room Chat Uuid
-        chatUuid = room.get().getChatUuid();
-        roomModel.setChatUuid(chatUuid);
-
         return roomModel;
     }
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
+    public Room createRoom(UUID ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);
@@ -150,7 +144,6 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
         return create(room);
     }
 
-
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
@@ -159,7 +152,7 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
     }
 
     @Override
-    public boolean deleteById(String roomUuid) throws DatabaseException, InvalidArgumentException {
+    public boolean deleteById(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
         Optional<Room> roomOpt = getById(roomUuid);
 
         boolean status = true;
@@ -177,6 +170,14 @@ public class RoomService extends ACrudServiceImpl<Room, String> implements IRoom
             status &= roomInviteService.deleteRoomInvites(roomUuid);
         }
 
+        webSocketController.sendToRoom(roomUuid, RoomStatus.CLOSED);
         return status;
+    }
+
+    @Override
+    public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        room = super.update(room);
+        webSocketController.sendToRoom(room.getUuid(), RoomStatus.UPDATED);
+        return room;
     }
 }

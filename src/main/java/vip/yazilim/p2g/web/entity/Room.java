@@ -1,14 +1,13 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room")
@@ -16,13 +15,16 @@ import java.time.LocalDateTime;
 public class Room implements Serializable {
 
     @Id
-    private String uuid;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
+    private UUID uuid;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 32)
     private String name;
 
-    @Column(name = "owner_uuid", nullable = false)
-    private String ownerUuid;
+    @Column(name = "owner_uuid", unique = true, updatable = false, nullable = false)
+    private UUID ownerUuid;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;
@@ -30,6 +32,7 @@ public class Room implements Serializable {
     @Column(name = "private_flag", nullable = false)
     private Boolean privateFlag;
 
+    @Column(length = 64)
     private String password;
 
     @Column(name = "max_users")
@@ -47,6 +50,7 @@ public class Room implements Serializable {
     @Column(name = "active_flag")
     private Boolean activeFlag;
 
-    private String chatUuid;
+    @Column(name = "country_code", length = 4)
+    private String countryCode;
 
 }

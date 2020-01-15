@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.controller.rest.p2g;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -18,6 +18,7 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -27,13 +28,13 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/user")
-public class UserRest extends ARestCrud<User, String> {
+public class UserRest extends ARestCrud<User, UUID> {
 
     @Autowired
     private IUserService userService;
 
     @Override
-    protected ICrudService<User, String> getService() {
+    protected ICrudService<User, UUID> getService() {
         return userService;
     }
 
@@ -50,7 +51,7 @@ public class UserRest extends ARestCrud<User, String> {
     @Override
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{id}"})
-    public RestResponse<User> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+    public RestResponse<User> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID id) {
         return super.getById(request, response, id);
     }
 
@@ -71,7 +72,7 @@ public class UserRest extends ARestCrud<User, String> {
     @Override
     @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID id) {
         return super.delete(request, response, id);
     }
 
@@ -81,7 +82,7 @@ public class UserRest extends ARestCrud<User, String> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userUuid}/model"})
-    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(userService.getUserModelByUserUuid(userUuid), HttpStatus.OK, request, response);
     }
 }

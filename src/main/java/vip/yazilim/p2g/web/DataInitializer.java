@@ -10,13 +10,14 @@ import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.relation.ISongService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -43,8 +44,8 @@ public class DataInitializer implements CommandLineRunner {
 
         Room testRoom = roomService.createRoom(arif.getUuid(), "Test Room1", "0");
 
-        String roomUuid = testRoom.getUuid();
-        LOGGER.info("--------> testRoomUuid: " + roomUuid);
+        UUID roomUuid = testRoom.getUuid();
+        LOGGER.info("--------> testroomUuid: " + roomUuid.toString());
         LOGGER.info("--------> arifUuid: " + arif.getUuid());
         LOGGER.info("--------> emreUuid: " + emre.getUuid());
         LOGGER.info("--------> mertUuid: " + mert.getUuid());

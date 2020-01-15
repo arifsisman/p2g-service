@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.relation.SpotifyToken;
-import vip.yazilim.p2g.web.service.p2g.ITokenService;
+import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 
@@ -52,7 +53,7 @@ public class AuthorizationRest {
     private TokenRefresher tokenRefresher;
 
     @Autowired
-    private ITokenService tokenService;
+    private ISpotifyTokenService tokenService;
 
     @Autowired
     private IUserService userService;
@@ -70,9 +71,9 @@ public class AuthorizationRest {
 
     @GetMapping("/callback")
     @ResponseBody
-    public SpotifyToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        String userUuid = SecurityHelper.getUserUuid();
-        Optional<User> userOpt = userService.getUserByUuid(userUuid);
+    public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        UUID userUuid = SecurityHelper.getUserUuid();
+        Optional<User> userOpt = userService.getById(userUuid);
 
         if (!userOpt.isPresent()) {
             throw new NotFoundException("User not found");
@@ -88,7 +89,7 @@ public class AuthorizationRest {
         spotifyApi.setRefreshToken(refreshToken);
 
         // save users token
-        SpotifyToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        OAuthToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
         // updates spotify infos every authorize
         userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userUuid), userOpt.get());
 

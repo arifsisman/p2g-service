@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vip.yazilim.p2g.web.config.security.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.Role;
-import vip.yazilim.p2g.web.entity.relation.UserDevice;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 
@@ -49,7 +50,7 @@ public class SpotifyUserRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{userUuid}/devices")
-    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
         return RestResponseFactory.generateResponse(spotifyUserService.getUsersAvailableDevices(userUuid), HttpStatus.OK, request, response);
     }
 }

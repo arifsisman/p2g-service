@@ -9,6 +9,7 @@ import java.util.HashMap;
 public enum Privilege {
     UNDEFINED("undefined"),
     ROOM_GET("room_get"),
+    ROOM_CHAT("room_chat"),
     ROOM_JOIN_AND_LEAVE("room_join"),
     ROOM_INVITE_REPLY("room_invite_reply"),
     ROOM_CREATE("room_create"),
