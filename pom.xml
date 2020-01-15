@@ -193,6 +193,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>vip.yazilim.p2g.web.Play2GetherWebApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
