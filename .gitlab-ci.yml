@@ -1,11 +1,26 @@
-image: maven:latest
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  SPRING_PROFILE_ACTIVE: prod
 
 stages:
   - build
+  - package
 
-build:
+maven-build:
+  image: maven:3-jdk-8
   stage: build
+  script: mvn clean package
+
+docker-build:
+  stage: package
   script:
-    - ./docker-init.sh
-#    - mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId
-    - grep --version
+    - grep -v
+    - ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov "INFO" | grep -ov "Down" | grep -ov "Prog")
+    - POM_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -ov "INFO" | grep -ov "Down" | grep -ov "Prog")
+    - ARTIFACT_NAME="${ARTIFACT_ID}-${POM_VERSION}.jar"
+    - IMAGE_NAME="mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
+    - CONTAINER_NAME=${ARTIFACT_ID}
+    - docker build -t ${IMAGE_NAME} --build-arg ARTIFACT_NAME=${ARTIFACT_NAME} --no-cache .
