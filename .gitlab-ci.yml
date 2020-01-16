@@ -1,6 +1,9 @@
-before_script:
-  - docker info
+image: maven:latest
 
-build_image:
+stages:
+  - build
+
+build:
+  stage: build
   script:
     - echo "HELLOOO"
