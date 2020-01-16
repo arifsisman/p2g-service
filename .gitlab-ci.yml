@@ -7,4 +7,4 @@ build:
   stage: build
   script:
     - ./docker-init.sh
-    - mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov "INFO" | grep -ov "Down" | grep -ov "Prog"
+    - mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId
