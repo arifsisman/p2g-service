@@ -1,4 +1,4 @@
-#mvn clean package
+mvn clean package
 
 ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov "INFO")
 POM_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -ov "INFO")

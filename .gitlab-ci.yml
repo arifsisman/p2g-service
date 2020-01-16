@@ -6,4 +6,5 @@ stages:
 build:
   stage: build
   script:
-    - ./docker-init.sh
+    - ls
+#    - ./docker-init.sh
