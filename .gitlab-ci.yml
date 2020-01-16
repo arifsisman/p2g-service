@@ -2,8 +2,13 @@ image: docker:latest
 services:
   - docker:dind
 
+cache:
+  paths:
+    - .m2/
+
 variables:
   SPRING_PROFILE_ACTIVE: prod
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
 
 stages:
   - build
@@ -18,7 +23,7 @@ maven-build:
     - ls
   artifacts:
     paths:
-      - ./target/*.jar
+      - target/
 
 docker-build:
   stage: package
