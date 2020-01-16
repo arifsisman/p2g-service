@@ -9,6 +9,6 @@ echo ${ARTIFACT_NAME}
 IMAGE_NAME="mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
 CONTAINER_NAME=${ARTIFACT_ID}
 
-docker build -t ${IMAGE_NAME} --build-arg ARTIFACT_NAME=${ARTIFACT_NAME} --no-cache .
-docker rm -vf ${CONTAINER_NAME}
-docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
+#docker build -t ${IMAGE_NAME} --build-arg ARTIFACT_NAME=${ARTIFACT_NAME} --no-cache .
+#docker rm -vf ${CONTAINER_NAME}
+#docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
