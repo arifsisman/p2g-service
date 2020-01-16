@@ -44,12 +44,12 @@
         </profile>
     </profiles>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>jitpack.io</id>-->
+<!--            <url>https://jitpack.io</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
     <dependencies>
 
@@ -188,7 +188,8 @@
         <dependency>
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
-            <version>4.1.0</version>
+<!--            <version>4.1.0</version>-->
+            <version>4.2.1</version>
         </dependency>
 
     </dependencies>
