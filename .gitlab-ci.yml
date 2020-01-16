@@ -18,12 +18,11 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
+    - echo $CI_PROJECT_DIR
     - mvn clean install
-    - cd target
-    - ls
   artifacts:
     paths:
-      - target/
+      -  $CI_PROJECT_DIR/target/*.jar
 
 docker-build:
   stage: package
