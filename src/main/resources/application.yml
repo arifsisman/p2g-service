@@ -1,34 +1,3 @@
-# Configures the port that Eureka Server will be running
-server:
-  port: 8080
-
-# Configure active spring profile
 spring:
   profiles:
     active: dev
-  devtools:
-    restart:
-      exclude: logs/**
-      enabled: false
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_IP}:5432/p2g_db
-    username: postgres
-    password: pos
-    initialization-mode: always
-  jpa:
-    hibernate.ddl-auto: create
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        show_sql: false
-        format_sql: false
-        jdbc.lob.non_contextual_creation: true
-
-# Spotify-Play2Gether configuration
-spotify:
-  clientId: 76f07bcdc1054c32884054e43a135480
-  clientSecret: 9881b96bb7e24401a9162312598185ba
-  redirectUrl: http://${APP_IP}:8080/api/spotify/callback
