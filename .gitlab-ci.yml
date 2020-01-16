@@ -12,10 +12,13 @@ stages:
 maven-build:
   image: maven:3-jdk-8
   stage: build
-  script: mvn clean install
+  script:
+    - mvn clean install
+    - cd target
+    - ls
   artifacts:
     paths:
-      - target/*.jar
+      - ./target/*.jar
 
 docker-build:
   stage: package
