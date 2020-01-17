@@ -203,7 +203,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>vip.yazilim.p2g.web.Play2GetherWebApplication</mainClass>
-                    <includeSystemScope>true</includeSystemScope>
+<!--                    <includeSystemScope>true</includeSystemScope>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -227,6 +227,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>vip.yazilim.p2g.web.Play2GetherWebApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
         <finalName>${project.artifactId}-${project.version}</finalName>

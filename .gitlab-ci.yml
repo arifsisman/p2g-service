@@ -29,7 +29,7 @@ maven-docker-build:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - IMAGE_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION.jar
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
     - docker push $IMAGE_NAME
 
