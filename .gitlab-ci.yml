@@ -52,5 +52,5 @@ deploy_to_server:
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-    - ssh -T arif@142.93.239.61
+    - ssh -iT $SSH_PRIVATE_KEY arif@142.93.239.61
     - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
