@@ -25,7 +25,12 @@ maven-docker-build:
     - IMAGE_NAME=$CI_REGISTRY/$ARTIFACT_ID:$POM_VERSION
     - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
-    - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
+    - >
+      docker build
+        --tag $CI_REGISTRY_IMAGE:$POM_VERSION
+        --build-arg ARTIFACT_NAME=$ARTIFACT_NAME
+        --build-arg SPRING_PROFILE_ACTIVE=$SPRING_PROFILE_ACTIVE
+        --no-cache .
     - docker push $CI_REGISTRY_IMAGE:$POM_VERSION
   artifacts:
     paths:
