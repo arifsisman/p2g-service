@@ -4,10 +4,6 @@ server:
 
 # Configure active spring profile
 spring:
-  devtools:
-    restart:
-      exclude: logs/**
-      enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://142.93.239.61:5432/p2g_db
