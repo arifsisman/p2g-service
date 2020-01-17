@@ -22,7 +22,7 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
-    - eval ARTIFACT_ID_SCRIPT
+    - eval "$ARTIFACT_ID_SCRIPT"
     - echo $ARTIFACT_ID
 #    - mvn -U clean install
 #    - eval ARTIFACT_ID
