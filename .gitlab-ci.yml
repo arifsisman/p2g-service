@@ -1,8 +1,11 @@
-image: twalter/maven-docker:latest
+image: docker:18-git
+
 services:
-  - docker:dind
+  - docker:18-dind
 
 variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
   SPRING_PROFILE_ACTIVE: prod
   ARTIFACT_ID_SCRIPT: "mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -Eiv 'INFO|Down|Prog'"
   POM_VERSION_SCRIPT: "mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -Eiv 'INFO|Down|Prog'"
@@ -26,6 +29,7 @@ stages:
 #      - $CI_PROJECT_DIR/lib/
 
 docker-build:
+  image: twalter/maven-docker:latest
   stage: package
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
