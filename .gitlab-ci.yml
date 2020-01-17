@@ -22,17 +22,16 @@ maven-build:
   stage: build
   script:
     - mvn -U clean install
-  artifacts:
-    paths:
-      -  $CI_PROJECT_DIR/target/
-      -  $CI_PROJECT_DIR/lib/
-
-docker-build:
-  stage: package
-  script:
     - eval $ARTIFACT_ID
     - eval $POM_VERSION
     - eval $ARTIFACT_NAME
     - IMAGE_NAME="mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
-    - CONTAINER_NAME=${ARTIFACT_ID}
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/target/
+      - $CI_PROJECT_DIR/lib/
+
+docker-build:
+  stage: package
+  script:
     - docker build -t ${IMAGE_NAME} --build-arg ARTIFACT_NAME=${ARTIFACT_NAME} --no-cache .
