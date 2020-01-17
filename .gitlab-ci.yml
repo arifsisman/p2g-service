@@ -2,16 +2,17 @@ image: docker:latest
 services:
   - docker:dind
 
-cache:
-  paths:
-    - .m2/
+#cache:
+#  paths:
+#    - .m2/
 
 variables:
   SPRING_PROFILE_ACTIVE: prod
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+#  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
   ARTIFACT_ID: "$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov 'INFO' | grep -ov 'Down' | grep -ov 'Prog')"
   POM_VERSION: "$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -ov 'INFO' | grep -ov 'Down' | grep -ov 'Prog')"
   ARTIFACT_NAME: "${ARTIFACT_ID}-${POM_VERSION}-jar-with-dependencies.jar"
+  IMAGE_NAME: "mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
 
 stages:
   - build
@@ -22,10 +23,10 @@ maven-build:
   stage: build
   script:
     - mvn -U clean install
-    - eval $ARTIFACT_ID
-    - eval $POM_VERSION
+    - exec $ARTIFACT_ID
+    - exec $POM_VERSION
     - eval $ARTIFACT_NAME
-    - IMAGE_NAME="mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
+    - eval $IMAGE_NAME
   artifacts:
     paths:
       - $CI_PROJECT_DIR/target/
