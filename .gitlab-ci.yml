@@ -1,6 +1,4 @@
-image: docker:latest
-services:
-  - docker:dind
+image: twalter/maven-docker:latest
 
 variables:
   SPRING_PROFILE_ACTIVE: prod
@@ -26,13 +24,10 @@ stages:
 #      - $CI_PROJECT_DIR/lib/
 
 docker-build:
-  image: twalter/maven-docker:latest
   stage: package
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
     - IMAGE_NAME=mustafasisman/$ARTIFACT_ID:$POM_VERSION
-    - echo $IMAGE_NAME
-    - echo $ARTIFACT_NAME
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
