@@ -1,18 +1,3 @@
-# Configures the port that Eureka Server will be running
-server:
-  port: 8080
-
-# Configure active spring profile
 spring:
   profiles:
     active: dev
-  devtools:
-    restart:
-      exclude: logs/**
-      enabled: false
-
-# Spotify-Play2Gether configuration
-spotify:
-  clientId: 76f07bcdc1054c32884054e43a135480
-  clientSecret: 9881b96bb7e24401a9162312598185ba
-  redirectUrl: http://${app_ip}:8080/api/spotify/callback
