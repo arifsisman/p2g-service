@@ -44,12 +44,16 @@
         </profile>
     </profiles>
 
-<!--    <repositories>-->
+    <repositories>
 <!--        <repository>-->
 <!--            <id>jitpack.io</id>-->
 <!--            <url>https://jitpack.io</url>-->
 <!--        </repository>-->
-<!--    </repositories>-->
+        <repository>
+            <id>p2g-web-dep</id>
+            <url>${project.build.directory}</url>
+        </repository>
+    </repositories>
 
     <dependencies>
 
