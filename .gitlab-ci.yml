@@ -16,6 +16,11 @@ stages:
   - deploy
 
 before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
   - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
 
 after_script:
@@ -47,10 +52,10 @@ after_script:
 deploy_to_server:
   image: twalter/maven-docker:latest
   stage: deploy
-#  only:
-#    - tags
+  #  only:
+  #    - tags
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-    - ssh -iT $SSH_PRIVATE_KEY arif@142.93.239.61
+    - ssh -T arif@142.93.239.61
     - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
