@@ -57,7 +57,7 @@ deploy_to_server:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - ssh -T arif@142.93.239.61
-    - ls
+    - ls -la
 #    - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
 #    - docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
     - exit
