@@ -9,7 +9,7 @@ services:
 variables:
   SPRING_PROFILE_ACTIVE: prod
 #  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
-  ARTIFACT_ID_SCRIPT: 'ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | egrep -ov "INFO|Down|Prog")'
+  ARTIFACT_ID_SCRIPT: 'mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -Eiv "INFO|Down|Prog"'
   POM_VERSION_SCRIPT: 'POM_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -ov "INFO" | grep -ov "Down" | grep -ov "Prog")'
   ARTIFACT_NAME: "${ARTIFACT_ID}-${POM_VERSION}-jar-with-dependencies.jar"
   IMAGE_NAME: "mustafasisman/${ARTIFACT_ID}:${POM_VERSION}"
@@ -22,7 +22,6 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
-    - egrep --version
     - eval "$ARTIFACT_ID_SCRIPT"
     - echo $ARTIFACT_ID
 #    - mvn -U clean install
