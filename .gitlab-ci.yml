@@ -11,23 +11,28 @@ stages:
   - build
   - package
 
-maven-build:
-  image: maven:3-jdk-8
-  stage: build
+#maven-build:
+#  image: maven:3-jdk-8
+#  stage: build
+#  script:
+  #    - mvn -U clean install
+  #    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
+  #    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
+  #    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+  #    - IMAGE_NAME=mustafasisman/$ARTIFACT_ID:$POM_VERSION
+#  artifacts:
+#    paths:
+#      - $CI_PROJECT_DIR/target/
+#      - $CI_PROJECT_DIR/lib/
+
+docker-build:
+  image: docker-maven:latest
+  stage: package
   script:
-    #    - mvn -U clean install
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
     - IMAGE_NAME=mustafasisman/$ARTIFACT_ID:$POM_VERSION
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/target/
-      - $CI_PROJECT_DIR/lib/
-
-docker-build:
-  stage: package
-  script:
     - echo $IMAGE_NAME
     - echo $ARTIFACT_NAME
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
