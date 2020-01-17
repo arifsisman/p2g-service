@@ -22,10 +22,11 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
-    - TEST=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov 'INFO' | grep -ov 'Down' | grep -ov 'Prog')
-    - echo $TEST
+#    - TEST=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov 'INFO' | grep -ov 'Down' | grep -ov 'Prog')
+#    - echo $TEST
 #    - mvn -U clean install
-#    - eval $ARTIFACT_ID
+    - eval ARTIFACT_ID=$ARTIFACT_ID
+    - echo $ARTIFACT_ID
 #    - eval $POM_VERSION
 #    - eval $ARTIFACT_NAME
 #    - eval $IMAGE_NAME
