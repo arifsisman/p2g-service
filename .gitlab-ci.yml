@@ -26,7 +26,7 @@ stages:
 #      - $CI_PROJECT_DIR/lib/
 
 docker-build:
-  image: docker-maven:latest
+  image: maven-docker:latest
   stage: package
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
