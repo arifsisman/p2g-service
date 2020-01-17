@@ -22,6 +22,7 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
+    - egrep --version
     - eval "$ARTIFACT_ID_SCRIPT"
     - echo $ARTIFACT_ID
 #    - mvn -U clean install
