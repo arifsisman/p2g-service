@@ -12,33 +12,22 @@ variables:
 
 stages:
   - build
-  - package
+  - deploy
 
-#maven-build:
-#  image: maven:3-jdk-8
-#  stage: build
-#  script:
-  #    - mvn -U clean install
-  #    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
-  #    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-  #    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
-  #    - IMAGE_NAME=mustafasisman/$ARTIFACT_ID:$POM_VERSION
-#  artifacts:
-#    paths:
-#      - $CI_PROJECT_DIR/target/
-#      - $CI_PROJECT_DIR/lib/
-
-docker-build:
+maven-docker-build:
   image: twalter/maven-docker:latest
-  stage: package
+  stage: build
+  when: on_success
   script:
     - mvn -U clean install
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-    - IMAGE_NAME=mustafasisman/$ARTIFACT_ID:$POM_VERSION
+    - IMAGE_NAME=$CI_REGISTRY/$ARTIFACT_ID:$POM_VERSION
     - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
+    - docker push $CI_REGISTRY/$ARTIFACT_ID:$POM_VERSION
   artifacts:
-        paths:
-          - $CI_PROJECT_DIR/target/
-          - $CI_PROJECT_DIR/lib/
+    paths:
+      - $CI_PROJECT_DIR/target/
+      - $CI_PROJECT_DIR/lib/
