@@ -62,4 +62,4 @@ deploy_to_server:
     - ssh arif@142.93.239.61
     - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
   after_script:
-    - docker info
+    - ls
