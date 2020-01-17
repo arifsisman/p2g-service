@@ -45,7 +45,6 @@ after_script:
 #    - docker push $CI_REGISTRY_IMAGE:$POM_VERSION
 
 deploy_to_server:
-#  image: twalter/maven-docker:latest
   stage: deploy
   #  only:
   #    - tags
@@ -57,9 +56,10 @@ deploy_to_server:
     - ssh-keyscan 142.93.239.61 >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-#    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
-#    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - ssh arif@142.93.239.61
-    - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
+    - ls
+#    - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
+#    - docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
+    - exit
   after_script:
     - ls
