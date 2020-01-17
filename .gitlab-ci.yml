@@ -26,12 +26,8 @@ maven-docker-build:
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
     - IMAGE_NAME=$CI_REGISTRY_IMAGE:$POM_VERSION
-    - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --build-arg SPRING_PROFILE_ACTIVE=$SPRING_PROFILE_ACTIVE --no-cache .
+    - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
     - docker push $IMAGE_NAME
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/target/
-      - $CI_PROJECT_DIR/lib/
 
 #push_when_tag:
 #  stage: push
