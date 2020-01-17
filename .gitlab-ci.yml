@@ -22,11 +22,13 @@ maven-build:
   image: maven:3-jdk-8
   stage: build
   script:
-    - mvn -U clean install
-    - exec $ARTIFACT_ID
-    - exec $POM_VERSION
-    - eval $ARTIFACT_NAME
-    - eval $IMAGE_NAME
+    - TEST=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.artifactId | grep -ov 'INFO' | grep -ov 'Down' | grep -ov 'Prog')
+    - echo $TEST
+#    - mvn -U clean install
+#    - eval $ARTIFACT_ID
+#    - eval $POM_VERSION
+#    - eval $ARTIFACT_NAME
+#    - eval $IMAGE_NAME
   artifacts:
     paths:
       - $CI_PROJECT_DIR/target/
