@@ -24,7 +24,7 @@ maven-build:
   script:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - echo $ARTIFACT_ID
-    - eval POM_VERSION=\$\(POM_VERSION_SCRIPT\)
+    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - echo $POM_VERSION
     - eval $ARTIFACT_NAME
     - eval $IMAGE_NAME
