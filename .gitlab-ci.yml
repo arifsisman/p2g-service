@@ -38,7 +38,6 @@ push_when_tag:
   only:
     - tags
   script:
-    - mvn clean package
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$POM_VERSION
