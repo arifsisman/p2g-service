@@ -21,33 +21,34 @@ before_script:
 after_script:
   - docker logout $CI_REGISTRY
 
-#maven-docker-build:
-#  image: twalter/maven-docker:latest
-#  stage: build
-#  script:
-#    - mvn clean package
-#    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
-#    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-#    - IMAGE_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-#    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
-#    - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
-#    - docker push $IMAGE_NAME
-#
-#push_when_tag:
-#  image: twalter/maven-docker:latest
-#  stage: push
-#  only:
-#    - tags
-#  script:
-#    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-#    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-#    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$POM_VERSION
-#    - docker push $CI_REGISTRY_IMAGE:$POM_VERSION
+maven-docker-build:
+  image: twalter/maven-docker:latest
+  stage: build
+  script:
+    - mvn clean package
+    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
+    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
+    - IMAGE_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+    - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
+    - docker push $IMAGE_NAME
+
+push_when_tag:
+  image: twalter/maven-docker:latest
+  stage: push
+  only:
+    - tags
+  script:
+    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$POM_VERSION
+    - docker push $CI_REGISTRY_IMAGE:$POM_VERSION
 
 deploy_to_server:
+  image: twalter/maven-docker:latest
   stage: deploy
-  #  only:
-  #    - tags
+  only:
+    - tags
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
@@ -56,9 +57,7 @@ deploy_to_server:
     - ssh-keyscan 142.93.239.61 >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ssh -T arif@142.93.239.61 "ls && hostname -I && exit"
-#    - docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/$ARTIFACT_ID:$POM_VERSION
-#    - docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
-    - hostname -I
+    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
+    - ssh arif@142.93.239.61 "hostname -I && (docker rm -vf p2g-web || true) && docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/p2g-web:$POM_VERSION && docker run -d --name p2g-web -p 8080:8080 registry.gitlab.com/yazilim.vip/projects/play2gether/p2g-web && exit"
   after_script:
-    -
+    - ls
