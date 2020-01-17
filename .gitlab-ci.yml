@@ -14,16 +14,18 @@ stages:
   - build
   - push
 
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+
 maven-docker-build:
   image: twalter/maven-docker:latest
   stage: build
   script:
     - mvn clean package
-#    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
+    - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
-    - ARTIFACT_NAME=$CI_PROJECT_NAME-$POM_VERSION-jar-with-dependencies.jar
-    - IMAGE_NAME=$CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$POM_VERSION
-    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+    - IMAGE_NAME=$CI_REGISTRY_IMAGE:$POM_VERSION
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --build-arg SPRING_PROFILE_ACTIVE=$SPRING_PROFILE_ACTIVE --no-cache .
     - docker push $IMAGE_NAME
   artifacts:
