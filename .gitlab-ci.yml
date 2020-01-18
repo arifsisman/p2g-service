@@ -13,6 +13,7 @@ variables:
 stages:
   - build
   - push
+  - deploy
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -28,7 +29,7 @@ maven-docker-build:
     - eval ARTIFACT_ID=\$\($ARTIFACT_ID_SCRIPT\)
     - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
     - IMAGE_NAME=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION-jar-with-dependencies.jar
+    - ARTIFACT_NAME=$ARTIFACT_ID-$POM_VERSION.jar
     - docker build -t $IMAGE_NAME --build-arg ARTIFACT_NAME=$ARTIFACT_NAME --no-cache .
     - docker push $IMAGE_NAME
 
@@ -42,3 +43,21 @@ push_when_tag:
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$POM_VERSION
     - docker push $CI_REGISTRY_IMAGE:$POM_VERSION
+
+deploy_to_server:
+  image: twalter/maven-docker:latest
+  stage: deploy
+  only:
+    - tags
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan 142.93.239.61 >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - eval POM_VERSION=\$\($POM_VERSION_SCRIPT\)
+    - ssh arif@142.93.239.61 "hostname -I && (docker rm -vf p2g-web || true) && docker pull registry.gitlab.com/yazilim.vip/projects/play2gether/p2g-web:$POM_VERSION && docker run -d --name p2g-web -p 8080:8080 registry.gitlab.com/yazilim.vip/projects/play2gether/p2g-web:$POM_VERSION && exit"
+  after_script:
+    - echo
