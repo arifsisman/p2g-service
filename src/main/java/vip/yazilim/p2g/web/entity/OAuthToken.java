@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.UUID;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "oauth_token")
@@ -17,7 +16,7 @@ public class OAuthToken implements Serializable {
 
     @Id
     @Column(name = "uuid", unique = true, nullable = false)
-    private UUID userUuid;
+    private String userId;
 
     @Column(name = "access_token")
     private String accessToken;

@@ -104,9 +104,9 @@ public class RoomRest extends ARestCrud<Room, UUID> {
 
     // RoomInvite (Invite & Accept & Reject)
     @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE)
-    @PostMapping("/{roomUuid}/invite/{userUuid}")
-    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID roomUuid, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomInviteService.invite(roomUuid, userUuid), HttpStatus.OK, request, response);
+    @PostMapping("/{roomUuid}/invite/{userId}")
+    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID roomUuid, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomInviteService.invite(roomUuid, userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

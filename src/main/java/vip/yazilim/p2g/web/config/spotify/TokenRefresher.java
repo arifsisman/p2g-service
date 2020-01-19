@@ -12,7 +12,6 @@ import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -32,12 +31,12 @@ public class TokenRefresher {
     @Autowired
     private ISpotifyTokenService tokenService;
 
-    public void refreshToken(UUID userUuid){
+    public void refreshToken(String userId){
         Optional<OAuthToken> tokenOptional;
         OAuthToken token;
 
         try {
-            tokenOptional = tokenService.getTokenByUserUuid(userUuid);
+            tokenOptional = tokenService.getTokenByUserId(userId);
         } catch (DatabaseException e) {
             LOGGER.error("Error while fetching tokens!");
             return;
@@ -46,7 +45,7 @@ public class TokenRefresher {
         if (tokenOptional.isPresent()) {
             token = tokenOptional.get();
         } else {
-            LOGGER.error("Token not found with userUuid[{}]", userUuid);
+            LOGGER.error("Token not found with userId[{}]", userId);
             return;
         }
 
@@ -68,9 +67,9 @@ public class TokenRefresher {
             String accessToken = authorizationCodeCredentials.getAccessToken();
             spotifyApi.setAccessToken(accessToken);
 
-            tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+            tokenService.saveUserToken(userId, accessToken, refreshToken);
 
-//                LOGGER.debug("Access token updated for userUuid[{}]", userUuid);
+//                LOGGER.debug("Access token updated for userId[{}]", userId);
 //                LOGGER.debug("Access Token: " + accessToken);
         } catch (Exception e) {
             LOGGER.error("Error while getting new access token!");

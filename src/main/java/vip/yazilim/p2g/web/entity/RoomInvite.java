@@ -22,7 +22,7 @@ public class RoomInvite {
     private UUID roomUuid;
 
     @Column(name = "user_uuid", updatable = false, nullable = false)
-    private UUID userUuid;
+    private String userId;
 
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime invitationDate;

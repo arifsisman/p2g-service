@@ -42,16 +42,16 @@ public class DataInitializer implements CommandLineRunner {
         User emre = userService.createUser("emre", "emre", "0");
         User mert = userService.createUser("mert", "mert", "0");
 
-        Room testRoom = roomService.createRoom(arif.getUuid(), "Test Room1", "0");
+        Room testRoom = roomService.createRoom(arif.getId(), "Test Room1", "0");
 
         UUID roomUuid = testRoom.getUuid();
         LOGGER.info("--------> testroomUuid: " + roomUuid.toString());
-        LOGGER.info("--------> arifUuid: " + arif.getUuid());
-        LOGGER.info("--------> emreUuid: " + emre.getUuid());
-        LOGGER.info("--------> mertUuid: " + mert.getUuid());
+        LOGGER.info("--------> arifUuid: " + arif.getId());
+        LOGGER.info("--------> emreUuid: " + emre.getId());
+        LOGGER.info("--------> mertUuid: " + mert.getId());
 
 
-        roomUserService.joinRoom(roomUuid, emre.getUuid(), "0", Role.ROOM_USER);
+        roomUserService.joinRoom(roomUuid, emre.getId(), "0", Role.ROOM_USER);
 
         songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
         songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);

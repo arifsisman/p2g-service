@@ -1,13 +1,14 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import vip.yazilim.p2g.web.constant.Constants;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -19,11 +20,10 @@ import java.util.UUID;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
-    private UUID uuid;
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
+    private String id;
 
+    //TODO: display_name to name
     @Column(name = "display_name", nullable = false, length = 64)
     private String displayName;
 

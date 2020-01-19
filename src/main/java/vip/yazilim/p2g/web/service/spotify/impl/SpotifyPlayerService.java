@@ -227,11 +227,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
-        UUID userUuid = roomUser.getUserUuid();
+        String userId = roomUser.getUserId();
         int ms = Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
 
-        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
-        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
 
         if (token.isPresent() && !userDevices.isEmpty()) {
             String accessToken = token.get().getAccessToken();
@@ -248,11 +248,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     private boolean seek(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
-        UUID userUuid = roomUser.getUserUuid();
+        String userId = roomUser.getUserId();
         int ms = Math.toIntExact(song.getCurrentMs());
 
-        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
-        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
 
         if (token.isPresent() && !userDevices.isEmpty()) {
             String accessToken = token.get().getAccessToken();
@@ -275,12 +275,12 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<User> userList = userService.getUsersByroomUuid(roomUuid);
 
         for (User u : userList) {
-            UUID userUuid = u.getUuid();
-            Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
+            String userId = u.getId();
+            Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
 
             token.ifPresent(spotifyToken -> spotifyTokenList.add(spotifyToken.getAccessToken()));
 
-            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
             if (!userDevices.isEmpty())
                 userDeviceList.add(userDevices.get(0).getId());
         }
@@ -299,9 +299,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<User> userList = userService.getUsersByroomUuid(roomUuid);
 
         for (User u : userList) {
-            UUID userUuid = u.getUuid();
-            Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
-            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+            String userId = u.getId();
+            Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+            List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
 
             if (token.isPresent() && !userDevices.isEmpty()) {
                 map.put(token.get().getAccessToken(), userDevices.get(0).getId());
@@ -311,11 +311,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return map;
     }
 
-    private HashMap<String, String> getUserTokenDeviceMap(UUID userUuid) throws DatabaseException {
+    private HashMap<String, String> getUserTokenDeviceMap(String userId) throws DatabaseException {
         HashMap<String, String> map = new HashMap<>();
 
-        Optional<OAuthToken> token = tokenService.getTokenByUserUuid(userUuid);
-        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserUuid(userUuid);
+        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
 
         if (token.isPresent() && !userDevices.isEmpty()) {
             map.put(token.get().getAccessToken(), userDevices.get(0).getId());

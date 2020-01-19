@@ -42,7 +42,7 @@ import java.util.UUID;
  */
 @Transactional
 @Service
-public class UserService extends ACrudServiceImpl<User, UUID> implements IUserService {
+public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -66,13 +66,13 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
     private AAuthorityProvider authorityProvider;
 
     @Override
-    protected JpaRepository<User, UUID> getRepository() {
+    protected JpaRepository<User, String> getRepository() {
         return userRepo;
     }
 
     @Override
-    protected UUID getId(User entity) {
-        return entity.getUuid();
+    protected String getId(User entity) {
+        return entity.getId();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
     }
 
     @Override
-    public UserModel getUserModelByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         UserModel userModel = new UserModel();
 
         Optional<User> userOpt;
@@ -109,13 +109,13 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
         List<User> friendRequests;
 
         // Set User
-        userOpt = getById(userUuid);
+        userOpt = getById(userId);
         if (!userOpt.isPresent()) {
             throw new NotFoundException("User not found");
         }
 
         // Set Room & Role
-        roomOpt = roomService.getRoomByUserUuid(userUuid);
+        roomOpt = roomService.getRoomByUserId(userId);
 
         // If user joined a room, user has got a room and role
         // Else user is not in a room, user hasn't got a room and role
@@ -123,16 +123,16 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
             userModel.setRoom(roomOpt.get());
 
             UUID roomUuid = roomOpt.get().getUuid();
-            roomRole = roomUserService.getRoleByRoomUuidAndUserUuid(roomUuid, userUuid);
+            roomRole = roomUserService.getRoleByRoomUuidAndUserId(roomUuid, userId);
             userModel.setRoomRole(roomRole);
         }
 
         // Set Friends
-        friends = friendRequestService.getFriendsByUserUuid(userUuid);
+        friends = friendRequestService.getFriendsByUserId(userId);
         userModel.setFriends(friends);
 
         // Set Friend Requests
-        friendRequests = friendRequestService.getFriendRequestsByUserUuid(userUuid);
+        friendRequests = friendRequestService.getFriendRequestsByUserId(userId);
         userModel.setFriendRequests(friendRequests);
 
         return userModel;
@@ -144,8 +144,8 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
 
         for (RoomUser roomUser : roomUserList) {
-            UUID userUuid = roomUser.getUserUuid();
-            getById(userUuid).ifPresent(userList::add);
+            String userId = roomUser.getUserId();
+            getById(userId).ifPresent(userList::add);
         }
 
         return userList;
@@ -155,6 +155,7 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
     @Override
     public User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException {
         User user = new User();
+        user.setId(username);
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);
@@ -181,20 +182,20 @@ public class UserService extends ACrudServiceImpl<User, UUID> implements IUserSe
             user.setImageUrl(images[0].getUrl());
         }
 
-        spotifyUserService.updateUsersAvailableDevices(user.getUuid());
+        spotifyUserService.updateUsersAvailableDevices(user.getId());
 
         return user;
     }
 
     @Override
-    public boolean hasSystemRole(UUID userUuid, Role role) throws DatabaseException, InvalidArgumentException {
-        Optional<User> userOpt = getById(userUuid);
+    public boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException {
+        Optional<User> userOpt = getById(userId);
         return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRoleName()));
     }
 
     @Override
-    public boolean hasSystemPrivilege(UUID userUuid, Privilege privilege) throws DatabaseException, InvalidArgumentException {
-        Optional<User> roomUserOpt = getById(userUuid);
+    public boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException {
+        Optional<User> roomUserOpt = getById(userId);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
     }
 }

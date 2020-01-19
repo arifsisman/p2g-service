@@ -34,13 +34,13 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     private IUserService userService;
 
     @Override
-    public List<UserDevice> getUserDevicesByUserUuid(UUID userUuid) throws DatabaseException {
+    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
         List<UserDevice> userDeviceList;
 
         try {
-            userDeviceList = userDeviceRepo.findByUserUuidOrderByActiveFlagDesc(userUuid);
+            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting UserDevice with userUuid[%s]", userUuid);
+            String errorMessage = String.format("An error occurred while getting UserDevice with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
@@ -53,7 +53,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
         List<User> userList = userService.getUsersByroomUuid(roomUuid);
 
         for (User u : userList) {
-            List<UserDevice> userDevices = getUserDevicesByUserUuid(u.getUuid());
+            List<UserDevice> userDevices = getUserDevicesByUserId(u.getId());
             if (!userDevices.isEmpty())
                 userDeviceList.add(userDevices.get(0));
         }

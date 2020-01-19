@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class ChatMessage {
-    private String userUuid;
+    private String userId;
     private String userName;
     private String roomUuid;
     private String message;

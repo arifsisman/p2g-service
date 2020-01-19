@@ -44,19 +44,19 @@
         }
 
         function connectUser() {
-            let userUuid = document.getElementById("userUuid").value;
+            let userId = document.getElementById("userId").value;
 
             let headerName = "X-XSRF-TOKEN";
             let token = getCookieValue("XSRF-TOKEN");
             let headers = {};
             headers[headerName] = token;
 
-            const socket = new WebSocket('ws://' + document.location.host + '/p2g/user/' + userUuid);
+            const socket = new WebSocket('ws://' + document.location.host + '/p2g/user/' + userId);
             userStompClient = Stomp.over(socket);
             userStompClient.connect(headers, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                userStompClient.subscribe("/p2g/user/" + userUuid, function (output) {
+                userStompClient.subscribe("/p2g/user/" + userId, function (output) {
                     showOutput(JSON.parse(output.body));
                 })
             })
@@ -64,14 +64,14 @@
 
         function sendMessage() {
             let roomUuid = document.getElementById("roomUuid").value;
-            let userUuid = document.getElementById("userUuid").value;
+            let userId = document.getElementById("userId").value;
             let userName = document.getElementById('userName').value;
             let message = document.getElementById('message').value;
             let now = new Date();
             let timestamp = now.toISOString();
 
             roomStompClient.send("/p2g/room/" + roomUuid, {}, JSON.stringify({
-                'userUuid': userUuid,
+                'userId': userId,
                 'userName': userName,
                 'roomUuid': roomUuid,
                 'message': message,
@@ -106,8 +106,8 @@
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     <div>
         roomUuid: <label for="roomUuid"></label><input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
-        userUuid: <label for="userUuid"></label><input disabled="disabled" type="text" id="userUuid"
-                                                       th:value="${userUuid}"/><br/>
+        userId: <label for="userId"></label><input disabled="disabled" type="text" id="userId"
+                                                       th:value="${userId}"/><br/>
         userName: <label for="userName"></label><input disabled="disabled" type="text" id="userName"
                                                        th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
         <button id="connect" onclick="connectRoom();">Connect</button>

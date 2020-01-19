@@ -26,9 +26,9 @@ public class PageController {
 
     @GetMapping("/ws")
     public String ws(Model model) throws DatabaseException {
-        model.addAttribute("userUuid", SecurityHelper.getUserUuid());
+        model.addAttribute("userId", SecurityHelper.getUserId());
 
-        Optional<RoomUser> roomUser = roomUserService.getRoomUser(SecurityHelper.getUserUuid());
+        Optional<RoomUser> roomUser = roomUserService.getRoomUser(SecurityHelper.getUserId());
         roomUser.ifPresent(user -> model.addAttribute("roomUuid", user.getRoomUuid()));
 
         return "page_ws";

@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
-    List<UserDevice> getUserDevicesByUserUuid(UUID userUuid) throws DatabaseException;
+    List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
 
     List<UserDevice> getUserDevicesByroomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
 

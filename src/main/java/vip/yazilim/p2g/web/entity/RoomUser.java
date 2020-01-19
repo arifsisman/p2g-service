@@ -23,7 +23,7 @@ public class RoomUser implements Serializable {
     private UUID roomUuid;
 
     @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
-    private UUID userUuid;
+    private String userId;
 
     @Column(name = "role_name", length = 16)
     private String roleName;

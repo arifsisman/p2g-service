@@ -69,7 +69,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         }
 
         for (RoomInvite invite : roomInviteList) {
-            Optional<User> user = userService.getById(invite.getUserUuid());
+            Optional<User> user = userService.getById(invite.getUserId());
             user.ifPresent(inviteList::add);
         }
 
@@ -77,18 +77,18 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(UUID roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomUuidAndUserUuid(roomUuid, userUuid);
+    public RoomInvite invite(UUID roomUuid, String userId) throws DatabaseException, InvalidArgumentException {
+        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomUuidAndUserId(roomUuid, userId);
 
         if (!existingInvite.isPresent()) {
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomUuid(roomUuid);
-            roomInvite.setUserUuid(userUuid);
+            roomInvite.setUserId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
             roomInvite.setAcceptedFlag(false);
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            webSocketController.sendToUser(userUuid, createdRoomInvite);
+            webSocketController.sendToUser(userId, createdRoomInvite);
             return createdRoomInvite;
         } else {
             throw new ConstraintViolationException("Invite already exists");

@@ -22,19 +22,19 @@ import java.util.UUID;
 public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     List<RoomUser> getRoomUsersByRoomUuid(UUID roomUuid) throws DatabaseException;
-    Optional<RoomUser> getRoomUser(UUID userUuid) throws DatabaseException;
-    Optional<RoomUser> getRoomUser(UUID roomUuid, UUID userUuid) throws DatabaseException;
+    Optional<RoomUser> getRoomUser(String userId) throws DatabaseException;
+    Optional<RoomUser> getRoomUser(UUID roomUuid, String userId) throws DatabaseException;
 
     RoomUser joinRoom(UUID roomUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 
-    RoomUser joinRoom(UUID roomUuid, UUID userUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    RoomUser joinRoomOwner(UUID roomUuid, UUID userUuid) throws DatabaseException, InvalidArgumentException;
+    RoomUser joinRoom(UUID roomUuid, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    RoomUser joinRoomOwner(UUID roomUuid, String userId) throws DatabaseException, InvalidArgumentException;
 
     boolean leaveRoom() throws DatabaseException, InvalidArgumentException;
 
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException;
 
-    Role getRoleByRoomUuidAndUserUuid(UUID roomUuid, UUID userUuid) throws DatabaseException;
+    Role getRoleByRoomUuidAndUserId(UUID roomUuid, String userId) throws DatabaseException;
 
     // Rest
     boolean deleteRoomUsers(UUID roomUuid) throws DatabaseException;
@@ -42,7 +42,7 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
     List<Privilege> promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     List<Privilege> demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
-    boolean hasRoomPrivilege(UUID userUuid, Privilege privilege) throws DatabaseException;
+    boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException;
 
-    boolean hasRoomRole(UUID userUuid, Role role) throws DatabaseException;
+    boolean hasRoomRole(String userId, Role role) throws DatabaseException;
 }

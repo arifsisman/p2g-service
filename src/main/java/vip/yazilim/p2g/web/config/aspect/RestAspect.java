@@ -97,18 +97,18 @@ public class RestAspect {
     // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!roomUserService.hasRoomPrivilege(userUuid, privilege)) {
+        if (!roomUserService.hasRoomPrivilege(userId, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handle(HasSystemPrivilege hasRoomPrivilege) throws DatabaseException, InvalidArgumentException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!userService.hasSystemPrivilege(userUuid, privilege)) {
+        if (!userService.hasSystemPrivilege(userId, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
@@ -116,25 +116,25 @@ public class RestAspect {
     // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
         Role role = hasRoomRole.role();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!roomUserService.hasRoomRole(userUuid, role)) {
+        if (!roomUserService.hasRoomRole(userId, role)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
         Role role = hasSystemRole.role();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!userService.hasSystemRole(userUuid, role)) {
+        if (!userService.hasSystemRole(userId, role)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handleUpdateRoomSongs() throws DatabaseException {
-        UUID userUuid = SecurityHelper.getUserUuid();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
         if (roomUserOpt.isPresent()) {
             UUID roomUuid = roomUserOpt.get().getRoomUuid();

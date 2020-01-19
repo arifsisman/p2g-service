@@ -28,27 +28,27 @@ public class WebSocketController {
 
     @SubscribeMapping("/p2g/room/{roomUuid}")
     public void subscribeToRoomWebSocket(@DestinationVariable UUID roomUuid, Authentication authentication) {
-        UUID userUuid = SecurityHelper.getUserUuid(authentication);
+        String userId = SecurityHelper.getUserId(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
-        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userUuid, roomUuid);
+        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomUuid);
         ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomUuid.toString()
                 , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
         sendToRoom(roomUuid, joinMessage);
     }
 
-    @SubscribeMapping("/p2g/user/{userUuid}")
-    public void subscribeToUserWebSocket(@DestinationVariable UUID userUuid, Authentication authentication) {
+    @SubscribeMapping("/p2g/user/{userId}")
+    public void subscribeToUserWebSocket(@DestinationVariable String userId, Authentication authentication) {
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
-        LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userUuid, userUuid);
+        LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
     public void sendToRoom(UUID roomUuid, Object payload) {
         messagingTemplate.convertAndSend("/p2g/room/" + roomUuid, payload);
     }
 
-    public void sendToUser(UUID userUuid, Object payload) {
-        messagingTemplate.convertAndSend("/p2g/user/" + userUuid, payload);
+    public void sendToUser(String userId, Object payload) {
+        messagingTemplate.convertAndSend("/p2g/user/" + userId, payload);
     }
 
 }

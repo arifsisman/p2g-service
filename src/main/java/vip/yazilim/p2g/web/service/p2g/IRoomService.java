@@ -15,10 +15,10 @@ import java.util.UUID;
  */
 public interface IRoomService extends ICrudService<Room, UUID> {
 
-    Optional<Room> getRoomByUserUuid(UUID userUuid) throws DatabaseException;
+    Optional<Room> getRoomByUserId(String userId) throws DatabaseException;
 
     //Rest
     RoomModel getRoomModelByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
-    Room createRoom(UUID ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
+    Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
 
 }

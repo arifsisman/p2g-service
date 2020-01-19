@@ -20,7 +20,6 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -45,28 +44,28 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public User getCurrentSpotifyUser(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
-        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
+    public User getCurrentSpotifyUser(String userId) throws DatabaseException, IOException, SpotifyWebApiException {
+        OAuthToken OAuthToken = tokenService.getTokenByUserId(userId).orElseThrow(() -> new NotFoundException("Token not found for userId: " + userId));
         return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), OAuthToken.getAccessToken());
     }
 
     @Override
-    public List<UserDevice> getUsersAvailableDevices(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+    public List<UserDevice> getUsersAvailableDevices(String userId) throws DatabaseException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = new LinkedList<>();
 
-        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
+        OAuthToken OAuthToken = tokenService.getTokenByUserId(userId).orElseThrow(() -> new NotFoundException("Token not found for userId: " + userId));
 
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), OAuthToken.getAccessToken());
 
         if (devices.length == 0) {
-            String err = String.format("Can not found any device for userUuid[%s]", userUuid);
+            String err = String.format("Can not found any device for userId[%s]", userId);
             throw new NotFoundException(err);
         }
 
         for (Device d : devices) {
             UserDevice userDevice = new UserDevice();
 
-            userDevice.setUserUuid(userUuid);
+            userDevice.setUserId(userId);
             userDevice.setId(d.getId());
             userDevice.setPlatform(Platform.SPOTIFY.getName());
             userDevice.setDeviceName(d.getName());
@@ -81,8 +80,8 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(UUID userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        List<UserDevice> userDeviceList = getUsersAvailableDevices(userUuid);
+    public List<UserDevice> updateUsersAvailableDevices(String userId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        List<UserDevice> userDeviceList = getUsersAvailableDevices(userId);
 
         for (UserDevice userDevice : userDeviceList) {
             userDeviceService.create(userDevice);

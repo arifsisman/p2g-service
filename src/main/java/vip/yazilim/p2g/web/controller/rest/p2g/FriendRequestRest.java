@@ -19,7 +19,6 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -62,9 +61,9 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
     ///////////////////////////////
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/add/{userUuid}")
-    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserUuid(), userUuid), HttpStatus.OK, request, response);
+    @PostMapping("/add/{userId}")
+    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserId(), userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

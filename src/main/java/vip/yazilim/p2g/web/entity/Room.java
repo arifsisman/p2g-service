@@ -24,7 +24,7 @@ public class Room implements Serializable {
     private String name;
 
     @Column(name = "owner_uuid", unique = true, updatable = false, nullable = false)
-    private UUID ownerUuid;
+    private String ownerUuid;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;

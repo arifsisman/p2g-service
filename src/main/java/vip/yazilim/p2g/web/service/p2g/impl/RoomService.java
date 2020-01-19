@@ -73,28 +73,28 @@ public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomSe
     }
 
     @Override
-    public Optional<Room> getRoomByUserUuid(UUID userUuid) throws DatabaseException {
+    public Optional<Room> getRoomByUserId(String userId) throws DatabaseException {
         Optional<Room> room;
         RoomUser roomUser;
 
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
         if (roomUserOpt.isPresent()) {
             roomUser = roomUserOpt.get();
         } else {
-            String err = String.format("user[%s] not in any room", userUuid);
+            String err = String.format("user[%s] not in any room", userId);
             throw new NotFoundException(err);
         }
 
         try {
             room = getById(roomUser.getRoomUuid());
         } catch (Exception exception) {
-            String err = String.format("An error occurred while getting Room with userUuid[%s]", userUuid);
+            String err = String.format("An error occurred while getting Room with userId[%s]", userId);
             throw new DatabaseReadException(err, exception);
         }
 
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", userUuid);
+            String err = String.format("Room[%s] not found", userId);
             throw new NotFoundException(err);
         }
 
@@ -132,7 +132,7 @@ public class RoomService extends ACrudServiceImpl<Room, UUID> implements IRoomSe
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(UUID ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
+    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
         room.setOwnerUuid(ownerUuid);

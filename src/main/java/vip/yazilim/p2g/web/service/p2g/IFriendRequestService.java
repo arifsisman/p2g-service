@@ -10,7 +10,6 @@ import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 2.11.2019
@@ -18,10 +17,10 @@ import java.util.UUID;
  */
 public interface IFriendRequestService extends ICrudService<FriendRequest, Long> {
 
-    List<User> getFriendsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException;
-    List<User> getFriendRequestsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException;
-    Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(UUID user1, UUID user2) throws DatabaseReadException;
-    boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseException, InvalidArgumentException;
+    List<User> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<User> getFriendRequestsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    Optional<FriendRequest> getFriendRequestByUserAndFriendId(String user1, String user2) throws DatabaseReadException;
+    boolean createFriendRequest(String user1, String user2) throws DatabaseException, InvalidArgumentException;
     boolean acceptFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
     boolean ignoreFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
     boolean rejectFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;

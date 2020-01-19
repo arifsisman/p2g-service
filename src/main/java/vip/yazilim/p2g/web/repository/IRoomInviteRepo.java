@@ -14,6 +14,6 @@ import java.util.UUID;
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, Long> {
 
     List<RoomInvite> findByRoomUuid(UUID roomUuid);
-    Optional<RoomInvite> findByRoomUuidAndUserUuid(UUID roomUuid, UUID userUuid);
+    Optional<RoomInvite> findByRoomUuidAndUserId(UUID roomUuid, String userId);
 
 }

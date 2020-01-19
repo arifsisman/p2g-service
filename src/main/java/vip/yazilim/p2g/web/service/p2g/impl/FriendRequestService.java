@@ -22,7 +22,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -49,19 +48,19 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
         try {
-            friendRequestList = friendRequestRepo.findByUserUuid(userUuid);
+            friendRequestList = friendRequestRepo.findByUserId(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userUuid);
+            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
         for (FriendRequest uf : friendRequestList) {
-            Optional<User> user = userService.getById(uf.getUserUuid());
+            Optional<User> user = userService.getById(uf.getUserId());
             user.ifPresent(users::add);
         }
 
@@ -69,20 +68,20 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendRequestsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getFriendRequestsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
         try {
-            friendRequestList = friendRequestRepo.findByUserUuid(userUuid);
+            friendRequestList = friendRequestRepo.findByUserId(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userUuid);
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
         for (FriendRequest uf : friendRequestList) {
             if (uf.getRequestStatus().equals(FriendRequestStatus.WAITING.toString())) {
-                Optional<User> user = userService.getById(uf.getUserUuid());
+                Optional<User> user = userService.getById(uf.getUserId());
                 user.ifPresent(users::add);
             }
         }
@@ -91,9 +90,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(UUID user1, UUID user2) throws DatabaseReadException {
+    public Optional<FriendRequest> getFriendRequestByUserAndFriendId(String user1, String user2) throws DatabaseReadException {
         try {
-            return friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
+            return friendRequestRepo.findByUserIdAndFriendId(user1, user2);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", user1, user2);
             throw new DatabaseReadException(errorMessage, exception);
@@ -101,14 +100,14 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseException, InvalidArgumentException {
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
+    public boolean createFriendRequest(String user1, String user2) throws DatabaseException, InvalidArgumentException {
+        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findByUserIdAndFriendId(user1, user2);
 
         if (!existingFriendRequest.isPresent()) {
             FriendRequest friendRequest = new FriendRequest();
 
-            friendRequest.setUserUuid(user1);
-            friendRequest.setFriendUuid(user2);
+            friendRequest.setUserId(user1);
+            friendRequest.setFriendId(user2);
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);

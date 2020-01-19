@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 
@@ -45,12 +44,12 @@ public class SpotifyUserRest {
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/current")
     public RestResponse<User> getCurrentSpotifyUser(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, IOException, SpotifyWebApiException {
-        return RestResponseFactory.generateResponse(spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserUuid()), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping("/{userUuid}/devices")
-    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
-        return RestResponseFactory.generateResponse(spotifyUserService.getUsersAvailableDevices(userUuid), HttpStatus.OK, request, response);
+    @GetMapping("/{userId}/devices")
+    public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, IOException, SpotifyWebApiException {
+        return RestResponseFactory.generateResponse(spotifyUserService.getUsersAvailableDevices(userId), HttpStatus.OK, request, response);
     }
 }

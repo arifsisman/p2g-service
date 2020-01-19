@@ -29,7 +29,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 
@@ -74,8 +73,8 @@ public class AuthorizationRest {
     @GetMapping("/callback")
     @ResponseBody
     public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        UUID userUuid = SecurityHelper.getUserUuid();
-        Optional<User> userOpt = userService.getById(userUuid);
+        String userId = SecurityHelper.getUserId();
+        Optional<User> userOpt = userService.getById(userId);
 
         if (!userOpt.isPresent()) {
             throw new NotFoundException("User not found");
@@ -91,9 +90,9 @@ public class AuthorizationRest {
         spotifyApi.setRefreshToken(refreshToken);
 
         // save users token
-        OAuthToken token = tokenService.saveUserToken(userUuid, accessToken, refreshToken);
+        OAuthToken token = tokenService.saveUserToken(userId, accessToken, refreshToken);
         // updates spotify infos every authorize
-        userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userUuid), userOpt.get());
+        userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userId), userOpt.get());
 
         // Set Token refresh scheduler
         int delayMs = 55 * 60 * 1000;
@@ -101,7 +100,7 @@ public class AuthorizationRest {
         Date startDate = new Date(now.getTime() + delayMs);
 
         tokenRefreshScheduler.getScheduler()
-                .scheduleWithFixedDelay(() -> tokenRefresher.refreshToken(userUuid), startDate, delayMs);
+                .scheduleWithFixedDelay(() -> tokenRefresher.refreshToken(userId), startDate, delayMs);
 
         return token;
     }

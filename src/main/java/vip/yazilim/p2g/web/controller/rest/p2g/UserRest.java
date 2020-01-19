@@ -18,7 +18,6 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -28,13 +27,13 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/user")
-public class UserRest extends ARestCrud<User, UUID> {
+public class UserRest extends ARestCrud<User, String> {
 
     @Autowired
     private IUserService userService;
 
     @Override
-    protected ICrudService<User, UUID> getService() {
+    protected ICrudService<User, String> getService() {
         return userService;
     }
 
@@ -50,9 +49,9 @@ public class UserRest extends ARestCrud<User, UUID> {
 
     @Override
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/{id}"})
-    public RestResponse<User> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID id) {
-        return super.getById(request, response, id);
+    @GetMapping({"/{userId}"})
+    public RestResponse<User> getById(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) {
+        return super.getById(request, response, userId);
     }
 
     @Override
@@ -71,9 +70,9 @@ public class UserRest extends ARestCrud<User, UUID> {
 
     @Override
     @HasSystemRole(role = Role.P2G_USER)
-    @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID id) {
-        return super.delete(request, response, id);
+    @DeleteMapping({"/{userId}"})
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) {
+        return super.delete(request, response, userId);
     }
 
     ///////////////////////////////
@@ -81,8 +80,8 @@ public class UserRest extends ARestCrud<User, UUID> {
     ///////////////////////////////
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/{userUuid}/model"})
-    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(userService.getUserModelByUserUuid(userUuid), HttpStatus.OK, request, response);
+    @GetMapping({"/{userId}/model"})
+    public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(userService.getUserModelByUserId(userId), HttpStatus.OK, request, response);
     }
 }
