@@ -11,18 +11,16 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Optional;
 
-import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
-
 @Controller
 public class PageController {
 
     @Autowired
     private RoomUserService roomUserService;
 
-    @GetMapping("/")
-    public String home() {
-        return "redirect:" + API_SPOTIFY + "/authorize";
-    }
+//    @GetMapping("/")
+//    public String home() {
+//        return "redirect:" + API_SPOTIFY + "/authorize";
+//    }
 
     @GetMapping("/ws")
     public String ws(Model model) throws DatabaseException {

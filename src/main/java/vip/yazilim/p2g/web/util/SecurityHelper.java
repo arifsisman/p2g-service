@@ -7,12 +7,9 @@ import vip.yazilim.p2g.web.entity.User;
 
 public class SecurityHelper {
 
+    // With SecurityContext
     private static CustomUserPrincipal getUserPrinciple() {
         return (CustomUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
-    public static Authentication getUserAuthentication(){
-        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     public static User getUser() {
@@ -23,11 +20,7 @@ public class SecurityHelper {
         return getUser().getId();
     }
 
-    public static String getUserDisplayName() {
-        return getUser().getDisplayName();
-    }
-
-    // With authentication
+    // With Authentication
     public static String getUserId(Authentication authentication) {
         return ((CustomUserPrincipal)authentication.getPrincipal()).getUser().getId();
     }
