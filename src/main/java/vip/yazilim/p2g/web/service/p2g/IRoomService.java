@@ -7,18 +7,17 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-public interface IRoomService extends ICrudService<Room, UUID> {
+public interface IRoomService extends ICrudService<Room, Long> {
 
     Optional<Room> getRoomByUserId(String userId) throws DatabaseException;
 
     //Rest
-    RoomModel getRoomModelByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
+    RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
     Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
 
 }

@@ -6,7 +6,6 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "song")
@@ -19,8 +18,8 @@ public class Song implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_uuid", nullable = false, length = 64)
-    private UUID roomUuid;
+    @Column(name = "room_id", nullable = false, length = 64)
+    private Long roomId;
 
     // Song
     @Column(name = "song_id", nullable = false, length = 64)

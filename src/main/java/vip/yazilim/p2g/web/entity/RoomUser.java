@@ -6,7 +6,6 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room_user")
@@ -19,10 +18,10 @@ public class RoomUser implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "room_uuid", length = 64)
-    private UUID roomUuid;
+    @Column(name = "room_id", length = 64)
+    private Long roomId;
 
-    @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
+    @Column(name = "user_id", unique = true, updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "role_name", length = 16)

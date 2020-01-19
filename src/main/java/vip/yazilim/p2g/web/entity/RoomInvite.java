@@ -5,10 +5,9 @@ import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_uuid", "user_uuid"}))
+@Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_id", "user_id"}))
 @Data
 public class RoomInvite {
 
@@ -18,10 +17,10 @@ public class RoomInvite {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_uuid", length = 64)
-    private UUID roomUuid;
+    @Column(name = "room_id", length = 64)
+    private Long roomId;
 
-    @Column(name = "user_uuid", updatable = false, nullable = false)
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")

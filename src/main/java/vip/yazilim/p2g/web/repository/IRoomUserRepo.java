@@ -5,7 +5,6 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -13,8 +12,8 @@ import java.util.UUID;
  */
 public interface IRoomUserRepo extends JpaRepository<RoomUser, Long> {
 
-    List<RoomUser> findRoomUserByRoomUuidOrderById(UUID roomUuid);
-    Optional<RoomUser> findRoomUserByRoomUuidAndUserId(UUID roomUuid, String userId);
+    List<RoomUser> findRoomUserByRoomIdOrderById(Long roomId);
+    Optional<RoomUser> findRoomUserByRoomIdAndUserId(Long roomId, String userId);
     Optional<RoomUser> findRoomUserByUserId(String userId);
 
 }

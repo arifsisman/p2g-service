@@ -17,7 +17,6 @@ import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -44,18 +43,18 @@ public class DataInitializer implements CommandLineRunner {
 
         Room testRoom = roomService.createRoom(arif.getId(), "Test Room1", "0");
 
-        UUID roomUuid = testRoom.getUuid();
-        LOGGER.info("--------> testroomUuid: " + roomUuid.toString());
+        Long roomId = testRoom.getId();
+        LOGGER.info("--------> testroomId: " + roomId.toString());
         LOGGER.info("--------> arifUuid: " + arif.getId());
         LOGGER.info("--------> emreUuid: " + emre.getId());
         LOGGER.info("--------> mertUuid: " + mert.getId());
 
 
-        roomUserService.joinRoom(roomUuid, emre.getId(), "0", Role.ROOM_USER);
+        roomUserService.joinRoom(roomId, emre.getId(), "0", Role.ROOM_USER);
 
-        songService.addSongToRoom(roomUuid, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
-        songService.addSongToRoom(roomUuid, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);
-        songService.addSongToRoom(roomUuid, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000,2);
-        songService.addSongToRoom(roomUuid, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000,0);
+        songService.addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
+        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);
+        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000,2);
+        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000,0);
     }
 }

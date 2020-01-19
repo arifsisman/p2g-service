@@ -24,19 +24,19 @@
         }
 
         function connectRoom() {
-            let roomUuid = document.getElementById("roomUuid").value;
+            let roomId = document.getElementById("roomId").value;
 
             let headerName = "X-XSRF-TOKEN";
             let token = getCookieValue("XSRF-TOKEN");
             let headers = {};
             headers[headerName] = token;
 
-            const socket = new WebSocket('ws://' + document.location.host + '/p2g/room/' + roomUuid);
+            const socket = new WebSocket('ws://' + document.location.host + '/p2g/room/' + roomId);
             roomStompClient = Stomp.over(socket);
             roomStompClient.connect(headers, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                roomStompClient.subscribe("/p2g/room/" + roomUuid, function (output) {
+                roomStompClient.subscribe("/p2g/room/" + roomId, function (output) {
                     console.log(output.body);
                     showOutput(JSON.parse(output.body));
                 });
@@ -63,17 +63,17 @@
         }
 
         function sendMessage() {
-            let roomUuid = document.getElementById("roomUuid").value;
+            let roomId = document.getElementById("roomId").value;
             let userId = document.getElementById("userId").value;
             let userName = document.getElementById('userName').value;
             let message = document.getElementById('message').value;
             let now = new Date();
             let timestamp = now.toISOString();
 
-            roomStompClient.send("/p2g/room/" + roomUuid, {}, JSON.stringify({
+            roomStompClient.send("/p2g/room/" + roomId, {}, JSON.stringify({
                 'userId': userId,
                 'userName': userName,
-                'roomUuid': roomUuid,
+                'roomId': roomId,
                 'message': message,
                 'timestamp': timestamp
             }));
@@ -105,7 +105,7 @@
 <div>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     <div>
-        roomUuid: <label for="roomUuid"></label><input type="text" id="roomUuid" th:value="${roomUuid}"/><br/>
+        roomId: <label for="roomId"></label><input type="text" id="roomId" th:value="${roomId}"/><br/>
         userId: <label for="userId"></label><input disabled="disabled" type="text" id="userId"
                                                        th:value="${userId}"/><br/>
         userName: <label for="userName"></label><input disabled="disabled" type="text" id="userName"

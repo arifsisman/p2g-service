@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -122,8 +121,8 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         if (roomOpt.isPresent()) {
             userModel.setRoom(roomOpt.get());
 
-            UUID roomUuid = roomOpt.get().getUuid();
-            roomRole = roomUserService.getRoleByRoomUuidAndUserId(roomUuid, userId);
+            Long roomId = roomOpt.get().getId();
+            roomRole = roomUserService.getRoleByRoomIdAndUserId(roomId, userId);
             userModel.setRoomRole(roomRole);
         }
 
@@ -139,9 +138,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public List<User> getUsersByroomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<User> userList = new LinkedList<>();
-        List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomUuid(roomUuid);
+        List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomId(roomId);
 
         for (RoomUser roomUser : roomUserList) {
             String userId = roomUser.getUserId();

@@ -12,8 +12,6 @@ import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
-import java.util.UUID;
-
 /**
  * @author mustafaarifsisman - 24.12.2019
  * @contact mustafaarifsisman@gmail.com
@@ -26,15 +24,15 @@ public class WebSocketController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @SubscribeMapping("/p2g/room/{roomUuid}")
-    public void subscribeToRoomWebSocket(@DestinationVariable UUID roomUuid, Authentication authentication) {
+    @SubscribeMapping("/p2g/room/{roomId}")
+    public void subscribeToRoomWebSocket(@DestinationVariable Long roomId, Authentication authentication) {
         String userId = SecurityHelper.getUserId(authentication);
         String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
 
-        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomUuid);
-        ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomUuid.toString()
+        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
+        ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString()
                 , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
-        sendToRoom(roomUuid, joinMessage);
+        sendToRoom(roomId, joinMessage);
     }
 
     @SubscribeMapping("/p2g/user/{userId}")
@@ -43,8 +41,8 @@ public class WebSocketController {
         LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
-    public void sendToRoom(UUID roomUuid, Object payload) {
-        messagingTemplate.convertAndSend("/p2g/room/" + roomUuid, payload);
+    public void sendToRoom(Long roomId, Object payload) {
+        messagingTemplate.convertAndSend("/p2g/room/" + roomId, payload);
     }
 
     public void sendToUser(String userId, Object payload) {

@@ -19,7 +19,6 @@ import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 31.10.2019
@@ -85,9 +84,9 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public List<OAuthToken> getTokenListByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<OAuthToken> OAuthTokenList = new LinkedList<>();
-        List<User> userList = userService.getUsersByroomUuid(roomUuid);
+        List<User> userList = userService.getUsersByroomId(roomId);
 
         for (User u : userList) {
             Optional<OAuthToken> token = getTokenByUserId(u.getId());

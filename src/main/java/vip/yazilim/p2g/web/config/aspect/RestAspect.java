@@ -28,7 +28,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 16.12.2019
@@ -137,9 +136,9 @@ public class RestAspect {
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
         if (roomUserOpt.isPresent()) {
-            UUID roomUuid = roomUserOpt.get().getRoomUuid();
-            List<Song> songList = songService.getSongListByRoomUuid(roomUuid);
-            webSocketController.sendToRoom(roomUuid, songList);
+            Long roomId = roomUserOpt.get().getRoomId();
+            List<Song> songList = songService.getSongListByRoomId(roomId);
+            webSocketController.sendToRoom(roomId, songList);
         } else {
             throw new NotFoundException("Room not found.");
         }

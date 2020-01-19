@@ -23,7 +23,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -56,15 +55,15 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<User> getInvitedUserListByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
 
         List<User> inviteList = new ArrayList<>();
         List<RoomInvite> roomInviteList;
 
         try {
-            roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
+            roomInviteList = roomInviteRepo.findByRoomId(roomId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomUuid);
+            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
@@ -77,12 +76,12 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(UUID roomUuid, String userId) throws DatabaseException, InvalidArgumentException {
-        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomUuidAndUserId(roomUuid, userId);
+    public RoomInvite invite(Long roomId, String userId) throws DatabaseException, InvalidArgumentException {
+        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndUserId(roomId, userId);
 
         if (!existingInvite.isPresent()) {
             RoomInvite roomInvite = new RoomInvite();
-            roomInvite.setRoomUuid(roomUuid);
+            roomInvite.setRoomId(roomId);
             roomInvite.setUserId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
             roomInvite.setAcceptedFlag(false);
@@ -109,8 +108,8 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean deleteRoomInvites(UUID roomUuid) throws DatabaseException {
-        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomUuid(roomUuid);
+    public boolean deleteRoomInvites(Long roomId) throws DatabaseException {
+        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomId(roomId);
 
         for (RoomInvite roomInvite : roomInviteList) {
             delete(roomInvite);

@@ -9,7 +9,6 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -17,12 +16,12 @@ import java.util.UUID;
  */
 public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
-    List<User> getInvitedUserListByRoomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
+    List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
     // Rest
-    RoomInvite invite(UUID roomUuid, String userId) throws DatabaseException, InvalidArgumentException;
+    RoomInvite invite(Long roomId, String userId) throws DatabaseException, InvalidArgumentException;
     RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     boolean reject(Long roomInviteId) throws DatabaseException, InvalidArgumentException;
-    boolean deleteRoomInvites(UUID roomUuid) throws DatabaseException;
+    boolean deleteRoomInvites(Long roomId) throws DatabaseException;
     boolean existsById(Long roomInviteId) throws DatabaseException;
 }

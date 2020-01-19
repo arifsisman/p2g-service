@@ -13,7 +13,6 @@ import vip.yazilim.spring.core.service.ICrudService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -21,23 +20,23 @@ import java.util.UUID;
  */
 public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
-    List<RoomUser> getRoomUsersByRoomUuid(UUID roomUuid) throws DatabaseException;
+    List<RoomUser> getRoomUsersByRoomId(Long roomId) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String userId) throws DatabaseException;
-    Optional<RoomUser> getRoomUser(UUID roomUuid, String userId) throws DatabaseException;
+    Optional<RoomUser> getRoomUser(Long roomId, String userId) throws DatabaseException;
 
-    RoomUser joinRoom(UUID roomUuid, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    RoomUser joinRoom(Long roomId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 
-    RoomUser joinRoom(UUID roomUuid, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    RoomUser joinRoomOwner(UUID roomUuid, String userId) throws DatabaseException, InvalidArgumentException;
+    RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    RoomUser joinRoomOwner(Long roomId, String userId) throws DatabaseException, InvalidArgumentException;
 
     boolean leaveRoom() throws DatabaseException, InvalidArgumentException;
 
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException;
 
-    Role getRoleByRoomUuidAndUserId(UUID roomUuid, String userId) throws DatabaseException;
+    Role getRoleByRoomIdAndUserId(Long roomId, String userId) throws DatabaseException;
 
     // Rest
-    boolean deleteRoomUsers(UUID roomUuid) throws DatabaseException;
+    boolean deleteRoomUsers(Long roomId) throws DatabaseException;
 
     List<Privilege> promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     List<Privilege> demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;

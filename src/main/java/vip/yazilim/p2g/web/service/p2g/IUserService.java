@@ -12,7 +12,6 @@ import vip.yazilim.spring.core.service.ICrudService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -23,7 +22,7 @@ public interface IUserService extends ICrudService<User, String> {
     Optional<User> getUserByUsername(String username);
     Optional<User> getUserByEmail(String email) throws DatabaseException;
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
-    List<User> getUsersByroomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException;
+    List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
     User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException;
 

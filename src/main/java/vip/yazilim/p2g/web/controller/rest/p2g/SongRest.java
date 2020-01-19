@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -89,16 +88,16 @@ public class SongRest extends ARestCrud<Song, Long> {
     ///////////////////////////////
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
-    @GetMapping("/{roomUuid}/list")
-    public RestResponse<List<Song>> getSongListByroomUuid(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID roomUuid) throws DatabaseException {
-        return RestResponseFactory.generateResponse(songService.getSongListByRoomUuid(roomUuid), HttpStatus.OK, request, response);
+    @GetMapping("/{roomId}/list")
+    public RestResponse<List<Song>> getSongListByroomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(songService.getSongListByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
-    @PostMapping("/{roomUuid}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID roomUuid, @RequestBody SearchModel searchModel) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomUuid, searchModel), HttpStatus.OK, request, response);
+    @PostMapping("/{roomId}")
+    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody SearchModel searchModel) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModel), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
