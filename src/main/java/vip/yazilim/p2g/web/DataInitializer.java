@@ -37,9 +37,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        User arif = userService.createUser("arif", "arif", "0");
-        User emre = userService.createUser("emre", "emre", "0");
-        User mert = userService.createUser("mert", "mert", "0");
+        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
+        User emre = userService.createUser("emre", "emre", "emre", "0");
+        User mert = userService.createUser("mert", "mert", "mert", "0");
 
         Room testRoom = roomService.createRoom(arif.getId(), "Test Room1", "0");
 
@@ -52,9 +52,9 @@ public class DataInitializer implements CommandLineRunner {
 
         roomUserService.joinRoom(roomId, emre.getId(), "0", Role.ROOM_USER);
 
-        songService.addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000,0);
-        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000,1);
-        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000,2);
-        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000,0);
+        songService.addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "spotify:track:4VqPOruhp5EdPBeR92t6lQ", "Uprising", 1200000, 0);
+        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "spotify:track:0c4IEciLCDdXEhhKxj4ThA", "Madness", 1200000, 1);
+        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "spotify:track:7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", 1200000, 2);
+        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "spotify:track:2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", 1200000, 0);
     }
 }

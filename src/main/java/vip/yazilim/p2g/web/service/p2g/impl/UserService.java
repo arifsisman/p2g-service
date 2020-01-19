@@ -152,9 +152,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     //todo: this method is for test purposes, delete later
     @Override
-    public User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException {
+    public User createUser(String id, String email, String username, String password) throws DatabaseException, InvalidArgumentException {
         User user = new User();
-        user.setId(username);
+        user.setId(id);
         user.setEmail(email);
         user.setDisplayName(username);
         user.setPassword(password);

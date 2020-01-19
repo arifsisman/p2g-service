@@ -2,31 +2,29 @@ package vip.yazilim.p2g.web.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import vip.yazilim.p2g.web.config.security.user.CustomUserPrincipal;
-import vip.yazilim.p2g.web.entity.User;
+
+import java.util.Map;
 
 public class SecurityHelper {
 
     // With SecurityContext
-    private static CustomUserPrincipal getUserPrinciple() {
-        return (CustomUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
-    public static User getUser() {
-        return getUserPrinciple().getUser();
+    private static OAuth2Authentication getUserAuthentication() {
+        return (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
     }
 
     public static String getUserId() {
-        return getUser().getId();
+        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("id").toString();
     }
 
     // With Authentication
     public static String getUserId(Authentication authentication) {
-        return ((CustomUserPrincipal)authentication.getPrincipal()).getUser().getId();
+        return ((CustomUserPrincipal) authentication.getPrincipal()).getUser().getId();
     }
 
     public static String getUserDisplayName(Authentication authentication) {
-        return ((CustomUserPrincipal)authentication.getPrincipal()).getUser().getDisplayName();
+        return ((CustomUserPrincipal) authentication.getPrincipal()).getUser().getDisplayName();
     }
 
 }

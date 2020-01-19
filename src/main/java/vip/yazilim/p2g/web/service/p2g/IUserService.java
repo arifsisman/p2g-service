@@ -24,7 +24,7 @@ public interface IUserService extends ICrudService<User, String> {
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
-    User createUser(String email, String username, String password) throws DatabaseException, InvalidArgumentException;
+    User createUser(String id, String email, String username, String password) throws DatabaseException, InvalidArgumentException;
 
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 
