@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-
+@Deprecated
 @EnableScheduling
 @EnableAsync
 @Configuration

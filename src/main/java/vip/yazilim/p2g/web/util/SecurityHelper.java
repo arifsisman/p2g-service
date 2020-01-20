@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.util;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
 import java.util.Map;
 
@@ -18,6 +19,14 @@ public class SecurityHelper {
 
     public static String getUserDisplayName() {
         return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("display_name").toString();
+    }
+
+    public static String getUserEmail() {
+        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("email").toString();
+    }
+
+    public static String getUserAccessToken() {
+        return ((OAuth2AuthenticationDetails) getUserAuthentication().getDetails()).getTokenValue();
     }
 
     // With Authentication

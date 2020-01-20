@@ -5,9 +5,10 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.spotify.TokenRefreshScheduler;
 import vip.yazilim.p2g.web.config.spotify.TokenRefresher;
@@ -24,10 +25,10 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
@@ -39,6 +40,8 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 @RestController
 @RequestMapping(API_SPOTIFY)
 public class AuthorizationRest {
+
+    private Logger LOGGER = LoggerFactory.getLogger(AuthorizationRest.class);
 
     @Autowired
     @Qualifier(Constants.BEAN_NAME_AUTHORIZATION_CODE)
@@ -62,6 +65,7 @@ public class AuthorizationRest {
     @Autowired
     private ISpotifyUserService spotifyUserService;
 
+    @Deprecated
     @GetMapping("/authorize")
     public void authorize(HttpServletResponse httpServletResponse) {
         URI uri = authorizationCodeUriRequest.execute();
@@ -70,6 +74,7 @@ public class AuthorizationRest {
         httpServletResponse.setStatus(302);
     }
 
+    @Deprecated
     @GetMapping("/callback")
     @ResponseBody
     public OAuthToken callback(@RequestParam String code) throws IOException, SpotifyWebApiException, DatabaseException, InvalidUpdateException, InvalidArgumentException {
@@ -105,16 +110,49 @@ public class AuthorizationRest {
         return token;
     }
 
-    @GetMapping("/register")
-    public String register(OAuth2Authentication oAuth2Authentication) {
-        return ((Map) oAuth2Authentication.getUserAuthentication().getDetails()).get("id").toString();
+    @Transactional
+    @GetMapping("/login")
+    public User login() throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
+        String userId = SecurityHelper.getUserId();
+        Optional<User> user = userService.getById(userId);
+
+        if (user.isPresent()) {
+            LOGGER.info("UserId[{}] logged in", userId);
+
+            updateAndGetOAuthToken();
+            updateAndGetUser();
+
+            return user.get();
+        } else {
+            return register();
+        }
     }
 
-    @GetMapping("/login")
-    public String login() {
+    private User register() throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
-//        if(userService.)
-        return "";
+        String email = SecurityHelper.getUserEmail();
+        String username = SecurityHelper.getUserDisplayName();
+
+        userService.createUser(userId, email, username, "0");
+
+        LOGGER.info("UserId[{}] registered", userId);
+        updateAndGetOAuthToken();
+        return updateAndGetUser();
+    }
+
+    private User updateAndGetUser() throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException {
+        String userId = SecurityHelper.getUserId();
+        Optional<User> userOpt = userService.getById(userId);
+
+        if (!userOpt.isPresent()) {
+            throw new NotFoundException("User not found");
+        }
+
+        return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userId), userOpt.get());
+    }
+
+    private OAuthToken updateAndGetOAuthToken() throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+        return tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
     }
 
 }

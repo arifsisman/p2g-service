@@ -58,7 +58,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), OAuthToken.getAccessToken());
 
         if (devices.length == 0) {
-            String err = String.format("Can not found any device for userId[%s]", userId);
+            String err = String.format("Can not found any device logged into Spotify App for userId[%s]. Please start Spotify App first!", userId);
             throw new NotFoundException(err);
         }
 

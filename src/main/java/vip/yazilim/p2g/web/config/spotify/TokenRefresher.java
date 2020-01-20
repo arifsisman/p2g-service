@@ -17,6 +17,7 @@ import java.util.Optional;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Deprecated
 @Configuration
 public class TokenRefresher {
 

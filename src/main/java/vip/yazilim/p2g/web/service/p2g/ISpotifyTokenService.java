@@ -19,6 +19,7 @@ public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
     Optional<OAuthToken> getTokenByUserId(String userId) throws DatabaseException;
 
     OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    OAuthToken saveUserToken(String userId, String accessToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
     List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 

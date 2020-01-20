@@ -84,6 +84,22 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
+    public OAuthToken saveUserToken(String userId, String accessToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+        Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
+
+        if (spotifyToken.isPresent()) {
+            OAuthToken token = spotifyToken.get();
+            token.setAccessToken(accessToken);
+            return update(token);
+        }
+
+        OAuthToken entity = new OAuthToken();
+        entity.setUserId(userId);
+        entity.setAccessToken(accessToken);
+        return create(entity);
+    }
+
+    @Override
     public List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<OAuthToken> OAuthTokenList = new LinkedList<>();
         List<User> userList = userService.getUsersByroomId(roomId);
