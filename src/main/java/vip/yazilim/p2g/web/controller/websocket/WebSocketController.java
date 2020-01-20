@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -25,9 +25,9 @@ public class WebSocketController {
     private SimpMessagingTemplate messagingTemplate;
 
     @SubscribeMapping("/p2g/room/{roomId}")
-    public void subscribeToRoomWebSocket(@DestinationVariable Long roomId, Authentication authentication) {
-        String userId = SecurityHelper.getUserId(authentication);
-        String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
+    public void subscribeToRoomWebSocket(@DestinationVariable Long roomId, OAuth2Authentication oAuth2Authentication) {
+        String userId = SecurityHelper.getUserId(oAuth2Authentication);
+        String userDisplayName = SecurityHelper.getUserDisplayName(oAuth2Authentication);
 
         LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
         ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString()
@@ -36,8 +36,8 @@ public class WebSocketController {
     }
 
     @SubscribeMapping("/p2g/user/{userId}")
-    public void subscribeToUserWebSocket(@DestinationVariable String userId, Authentication authentication) {
-        String userDisplayName = SecurityHelper.getUserDisplayName(authentication);
+    public void subscribeToUserWebSocket(@DestinationVariable String userId, OAuth2Authentication oAuth2Authentication) {
+        String userDisplayName = SecurityHelper.getUserDisplayName(oAuth2Authentication);
         LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
