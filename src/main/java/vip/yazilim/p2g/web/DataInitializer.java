@@ -38,16 +38,16 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
-        User emre = userService.createUser("emre", "emre", "emre", "0");
-        User mert = userService.createUser("mert", "mert", "mert", "0");
+        User arifTest = userService.createUser("4zmop7n9batjv78uvzy6u44um", "mustafaarifsismann@gmail.com", "Mustafa", "0");
+        User emre = userService.createUser("UNDEFINED", "emre@mail.com", "emre@mail.com", "0");
 
         Room testRoom = roomService.createRoom(arif.getId(), "Test Room1", "0");
 
         Long roomId = testRoom.getId();
         LOGGER.info("--------> testroomId: " + roomId.toString());
-        LOGGER.info("--------> arifUuid: " + arif.getId());
-        LOGGER.info("--------> emreUuid: " + emre.getId());
-        LOGGER.info("--------> mertUuid: " + mert.getId());
+        LOGGER.info("--------> arifId: " + arif.getId());
+        LOGGER.info("--------> arifTestId: " + arifTest.getId());
+        LOGGER.info("--------> emreId: " + emre.getId());
 
 
         roomUserService.joinRoom(roomId, emre.getId(), "0", Role.ROOM_USER);

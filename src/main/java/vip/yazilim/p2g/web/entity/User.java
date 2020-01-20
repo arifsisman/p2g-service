@@ -30,6 +30,7 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false, length = 64)
     private String email;
 
+    //TODO: will be deleted
     @Column(nullable = false, length = 64)
     private String password;
 

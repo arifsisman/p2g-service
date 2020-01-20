@@ -110,4 +110,11 @@ public class AuthorizationRest {
         return ((Map) oAuth2Authentication.getUserAuthentication().getDetails()).get("id").toString();
     }
 
+    @GetMapping("/login")
+    public String login() {
+        String userId = SecurityHelper.getUserId();
+//        if(userService.)
+        return "";
+    }
+
 }
