@@ -19,6 +19,11 @@ spring:
         format_sql: false
         jdbc.lob.non_contextual_creation: true
 
+security:
+  oauth2:
+    resource:
+      user-info-uri: https://api.spotify.com/v1/me
+
 # Spotify-Play2Gether configuration
 spotify:
   clientId: 76f07bcdc1054c32884054e43a135480
