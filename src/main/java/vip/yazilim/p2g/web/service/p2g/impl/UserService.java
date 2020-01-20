@@ -76,25 +76,23 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Override
     protected User preInsert(User entity) {
-        Optional<User> existingUser = getUserByEmail(entity.getEmail());
+        Optional<User> existingUser = getUserById(entity.getId());
         if (existingUser.isPresent()) {
-            throw new AccountException("Email already exists.");
+            String err = String.format("Account with ID [%s] already exists.", existingUser.get().getId());
+            throw new AccountException(err);
         }
 
-        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
-        entity.setRoleName(Role.P2G_USER.getRoleName());
+        entity.setRole(Role.P2G_USER.getRole());
+        entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+        entity.setShowActivityFlag(true);
+        entity.setShowFriendsFlag(true);
         return entity;
     }
 
     @Override
-    public Optional<User> getUserByUsername(String username) {
-        return userRepo.findByDisplayName(username);
-    }
-
-    @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public Optional<User> getUserById(String id) {
+        return userRepo.findById(id);
     }
 
     @Override
@@ -155,8 +153,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         User user = new User();
         user.setId(id);
         user.setEmail(email);
-        user.setDisplayName(username);
-        user.setPassword(password);
+        user.setName(username);
 
         return create(user);
     }
@@ -170,9 +167,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             throw new SpotifyAccountException("Product type must be premium");
         }
 
-        user.setSpotifyAccountId(spotifyUser.getId());
         user.setCountryCode(spotifyUser.getCountry().name());
-        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setSpotifyProductType(productType);
 
         Image[] images = spotifyUser.getImages();
@@ -188,12 +183,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException {
         Optional<User> userOpt = getById(userId);
-        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRoleName()));
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
     }
 
     @Override
     public boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException {
         Optional<User> roomUserOpt = getById(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
     }
 }

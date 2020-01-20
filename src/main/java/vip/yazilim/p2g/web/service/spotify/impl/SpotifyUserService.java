@@ -39,8 +39,8 @@ public class SpotifyUserService implements ISpotifyUserService {
     private IUserDeviceService userDeviceService;
 
     @Override
-    public User getSpotifyUser(String spotifyAccountId) throws IOException, SpotifyWebApiException {
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(spotifyAccountId).build());
+    public User getSpotifyUser(String userId) throws IOException, SpotifyWebApiException {
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build());
     }
 
     @Override

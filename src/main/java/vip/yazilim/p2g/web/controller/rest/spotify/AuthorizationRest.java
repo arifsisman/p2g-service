@@ -114,15 +114,14 @@ public class AuthorizationRest {
     @GetMapping("/login")
     public User login() throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
-        Optional<User> user = userService.getById(userId);
+        String userName = SecurityHelper.getUserDisplayName();
+        Optional<User> userOpt = userService.getById(userId);
 
-        if (user.isPresent()) {
-            LOGGER.info("UserId[{}] logged in", userId);
-
-            updateAndGetOAuthToken();
-            updateAndGetUser();
-
-            return user.get();
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            LOGGER.info("{}[{}] logged in", userName, userId);
+            updateUserAccessToken();
+            return updateUserSpotifyInfos(user);
         } else {
             return register();
         }
@@ -131,27 +130,20 @@ public class AuthorizationRest {
     private User register() throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
         String email = SecurityHelper.getUserEmail();
-        String username = SecurityHelper.getUserDisplayName();
+        String userName = SecurityHelper.getUserDisplayName();
 
-        userService.createUser(userId, email, username, "0");
+        User user = userService.createUser(userId, email, userName, "0");
 
-        LOGGER.info("UserId[{}] registered", userId);
-        updateAndGetOAuthToken();
-        return updateAndGetUser();
+        LOGGER.info("{}[{}] registered", userName, userId);
+        updateUserAccessToken();
+        return updateUserSpotifyInfos(user);
     }
 
-    private User updateAndGetUser() throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException {
-        String userId = SecurityHelper.getUserId();
-        Optional<User> userOpt = userService.getById(userId);
-
-        if (!userOpt.isPresent()) {
-            throw new NotFoundException("User not found");
-        }
-
-        return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(userId), userOpt.get());
+    private User updateUserSpotifyInfos(User user) throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException {
+        return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(user.getId()), user);
     }
 
-    private OAuthToken updateAndGetOAuthToken() throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+    private OAuthToken updateUserAccessToken() throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
         return tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
     }
 

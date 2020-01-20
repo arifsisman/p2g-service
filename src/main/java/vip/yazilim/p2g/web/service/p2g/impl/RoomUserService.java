@@ -118,7 +118,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
             roomUser.setRoomId(roomId);
             roomUser.setUserId(userId);
-            roomUser.setRoleName(role.getRoleName());
+            roomUser.setRole(role.getRole());
             roomUser.setActiveFlag(true);
         } else {
             throw new InvalidArgumentException("Wrong password");
@@ -146,7 +146,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
             roomUser.setRoomId(roomId);
             roomUser.setUserId(userId);
-            roomUser.setRoleName(role.getRoleName());
+            roomUser.setRole(role.getRole());
             roomUser.setActiveFlag(true);
         } else {
             throw new InvalidArgumentException("Wrong password");
@@ -164,7 +164,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         roomUser.setRoomId(roomId);
         roomUser.setUserId(userId);
-        roomUser.setRoleName(Role.ROOM_OWNER.getRoleName());
+        roomUser.setRole(Role.ROOM_OWNER.getRole());
         roomUser.setActiveFlag(true);
 
         return create(roomUser);
@@ -176,7 +176,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         Optional<RoomUser> roomUser = getRoomUser(userId);
 
         if (roomUser.isPresent()) {
-            if (roomUser.get().getRoleName().equals(Role.ROOM_OWNER.getRoleName())) {
+            if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
                 return roomService.deleteById(roomUser.get().getRoomId());
             } else {
                 return deleteById(roomUser.get().getId());
@@ -193,7 +193,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             roomUser.setRoomId(roomInvite.getRoomId());
             roomUser.setUserId(roomInvite.getUserId());
-            roomUser.setRoleName(Role.ROOM_USER.getRoleName());
+            roomUser.setRole(Role.ROOM_USER.getRole());
             roomUser.setActiveFlag(true);
 
             return create(roomUser);
@@ -211,8 +211,8 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             return null;
         }
 
-        String roleName = roomUserOpt.get().getRoleName();
-        return Role.getRole(roleName);
+        String role = roomUserOpt.get().getRole();
+        return Role.getRole(role);
     }
 
     @Override
@@ -230,7 +230,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public List<Privilege> promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
-        Role oldRole = Role.getRole(roomUser.getRoleName());
+        Role oldRole = Role.getRole(roomUser.getRole());
         Role newRole;
 
         switch (oldRole) {
@@ -245,7 +245,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 break;
         }
 
-        roomUser.setRoleName(newRole.getRoleName());
+        roomUser.setRole(newRole.getRole());
         update(roomUser);
 
         return authorityProvider.getPrivilegeListByRoleName(newRole);
@@ -255,7 +255,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public List<Privilege> demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
-        Role oldRole = Role.getRole(roomUser.getRoleName());
+        Role oldRole = Role.getRole(roomUser.getRole());
         Role newRole;
 
         switch (oldRole) {
@@ -270,7 +270,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 break;
         }
 
-        roomUser.setRoleName(newRole.getRoleName());
+        roomUser.setRole(newRole.getRole());
         update(roomUser);
 
         return authorityProvider.getPrivilegeListByRoleName(newRole);
@@ -279,13 +279,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRoleName()), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
     }
 
     @Override
     public boolean hasRoomRole(String userId, Role role) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
-        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoleName()));
+        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
     }
 
     private RoomUser getSafeRoomUser(Long roomUserId) throws DatabaseException, InvalidArgumentException {

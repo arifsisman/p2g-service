@@ -11,23 +11,23 @@ public enum Role {
     ROOM_OWNER("room_owner");
 
     private static final HashMap<String, Role> map = new HashMap<>();
-    public final String roleName;
+    public final String role;
 
-    Role(String roleName) {
-        this.roleName = roleName;
+    Role(String role) {
+        this.role = role;
     }
 
-    public static Role getRole(String roleName) {
-        return map.get(roleName);
+    public static Role getRole(String role) {
+        return map.get(role);
     }
 
-    public String getRoleName() {
-        return this.roleName;
+    public String getRole() {
+        return this.role;
     }
 
     static {
         for (Role role : values()) {
-            map.put(role.roleName, role);
+            map.put(role.role, role);
         }
     }
 }

@@ -23,19 +23,14 @@ public class User implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private String id;
 
-    //TODO: display_name to name
-    @Column(name = "display_name", nullable = false, length = 64)
-    private String displayName;
+    @Column(name = "name", nullable = false, length = 64)
+    private String name;
 
     @Column(unique = true, nullable = false, length = 64)
     private String email;
 
-    //TODO: will be deleted
-    @Column(nullable = false, length = 64)
-    private String password;
-
-    @Column(name = "role_name", nullable = false, length = 16)
-    private String roleName;
+    @Column(name = "role", nullable = false, length = 16)
+    private String role;
 
     @Column(name = "online_status", length = 16)
     private String onlineStatus;
@@ -51,9 +46,6 @@ public class User implements Serializable {
 
     @Column(name = "spotify_product_type", length = 16)
     private String spotifyProductType;
-
-    @Column(name = "spotify_account_id", length = 64)
-    private String spotifyAccountId;
 
     @Column(name = "show_activity_flag")
     private Boolean showActivityFlag;

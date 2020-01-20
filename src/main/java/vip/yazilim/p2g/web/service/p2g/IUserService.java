@@ -19,8 +19,7 @@ import java.util.Optional;
  */
 public interface IUserService extends ICrudService<User, String> {
 
-    Optional<User> getUserByUsername(String username);
-    Optional<User> getUserByEmail(String email) throws DatabaseException;
+    Optional<User> getUserById(String id);
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
