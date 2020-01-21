@@ -13,10 +13,8 @@ spring:
   jpa:
     hibernate.ddl-auto: create
     database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: false
         format_sql: false
         jdbc.lob.non_contextual_creation: true

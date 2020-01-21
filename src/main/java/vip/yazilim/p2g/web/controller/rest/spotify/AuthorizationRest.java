@@ -25,7 +25,6 @@ import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
@@ -110,7 +109,6 @@ public class AuthorizationRest {
         return token;
     }
 
-    @Transactional
     @GetMapping("/login")
     public User login() throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();

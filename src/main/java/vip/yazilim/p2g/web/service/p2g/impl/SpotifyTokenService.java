@@ -47,7 +47,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     @Override
     public String getAccessTokenByUserId(String userId) throws DatabaseException {
         try {
-            Optional<OAuthToken> spotifyToken = tokenRepo.findSpotifyTokenByUserId(userId);
+            Optional<OAuthToken> spotifyToken = tokenRepo.findOAuthTokenByUserId(userId);
             return spotifyToken.map(OAuthToken::getAccessToken).orElseThrow(() -> new NotFoundException("Token not found for userId: " + userId));
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userId[%s]", userId);
@@ -58,7 +58,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     @Override
     public Optional<OAuthToken> getTokenByUserId(String userId) throws DatabaseException {
         try {
-            return tokenRepo.findSpotifyTokenByUserId(userId);
+            return tokenRepo.findOAuthTokenByUserId(userId);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Tokens with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);

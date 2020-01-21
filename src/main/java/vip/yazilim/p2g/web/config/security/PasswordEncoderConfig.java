@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @contact mustafaarifsisman@gmail.com
  */
 @Configuration
-public class SecurityConfig {
+public class PasswordEncoderConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

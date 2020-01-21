@@ -4,7 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.config.security.SecurityConfig;
+import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.Privilege;
 import vip.yazilim.p2g.web.constant.Role;
@@ -51,7 +51,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     private AAuthorityProvider authorityProvider;
 
     @Autowired
-    private SecurityConfig securityConfig;
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     @Autowired
     private SpotifyPlayerService spotifyPlayerService;
@@ -115,7 +115,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         Room room = roomOpt.get();
         RoomUser roomUser = new RoomUser();
 
-        if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
+        if (passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
             roomUser.setRoomId(roomId);
             roomUser.setUserId(userId);
             roomUser.setRole(role.getRole());
@@ -143,7 +143,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         Room room = roomOpt.get();
         RoomUser roomUser = new RoomUser();
 
-        if (securityConfig.passwordEncoder().matches(password, room.getPassword())) {
+        if (passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
             roomUser.setRoomId(roomId);
             roomUser.setUserId(userId);
             roomUser.setRole(role.getRole());

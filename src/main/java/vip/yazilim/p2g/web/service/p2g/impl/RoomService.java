@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.config.security.SecurityConfig;
+import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.constant.RoomStatus;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
@@ -49,7 +49,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     private ISongService songService;
 
     @Autowired
-    private SecurityConfig securityConfig;
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     @Autowired
     private WebSocketController webSocketController;
@@ -66,7 +66,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     protected Room preInsert(Room entity) {
-        entity.setPassword(securityConfig.passwordEncoder().encode(entity.getPassword()));
+        entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }

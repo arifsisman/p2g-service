@@ -15,13 +15,13 @@ import java.io.Serializable;
 public class OAuthToken implements Serializable {
 
     @Id
-    @Column(name = "uuid", unique = true, nullable = false)
+    @Column(name = "user_id", unique = true, nullable = false)
     private String userId;
 
-    @Column(name = "access_token")
+    @Column(name = "access_token", length = 512)
     private String accessToken;
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 
 }
