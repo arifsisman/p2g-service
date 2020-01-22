@@ -21,11 +21,11 @@ public class UserDevice {
     @Column(name = "id", unique = true, updatable = false, nullable = false, length = 64)
     private String id;
 
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private String userId;
+
     @Column(name = "platform", updatable = false, nullable = false, length = 16)
     private String platform;
-
-    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
-    private String userId;
 
     @Column(name = "device_name", length = 64)
     private String deviceName;
