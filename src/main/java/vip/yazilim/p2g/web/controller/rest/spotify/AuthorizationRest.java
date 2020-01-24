@@ -125,6 +125,12 @@ public class AuthorizationRest {
         }
     }
 
+    @PostMapping("/token")
+    public OAuthToken updateUserAccessToken(@RequestBody String accessToken) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+        String userId = SecurityHelper.getUserId();
+        return tokenService.saveUserToken(userId, accessToken);
+    }
+
     private User register() throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
         String email = SecurityHelper.getUserEmail();
