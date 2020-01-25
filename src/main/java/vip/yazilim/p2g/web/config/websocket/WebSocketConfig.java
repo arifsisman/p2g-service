@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
-        brokerRegistry.enableSimpleBroker("/p2g/room", "/p2g/user");
+        brokerRegistry.enableSimpleBroker("/p2g/room/", "/p2g/user/");
         brokerRegistry.setApplicationDestinationPrefixes("/");
 
         brokerRegistry.configureBrokerChannel().taskExecutor().corePoolSize(WEBSOCKET_THREAD_POOL_SIZE);

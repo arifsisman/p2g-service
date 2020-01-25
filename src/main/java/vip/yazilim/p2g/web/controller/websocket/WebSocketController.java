@@ -4,10 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import vip.yazilim.p2g.web.model.websocket.ChatMessage;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -41,11 +43,11 @@ public class WebSocketController {
         LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
-    //    @MessageMapping("/p2g/room/{roomId}")
-//    public String message(@PathVariable String message){
-//        System.out.println(message);
-//        return message;
-//    }
+    @MessageMapping("/p2g/room/{roomId}")
+    public String message(@PathVariable String message) {
+        System.out.println(message);
+        return message;
+    }
 
     public void sendToRoom(Long roomId, Object payload) {
         messagingTemplate.convertAndSend("/p2g/room/" + roomId, payload);
