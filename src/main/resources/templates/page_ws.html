@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta name="_csrf" th:content="${_csrf.token}" />
     <title>Chat WebSocket</title>
     <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
     <script type="text/javascript">
@@ -26,14 +25,14 @@
         function connectRoom() {
             let roomId = document.getElementById("roomId").value;
 
-            let headerName = "X-XSRF-TOKEN";
-            let token = getCookieValue("XSRF-TOKEN");
-            let headers = {};
-            headers[headerName] = token;
+            // let headerName = "X-XSRF-TOKEN";
+            // let token = getCookieValue("XSRF-TOKEN");
+            // let headers = {};
+            // headers[headerName] = token;
 
             const socket = new WebSocket('ws://' + document.location.host + '/p2g/room/' + roomId);
             roomStompClient = Stomp.over(socket);
-            roomStompClient.connect(headers, function (frame) {
+            roomStompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 roomStompClient.subscribe("/p2g/room/" + roomId, function (output) {
@@ -46,14 +45,14 @@
         function connectUser() {
             let userId = document.getElementById("userId").value;
 
-            let headerName = "X-XSRF-TOKEN";
-            let token = getCookieValue("XSRF-TOKEN");
-            let headers = {};
-            headers[headerName] = token;
+            // let headerName = "X-XSRF-TOKEN";
+            // let token = getCookieValue("XSRF-TOKEN");
+            // let headers = {};
+            // headers[headerName] = token;
 
             const socket = new WebSocket('ws://' + document.location.host + '/p2g/user/' + userId);
             userStompClient = Stomp.over(socket);
-            userStompClient.connect(headers, function (frame) {
+            userStompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 userStompClient.subscribe("/p2g/user/" + userId, function (output) {
@@ -103,13 +102,12 @@
 </head>
 
 <div>
-    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     <div>
-        roomId: <label for="roomId"></label><input type="text" id="roomId" th:value="${roomId}"/><br/>
+        roomId: <label for="roomId"></label><input type="text" id="roomId" value="1"/><br/>
         userId: <label for="userId"></label><input disabled="disabled" type="text" id="userId"
-                                                       th:value="${userId}"/><br/>
+                                                       value="mustafaarifisman"/><br/>
         userName: <label for="userName"></label><input disabled="disabled" type="text" id="userName"
-                                                       th:value="${#authentication.getPrincipal().getUsername()}"/><br/>
+                                                       value="Mustafa Arif Sisman"/><br/>
         <button id="connect" onclick="connectRoom();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>

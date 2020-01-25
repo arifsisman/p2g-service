@@ -41,6 +41,12 @@ public class WebSocketController {
         LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
+    //    @MessageMapping("/p2g/room/{roomId}")
+//    public String message(@PathVariable String message){
+//        System.out.println(message);
+//        return message;
+//    }
+
     public void sendToRoom(Long roomId, Object payload) {
         messagingTemplate.convertAndSend("/p2g/room/" + roomId, payload);
     }

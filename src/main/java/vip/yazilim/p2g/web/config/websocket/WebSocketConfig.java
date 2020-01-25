@@ -35,8 +35,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/p2g/room/{roomId}");
-        registry.addEndpoint("/p2g/user/{userId}");
+        registry.addEndpoint("/p2g/room/{roomId}").setAllowedOrigins("*");
+        registry.addEndpoint("/p2g/user/{userId}").setAllowedOrigins("*");
     }
 
 
