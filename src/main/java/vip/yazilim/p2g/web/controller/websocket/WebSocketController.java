@@ -47,7 +47,7 @@ public class WebSocketController {
     @MessageMapping("/p2g/room/{roomId}")
     @SendTo("/p2g/room/{roomId}/messages")
     public ChatMessage chatMessageMapping(@PathVariable ChatMessage chatMessage) {
-        System.out.println(chatMessage.getMessage());
+        LOGGER.debug("Received Message: {}", chatMessage.getMessage());
         return chatMessage;
     }
 
