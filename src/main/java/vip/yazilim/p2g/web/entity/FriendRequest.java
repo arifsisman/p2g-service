@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -28,6 +28,6 @@ public class FriendRequest implements Serializable {
     private String requestStatus;
 
     @Column(name = "request_date")
-    private LocalDateTime requestDate;
+    private DateTime requestDate;
 
 }

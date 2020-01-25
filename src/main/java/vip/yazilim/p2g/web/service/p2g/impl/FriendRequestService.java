@@ -108,7 +108,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
             friendRequest.setUserId(user1);
             friendRequest.setFriendId(user2);
-            friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
+            friendRequest.setRequestDate(TimeHelper.getDateTimeNow());
 
             create(friendRequest);
 

@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -25,7 +25,7 @@ public class Room implements Serializable {
     private String ownerUuid;
 
     @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+    private DateTime creationDate;
 
     @Column(name = "private_flag", nullable = false)
     private Boolean privateFlag;

@@ -83,11 +83,11 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomId(roomId);
             roomInvite.setUserId(userId);
-            roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+            roomInvite.setInvitationDate(TimeHelper.getDateTimeNow());
             roomInvite.setAcceptedFlag(false);
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            webSocketController.sendToUser(userId, createdRoomInvite);
+            webSocketController.sendToUser("invites", userId, createdRoomInvite);
             return createdRoomInvite;
         } else {
             throw new ConstraintViolationException("Invite already exists");

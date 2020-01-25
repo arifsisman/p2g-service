@@ -68,7 +68,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     protected RoomUser preInsert(RoomUser entity) {
-        entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
+        entity.setJoinDate(TimeHelper.getDateTimeNow());
         return entity;
     }
 

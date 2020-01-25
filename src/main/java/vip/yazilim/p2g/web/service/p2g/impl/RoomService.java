@@ -67,7 +67,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     protected Room preInsert(Room entity) {
         entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
-        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
+        entity.setCreationDate(TimeHelper.getDateTimeNow());
         return entity;
     }
 
@@ -169,14 +169,14 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             status &= roomInviteService.deleteRoomInvites(roomId);
         }
 
-        webSocketController.sendToRoom(roomId, RoomStatus.CLOSED);
+        webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
         return status;
     }
 
     @Override
     public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         room = super.update(room);
-        webSocketController.sendToRoom(room.getId(), RoomStatus.UPDATED);
+        webSocketController.sendToRoom("status", room.getId(), RoomStatus.UPDATED);
         return room;
     }
 }

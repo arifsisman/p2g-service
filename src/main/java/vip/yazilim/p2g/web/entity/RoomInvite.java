@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -24,7 +24,7 @@ public class RoomInvite {
     private String userId;
 
     @Column(name = "invitation_date")
-    private LocalDateTime invitationDate;
+    private DateTime invitationDate;
 
     @Column(name = "accepted_flag")
     private Boolean acceptedFlag;

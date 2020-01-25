@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -48,10 +48,10 @@ public class Song implements Serializable {
     private String songStatus;
 
     @Column(name = "queued_time")
-    private LocalDateTime queuedTime;
+    private DateTime queuedTime;
 
     @Column(name = "playing_time")
-    private LocalDateTime playingTime;
+    private DateTime playingTime;
 
     @Column(name = "current_ms")
     private Integer currentMs;

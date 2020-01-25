@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.model.websocket;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 
 /**
@@ -16,5 +16,5 @@ public class ChatMessage {
     private String userName;
     private String roomId;
     private String message;
-    private LocalDateTime timestamp;
+    private DateTime timestamp;
 }

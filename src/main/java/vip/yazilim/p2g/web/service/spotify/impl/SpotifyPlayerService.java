@@ -70,7 +70,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            song.setPlayingTime(TimeHelper.getDateTimeNow());
             song.setSongStatus(SongStatus.PLAYING.getSongStatus());
             songService.update(song);
         }
@@ -112,7 +112,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
             // Update playing
             long oldPassedMs = playing.getCurrentMs() == null ? 0L: playing.getCurrentMs();
-            long newPassedMs = new Period(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow(), PeriodType.millis()).getMillis();
+            long newPassedMs = new Period(playing.getPlayingTime(), TimeHelper.getDateTimeNow(), PeriodType.millis()).getMillis();
 
             playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
@@ -229,7 +229,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
-        int ms = song.getCurrentMs() +  new Period(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow(), PeriodType.millis()).getMillis();
+        int ms = song.getCurrentMs() +  new Period(song.getPlayingTime(), TimeHelper.getDateTimeNow(), PeriodType.millis()).getMillis();
 
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);

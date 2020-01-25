@@ -90,7 +90,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         song.setSongUri(songUri);
         song.setSongName(songName);
         song.setDurationMs(durationMs);
-        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
+        song.setQueuedTime(TimeHelper.getDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
 
@@ -199,7 +199,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         song.setImageUrl(searchModel.getImageUrl());
         song.setCurrentMs(0);
         song.setDurationMs(searchModel.getDurationMs());
-        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
+        song.setQueuedTime(TimeHelper.getDateTimeNow());
         song.setVotes(0);
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
 

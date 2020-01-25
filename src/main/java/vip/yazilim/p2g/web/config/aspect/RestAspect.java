@@ -138,7 +138,7 @@ public class RestAspect {
         if (roomUserOpt.isPresent()) {
             Long roomId = roomUserOpt.get().getRoomId();
             List<Song> songList = songService.getSongListByRoomId(roomId);
-            webSocketController.sendToRoom(roomId, songList);
+            webSocketController.sendToRoom("songs", roomId, songList);
         } else {
             throw new NotFoundException("Room not found.");
         }

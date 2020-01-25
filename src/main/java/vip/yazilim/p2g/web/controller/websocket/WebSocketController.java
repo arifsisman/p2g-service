@@ -34,8 +34,8 @@ public class WebSocketController {
 
         LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
         ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString()
-                , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
-        sendToRoom(roomId, joinMessage);
+                , userDisplayName + " joined!", TimeHelper.getDateTimeNow());
+        sendToRoom("messages", roomId, joinMessage);
     }
 
     @SubscribeMapping("/p2g/user/{userId}")
@@ -51,12 +51,12 @@ public class WebSocketController {
         return chatMessage;
     }
 
-    public void sendToRoom(Long roomId, Object payload) {
-        messagingTemplate.convertAndSend("/p2g/room/" + roomId, payload);
+    public void sendToRoom(String destination, Long roomId, Object payload) {
+        messagingTemplate.convertAndSend("/p2g/room/" + roomId + "/" + destination, payload);
     }
 
-    public void sendToUser(String userId, Object payload) {
-        messagingTemplate.convertAndSend("/p2g/user/" + userId, payload);
+    public void sendToUser(String destination, String userId, Object payload) {
+        messagingTemplate.convertAndSend("/p2g/user/" + userId + "/" + destination, payload);
     }
 
 }

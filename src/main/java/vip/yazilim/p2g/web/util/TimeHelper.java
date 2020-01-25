@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.util;
 
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -9,8 +9,8 @@ import org.joda.time.LocalDateTime;
  */
 public class TimeHelper {
 
-    public static LocalDateTime getLocalDateTimeNow() {
-        return LocalDateTime.now();
+    public static DateTime getDateTimeNow() {
+        return DateTime.now();
     }
 
 }
