@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.Column;
@@ -9,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -53,7 +53,7 @@ public class User implements Serializable {
     @Column(name = "show_friends_flag")
     private Boolean showFriendsFlag;
 
-    @Column(name = "creation_date")
-    private DateTime creationDate;
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime creationDate;
 
 }

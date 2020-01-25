@@ -82,7 +82,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             throw new AccountException(err);
         }
 
-        entity.setCreationDate(TimeHelper.getDateTimeNow());
+        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         entity.setRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         entity.setShowActivityFlag(true);

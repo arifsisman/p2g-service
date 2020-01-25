@@ -34,7 +34,7 @@ public class WebSocketController {
 
         LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
         ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString()
-                , userDisplayName + " joined!", TimeHelper.getDateTimeNow());
+                , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
         sendToRoom("messages", roomId, joinMessage);
     }
 

@@ -67,7 +67,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     protected Room preInsert(Room entity) {
         entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
-        entity.setCreationDate(TimeHelper.getDateTimeNow());
+        entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }
 

@@ -1,10 +1,10 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_id", "user_id"}))
@@ -23,8 +23,8 @@ public class RoomInvite {
     @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
-    @Column(name = "invitation_date")
-    private DateTime invitationDate;
+    @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime invitationDate;
 
     @Column(name = "accepted_flag")
     private Boolean acceptedFlag;

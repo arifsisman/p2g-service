@@ -1,11 +1,11 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
-import org.joda.time.DateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "friend_id"}))
@@ -27,7 +27,7 @@ public class FriendRequest implements Serializable {
     @Column(name = "request_status", length = 16)
     private String requestStatus;
 
-    @Column(name = "request_date")
-    private DateTime requestDate;
+    @Column(name = "request_date", columnDefinition = "TIMESTAMP")
+    private LocalDateTime requestDate;
 
 }
