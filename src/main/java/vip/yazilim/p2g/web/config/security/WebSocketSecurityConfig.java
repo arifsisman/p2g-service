@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.socket.AbstractSecurit
 public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages.simpDestMatchers("/ws/**", "/p2g/**").permitAll();
+        messages.simpDestMatchers("/**").fullyAuthenticated();
     }
 
     // Determines if a CSRF token is required for connecting. This protects against remote
