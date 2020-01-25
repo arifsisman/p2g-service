@@ -1,11 +1,11 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.joda.time.LocalDateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room_user")
@@ -27,7 +27,7 @@ public class RoomUser implements Serializable {
     @Column(name = "role", length = 16)
     private String role;
 
-    @Column(name = "join_date", columnDefinition = "TIMESTAMP")
+    @Column(name = "join_date")
     private LocalDateTime joinDate;
 
     @Column(name = "active_flag")

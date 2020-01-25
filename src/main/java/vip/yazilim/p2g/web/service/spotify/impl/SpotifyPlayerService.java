@@ -4,6 +4,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.SongStatus;
@@ -23,7 +25,6 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -111,7 +112,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
             // Update playing
             long oldPassedMs = playing.getCurrentMs() == null ? 0L: playing.getCurrentMs();
-            long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
+            long newPassedMs = new Period(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow(), PeriodType.millis()).getMillis();
 
             playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
@@ -228,7 +229,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
-        int ms = Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
+        int ms = song.getCurrentMs() +  new Period(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow(), PeriodType.millis()).getMillis();
 
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);

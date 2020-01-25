@@ -1,11 +1,11 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import org.joda.time.LocalDateTime;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "song")
@@ -47,10 +47,10 @@ public class Song implements Serializable {
     @Column(name = "song_status", nullable = false)
     private String songStatus;
 
-    @Column(name = "queued_time", columnDefinition = "TIMESTAMP")
+    @Column(name = "queued_time")
     private LocalDateTime queuedTime;
 
-    @Column(name = "playing_time", columnDefinition = "TIMESTAMP")
+    @Column(name = "playing_time")
     private LocalDateTime playingTime;
 
     @Column(name = "current_ms")

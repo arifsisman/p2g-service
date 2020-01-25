@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -44,9 +45,10 @@ public class WebSocketController {
     }
 
     @MessageMapping("/p2g/room/{roomId}")
-    public String message(@PathVariable String message) {
-        System.out.println(message);
-        return message;
+    @SendTo("/p2g/room/{roomId}/messages")
+    public ChatMessage chatMessageMapping(@PathVariable ChatMessage chatMessage) {
+        System.out.println(chatMessage.getMessage());
+        return chatMessage;
     }
 
     public void sendToRoom(Long roomId, Object payload) {
