@@ -101,7 +101,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         Optional<User> userOpt;
         Optional<Room> roomOpt;
-        Role roomRole;
+        Optional<RoomUser> roomUser;
         List<User> friends;
         List<User> friendRequests;
 
@@ -109,6 +109,8 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         userOpt = getById(userId);
         if (!userOpt.isPresent()) {
             throw new NotFoundException("User not found");
+        } else {
+            userModel.setUser(userOpt.get());
         }
 
         // Set Room & Role
@@ -120,8 +122,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userModel.setRoom(roomOpt.get());
 
             Long roomId = roomOpt.get().getId();
-            roomRole = roomUserService.getRoleByRoomIdAndUserId(roomId, userId);
-            userModel.setRoomRole(roomRole);
+
+            roomUser = roomUserService.getRoomUser(roomId, userId);
+            roomUser.ifPresent(userModel::setRoomUser);
         }
 
         // Set Friends

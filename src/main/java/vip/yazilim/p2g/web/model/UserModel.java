@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
-import vip.yazilim.p2g.web.constant.Role;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 
 import java.util.List;
@@ -13,12 +13,9 @@ import java.util.List;
  */
 @Data
 public class UserModel {
-
     private User user;
     private Room room;
-    private Role roomRole;
-
+    private RoomUser roomUser;
     private List<User> friends;
     private List<User> friendRequests;
-
 }
