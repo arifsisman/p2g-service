@@ -96,11 +96,10 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(Long roomId, String songId, String songUri, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    public Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
-        song.setSongUri(songUri);
         song.setSongName(songName);
         song.setArtistNames(artistNames);
         song.setDurationMs(durationMs);
@@ -189,7 +188,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             Song song = new Song();
             song.setRoomId(roomId);
             song.setSongId(s.getId());
-            song.setSongUri(s.getUri());
             song.setSongName(s.getName());
             song.setAlbumName(s.getAlbumName());
             song.setArtistNames(s.getArtistNames());

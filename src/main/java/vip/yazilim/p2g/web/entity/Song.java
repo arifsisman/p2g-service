@@ -23,11 +23,8 @@ public class Song implements Serializable {
     private Long roomId;
 
     // Song
-    @Column(name = "song_id", nullable = false, length = 128)
+    @Column(name = "song_id", length = 128)
     private String songId;
-
-    @Column(name = "song_uri", length = 128)
-    private String songUri;
 
     @Column(name = "song_name", nullable = false, length = 128)
     private String songName;
@@ -35,7 +32,7 @@ public class Song implements Serializable {
     @Column(name = "album_name", length = 128)
     private String albumName;
 
-    @Column(name = "artists")
+    @Column(name = "artist_names")
     @ElementCollection(targetClass=String.class)
     private List<String> artistNames;
 

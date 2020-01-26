@@ -54,25 +54,20 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     ///////////////////////
     @Override
     public List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        String songUri = song.getSongUri();
         Long roomId = song.getRoomId();
 
-        if (!songUri.contains(SearchType.TRACK.getType())) {
-            String err = String.format("URI[%s] does not match with an Track URI", songUri);
-            throw new InvalidArgumentException(err);
-        } else {
-            // JsonArray with song, because uris needs JsonArray as input
-            List<String> songList = Collections.singletonList(songUri);
-            JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
+        // JsonArray with song, because uris needs JsonArray as input
+        List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
+        JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
-            // Start playback
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        // Start playback
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
-            // Update playing
-            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            song.setSongStatus(SongStatus.PLAYING.getSongStatus());
-            songService.update(song);
-        }
+        // Update playing
+        song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+        song.setSongStatus(SongStatus.PLAYING.getSongStatus());
+        songService.update(song);
+
 
         return songService.getSongListByRoomId(roomId);
     }
@@ -110,7 +105,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            long oldPassedMs = playing.getCurrentMs() == null ? 0L: playing.getCurrentMs();
+            long oldPassedMs = playing.getCurrentMs() == null ? 0L : playing.getCurrentMs();
             long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
             playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
@@ -228,7 +223,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
-        int ms = song.getCurrentMs() +  Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
+        int ms = song.getCurrentMs() + Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
 
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
@@ -237,8 +232,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             String accessToken = token.get().getAccessToken();
             String deviceId = userDevices.get(0).getId();
 
-            String songUri = song.getSongUri();
-            List<String> songList = Collections.singletonList(songUri);
+            List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
             JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
             spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(deviceId).build(), accessToken);

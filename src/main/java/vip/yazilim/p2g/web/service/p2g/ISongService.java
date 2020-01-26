@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public interface ISongService extends ICrudService<Song, Long> {
 
-    Song addSongToRoom(Long roomId, String songId, String songUri, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
+    Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
 
     Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException;
 
