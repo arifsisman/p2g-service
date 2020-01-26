@@ -18,6 +18,6 @@ public interface IRoomService extends ICrudService<Room, Long> {
 
     //Rest
     RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
-    Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
+    Room createRoom(String ownerId, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException;
 
 }

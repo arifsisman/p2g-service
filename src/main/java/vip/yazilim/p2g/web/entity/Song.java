@@ -6,6 +6,7 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "song")
@@ -35,7 +36,8 @@ public class Song implements Serializable {
     private String albumName;
 
     @Column(name = "artists")
-    private String[] artists;
+    @ElementCollection(targetClass=String.class)
+    private List<String> artists;
 
     @Column(name = "image_url", length = 128)
     private String imageUrl;

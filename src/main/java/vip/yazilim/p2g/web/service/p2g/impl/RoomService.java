@@ -8,6 +8,7 @@ import vip.yazilim.p2g.web.constant.RoomStatus;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
@@ -107,6 +108,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Optional<Room> room;
 
         List<User> userList;
+        List<Song> songList;
         List<User> invitedUserList;
 
         // Set Room
@@ -122,6 +124,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         userList = userService.getUsersByroomId(roomId);
         roomModel.setUserList(userList);
 
+        // Set Song List
+        songList = songService.getSongListByRoomId(roomId);
+        roomModel.setSongList(songList);
+
         // Set Invited User List
         invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
         roomModel.setInvitedUserList(invitedUserList);
@@ -131,10 +137,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     //TODO: for tests, delete later
     @Override
-    public Room createRoom(String ownerUuid, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
+    public Room createRoom(String ownerId, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();
 
-        room.setOwnerUuid(ownerUuid);
+        room.setOwnerId(ownerId);
         room.setName(roomName);
         room.setPassword(roomPassword);
 
@@ -146,7 +152,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
-        roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerUuid());
+        roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
         return room;
     }
 

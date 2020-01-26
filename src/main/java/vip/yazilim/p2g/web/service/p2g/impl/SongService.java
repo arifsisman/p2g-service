@@ -204,13 +204,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
 
         ArtistSimplified[] artists = searchModel.getArtists();
-        String[] SongArtists = new String[artists.length];
+        List<String> artistList = new LinkedList<>();
 
-        for (int i = 0; i < artists.length; i++) {
-            SongArtists[i] = artists[i].getName();
+        for (ArtistSimplified artist : artists) {
+            artistList.add(artist.getName());
         }
 
-        song.setArtists(SongArtists);
+        song.setArtists(artistList);
         return create(song);
     }
 

@@ -22,7 +22,7 @@ public class Room implements Serializable {
     private String name;
 
     @Column(name = "owner_id", unique = true, updatable = false, nullable = false)
-    private String ownerUuid;
+    private String ownerId;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;
