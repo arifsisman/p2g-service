@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import vip.yazilim.p2g.web.constant.Privilege;
-import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;

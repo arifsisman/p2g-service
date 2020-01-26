@@ -37,7 +37,7 @@ public class Song implements Serializable {
 
     @Column(name = "artists")
     @ElementCollection(targetClass=String.class)
-    private List<String> artists;
+    private List<String> artistNames;
 
     @Column(name = "image_url", length = 128)
     private String imageUrl;

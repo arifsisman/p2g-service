@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;

@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import vip.yazilim.p2g.web.constant.SongStatus;
+import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public interface ISongService extends ICrudService<Song, Long> {
 
-    Song addSongToRoom(Long roomId, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
+    Song addSongToRoom(Long roomId, String songId, String songUri, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
 
     Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException;
 

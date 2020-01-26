@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
-import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
@@ -48,8 +48,10 @@ public class SearchRest {
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/{query}")
     public RestResponse<List<SearchModel>> search(HttpServletRequest request, HttpServletResponse response, @PathVariable String query) throws IOException, SpotifyWebApiException {
-        return RestResponseFactory.generateResponse(spotifySearchService
-                .search(query, ModelObjectType.TRACK, ModelObjectType.ALBUM, ModelObjectType.PLAYLIST), HttpStatus.OK, request, response);
+        return RestResponseFactory
+                .generateResponse(spotifySearchService
+                .search(query, SearchType.TRACK, SearchType.ALBUM, SearchType.PLAYLIST),
+                HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)

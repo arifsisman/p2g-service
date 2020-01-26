@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
-import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;

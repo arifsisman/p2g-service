@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.FriendRequestStatus;
+import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;

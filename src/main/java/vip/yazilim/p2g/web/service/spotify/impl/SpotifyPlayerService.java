@@ -2,11 +2,11 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.SongStatus;
+import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
@@ -57,7 +57,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         String songUri = song.getSongUri();
         Long roomId = song.getRoomId();
 
-        if (!songUri.contains(ModelObjectType.TRACK.getType())) {
+        if (!songUri.contains(SearchType.TRACK.getType())) {
             String err = String.format("URI[%s] does not match with an Track URI", songUri);
             throw new InvalidArgumentException(err);
         } else {
@@ -193,7 +193,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Boolean repeatFlag = song.getRepeatFlag();
 
         if (repeatFlag == null || !repeatFlag) {
-            repeatMode = ModelObjectType.TRACK.getType();
+            repeatMode = SearchType.TRACK.getType();
             repeatFlag = true;
         } else {
             repeatMode = "off";

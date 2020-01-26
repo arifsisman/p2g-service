@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.constant;
+package vip.yazilim.p2g.web.constant.enums;
 
 import java.util.HashMap;
 
@@ -10,7 +10,8 @@ public enum SearchType {
     ALBUM("album"),
     PLAYLIST("playlist"),
     TRACK("track"),
-    ARTIST("artist");
+    ARTIST("artist"),
+    USER("user");
 
     private static final HashMap<String, SearchType> map = new HashMap<>();
     public final String type;

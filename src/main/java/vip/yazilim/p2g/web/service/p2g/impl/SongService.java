@@ -1,14 +1,13 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.SongStatus;
+import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
@@ -83,12 +82,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     //TODO: delete method, this method is test purposes
     @Override
-    public Song addSongToRoom(Long roomId, String songId, String songUri, String songName, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    public Song addSongToRoom(Long roomId, String songId, String songUri, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
         song.setSongUri(songUri);
         song.setSongName(songName);
+        song.setArtistNames(artistNames);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
@@ -171,9 +171,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private List<Song> convertSearchModelToSong(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
 
-        if (searchModel.getType() == ModelObjectType.TRACK) {
+        if (searchModel.getType() == SearchType.TRACK) {
             songList.add(getSongFromTrack(roomId, searchModel));
-        } else if (searchModel.getType() == ModelObjectType.ALBUM) {
+        } else if (searchModel.getType() == SearchType.ALBUM) {
             List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
             for (SearchModel s : searchModelList) {
                 songList.add(getSongFromTrack(roomId, s));
@@ -196,6 +196,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         song.setSongUri(searchModel.getUri());
         song.setSongName(searchModel.getName());
         song.setAlbumName(searchModel.getAlbumName());
+        song.setArtistNames(searchModel.getArtistNames());
         song.setImageUrl(searchModel.getImageUrl());
         song.setCurrentMs(0);
         song.setDurationMs(searchModel.getDurationMs());
@@ -203,14 +204,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         song.setVotes(0);
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
 
-        ArtistSimplified[] artists = searchModel.getArtists();
-        List<String> artistList = new LinkedList<>();
-
-        for (ArtistSimplified artist : artists) {
-            artistList.add(artist.getName());
-        }
-
-        song.setArtists(artistList);
         return create(song);
     }
 

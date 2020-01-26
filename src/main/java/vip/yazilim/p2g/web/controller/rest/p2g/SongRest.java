@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
-import vip.yazilim.p2g.web.constant.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISongService;

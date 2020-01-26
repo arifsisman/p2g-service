@@ -1,11 +1,11 @@
 package vip.yazilim.p2g.web.util;
 
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,9 +14,8 @@ import java.util.List;
  */
 public class SpotifyHelper {
 
-    public static List<String> artistsToArtistNameList(ArtistSimplified[] artists) {
-        List<String> artistList = new ArrayList<>();
-
+    public static List<String> convertArtistsToArtistNameList(ArtistSimplified[] artists) {
+        List<String> artistList = new LinkedList<>();
         for (ArtistSimplified artist : artists) {
             artistList.add(artist.getName());
         }
@@ -24,24 +23,24 @@ public class SpotifyHelper {
     }
 
     public static List<SearchModel> convertAbstractModelObjectToSearchModelList(AbstractModelObject[] abstractModelObjects) {
-        List<SearchModel> searchModelList = new ArrayList<>();
+        List<SearchModel> searchModelList = new LinkedList<>();
         for (AbstractModelObject a : abstractModelObjects) {
             searchModelList.add(new SearchModel(a));
         }
         return searchModelList;
     }
 
-    public static String convertIdToUri(String id, ModelObjectType type) {
+    public static String convertIdToUri(String id, SearchType type) {
         String uri = "spotify:";
         switch (type) {
             case TRACK:
-                uri += ModelObjectType.TRACK.getType();
+                uri += SearchType.TRACK.getType();
                 break;
             case ALBUM:
-                uri += ModelObjectType.ALBUM.getType();
+                uri += SearchType.ALBUM.getType();
                 break;
             case PLAYLIST:
-                uri += ModelObjectType.PLAYLIST.getType();
+                uri += SearchType.PLAYLIST.getType();
                 break;
         }
         return uri + id;
