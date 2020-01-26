@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping("/ws")
+    @GetMapping("/")
     public String ws(Model model) {
-        return "page_ws";
+        return "redirect:/swagger-ui.html";
     }
 
 }
