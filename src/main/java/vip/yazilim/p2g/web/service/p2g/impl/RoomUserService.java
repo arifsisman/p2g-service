@@ -227,7 +227,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public List<Privilege> promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
         Role oldRole = Role.getRole(roomUser.getRole());
@@ -246,13 +246,11 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         roomUser.setRole(newRole.getRole());
-        update(roomUser);
-
-        return authorityProvider.getPrivilegeListByRoleName(newRole);
+        return update(roomUser);
     }
 
     @Override
-    public List<Privilege> demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
         Role oldRole = Role.getRole(roomUser.getRole());
@@ -271,9 +269,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         roomUser.setRole(newRole.getRole());
-        update(roomUser);
-
-        return authorityProvider.getPrivilegeListByRoleName(newRole);
+        return update(roomUser);
     }
 
     @Override

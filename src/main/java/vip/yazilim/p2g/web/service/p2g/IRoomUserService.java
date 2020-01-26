@@ -38,8 +38,8 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
     // Rest
     boolean deleteRoomUsers(Long roomId) throws DatabaseException;
 
-    List<Privilege> promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    List<Privilege> demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
 
     boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException;
 
