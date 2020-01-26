@@ -73,7 +73,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         List<User> users = new ArrayList<>();
 
         try {
-            friendRequestList = friendRequestRepo.findByUserId(userId);
+            friendRequestList = friendRequestRepo.findByFriendId(userId);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);

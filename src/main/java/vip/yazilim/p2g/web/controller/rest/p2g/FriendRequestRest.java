@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -27,7 +28,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_P2G + "/friends")
+@RequestMapping(API_P2G + "/friend/requests")
 public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
 
     @Autowired
@@ -61,25 +62,31 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
     ///////////////////////////////
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/add/{userId}")
+    @PostMapping("/")
+    public RestResponse<List<User>> getRequests(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestsByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PostMapping("/send/{userId}")
     public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserId(), userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/accept/{friendRequestId}")
+    @PutMapping("/{friendRequestId}/accept")
     public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.acceptFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/reject/{friendRequestId}")
+    @PutMapping("/{friendRequestId}/reject")
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.rejectFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/ignore/{friendRequestId}")
+    @PutMapping("/{friendRequestId}/ignore")
     public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.ignoreFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
