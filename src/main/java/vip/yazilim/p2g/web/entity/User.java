@@ -23,10 +23,10 @@ public class User implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private String id;
 
-    @Column(name = "name", nullable = false, length = 64)
+    @Column(name = "name", nullable = false, length = 128)
     private String name;
 
-    @Column(unique = true, nullable = false, length = 64)
+    @Column(unique = true, nullable = false, length = 128)
     private String email;
 
     @Column(name = "role", nullable = false, length = 16)
@@ -41,7 +41,7 @@ public class User implements Serializable {
     @Column(name = "image_url", length = 128)
     private String imageUrl;
 
-    @Column(length = 64)
+    @Column(length = 128)
     private String anthem;
 
     @Column(name = "spotify_product_type", length = 16)

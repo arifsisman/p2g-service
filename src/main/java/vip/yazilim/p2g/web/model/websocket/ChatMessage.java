@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.model.websocket;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
  */
 @AllArgsConstructor
 @Data
-public class ChatMessage {
+public class ChatMessage implements Serializable {
     private String userId;
     private String userName;
     private String roomId;

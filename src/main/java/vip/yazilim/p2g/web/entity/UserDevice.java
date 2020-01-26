@@ -18,7 +18,7 @@ import javax.persistence.Table;
 public class UserDevice {
 
     @Id
-    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 64)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 128)
     private String id;
 
     @Column(name = "user_id", updatable = false, nullable = false)
@@ -27,7 +27,7 @@ public class UserDevice {
     @Column(name = "platform", updatable = false, nullable = false, length = 16)
     private String platform;
 
-    @Column(name = "device_name", length = 64)
+    @Column(name = "device_name", length = 128)
     private String deviceName;
 
     @Column(name = "device_type", length = 16)

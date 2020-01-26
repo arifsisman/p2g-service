@@ -6,6 +6,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.UserDevice;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Data
-public class UserModel {
+public class UserModel implements Serializable {
     private User user;
     private Room room;
     private List<UserDevice> userDevices;

@@ -24,6 +24,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -76,8 +77,21 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> addSongToRoom(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        return convertSearchModelToSong(roomId, searchModel);
+    public List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        List<Song> songList = new LinkedList<>();
+        for (SearchModel s : searchModel) {
+            if (s.getType() == SearchType.TRACK) {
+                songList.addAll(getSongListFromSearchModelList(roomId, Collections.singletonList(s)));
+            } else if (s.getType() == SearchType.ALBUM) {
+                List<SearchModel> searchModelList = spotifyAlbumService.getSongs(s.getId());
+                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
+            } else if (s.getType() == SearchType.PLAYLIST) {
+                List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(s.getId());
+                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
+            }
+        }
+
+        return songList;
     }
 
     //TODO: delete method, this method is test purposes
@@ -168,43 +182,27 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
-    private List<Song> convertSearchModelToSong(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) throws DatabaseException, InvalidArgumentException {
         List<Song> songList = new LinkedList<>();
 
-        if (searchModel.getType() == SearchType.TRACK) {
-            songList.add(getSongFromTrack(roomId, searchModel));
-        } else if (searchModel.getType() == SearchType.ALBUM) {
-            List<SearchModel> searchModelList = spotifyAlbumService.getSongs(searchModel.getId());
-            for (SearchModel s : searchModelList) {
-                songList.add(getSongFromTrack(roomId, s));
-            }
-        } else {
-            List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(searchModel.getId());
-            for (SearchModel s : searchModelList) {
-                songList.add(getSongFromTrack(roomId, s));
-            }
+        for (SearchModel s : searchModelList) {
+            Song song = new Song();
+            song.setRoomId(roomId);
+            song.setSongId(s.getId());
+            song.setSongUri(s.getUri());
+            song.setSongName(s.getName());
+            song.setAlbumName(s.getAlbumName());
+            song.setArtistNames(s.getArtistNames());
+            song.setImageUrl(s.getImageUrl());
+            song.setCurrentMs(0);
+            song.setDurationMs(s.getDurationMs());
+            song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
+            song.setVotes(0);
+            song.setSongStatus(SongStatus.NEXT.getSongStatus());
+            songList.add(create(song));
         }
 
         return songList;
-    }
-
-    private Song getSongFromTrack(Long roomId, SearchModel searchModel) throws DatabaseException, InvalidArgumentException {
-        Song song = new Song();
-
-        song.setRoomId(roomId);
-        song.setSongId(searchModel.getId());
-        song.setSongUri(searchModel.getUri());
-        song.setSongName(searchModel.getName());
-        song.setAlbumName(searchModel.getAlbumName());
-        song.setArtistNames(searchModel.getArtistNames());
-        song.setImageUrl(searchModel.getImageUrl());
-        song.setCurrentMs(0);
-        song.setDurationMs(searchModel.getDurationMs());
-        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setVotes(0);
-        song.setSongStatus(SongStatus.NEXT.getSongStatus());
-
-        return create(song);
     }
 
     private Song getSafeSong(Long songId) throws DatabaseException, InvalidArgumentException {

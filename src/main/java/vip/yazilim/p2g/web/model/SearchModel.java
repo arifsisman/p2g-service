@@ -7,6 +7,7 @@ import lombok.Data;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @AllArgsConstructor
 @Data
-public class SearchModel {
+public class SearchModel implements Serializable {
     private SearchType type;
     private String name;
     private List<String> artistNames;

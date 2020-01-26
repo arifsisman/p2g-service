@@ -5,6 +5,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 @Data
-public class RoomModel {
+public class RoomModel implements Serializable {
     private Room room;
     private List<User> userList;
     private List<Song> songList;

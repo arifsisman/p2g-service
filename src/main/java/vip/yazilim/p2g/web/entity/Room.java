@@ -30,7 +30,7 @@ public class Room implements Serializable {
     @Column(name = "private_flag", nullable = false)
     private Boolean privateFlag;
 
-    @Column(length = 64)
+    @Column(length = 128)
     private String password;
 
     @Column(name = "max_users")

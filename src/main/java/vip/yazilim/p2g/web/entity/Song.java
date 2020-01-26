@@ -19,20 +19,20 @@ public class Song implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_id", nullable = false, length = 64)
+    @Column(name = "room_id", nullable = false, length = 128)
     private Long roomId;
 
     // Song
-    @Column(name = "song_id", nullable = false, length = 64)
+    @Column(name = "song_id", nullable = false, length = 128)
     private String songId;
 
-    @Column(name = "song_uri", length = 64)
+    @Column(name = "song_uri", length = 128)
     private String songUri;
 
-    @Column(name = "song_name", nullable = false, length = 64)
+    @Column(name = "song_name", nullable = false, length = 128)
     private String songName;
 
-    @Column(name = "album_name", length = 64)
+    @Column(name = "album_name", length = 128)
     private String albumName;
 
     @Column(name = "artists")

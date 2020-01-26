@@ -89,15 +89,15 @@ public class SongRest extends ARestCrud<Song, Long> {
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
     @GetMapping("/{roomId}/list")
-    public RestResponse<List<Song>> getSongListByroomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
+    public RestResponse<List<Song>> getSongListByRoomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
         return RestResponseFactory.generateResponse(songService.getSongListByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody SearchModel searchModel) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModel), HttpStatus.OK, request, response);
+    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+        return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModelList), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
