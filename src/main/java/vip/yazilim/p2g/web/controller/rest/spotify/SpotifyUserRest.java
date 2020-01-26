@@ -37,7 +37,7 @@ public class SpotifyUserRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{userId}")
-    public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws IOException, SpotifyWebApiException {
+    public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws IOException, SpotifyWebApiException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyUserService.getSpotifyUser(userId), HttpStatus.OK, request, response);
     }
 

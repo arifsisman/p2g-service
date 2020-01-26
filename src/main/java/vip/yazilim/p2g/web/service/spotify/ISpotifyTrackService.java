@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.service.spotify;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.model.SearchModel;
+import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
  */
 public interface ISpotifyTrackService {
 
-    SearchModel getTrack(String id) throws IOException, SpotifyWebApiException;
+    SearchModel getTrack(String id) throws IOException, SpotifyWebApiException, DatabaseException;
 
-    List<SearchModel> getSeveralTracks(String[] ids) throws IOException, SpotifyWebApiException;
+    List<SearchModel> getSeveralTracks(String[] ids) throws IOException, SpotifyWebApiException, DatabaseException;
 
 }

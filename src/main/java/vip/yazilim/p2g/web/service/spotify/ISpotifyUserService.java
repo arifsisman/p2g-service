@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ISpotifyUserService {
 
-    User getSpotifyUser(String spotifyAccountId) throws IOException, SpotifyWebApiException;
+    User getSpotifyUser(String spotifyAccountId) throws IOException, SpotifyWebApiException, DatabaseException;
     User getCurrentSpotifyUser(String userId) throws DatabaseException, IOException, SpotifyWebApiException;
 
     List<UserDevice> getUsersAvailableDevices(String userId) throws DatabaseException, IOException, SpotifyWebApiException;

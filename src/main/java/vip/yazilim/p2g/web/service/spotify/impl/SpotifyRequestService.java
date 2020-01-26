@@ -3,10 +3,7 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.model.RequestFunction;
 
@@ -25,26 +22,11 @@ import java.util.function.Function;
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
 
-    @Autowired
-    @Qualifier(Constants.BEAN_NAME_CLIENT_CREDENTIALS)
-    private SpotifyApi spotifyApi;
-
     @Override
     public SpotifyApi initAuthorizedApi(String accessToken) {
         return new SpotifyApi.Builder()
                 .setAccessToken(accessToken)
                 .build();
-    }
-
-    //------------------------------------------------------
-    @Override
-    public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws IOException, SpotifyWebApiException {
-        return execRequest(dataRequestBuilder.apply(spotifyApi), false);
-    }
-
-    @Override
-    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder) throws IOException, SpotifyWebApiException {
-        execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //////////////////////////////////////////
