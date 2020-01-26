@@ -14,14 +14,12 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
-import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -60,6 +58,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
+
+    @Autowired
+    private IUserDeviceService userDeviceService;
 
     @Autowired
     private AAuthorityProvider authorityProvider;
@@ -101,6 +102,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         Optional<User> userOpt;
         Optional<Room> roomOpt;
+        List<UserDevice> userDevices;
         Optional<RoomUser> roomUser;
         List<User> friends;
         List<User> friendRequests;
@@ -126,6 +128,10 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             roomUser = roomUserService.getRoomUser(roomId, userId);
             roomUser.ifPresent(userModel::setRoomUser);
         }
+
+        // Set User Devices
+        userDevices = userDeviceService.getUserDevicesByUserId(userId);
+        userModel.setUserDevices(userDevices);
 
         // Set Friends
         friends = friendRequestService.getFriendsByUserId(userId);
