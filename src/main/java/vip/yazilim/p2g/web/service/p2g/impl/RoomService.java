@@ -22,6 +22,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,18 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         return room;
+    }
+
+    @Override
+    public List<RoomModel> getRoomModels() throws DatabaseException, InvalidArgumentException {
+        List<RoomModel> roomModelList = new LinkedList<>();
+        List<Room> roomList = getAll();
+
+        for (Room r: roomList) {
+            roomModelList.add(getRoomModelByRoomId(r.getId()));
+        }
+
+        return roomModelList;
     }
 
     @Override
