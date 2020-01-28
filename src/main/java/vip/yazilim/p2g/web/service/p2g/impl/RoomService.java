@@ -120,7 +120,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
         Optional<Room> room;
 
+        User owner;
         List<User> userList;
+        List<RoomUser> roomUserList;
         List<Song> songList;
         List<User> invitedUserList;
 
@@ -136,6 +138,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Set User List
         userList = userService.getUsersByroomId(roomId);
         roomModel.setUserList(userList);
+
+        // Set owner
+        roomModel.setOwner(userList.get(0));
+
+        // Set Room Users
+        roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
 
         // Set Song List
         songList = songService.getSongListByRoomId(roomId);
