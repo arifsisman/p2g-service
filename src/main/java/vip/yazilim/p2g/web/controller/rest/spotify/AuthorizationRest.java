@@ -4,6 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
@@ -14,7 +15,11 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.util.RestResponseFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -40,7 +45,7 @@ public class AuthorizationRest {
     private ISpotifyUserService spotifyUserService;
 
     @GetMapping("/login")
-    public User login() throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
+    public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
         String userName = SecurityHelper.getUserDisplayName();
         Optional<User> userOpt = userService.getById(userId);
@@ -49,19 +54,19 @@ public class AuthorizationRest {
             User user = userOpt.get();
             LOGGER.info("{}[{}] logged in", userName, userId);
             updateUserAccessToken();
-            return updateUserSpotifyInfos(user);
+            return RestResponseFactory.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
         } else {
-            return register();
+            return register(request, response);
         }
     }
 
     @PostMapping("/token")
-    public OAuthToken updateUserAccessToken(@RequestBody String accessToken) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public RestResponse<OAuthToken> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         String userId = SecurityHelper.getUserId();
-        return tokenService.saveUserToken(userId, accessToken);
+        return RestResponseFactory.generateResponse(tokenService.saveUserToken(userId, accessToken), HttpStatus.OK, request, response);
     }
 
-    private User register() throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
         String email = SecurityHelper.getUserEmail();
         String userName = SecurityHelper.getUserDisplayName();
@@ -70,7 +75,7 @@ public class AuthorizationRest {
 
         LOGGER.info("{}[{}] registered", userName, userId);
         updateUserAccessToken();
-        return updateUserSpotifyInfos(user);
+        return RestResponseFactory.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
     }
 
     private User updateUserSpotifyInfos(User user) throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException {
