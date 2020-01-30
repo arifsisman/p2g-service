@@ -68,7 +68,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     protected Room preInsert(Room entity) {
-        entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
+        if (!entity.getPassword().equals("")) { // Else default password is empty string
+            entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
+        }
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         return entity;
     }
@@ -107,7 +109,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         List<RoomModel> roomModelList = new LinkedList<>();
         List<Room> roomList = getAll();
 
-        for (Room r: roomList) {
+        for (Room r : roomList) {
             roomModelList.add(getRoomModelByRoomId(r.getId()));
         }
 
