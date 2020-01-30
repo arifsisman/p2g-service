@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
@@ -94,6 +95,12 @@ public class RoomRest extends ARestCrud<Room, Long> {
     ///////////////////////////////
     // Custom controllers
     ///////////////////////////////
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PostMapping({"/create/{roomName}"})
+    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody String roomPassword) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomService.createRoom(SecurityHelper.getUserId(), roomName, roomPassword), HttpStatus.OK, request, response);
+    }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/{roomId}")

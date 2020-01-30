@@ -68,10 +68,20 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     protected Room preInsert(Room entity) {
-        if (!entity.getPassword().equals("")) { // Else default password is empty string
+        if (entity.getPassword() == null || entity.getPassword().equals("\"\"")) {
+            entity.setPassword("");
+            entity.setPrivateFlag(false);
+        } else {
             entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));
+            entity.setPrivateFlag(true);
         }
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
+        entity.setActiveFlag(true);
+        entity.setUsersAllowedQueueFlag(false);
+        entity.setUsersAllowedControlFlag(false);
+        entity.setShowRoomActivityFlag(true);
+        entity.setMaxUsers(50);
+
         return entity;
     }
 
@@ -121,10 +131,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         RoomModel roomModel = new RoomModel();
 
         Optional<Room> room;
-
-        User owner;
         List<User> userList;
-        List<RoomUser> roomUserList;
         List<Song> songList;
         List<User> invitedUserList;
 
@@ -166,8 +173,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         room.setOwnerId(ownerId);
         room.setName(roomName);
         room.setPassword(roomPassword);
-
-        room.setPrivateFlag(false);
+        userService.getById(ownerId).ifPresent(u -> room.setCountryCode(u.getCountryCode()));
 
         return create(room);
     }
@@ -175,6 +181,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public Room create(Room room) throws DatabaseException, InvalidArgumentException {
         Room createdRoom = super.create(room);
+        // Post create
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
         return room;
     }
