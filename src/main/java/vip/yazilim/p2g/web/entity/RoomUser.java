@@ -18,10 +18,11 @@ public class RoomUser implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "room_id", length = 64)
+    @Column(name = "room_id", updatable = false, nullable = false)
     private Long roomId;
 
-    @Column(name = "user_id", unique = true, updatable = false, nullable = false)
+    //TODO: ADD unique true, removed for test reasons
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "role", length = 16)

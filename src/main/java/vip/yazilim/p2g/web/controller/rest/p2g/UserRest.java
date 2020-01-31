@@ -8,6 +8,7 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.rest.ARestCrud;
@@ -83,5 +84,11 @@ public class UserRest extends ARestCrud<User, String> {
     @GetMapping({"/{userId}/model"})
     public RestResponse<UserModel> getUserModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(userService.getUserModelByUserId(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/me/model"})
+    public RestResponse<UserModel> getUserModelMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(userService.getUserModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 }
