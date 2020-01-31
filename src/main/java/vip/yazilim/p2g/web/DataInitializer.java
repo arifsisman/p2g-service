@@ -36,8 +36,8 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
 //        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen", "0");
-        User u2 = userService.createUser("2", "2@gmail.com", "TEST 2", "0");
-        User u3 = userService.createUser("3", "3@gmail.com", "TEST 3", "0");
+        User u2 = userService.createUser("2", "2@gmail.com", "TEST 2", "123");
+        User u3 = userService.createUser("3", "3@gmail.com", "TEST 3", "123");
         User u5 = userService.createUser("5", "5@gmail.com", "TEST 5", null);
         User u6 = userService.createUser("6", "6@gmail.com", "TEST 6", null);
         User u4 = userService.createUser("4", "4@gmail.com", "TEST 4", null);
@@ -46,8 +46,8 @@ public class DataInitializer implements CommandLineRunner {
         User u1 = userService.createUser("1", "1@gmail.com", "TEST 1", null);
 
 //        Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", "0");
-        Room testRoom2 = roomService.createRoom(u1.getId(), "Test Room 2", "0");
-        Room testRoom3 = roomService.createRoom(u2.getId(), "Test Room 3", "0");
+        Room testRoom2 = roomService.createRoom(u1.getId(), "Test Room 2", "123");
+        Room testRoom3 = roomService.createRoom(u2.getId(), "Test Room 3", "123");
         Room testRoom5 = roomService.createRoom(u4.getId(), "Test Room 5", null);
         Room testRoom4 = roomService.createRoom(u3.getId(), "Test Room 4", null);
         Room testRoom6 = roomService.createRoom(u5.getId(), "Test Room 6", null);
