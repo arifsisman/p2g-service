@@ -1,19 +1,17 @@
 package vip.yazilim.p2g.web.controller;
 
 import com.wrapper.spotify.exceptions.detailed.*;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import vip.yazilim.p2g.web.exception.AccountException;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -72,23 +70,8 @@ public class ExceptionHandlerController {
         return error(CONFLICT, e);
     }
 
-    @ExceptionHandler({vip.yazilim.p2g.web.exception.ConstraintViolationException.class})
-    public ResponseEntity<String> handleConstraintViolationException(vip.yazilim.p2g.web.exception.ConstraintViolationException e) {
-        return error(CONFLICT, e);
-    }
-
-    @ExceptionHandler({DataIntegrityViolationException.class})
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        return error(CONFLICT, e);
-    }
-
     @ExceptionHandler({MessageDeliveryException.class})
     public ResponseEntity<String> handleMessageDeliveryException(MessageDeliveryException e) {
-        return error(FORBIDDEN, e);
-    }
-
-    @ExceptionHandler({InvalidCsrfTokenException.class})
-    public ResponseEntity<String> handleInvalidCsrfTokenException(InvalidCsrfTokenException e) {
         return error(FORBIDDEN, e);
     }
 
@@ -96,6 +79,7 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         return error(FORBIDDEN, e);
     }
+
 
     /////////////////////////////
     // Spring Core Lib Exceptions
