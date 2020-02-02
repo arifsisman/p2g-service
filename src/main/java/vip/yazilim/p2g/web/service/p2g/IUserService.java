@@ -4,6 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.model.InviteModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -22,7 +23,8 @@ public interface IUserService extends ICrudService<User, String> {
 
     Optional<User> getUserById(String id);
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
-    List<User> getUsersByroomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    InviteModel getInviteModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<User> getUsersByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
     User createUser(String id, String email, String username, String password) throws DatabaseException, InvalidArgumentException;
 

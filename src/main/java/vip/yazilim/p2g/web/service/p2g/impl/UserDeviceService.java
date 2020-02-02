@@ -49,7 +49,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     @Override
     public List<UserDevice> getUserDevicesByroomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<UserDevice> userDeviceList = new LinkedList<>();
-        List<User> userList = userService.getUsersByroomId(roomId);
+        List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
             List<UserDevice> userDevices = getUserDevicesByUserId(u.getId());

@@ -144,7 +144,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         // Set User List
-        userList = userService.getUsersByroomId(roomId);
+        userList = userService.getUsersByRoomId(roomId);
         roomModel.setUserList(userList);
 
         // Set owner

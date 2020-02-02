@@ -102,7 +102,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     @Override
     public List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<OAuthToken> OAuthTokenList = new LinkedList<>();
-        List<User> userList = userService.getUsersByroomId(roomId);
+        List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
             Optional<OAuthToken> token = getTokenByUserId(u.getId());

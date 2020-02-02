@@ -68,7 +68,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendRequestsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<User> getFriendRequestsUsersByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<User> users = new ArrayList<>();
 
@@ -87,6 +87,16 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         return users;
+    }
+
+    @Override
+    public List<FriendRequest> getFriendRequestsByUserId(String userId) throws DatabaseException {
+        try {
+            return friendRequestRepo.findByFriendId(userId);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
+            throw new DatabaseReadException(errorMessage, exception);
+        }
     }
 
     @Override

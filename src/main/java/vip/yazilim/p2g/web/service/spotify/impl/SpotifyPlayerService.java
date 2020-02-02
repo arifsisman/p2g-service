@@ -266,7 +266,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         List<String> spotifyTokenList = new LinkedList<>();
         List<String> userDeviceList = new LinkedList<>();
 
-        List<User> userList = userService.getUsersByroomId(roomId);
+        List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
             String userId = u.getId();
@@ -290,7 +290,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private HashMap<String, String> getRoomTokenDeviceMap(Long roomId) throws DatabaseException, InvalidArgumentException {
         HashMap<String, String> map = new HashMap<>();
 
-        List<User> userList = userService.getUsersByroomId(roomId);
+        List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
             String userId = u.getId();
