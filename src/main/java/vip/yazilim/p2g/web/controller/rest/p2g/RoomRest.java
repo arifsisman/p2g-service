@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.model.RoomInviteModel;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -164,4 +165,11 @@ public class RoomRest extends ARestCrud<Room, Long> {
     public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(Long.valueOf(roomUserId)), HttpStatus.OK, request, response);
     }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/invite/model"})
+    public RestResponse<RoomInviteModel> getInviteModel(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomInviteService.getRoomInviteModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
 }

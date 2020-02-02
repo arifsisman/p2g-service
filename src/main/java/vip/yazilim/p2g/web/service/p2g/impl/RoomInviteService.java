@@ -8,8 +8,11 @@ import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.RoomInviteModel;
+import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -21,6 +24,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +41,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IRoomService roomService;
 
     @Autowired
     private IRoomUserService roomUserService;
@@ -83,6 +90,23 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             String errorMessage = String.format("An error occurred while getting Invites with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
+    }
+
+    @Override
+    public RoomInviteModel getRoomInviteModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        RoomInviteModel roomInviteModel = new RoomInviteModel();
+        List<RoomInvite> roomInvites;
+        List<RoomModel> roomModels = new LinkedList<>();
+
+        roomInvites = getRoomInvitesByUserId(userId);
+        roomInviteModel.setRoomInvites(roomInvites);
+
+        for(RoomInvite ri : roomInvites){
+            roomModels.add(roomService.getRoomModelByRoomId(ri.getRoomId()));
+        }
+        roomInviteModel.setRoomModels(roomModels);
+
+        return roomInviteModel;
     }
 
     @Override

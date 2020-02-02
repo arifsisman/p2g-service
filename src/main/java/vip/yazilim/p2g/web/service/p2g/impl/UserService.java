@@ -11,11 +11,12 @@ import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
-import vip.yazilim.p2g.web.entity.*;
+import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
-import vip.yazilim.p2g.web.model.InviteModel;
-import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
@@ -55,9 +56,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private IFriendRequestService friendRequestService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
@@ -145,32 +143,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         userModel.setFriendRequests(friendRequests);
 
         return userModel;
-    }
-
-    @Override
-    public InviteModel getInviteModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
-        InviteModel inviteModel = new InviteModel();
-
-        List<FriendRequest> friendRequests;
-        List<User> friendRequestUsers;
-        List<RoomInvite> roomInvites;
-        List<RoomModel> roomModels = new LinkedList<>();
-
-        friendRequests = friendRequestService.getFriendRequestsByUserId(userId);
-        inviteModel.setFriendRequests(friendRequests);
-
-        friendRequestUsers = friendRequestService.getFriendRequestsUsersByUserId(userId);
-        inviteModel.setFriendRequestUsers(friendRequestUsers);
-
-        roomInvites = roomInviteService.getRoomInvitesByUserId(userId);
-        inviteModel.setRoomInvites(roomInvites);
-
-        for(RoomInvite ri : roomInvites){
-            roomModels.add(roomService.getRoomModelByRoomId(ri.getRoomId()));
-        }
-        inviteModel.setRoomModels(roomModels);
-
-        return inviteModel;
     }
 
     @Override

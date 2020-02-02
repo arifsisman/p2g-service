@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.model.InviteModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -91,12 +90,6 @@ public class UserRest extends ARestCrud<User, String> {
     @GetMapping({"/me/model"})
     public RestResponse<UserModel> getUserModelMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(userService.getUserModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/me/invite/model"})
-    public RestResponse<InviteModel> getInviteModel(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(userService.getInviteModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
 }
