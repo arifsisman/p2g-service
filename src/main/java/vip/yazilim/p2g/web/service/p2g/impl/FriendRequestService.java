@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -21,7 +22,6 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -56,14 +56,21 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         List<UserModel> userModels = new LinkedList<>();
 
         try {
-            friendRequestList = friendRequestRepo.findByUserId(userId);
+            // Does not matter who sent friend request
+            friendRequestList = friendRequestRepo.findByUserIdOrFriendIdAndRequestStatus(userId, userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
-        for (FriendRequest uf : friendRequestList) {
-            UserModel um = userService.getUserModelByUserId(uf.getUserId());
+        for (FriendRequest fr : friendRequestList) {
+            UserModel um;
+            String frUserId = fr.getUserId();
+            String frFriendIdId = fr.getFriendId();
+
+            String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
+            um = userService.getUserModelByUserId(queryId);
+
             userModels.add(um);
         }
 
@@ -71,35 +78,28 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendRequestsUsersByUserId(String userId) throws DatabaseException, InvalidArgumentException {
-        List<FriendRequest> friendRequestList;
-        List<User> users = new ArrayList<>();
-
+    public List<FriendRequest> getFriendRequestsByUserId(String userId) throws DatabaseException {
         try {
-            friendRequestList = friendRequestRepo.findByFriendId(userId);
+            return friendRequestRepo.findByFriendIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
-
-        for (FriendRequest uf : friendRequestList) {
-            if (uf.getRequestStatus().equals(FriendRequestStatus.WAITING.toString())) {
-                Optional<User> user = userService.getById(uf.getUserId());
-                user.ifPresent(users::add);
-            }
-        }
-
-        return users;
     }
 
     @Override
-    public List<FriendRequest> getFriendRequestsByUserId(String userId) throws DatabaseException {
-        try {
-            return friendRequestRepo.findByFriendId(userId);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+    public List<User> getFriendRequestsUsersByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        List<FriendRequest> friendRequestList;
+        List<User> users = new LinkedList<>();
+
+        friendRequestList = getFriendRequestsByUserId(userId);
+
+        for (FriendRequest uf : friendRequestList) {
+            Optional<User> user = userService.getById(uf.getUserId());
+            user.ifPresent(users::add);
         }
+
+        return users;
     }
 
     @Override
@@ -176,6 +176,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         } else {
             delete(friendRequest);
         }
+
+        //TODO: if request replied, search for user and friend then update or delete existing request
 
         return true;
     }

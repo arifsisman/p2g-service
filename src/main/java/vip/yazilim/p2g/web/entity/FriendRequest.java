@@ -18,10 +18,10 @@ public class FriendRequest implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "user_id", unique = true, updatable = false, nullable = false)
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
-    @Column(name = "friend_id", unique = true, updatable = false, nullable = false)
+    @Column(name = "friend_id", updatable = false, nullable = false)
     private String friendId;
 
     @Column(name = "request_status", length = 16)

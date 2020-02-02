@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
+import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
@@ -29,6 +32,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private IRoomUserService roomUserService;
+
+    @Autowired
+    private FriendRequestService friendRequestService;
 
     @Autowired
     private ISongService songService;
@@ -59,5 +65,11 @@ public class DataInitializer implements CommandLineRunner {
 //        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1);
 //        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
 //        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
+
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setUserId(arif.getId());
+        friendRequest.setFriendId(u2.getId());
+        friendRequest.setRequestStatus(FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
+        friendRequestService.create(friendRequest);
     }
 }
