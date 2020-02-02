@@ -66,10 +66,16 @@ public class DataInitializer implements CommandLineRunner {
 //        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
 //        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
 
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setUserId(arif.getId());
-        friendRequest.setFriendId(u2.getId());
-        friendRequest.setRequestStatus(FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
-        friendRequestService.create(friendRequest);
+        FriendRequest friendRequest1 = new FriendRequest();
+        friendRequest1.setSenderUserId(u2.getId());
+        friendRequest1.setReceiverUserId(arif.getId());
+        friendRequest1.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
+        friendRequestService.create(friendRequest1);
+
+        FriendRequest friendRequest2 = new FriendRequest();
+        friendRequest2.setSenderUserId(arif.getId());
+        friendRequest2.setReceiverUserId(u2.getId());
+        friendRequest2.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
+        friendRequestService.create(friendRequest2);
     }
 }
