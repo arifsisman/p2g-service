@@ -78,7 +78,7 @@ public class AuthorizationRest {
         return RestResponseFactory.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
     }
 
-    private User updateUserSpotifyInfos(User user) throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException {
+    private User updateUserSpotifyInfos(User user) throws DatabaseException, IOException, SpotifyWebApiException, InvalidArgumentException, InvalidUpdateException {
         return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(user.getId()), user);
     }
 

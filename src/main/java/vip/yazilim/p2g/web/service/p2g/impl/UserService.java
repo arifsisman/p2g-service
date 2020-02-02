@@ -23,6 +23,7 @@ import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -168,14 +169,15 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException, InvalidUpdateException {
         String productType = spotifyUser.getProduct().getType();
 
         if (!productType.equals(ProductType.PREMIUM.getType())) {
-            throw new SpotifyAccountException("Product type must be premium");
+            throw new SpotifyAccountException("Spotify account must be premium");
         }
 
+        user.setName(spotifyUser.getDisplayName());
+        user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
         user.setSpotifyProductType(productType);
 
@@ -185,8 +187,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         spotifyUserService.updateUsersAvailableDevices(user.getId());
-
-        return user;
+        return update(user);
     }
 
     @Override

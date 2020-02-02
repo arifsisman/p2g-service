@@ -103,6 +103,16 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
+    public Optional<RoomUser> getRoomOwner(Long roomId) throws DatabaseException {
+        try {
+            return roomUserRepo.findRoomUserByRoomIdAndRole(roomId, Role.ROOM_OWNER.role);
+        } catch (Exception exception) {
+            String errMsg = String.format("An error occurred while getting RoomOwner with Room[%s]", roomId);
+            throw new DatabaseReadException(errMsg, exception);
+        }
+    }
+
+    @Override
     public RoomUser joinRoom(Long roomId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
         Optional<Room> roomOpt = roomService.getById(roomId);

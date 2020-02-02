@@ -148,7 +148,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         roomModel.setUserList(userList);
 
         // Set owner
-        roomModel.setOwner(userList.get(0));
+        Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
+        if (roomOwnerOpt.isPresent()) {
+            Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
+            roomModel.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
+        }
 
         // Set Room Users
         roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
