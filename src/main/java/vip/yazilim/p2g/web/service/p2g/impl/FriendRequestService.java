@@ -7,6 +7,8 @@ import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.FriendRequestModel;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -20,6 +22,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +51,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
-        List<User> users = new ArrayList<>();
+        List<UserModel> userModels = new LinkedList<>();
 
         try {
             friendRequestList = friendRequestRepo.findByUserId(userId);
@@ -60,11 +63,11 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         for (FriendRequest uf : friendRequestList) {
-            Optional<User> user = userService.getById(uf.getUserId());
-            user.ifPresent(users::add);
+            UserModel um = userService.getUserModelByUserId(uf.getUserId());
+            userModels.add(um);
         }
 
-        return users;
+        return userModels;
     }
 
     @Override
@@ -97,6 +100,26 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
             String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
+    }
+
+    @Override
+    public FriendRequestModel getFriendRequestModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        FriendRequestModel friendRequestModel = new FriendRequestModel();
+
+        List<FriendRequest> friendRequests;
+        List<User> friendRequestUsers;
+        List<UserModel> friends;
+
+        friendRequests = getFriendRequestsByUserId(userId);
+        friendRequestModel.setFriendRequests(friendRequests);
+
+        friendRequestUsers = getFriendRequestsUsersByUserId(userId);
+        friendRequestModel.setFriendRequestUsers(friendRequestUsers);
+
+        friends = getFriendsByUserId(userId);
+        friendRequestModel.setFriends(friends);
+
+        return friendRequestModel;
     }
 
     @Override

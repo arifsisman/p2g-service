@@ -14,7 +14,6 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -103,10 +102,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
         Optional<User> userOpt;
         Optional<Room> roomOpt;
-        List<UserDevice> userDevices;
         Optional<RoomUser> roomUser;
-        List<User> friends;
-        List<User> friendRequests;
 
         // Set User
         userOpt = getById(userId);
@@ -129,18 +125,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             roomUser = roomUserService.getRoomUser(roomId, userId);
             roomUser.ifPresent(userModel::setRoomUser);
         }
-
-        // Set User Devices
-        userDevices = userDeviceService.getUserDevicesByUserId(userId);
-        userModel.setUserDevices(userDevices);
-
-        // Set Friends
-        friends = friendRequestService.getFriendsByUserId(userId);
-        userModel.setFriends(friends);
-
-        // Set Friend Requests
-        friendRequests = friendRequestService.getFriendRequestsUsersByUserId(userId);
-        userModel.setFriendRequests(friendRequests);
 
         return userModel;
     }
