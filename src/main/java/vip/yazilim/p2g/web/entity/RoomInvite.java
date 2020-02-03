@@ -20,6 +20,9 @@ public class RoomInvite {
     @Column(name = "room_id", length = 128)
     private Long roomId;
 
+    @Column(name = "inviter_id", updatable = false, nullable = false)
+    private String inviterId;
+
     @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 

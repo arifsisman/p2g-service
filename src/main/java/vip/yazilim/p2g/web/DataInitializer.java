@@ -8,13 +8,16 @@ import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
+import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 
 import java.util.Collections;
@@ -31,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
     private IRoomService roomService;
 
     @Autowired
-    private IRoomUserService roomUserService;
+    private IRoomInviteService roomInviteService;
 
     @Autowired
     private FriendRequestService friendRequestService;
@@ -40,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
     private ISongService songService;
 
     @Override
-    public void run(String... args) throws DatabaseException, InvalidArgumentException {
+    public void run(String... args) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen", "0");
         User u2 = userService.createUser("2", "2@gmail.com", "Test User 2", "123");
@@ -77,5 +80,17 @@ public class DataInitializer implements CommandLineRunner {
         friendRequest2.setReceiverUserId(u2.getId());
         friendRequest2.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
         friendRequestService.create(friendRequest2);
+
+        u2.setImageUrl("http://www.pngall.com/wp-content/uploads/2016/05/Orange-Free-Download-PNG.png");
+        userService.update(u2);
+
+        RoomInvite roomInvite = new RoomInvite();
+        roomInvite.setRoomId(testRoom2.getId());
+        roomInvite.setInviterId(u2.getId());
+        roomInvite.setUserId(arif.getId());
+        roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+        roomInvite.setAcceptedFlag(false);
+
+        roomInviteService.create(roomInvite);
     }
 }

@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -116,6 +117,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         if (!existingInvite.isPresent()) {
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomId(roomId);
+            roomInvite.setInviterId(SecurityHelper.getUserId());
             roomInvite.setUserId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
             roomInvite.setAcceptedFlag(false);
