@@ -94,20 +94,17 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInviteModel getRoomInviteModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
-        RoomInviteModel roomInviteModel = new RoomInviteModel();
-        List<RoomInvite> roomInvites;
-        List<RoomModel> roomModels = new LinkedList<>();
+    public List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        List<RoomInviteModel> roomInviteModelList = new LinkedList<>();
+        List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 
-        roomInvites = getRoomInvitesByUserId(userId);
-        roomInviteModel.setRoomInvites(roomInvites);
+        for (RoomInvite ri : roomInvites) {
+            RoomModel rm = roomService.getRoomModelByRoomId(ri.getRoomId());
+            roomInviteModelList.add(new RoomInviteModel(ri, rm));
 
-        for(RoomInvite ri : roomInvites){
-            roomModels.add(roomService.getRoomModelByRoomId(ri.getRoomId()));
         }
-        roomInviteModel.setRoomModels(roomModels);
 
-        return roomInviteModel;
+        return roomInviteModelList;
     }
 
     @Override

@@ -84,13 +84,20 @@ public class DataInitializer implements CommandLineRunner {
         u2.setImageUrl("http://www.pngall.com/wp-content/uploads/2016/05/Orange-Free-Download-PNG.png");
         userService.update(u2);
 
-        RoomInvite roomInvite = new RoomInvite();
-        roomInvite.setRoomId(testRoom2.getId());
-        roomInvite.setInviterId(u2.getId());
-        roomInvite.setUserId(arif.getId());
-        roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInvite.setAcceptedFlag(false);
+        RoomInvite roomInvite1 = new RoomInvite();
+        roomInvite1.setRoomId(testRoom2.getId());
+        roomInvite1.setInviterId(u2.getId());
+        roomInvite1.setUserId(arif.getId());
+        roomInvite1.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+        roomInvite1.setAcceptedFlag(false);
+        roomInviteService.create(roomInvite1);
 
-        roomInviteService.create(roomInvite);
+        RoomInvite roomInvite2 = new RoomInvite();
+        roomInvite2.setRoomId(testRoom3.getId());
+        roomInvite2.setInviterId(u3.getId());
+        roomInvite2.setUserId(arif.getId());
+        roomInvite2.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+        roomInvite2.setAcceptedFlag(false);
+        roomInviteService.create(roomInvite2);
     }
 }

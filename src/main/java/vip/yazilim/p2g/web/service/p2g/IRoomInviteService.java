@@ -20,7 +20,7 @@ public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
     List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
     List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException;
-    RoomInviteModel getRoomInviteModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     RoomInvite invite(Long roomId, String userId) throws DatabaseException, InvalidArgumentException;
     RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
     boolean reject(Long roomInviteId) throws DatabaseException, InvalidArgumentException;
