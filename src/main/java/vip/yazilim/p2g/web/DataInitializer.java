@@ -72,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
         FriendRequest friendRequest1 = new FriendRequest();
         friendRequest1.setSenderUserId(u2.getId());
         friendRequest1.setReceiverUserId(arif.getId());
-        friendRequest1.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
+        friendRequest1.setRequestStatus(FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         friendRequestService.create(friendRequest1);
 
         FriendRequest friendRequest2 = new FriendRequest();
@@ -81,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequest2.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
         friendRequestService.create(friendRequest2);
 
-        u2.setImageUrl("http://www.pngall.com/wp-content/uploads/2016/05/Orange-Free-Download-PNG.png");
+        u2.setImageUrl("https://steemitimages.com/DQmSEpZyuGNzzupdLu41N1bmi6Ucrz475M1JUFQdDKfJtYc/images%20(7).jpeg");
         userService.update(u2);
 
         RoomInvite roomInvite1 = new RoomInvite();
@@ -99,5 +99,14 @@ public class DataInitializer implements CommandLineRunner {
         roomInvite2.setInvitationDate(TimeHelper.getLocalDateTimeNow());
         roomInvite2.setAcceptedFlag(false);
         roomInviteService.create(roomInvite2);
+
+        RoomInvite roomInvite3 = new RoomInvite();
+        roomInvite3.setRoomId(testRoom4.getId());
+        roomInvite3.setInviterId(u4.getId());
+        roomInvite3.setUserId(arif.getId());
+        roomInvite3.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+        roomInvite3.setAcceptedFlag(false);
+        roomInviteService.create(roomInvite3);
+
     }
 }

@@ -168,7 +168,6 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         return roomModel;
     }
 
-    //TODO: for tests, delete later
     @Override
     public Room createRoom(String ownerId, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
         Room room = new Room();

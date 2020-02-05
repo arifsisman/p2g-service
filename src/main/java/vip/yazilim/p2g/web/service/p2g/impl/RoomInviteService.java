@@ -86,7 +86,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     @Override
     public List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException {
         try {
-            return roomInviteRepo.findByUserId(userId);
+            return roomInviteRepo.findByUserIdAndAcceptedFlag(userId, false);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Invites with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
