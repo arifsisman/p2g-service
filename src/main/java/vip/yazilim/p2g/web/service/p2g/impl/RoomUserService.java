@@ -206,7 +206,10 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             roomUser.setRole(Role.ROOM_USER.getRole());
             roomUser.setActiveFlag(true);
 
-            return create(roomUser);
+            RoomUser createdRoomUser = create(roomUser);
+            roomInviteService.delete(roomInvite);
+
+            return createdRoomUser;
         } else {
             String err = String.format("Room Invite[%s] not found", roomInvite.getId());
             throw new NotFoundException(err);

@@ -81,32 +81,27 @@ public class DataInitializer implements CommandLineRunner {
         friendRequest2.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
         friendRequestService.create(friendRequest2);
 
-        u2.setImageUrl("https://steemitimages.com/DQmSEpZyuGNzzupdLu41N1bmi6Ucrz475M1JUFQdDKfJtYc/images%20(7).jpeg");
+        u2.setImageUrl("http://clipart-library.com/images_k/transparent-apple/transparent-apple-25.png");
         userService.update(u2);
 
+        u3.setImageUrl("http://clipart-library.com/images/qcBoGnLKi.png");
+        userService.update(u3);
+
+        u4.setImageUrl("http://clipart-library.com/image_gallery/n700901.jpg");
+        userService.update(u4);
+
+        createRoomInvite(arif, u2, testRoom2);
+        createRoomInvite(arif, u3, testRoom3);
+        createRoomInvite(arif, u4, testRoom4);
+
+    }
+
+    private void createRoomInvite(User receiver, User inviter, Room testRoom2) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite1 = new RoomInvite();
         roomInvite1.setRoomId(testRoom2.getId());
-        roomInvite1.setInviterId(u2.getId());
-        roomInvite1.setUserId(arif.getId());
+        roomInvite1.setUserId(receiver.getId());
+        roomInvite1.setInviterId(inviter.getId());
         roomInvite1.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInvite1.setAcceptedFlag(false);
         roomInviteService.create(roomInvite1);
-
-        RoomInvite roomInvite2 = new RoomInvite();
-        roomInvite2.setRoomId(testRoom3.getId());
-        roomInvite2.setInviterId(u3.getId());
-        roomInvite2.setUserId(arif.getId());
-        roomInvite2.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInvite2.setAcceptedFlag(false);
-        roomInviteService.create(roomInvite2);
-
-        RoomInvite roomInvite3 = new RoomInvite();
-        roomInvite3.setRoomId(testRoom4.getId());
-        roomInvite3.setInviterId(u4.getId());
-        roomInvite3.setUserId(arif.getId());
-        roomInvite3.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInvite3.setAcceptedFlag(false);
-        roomInviteService.create(roomInvite3);
-
     }
 }

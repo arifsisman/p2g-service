@@ -18,7 +18,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -86,7 +85,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     @Override
     public List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException {
         try {
-            return roomInviteRepo.findByUserIdAndAcceptedFlag(userId, false);
+            return roomInviteRepo.findByUserId(userId);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Invites with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
@@ -117,7 +116,6 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             roomInvite.setInviterId(SecurityHelper.getUserId());
             roomInvite.setUserId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-            roomInvite.setAcceptedFlag(false);
 
             RoomInvite createdRoomInvite = create(roomInvite);
             webSocketController.sendToUser("invites", userId, createdRoomInvite);
@@ -128,10 +126,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
-        roomInvite.setAcceptedFlag(true);
-        update(roomInvite);
-
+    public RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException {
         return roomUserService.acceptRoomInvite(roomInvite);
     }
 

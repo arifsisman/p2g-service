@@ -29,7 +29,4 @@ public class RoomInvite {
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime invitationDate;
 
-    @Column(name = "accepted_flag")
-    private Boolean acceptedFlag;
-
 }
