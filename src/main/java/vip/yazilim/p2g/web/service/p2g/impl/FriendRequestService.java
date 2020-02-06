@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
-import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -64,7 +63,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         for (FriendRequest fr : friendRequestList) {
-            if(fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())){
+            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                 UserModel um;
                 String frUserId = fr.getSenderUserId();
                 String frFriendIdId = fr.getReceiverUserId();
@@ -89,38 +88,17 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendRequestsUsersByUserId(String userId) throws DatabaseException, InvalidArgumentException {
-        List<FriendRequest> friendRequestList;
-        List<User> users = new LinkedList<>();
+    public List<FriendRequestModel> getFriendRequestModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        List<FriendRequestModel> friendRequestModels = new LinkedList<>();
+        List<FriendRequest> friendRequests = getFriendRequestsByUserId(userId);
 
-        friendRequestList = getFriendRequestsByUserId(userId);
-
-        for (FriendRequest uf : friendRequestList) {
-            Optional<User> user = userService.getById(uf.getSenderUserId());
-            user.ifPresent(users::add);
+        for (FriendRequest fr : friendRequests) {
+            FriendRequestModel frm = new FriendRequestModel();
+            frm.setFriendRequest(fr);
+            frm.setFriendRequestUser(userService.getUserModelByUserId(fr.getSenderUserId()));
         }
 
-        return users;
-    }
-
-    @Override
-    public FriendRequestModel getFriendRequestModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
-        FriendRequestModel friendRequestModel = new FriendRequestModel();
-
-        List<FriendRequest> friendRequests;
-        List<User> friendRequestUsers;
-        List<UserModel> friends;
-
-        friendRequests = getFriendRequestsByUserId(userId);
-        friendRequestModel.setFriendRequests(friendRequests);
-
-        friendRequestUsers = getFriendRequestsUsersByUserId(userId);
-        friendRequestModel.setFriendRequestUsers(friendRequestUsers);
-
-        friends = getFriendsByUserId(userId);
-        friendRequestModel.setFriends(friends);
-
-        return friendRequestModel;
+        return friendRequestModels;
     }
 
     @Override
@@ -186,7 +164,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         // Search for counter friend request and delete if it exists
         Optional<FriendRequest> counterFriendRequest = getFriendRequestByUserAndFriendId(friendRequest.getReceiverUserId(), friendRequest.getSenderUserId());
 
-        if(counterFriendRequest.isPresent()){
+        if (counterFriendRequest.isPresent()) {
             return delete(counterFriendRequest.get());
         }
 

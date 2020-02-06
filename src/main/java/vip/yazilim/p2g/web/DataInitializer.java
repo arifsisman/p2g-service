@@ -81,13 +81,13 @@ public class DataInitializer implements CommandLineRunner {
         friendRequest2.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
         friendRequestService.create(friendRequest2);
 
-        u2.setImageUrl("http://clipart-library.com/images_k/transparent-apple/transparent-apple-25.png");
+        u2.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         userService.update(u2);
 
-        u3.setImageUrl("http://clipart-library.com/images/qcBoGnLKi.png");
+        u3.setImageUrl("https://randomuser.me/api/portraits/women/40.jpg");
         userService.update(u3);
 
-        u4.setImageUrl("http://clipart-library.com/image_gallery/n700901.jpg");
+        u4.setImageUrl("https://randomuser.me/api/portraits/men/42.jpg");
         userService.update(u4);
 
         createRoomInvite(arif, u2, testRoom2);
