@@ -75,7 +75,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         }
 
         for (RoomInvite invite : roomInviteList) {
-            Optional<User> user = userService.getById(invite.getUserId());
+            Optional<User> user = userService.getById(invite.getReceiverId());
             user.ifPresent(inviteList::add);
         }
 
@@ -85,7 +85,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     @Override
     public List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException {
         try {
-            return roomInviteRepo.findByUserId(userId);
+            return roomInviteRepo.findByReceiverId(userId);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Invites with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
@@ -108,13 +108,13 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
     @Override
     public RoomInvite invite(Long roomId, String userId) throws DatabaseException, InvalidArgumentException {
-        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndUserId(roomId, userId);
+        Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndReceiverId(roomId, userId);
 
         if (!existingInvite.isPresent()) {
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomId(roomId);
             roomInvite.setInviterId(SecurityHelper.getUserId());
-            roomInvite.setUserId(userId);
+            roomInvite.setReceiverId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);

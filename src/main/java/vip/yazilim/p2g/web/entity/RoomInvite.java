@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_id", "user_id"}))
+@Table(name = Constants.TABLE_PREFIX + "room_invite", uniqueConstraints = @UniqueConstraint(columnNames = {"room_id", "receiver_id"}))
 @Data
 public class RoomInvite {
 
@@ -23,8 +23,8 @@ public class RoomInvite {
     @Column(name = "inviter_id", updatable = false, nullable = false)
     private String inviterId;
 
-    @Column(name = "user_id", updatable = false, nullable = false)
-    private String userId;
+    @Column(name = "receiver_id", updatable = false, nullable = false)
+    private String receiverId;
 
     @Column(name = "invitation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime invitationDate;

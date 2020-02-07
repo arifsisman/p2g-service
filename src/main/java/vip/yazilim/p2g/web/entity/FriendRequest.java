@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"sender_user_id", "receiver_user_id"}))
+@Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"sender_id", "receiver_id"}))
 @Data
 public class FriendRequest implements Serializable {
 
@@ -18,11 +18,11 @@ public class FriendRequest implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "sender_user_id", updatable = false, nullable = false)
-    private String senderUserId;
+    @Column(name = "sender_id", updatable = false, nullable = false)
+    private String senderId;
 
-    @Column(name = "receiver_user_id", updatable = false, nullable = false)
-    private String receiverUserId;
+    @Column(name = "receiver_id", updatable = false, nullable = false)
+    private String receiverId;
 
     @Column(name = "request_status", length = 16)
     private String requestStatus;

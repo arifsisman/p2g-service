@@ -174,7 +174,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             RoomUser roomUser = new RoomUser();
 
             roomUser.setRoomId(roomInvite.getRoomId());
-            roomUser.setUserId(roomInvite.getUserId());
+            roomUser.setUserId(roomInvite.getReceiverId());
             roomUser.setRole(Role.ROOM_USER.getRole());
             roomUser.setActiveFlag(true);
 

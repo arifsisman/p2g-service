@@ -57,7 +57,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         try {
             // Does not matter who sent friend request
-            friendRequestList = friendRequestRepo.findBySenderUserIdOrReceiverUserId(userId, userId);
+            friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
@@ -66,8 +66,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         for (FriendRequest fr : friendRequestList) {
             if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                 UserModel um;
-                String frUserId = fr.getSenderUserId();
-                String frFriendIdId = fr.getReceiverUserId();
+                String frUserId = fr.getSenderId();
+                String frFriendIdId = fr.getReceiverId();
 
                 String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
                 um = userService.getUserModelByUserId(queryId);
@@ -81,7 +81,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public List<FriendRequest> getFriendRequestsByUserId(String userId) throws DatabaseException {
         try {
-            return friendRequestRepo.findByReceiverUserIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
+            return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
@@ -96,7 +96,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         for (FriendRequest fr : friendRequests) {
             FriendRequestModel frm = new FriendRequestModel();
             frm.setFriendRequest(fr);
-            Optional<User> userOpt = userService.getById(fr.getSenderUserId());
+            Optional<User> userOpt = userService.getById(fr.getSenderId());
             userOpt.ifPresent(frm::setFriendRequestUser);
         }
 
@@ -106,7 +106,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public Optional<FriendRequest> getFriendRequestByUserAndFriendId(String user1, String user2) throws DatabaseReadException {
         try {
-            return friendRequestRepo.findBySenderUserIdAndReceiverUserId(user1, user2);
+            return friendRequestRepo.findBySenderIdAndReceiverId(user1, user2);
         } catch (Exception exception) {
             String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", user1, user2);
             throw new DatabaseReadException(errorMessage, exception);
@@ -115,13 +115,13 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     @Override
     public boolean createFriendRequest(String user1, String user2) throws DatabaseException, InvalidArgumentException {
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderUserIdAndReceiverUserId(user1, user2);
+        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(user1, user2);
 
         if (!existingFriendRequest.isPresent()) {
             FriendRequest friendRequest = new FriendRequest();
 
-            friendRequest.setSenderUserId(user1);
-            friendRequest.setReceiverUserId(user2);
+            friendRequest.setSenderId(user1);
+            friendRequest.setReceiverId(user2);
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
@@ -164,7 +164,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     private boolean deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
         // Search for counter friend request and delete if it exists
-        Optional<FriendRequest> counterFriendRequest = getFriendRequestByUserAndFriendId(friendRequest.getReceiverUserId(), friendRequest.getSenderUserId());
+        Optional<FriendRequest> counterFriendRequest = getFriendRequestByUserAndFriendId(friendRequest.getReceiverId(), friendRequest.getSenderId());
 
         if (counterFriendRequest.isPresent()) {
             return delete(counterFriendRequest.get());

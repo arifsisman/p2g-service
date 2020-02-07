@@ -12,12 +12,12 @@ import java.util.Optional;
  */
 public interface IFriendRequestRepo extends JpaRepository<FriendRequest, Long> {
 
-    List<FriendRequest> findBySenderUserId(String senderUserId);
+    List<FriendRequest> findBySenderId(String senderUserId);
 
-    List<FriendRequest> findBySenderUserIdOrReceiverUserId(String senderUserId, String receiverUserId);
+    List<FriendRequest> findBySenderIdOrReceiverId(String senderId, String receiverId);
 
-    List<FriendRequest> findByReceiverUserIdAndRequestStatusNot(String receiverUserId, String requestStatus);
+    List<FriendRequest> findByReceiverIdAndRequestStatusNot(String receiverId, String requestStatus);
 
-    Optional<FriendRequest> findBySenderUserIdAndReceiverUserId(String senderUserId, String receiverUserId);
+    Optional<FriendRequest> findBySenderIdAndReceiverId(String senderId, String receiverId);
 
 }

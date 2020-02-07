@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, Long> {
 
     List<RoomInvite> findByRoomId(Long roomId);
-    Optional<RoomInvite> findByRoomIdAndUserId(Long roomId, String userId);
-    List<RoomInvite> findByUserId(String userId);
+    Optional<RoomInvite> findByRoomIdAndReceiverId(Long roomId, String userId);
+    List<RoomInvite> findByReceiverId(String userId);
 
 }

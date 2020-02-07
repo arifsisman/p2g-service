@@ -89,27 +89,27 @@ public class DataInitializer implements CommandLineRunner {
         u4.setImageUrl("https://randomuser.me/api/portraits/men/42.jpg");
         userService.update(u4);
 
-        createRoomInvite(arif, u2, testRoom2);
-        createRoomInvite(arif, u3, testRoom3);
-        createRoomInvite(arif, u4, testRoom4);
+        createRoomInvite(u2, arif, testRoom2);
+        createRoomInvite(u3, arif, testRoom3);
+        createRoomInvite(u4, arif, testRoom4);
 
         createFriendRequest(u2, arif, FriendRequestStatus.ACCEPTED);
         createFriendRequest(u3, arif, FriendRequestStatus.WAITING);
     }
 
-    private void createRoomInvite(User receiver, User inviter, Room testRoom2) throws DatabaseException, InvalidArgumentException {
+    private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws DatabaseException, InvalidArgumentException {
         RoomInvite roomInvite1 = new RoomInvite();
         roomInvite1.setRoomId(testRoom2.getId());
-        roomInvite1.setUserId(receiver.getId());
         roomInvite1.setInviterId(inviter.getId());
+        roomInvite1.setReceiverId(receiver.getId());
         roomInvite1.setInvitationDate(TimeHelper.getLocalDateTimeNow());
         roomInviteService.create(roomInvite1);
     }
 
     private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
         FriendRequest friendRequest1 = new FriendRequest();
-        friendRequest1.setSenderUserId(sender.getId());
-        friendRequest1.setReceiverUserId(receiver.getId());
+        friendRequest1.setSenderId(sender.getId());
+        friendRequest1.setReceiverId(receiver.getId());
         friendRequest1.setRequestStatus(status.getFriendRequestStatus());
         friendRequestService.create(friendRequest1);
     }
