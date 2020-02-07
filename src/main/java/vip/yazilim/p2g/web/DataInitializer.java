@@ -98,20 +98,21 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws DatabaseException, InvalidArgumentException {
-        RoomInvite roomInvite1 = new RoomInvite();
-        roomInvite1.setRoomId(testRoom2.getId());
-        roomInvite1.setInviterId(inviter.getId());
-        roomInvite1.setReceiverId(receiver.getId());
-        roomInvite1.setInvitationDate(TimeHelper.getLocalDateTimeNow());
-        roomInviteService.create(roomInvite1);
+        RoomInvite roomInvite = new RoomInvite();
+        roomInvite.setRoomId(testRoom2.getId());
+        roomInvite.setInviterId(inviter.getId());
+        roomInvite.setReceiverId(receiver.getId());
+        roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
+        roomInviteService.create(roomInvite);
     }
 
     private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
-        FriendRequest friendRequest1 = new FriendRequest();
-        friendRequest1.setSenderId(sender.getId());
-        friendRequest1.setReceiverId(receiver.getId());
-        friendRequest1.setRequestStatus(status.getFriendRequestStatus());
-        friendRequestService.create(friendRequest1);
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setSenderId(sender.getId());
+        friendRequest.setReceiverId(receiver.getId());
+        friendRequest.setRequestStatus(status.getFriendRequestStatus());
+        friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
+        friendRequestService.create(friendRequest);
     }
 
     private RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {

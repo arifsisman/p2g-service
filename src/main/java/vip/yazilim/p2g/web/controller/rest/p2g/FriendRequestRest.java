@@ -95,13 +95,13 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/model"})
     public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userId}/model"})
     public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByUserId(userId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

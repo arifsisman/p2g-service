@@ -18,11 +18,11 @@ import java.util.Optional;
  */
 public interface IFriendRequestService extends ICrudService<FriendRequest, Long> {
 
-    List<FriendRequest> getFriendRequestsByUserId(String userId) throws DatabaseException;
+    List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException;
     List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
-    List<FriendRequestModel> getFriendRequestModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException;
 
-    Optional<FriendRequest> getFriendRequestByUserAndFriendId(String user1, String user2) throws DatabaseReadException;
+    Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String user1, String user2) throws DatabaseReadException;
     boolean createFriendRequest(String user1, String user2) throws DatabaseException, InvalidArgumentException;
     boolean acceptFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
     boolean ignoreFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException;
