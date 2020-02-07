@@ -19,9 +19,6 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISongService extends ICrudService<Song, Long> {
-
-    Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException;
-
     Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException;
 
     Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException;

@@ -94,26 +94,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return songList;
     }
 
-    //TODO: delete method, this method is test purposes
-    @Override
-    public Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
-        Song song = new Song();
-        song.setRoomId(roomId);
-        song.setSongId(songId);
-        song.setSongName(songName);
-        song.setArtistNames(artistNames);
-        song.setDurationMs(durationMs);
-        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setSongStatus(SongStatus.NEXT.getSongStatus());
-        song.setVotes(votes);
-
-        song = create(song);
-
-        LOGGER.info("songId: {} - songName: {}", song.getId(), songName);
-
-        return song;
-    }
-
     @Override
     public boolean removeSongFromRoom(Long songId) throws DatabaseException, InvalidArgumentException {
         Optional<Song> SongOpt = getById(songId);

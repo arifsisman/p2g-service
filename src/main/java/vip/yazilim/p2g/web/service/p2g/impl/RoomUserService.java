@@ -140,34 +140,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         return roomUser;
     }
 
-    //todo: for tests, delete later
-    @Override
-    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Room> roomOpt = roomService.getById(roomId);
-
-        if (!roomOpt.isPresent()) {
-            String err = String.format("Room[%s] can not found", roomId);
-            throw new InvalidArgumentException(err);
-        }
-
-        Room room = roomOpt.get();
-        RoomUser roomUser = new RoomUser();
-
-        if (passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
-            roomUser.setRoomId(roomId);
-            roomUser.setUserId(userId);
-            roomUser.setRole(role.getRole());
-            roomUser.setActiveFlag(true);
-        } else {
-            throw new InvalidArgumentException("Wrong password");
-        }
-
-        RoomUser joinedUser = create(roomUser);
-        spotifyPlayerService.userSyncWithRoom(joinedUser);
-
-        return roomUser;
-    }
-
     @Override
     public RoomUser joinRoomOwner(Long roomId, String userId) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = new RoomUser();
