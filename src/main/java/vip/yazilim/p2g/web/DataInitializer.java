@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
+import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
@@ -69,7 +70,6 @@ public class DataInitializer implements CommandLineRunner {
         Room testRoom2 = roomService.createRoom(u2.getId(), "Test Room 2", "123");
         Room testRoom3 = roomService.createRoom(u3.getId(), "Test Room 3", "123");
         Room testRoom4 = roomService.createRoom(u4.getId(), "Test Room 4", null);
-        Room testRoom5 = roomService.createRoom(u5.getId(), "Test Room 5", null);
         Room testRoom6 = roomService.createRoom(u6.getId(), "Test Room 6", null);
         Room testRoom7 = roomService.createRoom(u7.getId(), "Test Room 7", null);
         Room testRoom8 = roomService.createRoom(u8.getId(), "Test Room 8", null);
@@ -89,12 +89,22 @@ public class DataInitializer implements CommandLineRunner {
         u4.setImageUrl("https://randomuser.me/api/portraits/men/42.jpg");
         userService.update(u4);
 
+        u4.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
+        userService.update(u4);
+
+        u5.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+        userService.update(u5);
+
         createRoomInvite(u2, arif, testRoom2);
         createRoomInvite(u3, arif, testRoom3);
         createRoomInvite(u4, arif, testRoom4);
+        createRoomInvite(u8, arif, testRoom8);
 
         createFriendRequest(u2, arif, FriendRequestStatus.ACCEPTED);
         createFriendRequest(u3, arif, FriendRequestStatus.WAITING);
+        createFriendRequest(u4, arif, FriendRequestStatus.WAITING);
+        createFriendRequest(u7, arif, FriendRequestStatus.WAITING);
+        createFriendRequest(u5, arif, FriendRequestStatus.ACCEPTED);
     }
 
     private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws DatabaseException, InvalidArgumentException {

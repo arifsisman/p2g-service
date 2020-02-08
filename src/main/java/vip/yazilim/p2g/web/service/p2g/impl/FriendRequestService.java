@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
-import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -96,8 +95,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         for (FriendRequest fr : friendRequests) {
             FriendRequestModel frm = new FriendRequestModel();
             frm.setFriendRequest(fr);
-            Optional<User> userOpt = userService.getById(fr.getSenderId());
-            userOpt.ifPresent(frm::setFriendRequestUser);
+            UserModel userModel = userService.getUserModelByUserId(fr.getSenderId());
+            frm.setFriendRequestUserModel(userModel);
 
             friendRequestModels.add(frm);
         }
