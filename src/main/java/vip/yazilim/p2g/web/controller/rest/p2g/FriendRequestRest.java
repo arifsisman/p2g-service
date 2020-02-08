@@ -62,16 +62,16 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
     // Custom controllers
     ///////////////////////////////
 
-//    @HasSystemRole(role = Role.P2G_USER)
-//    @PostMapping("/")
-//    public RestResponse<List<User>> getRequests(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-//        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestsUsersByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
-//    }
-
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/send/{userId}")
+    @PostMapping("/{userId}/add")
     public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserId(), userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @DeleteMapping("/{userId}/delete")
+    public RestResponse<Boolean> deleteFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(friendRequestService.deleteFriend(userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

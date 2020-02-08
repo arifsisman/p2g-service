@@ -115,14 +115,14 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(String user1, String user2) throws DatabaseException, InvalidArgumentException {
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(user1, user2);
+    public boolean createFriendRequest(String senderId, String receiverId) throws DatabaseException, InvalidArgumentException {
+        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
 
         if (!existingFriendRequest.isPresent()) {
             FriendRequest friendRequest = new FriendRequest();
 
-            friendRequest.setSenderId(user1);
-            friendRequest.setReceiverId(user2);
+            friendRequest.setSenderId(senderId);
+            friendRequest.setReceiverId(receiverId);
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
@@ -147,6 +147,20 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public boolean rejectFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.REJECTED);
+    }
+
+    @Override
+    public boolean deleteFriend(String friendId) throws DatabaseException {
+        String userId = SecurityHelper.getUserId();
+        Optional<FriendRequest> friendRequestOpt1 = getFriendRequestBySenderIdAndReceiverId(friendId, userId);
+        Optional<FriendRequest> friendRequestOpt2 = getFriendRequestBySenderIdAndReceiverId(userId, friendId);
+
+        if(!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()){
+            throw new NotFoundException("Friend can not found");
+        }else{
+            FriendRequest friendRequest = friendRequestOpt1.orElseGet(friendRequestOpt2::get);
+            return delete(friendRequest);
+        }
     }
 
     private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
