@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.enums.WebSocketDestinations;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -118,7 +119,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            webSocketController.sendToUser("invites", userId, createdRoomInvite);
+            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, createdRoomInvite);
             return createdRoomInvite;
         } else {
             throw new ConstraintViolationException("Invite already exists");
