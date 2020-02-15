@@ -19,6 +19,7 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.general.database.DatabaseDeleteException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseException;
 import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -119,7 +120,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, createdRoomInvite);
+            RoomModel roomModel = roomService.getRoomModelByRoomId(roomId);
+
+            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, new RoomInviteModel(createdRoomInvite, roomModel));
             return createdRoomInvite;
         } else {
             throw new ConstraintViolationException("Invite already exists");
@@ -132,8 +135,12 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean reject(Long roomInviteId) throws DatabaseException, InvalidArgumentException {
-        return deleteById(roomInviteId);
+    public boolean reject(Long roomInviteId) throws DatabaseException {
+        try {
+            return deleteById(roomInviteId);
+        } catch (Exception e) {
+            throw new DatabaseDeleteException(e);
+        }
     }
 
     @Override

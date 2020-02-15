@@ -90,6 +90,11 @@ public class ExceptionHandlerController {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
+//    @ExceptionHandler({DatabaseDeleteException.class})
+//    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
+//        return error(NOT_MODIFIED, e);
+//    }
+
     @ExceptionHandler({ServiceException.class})
     public ResponseEntity<String> handleServiceException(ServiceException e) {
         return error(INTERNAL_SERVER_ERROR, e);
