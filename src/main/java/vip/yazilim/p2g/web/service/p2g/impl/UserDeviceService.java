@@ -16,7 +16,6 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -34,13 +33,13 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     private IUserService userService;
 
     @Override
-    public List<UserDevice> getUserDevicesByUserUuid(UUID userUuid) throws DatabaseException {
+    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
         List<UserDevice> userDeviceList;
 
         try {
-            userDeviceList = userDeviceRepo.findByUserUuidOrderByActiveFlagDesc(userUuid);
+            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting UserDevice with userUuid[%s]", userUuid);
+            String errorMessage = String.format("An error occurred while getting UserDevice with userId[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
@@ -48,12 +47,12 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public List<UserDevice> getUserDevicesByroomUuid(UUID roomUuid) throws DatabaseException, InvalidArgumentException {
+    public List<UserDevice> getUserDevicesByroomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<UserDevice> userDeviceList = new LinkedList<>();
-        List<User> userList = userService.getUsersByroomUuid(roomUuid);
+        List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
-            List<UserDevice> userDevices = getUserDevicesByUserUuid(u.getUuid());
+            List<UserDevice> userDevices = getUserDevicesByUserId(u.getId());
             if (!userDevices.isEmpty())
                 userDeviceList.add(userDevices.get(0));
         }

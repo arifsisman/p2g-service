@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.model.FriendRequestModel;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
@@ -19,7 +21,6 @@ import vip.yazilim.spring.core.util.RestResponseFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.UUID;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -28,7 +29,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_P2G + "/friends")
+@RequestMapping(API_P2G + "/friend/requests")
 public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
 
     @Autowired
@@ -62,26 +63,57 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
     ///////////////////////////////
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/add/{userUuid}")
-    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserUuid(), userUuid), HttpStatus.OK, request, response);
+    @PostMapping("/{userId}/add")
+    public RestResponse<Boolean> addFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.createFriendRequest(SecurityHelper.getUserId(), userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/accept/{friendRequestId}")
+    @DeleteMapping("/{userId}/delete")
+    public RestResponse<Boolean> deleteFriend(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(friendRequestService.deleteFriend(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PutMapping("/{friendRequestId}/accept")
     public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.acceptFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/reject/{friendRequestId}")
+    @PutMapping("/{friendRequestId}/reject")
     public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.rejectFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/ignore/{friendRequestId}")
+    @PutMapping("/{friendRequestId}/ignore")
     public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.ignoreFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/model"})
+    public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/{userId}/model"})
+    public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/friends"})
+    public RestResponse<List<UserModel>> getFriends(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendsByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/{userId}/friends"})
+    public RestResponse<List<UserModel>> getFriends(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendsByUserId(userId), HttpStatus.OK, request, response);
+    }
+
 }

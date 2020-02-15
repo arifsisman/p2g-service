@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.constant;
+package vip.yazilim.p2g.web.constant.enums;
 
 import java.util.HashMap;
 
@@ -38,6 +38,5 @@ public enum SpotifyScope {
             map.put(spotifyScope.scopeName, spotifyScope);
         }
     }
-
 
 }

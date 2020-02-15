@@ -5,7 +5,6 @@ import vip.yazilim.p2g.web.entity.FriendRequest;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -13,8 +12,12 @@ import java.util.UUID;
  */
 public interface IFriendRequestRepo extends JpaRepository<FriendRequest, Long> {
 
-    List<FriendRequest> findByUserUuid(UUID userUuid);
-    List<FriendRequest> findByFriendUuid(UUID friendUuid);
-    Optional<FriendRequest> findByUserUuidAndFriendUuid(UUID userUuid, UUID friendUuid);
+    List<FriendRequest> findBySenderId(String senderUserId);
+
+    List<FriendRequest> findBySenderIdOrReceiverId(String senderId, String receiverId);
+
+    List<FriendRequest> findByReceiverIdAndRequestStatusNot(String receiverId, String requestStatus);
+
+    Optional<FriendRequest> findBySenderIdAndReceiverId(String senderId, String receiverId);
 
 }

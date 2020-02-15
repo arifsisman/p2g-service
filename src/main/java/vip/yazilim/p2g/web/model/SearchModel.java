@@ -1,10 +1,14 @@
 package vip.yazilim.p2g.web.model;
 
-import com.wrapper.spotify.enums.ModelObjectType;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.util.SpotifyHelper;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author mustafaarifsisman - 29.11.2019
@@ -12,10 +16,10 @@ import lombok.Data;
  */
 @AllArgsConstructor
 @Data
-public class SearchModel {
-    private ModelObjectType type;
+public class SearchModel implements Serializable {
+    private SearchType type;
     private String name;
-    private ArtistSimplified[] artists;
+    private List<String> artistNames;
     private String albumName;
     private String id;
     private String uri;
@@ -35,24 +39,24 @@ public class SearchModel {
     }
 
     private void init(Track track) {
-        this.type = ModelObjectType.TRACK;
+        this.type = SearchType.TRACK;
         this.name = track.getName();
-        this.artists = track.getArtists();
+        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(track.getArtists());
         this.albumName = track.getAlbum().getName();
         this.id = track.getId();
         this.uri = track.getUri();
         this.durationMs = track.getDurationMs();
-        Image[] images = track.getAlbum().getImages();
 
+        Image[] images = track.getAlbum().getImages();
         if (images.length > 0) {
             this.imageUrl = images[0].getUrl();
         }
     }
 
     private void init(TrackSimplified trackSimplified) {
-        this.type = ModelObjectType.TRACK;
+        this.type = SearchType.TRACK;
         this.name = trackSimplified.getName();
-        this.artists = trackSimplified.getArtists();
+        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(trackSimplified.getArtists());
         this.id = trackSimplified.getId();
         this.uri = trackSimplified.getUri();
         this.durationMs = trackSimplified.getDurationMs();
@@ -60,26 +64,25 @@ public class SearchModel {
     }
 
     private void init(PlaylistSimplified playlistSimplified) {
-        this.type = ModelObjectType.PLAYLIST;
+        this.type = SearchType.PLAYLIST;
         this.name = playlistSimplified.getName();
         this.id = playlistSimplified.getId();
         this.uri = playlistSimplified.getUri();
 
         Image[] images = playlistSimplified.getImages();
-
         if (images.length > 0) {
             this.imageUrl = images[0].getUrl();
         }
     }
 
     private void init(AlbumSimplified albumSimplified) {
-        this.type = ModelObjectType.ALBUM;
+        this.type = SearchType.ALBUM;
         this.name = albumSimplified.getName();
+        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(albumSimplified.getArtists());
         this.id = albumSimplified.getId();
         this.uri = albumSimplified.getUri();
 
         Image[] images = albumSimplified.getImages();
-
         if (images.length > 0) {
             this.imageUrl = images[0].getUrl();
         }

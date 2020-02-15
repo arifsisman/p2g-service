@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.config.security.authority;
 
-import vip.yazilim.p2g.web.constant.Privilege;
-import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Role;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;

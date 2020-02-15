@@ -5,7 +5,6 @@ import vip.yazilim.p2g.web.entity.RoomInvite;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -13,7 +12,8 @@ import java.util.UUID;
  */
 public interface IRoomInviteRepo  extends JpaRepository<RoomInvite, Long> {
 
-    List<RoomInvite> findByRoomUuid(UUID roomUuid);
-    Optional<RoomInvite> findByRoomUuidAndUserUuid(UUID roomUuid, UUID userUuid);
+    List<RoomInvite> findByRoomId(Long roomId);
+    Optional<RoomInvite> findByRoomIdAndReceiverId(Long roomId, String userId);
+    List<RoomInvite> findByReceiverId(String userId);
 
 }

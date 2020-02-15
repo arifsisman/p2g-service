@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.service.spotify.model;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 04.12.2019
@@ -11,7 +10,7 @@ import java.util.UUID;
  */
 @Data
 public class PlayerModel {
-    private UUID roomUuid;
+    private Long roomId;
     private List<String> spotifyTokenList;
     private List<String> userDeviceList;
 }

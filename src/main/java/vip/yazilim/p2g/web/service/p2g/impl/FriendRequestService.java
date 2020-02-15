@@ -3,13 +3,15 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.FriendRequestStatus;
+import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
-import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.FriendRequestModel;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
@@ -19,10 +21,9 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -49,66 +50,79 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<User> getFriendsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
+    public List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
-        List<User> users = new ArrayList<>();
+        List<UserModel> userModels = new LinkedList<>();
 
         try {
-            friendRequestList = friendRequestRepo.findByUserUuid(userUuid);
+            // Does not matter who sent friend request
+            friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userUuid);
+            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
 
-        for (FriendRequest uf : friendRequestList) {
-            Optional<User> user = userService.getById(uf.getUserUuid());
-            user.ifPresent(users::add);
-        }
+        for (FriendRequest fr : friendRequestList) {
+            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
+                UserModel um;
+                String frUserId = fr.getSenderId();
+                String frFriendIdId = fr.getReceiverId();
 
-        return users;
-    }
-
-    @Override
-    public List<User> getFriendRequestsByUserUuid(UUID userUuid) throws DatabaseException, InvalidArgumentException {
-        List<FriendRequest> friendRequestList;
-        List<User> users = new ArrayList<>();
-
-        try {
-            friendRequestList = friendRequestRepo.findByUserUuid(userUuid);
-        } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userUuid);
-            throw new DatabaseReadException(errorMessage, exception);
-        }
-
-        for (FriendRequest uf : friendRequestList) {
-            if (uf.getRequestStatus().equals(FriendRequestStatus.WAITING.toString())) {
-                Optional<User> user = userService.getById(uf.getUserUuid());
-                user.ifPresent(users::add);
+                String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
+                um = userService.getUserModelByUserId(queryId);
+                userModels.add(um);
             }
         }
 
-        return users;
+        return userModels;
     }
 
     @Override
-    public Optional<FriendRequest> getFriendRequestByUserAndFriendUuid(UUID user1, UUID user2) throws DatabaseReadException {
+    public List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException {
         try {
-            return friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
+            return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", user1, user2);
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
             throw new DatabaseReadException(errorMessage, exception);
         }
     }
 
     @Override
-    public boolean createFriendRequest(UUID user1, UUID user2) throws DatabaseException, InvalidArgumentException {
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findByUserUuidAndFriendUuid(user1, user2);
+    public List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException {
+        List<FriendRequestModel> friendRequestModels = new LinkedList<>();
+        List<FriendRequest> friendRequests = getFriendRequestsByReceiverId(userId);
+
+        for (FriendRequest fr : friendRequests) {
+            FriendRequestModel frm = new FriendRequestModel();
+            frm.setFriendRequest(fr);
+            UserModel userModel = userService.getUserModelByUserId(fr.getSenderId());
+            frm.setFriendRequestUserModel(userModel);
+
+            friendRequestModels.add(frm);
+        }
+
+        return friendRequestModels;
+    }
+
+    @Override
+    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String senderId, String receiverId) throws DatabaseReadException {
+        try {
+            return friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
+        } catch (Exception exception) {
+            String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", senderId, receiverId);
+            throw new DatabaseReadException(errorMessage, exception);
+        }
+    }
+
+    @Override
+    public boolean createFriendRequest(String senderId, String receiverId) throws DatabaseException, InvalidArgumentException {
+        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
 
         if (!existingFriendRequest.isPresent()) {
             FriendRequest friendRequest = new FriendRequest();
 
-            friendRequest.setUserUuid(user1);
-            friendRequest.setFriendUuid(user2);
+            friendRequest.setSenderId(senderId);
+            friendRequest.setReceiverId(receiverId);
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
@@ -135,14 +149,40 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         return replyFriendRequest(friendRequestId, FriendRequestStatus.REJECTED);
     }
 
+    @Override
+    public boolean deleteFriend(String friendId) throws DatabaseException {
+        String userId = SecurityHelper.getUserId();
+        Optional<FriendRequest> friendRequestOpt1 = getFriendRequestBySenderIdAndReceiverId(friendId, userId);
+        Optional<FriendRequest> friendRequestOpt2 = getFriendRequestBySenderIdAndReceiverId(userId, friendId);
+
+        if(!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()){
+            throw new NotFoundException("Friend can not found");
+        }else{
+            FriendRequest friendRequest = friendRequestOpt1.orElseGet(friendRequestOpt2::get);
+            return delete(friendRequest);
+        }
+    }
+
     private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
         FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NotFoundException("Friend request can not found"));
 
-        if (status == FriendRequestStatus.ACCEPTED || status == FriendRequestStatus.IGNORED) {
+        if (status == FriendRequestStatus.ACCEPTED) {
             friendRequest.setRequestStatus(status.getFriendRequestStatus());
             update(friendRequest);
         } else {
             delete(friendRequest);
+        }
+
+        // if request replied, search for counter friend request then delete matching request
+        return deleteCounterFriendRequest(friendRequest);
+    }
+
+    private boolean deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
+        // Search for counter friend request and delete if it exists
+        Optional<FriendRequest> counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
+
+        if (counterFriendRequest.isPresent()) {
+            return delete(counterFriendRequest.get());
         }
 
         return true;

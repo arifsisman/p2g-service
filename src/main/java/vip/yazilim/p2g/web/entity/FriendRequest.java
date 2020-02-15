@@ -6,10 +6,9 @@ import vip.yazilim.p2g.web.constant.Constants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"user_uuid", "friend_uuid"}))
+@Table(name = Constants.TABLE_PREFIX + "friend_request", uniqueConstraints = @UniqueConstraint(columnNames = {"sender_id", "receiver_id"}))
 @Data
 public class FriendRequest implements Serializable {
 
@@ -19,11 +18,11 @@ public class FriendRequest implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "user_uuid", unique = true, updatable = false, nullable = false)
-    private UUID userUuid;
+    @Column(name = "sender_id", updatable = false, nullable = false)
+    private String senderId;
 
-    @Column(name = "friend_uuid", unique = true, updatable = false, nullable = false)
-    private UUID friendUuid;
+    @Column(name = "receiver_id", updatable = false, nullable = false)
+    private String receiverId;
 
     @Column(name = "request_status", length = 16)
     private String requestStatus;

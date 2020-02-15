@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -19,16 +18,16 @@ import java.util.UUID;
 public class UserDevice {
 
     @Id
-    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 64)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 128)
     private String id;
+
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private String userId;
 
     @Column(name = "platform", updatable = false, nullable = false, length = 16)
     private String platform;
 
-    @Column(name = "uuid", unique = true, updatable = false, nullable = false)
-    private UUID userUuid;
-
-    @Column(name = "device_name", length = 64)
+    @Column(name = "device_name", length = 128)
     private String deviceName;
 
     @Column(name = "device_type", length = 16)

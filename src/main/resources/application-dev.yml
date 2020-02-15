@@ -4,10 +4,6 @@ server:
 
 # Configure active spring profile
 spring:
-  devtools:
-    restart:
-      exclude: logs/**
-      enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_IP}:5432/p2g_db
@@ -17,13 +13,16 @@ spring:
   jpa:
     hibernate.ddl-auto: create
     database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: false
         format_sql: false
         jdbc.lob.non_contextual_creation: true
+
+security:
+  oauth2:
+    resource:
+      user-info-uri: https://api.spotify.com/v1/me
 
 # Spotify-Play2Gether configuration
 spotify:

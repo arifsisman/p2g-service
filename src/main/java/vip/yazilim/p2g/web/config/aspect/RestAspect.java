@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
-import vip.yazilim.p2g.web.constant.Privilege;
-import vip.yazilim.p2g.web.constant.Role;
+import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
@@ -28,7 +28,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 16.12.2019
@@ -97,18 +96,18 @@ public class RestAspect {
     // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!roomUserService.hasRoomPrivilege(userUuid, privilege)) {
+        if (!roomUserService.hasRoomPrivilege(userId, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handle(HasSystemPrivilege hasRoomPrivilege) throws DatabaseException, InvalidArgumentException {
         Privilege privilege = hasRoomPrivilege.privilege();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!userService.hasSystemPrivilege(userUuid, privilege)) {
+        if (!userService.hasSystemPrivilege(userId, privilege)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
@@ -116,30 +115,30 @@ public class RestAspect {
     // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
         Role role = hasRoomRole.role();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!roomUserService.hasRoomRole(userUuid, role)) {
+        if (!roomUserService.hasRoomRole(userId, role)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
         Role role = hasSystemRole.role();
-        UUID userUuid = SecurityHelper.getUserUuid();
+        String userId = SecurityHelper.getUserId();
 
-        if (!userService.hasSystemRole(userUuid, role)) {
+        if (!userService.hasSystemRole(userId, role)) {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
 
     private void handleUpdateRoomSongs() throws DatabaseException {
-        UUID userUuid = SecurityHelper.getUserUuid();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userUuid);
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
         if (roomUserOpt.isPresent()) {
-            UUID roomUuid = roomUserOpt.get().getRoomUuid();
-            List<Song> songList = songService.getSongListByRoomUuid(roomUuid);
-            webSocketController.sendToRoom(roomUuid, songList);
+            Long roomId = roomUserOpt.get().getRoomId();
+            List<Song> songList = songService.getSongListByRoomId(roomId);
+            webSocketController.sendToRoom("songs", roomId, songList);
         } else {
             throw new NotFoundException("Room not found.");
         }

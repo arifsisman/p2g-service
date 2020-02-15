@@ -1,50 +1,28 @@
 package vip.yazilim.p2g.web.config.security;
 
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import vip.yazilim.p2g.web.config.security.user.CustomUserDetailsService;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.web.context.request.RequestContextListener;
 
+/**
+ * @author mustafaarifsisman - 24.01.2020
+ * @contact mustafaarifsisman@gmail.com
+ */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService();
-    }
-
+@EnableOAuth2Sso
+public class SecurityConfig extends ResourceServerConfigurerAdapter {
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authenticationProvider());
+    public void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests().antMatchers("/swagger-ui**")
+                .permitAll();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public RequestContextListener requestContextListener() {
+        return new RequestContextListener();
     }
-
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
-                .authorizeRequests().antMatchers("/**").authenticated().and().httpBasic();
-    }
-
 }

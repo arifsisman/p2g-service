@@ -5,8 +5,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.Platform;
-import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.constant.enums.Platform;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
@@ -20,7 +19,6 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -40,33 +38,34 @@ public class SpotifyUserService implements ISpotifyUserService {
     private IUserDeviceService userDeviceService;
 
     @Override
-    public User getSpotifyUser(String spotifyAccountId) throws IOException, SpotifyWebApiException {
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(spotifyAccountId).build());
+    public User getSpotifyUser(String userId) throws IOException, SpotifyWebApiException, DatabaseException {
+        String accessToken = tokenService.getAccessTokenByUserId(userId);
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), accessToken);
     }
 
     @Override
-    public User getCurrentSpotifyUser(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
-        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), OAuthToken.getAccessToken());
+    public User getCurrentSpotifyUser(String userId) throws DatabaseException, IOException, SpotifyWebApiException {
+        String accessToken = tokenService.getAccessTokenByUserId(userId);
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), accessToken);
     }
 
     @Override
-    public List<UserDevice> getUsersAvailableDevices(UUID userUuid) throws DatabaseException, IOException, SpotifyWebApiException {
+    public List<UserDevice> getUsersAvailableDevices(String userId) throws DatabaseException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = new LinkedList<>();
 
-        OAuthToken OAuthToken = tokenService.getTokenByUserUuid(userUuid).orElseThrow(() -> new NotFoundException("Token not found for userUuid: " + userUuid));
+        String accessToken = tokenService.getAccessTokenByUserId(userId);
 
-        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), OAuthToken.getAccessToken());
+        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
 
         if (devices.length == 0) {
-            String err = String.format("Can not found any device for userUuid[%s]", userUuid);
+            String err = String.format("Can not found any device logged into Spotify App for userId[%s]. Please restart Spotify App first!", userId);
             throw new NotFoundException(err);
         }
 
         for (Device d : devices) {
             UserDevice userDevice = new UserDevice();
 
-            userDevice.setUserUuid(userUuid);
+            userDevice.setUserId(userId);
             userDevice.setId(d.getId());
             userDevice.setPlatform(Platform.SPOTIFY.getName());
             userDevice.setDeviceName(d.getName());
@@ -81,8 +80,8 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(UUID userUuid) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        List<UserDevice> userDeviceList = getUsersAvailableDevices(userUuid);
+    public List<UserDevice> updateUsersAvailableDevices(String userId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        List<UserDevice> userDeviceList = getUsersAvailableDevices(userId);
 
         for (UserDevice userDevice : userDeviceList) {
             userDeviceService.create(userDevice);
