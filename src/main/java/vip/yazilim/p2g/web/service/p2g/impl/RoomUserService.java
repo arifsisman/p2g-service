@@ -138,7 +138,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         RoomUser joinedUser = create(roomUser);
         spotifyPlayerService.userSyncWithRoom(joinedUser);
 
-        return roomUser;
+        return joinedUser;
     }
 
     @Override
@@ -205,9 +205,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public boolean deleteRoomUsers(Long roomId) throws DatabaseException {
         List<RoomUser> roomUserList;
 
-        try{
+        try {
             roomUserList = roomUserRepo.findRoomUserByRoomIdOrderById(roomId);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
 
