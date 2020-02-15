@@ -4,10 +4,10 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.io.IOException;
@@ -29,12 +29,12 @@ public interface ISongService extends ICrudService<Song, Long> {
     Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException;
 
     // Rest
-    List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-    boolean removeSongFromRoom(Long songId) throws DatabaseException, InvalidArgumentException;
+    List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws GeneralException, IOException, SpotifyWebApiException;
+    boolean removeSongFromRoom(Long songId) throws DatabaseException;
     boolean deleteRoomSongList(Long roomId) throws DatabaseException;
     List<Song> getSongListByRoomId(Long roomId) throws DatabaseException;
 
-    int upvote(Long songId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
-    int downvote(Long songId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException;
+    int upvote(Long songId) throws DatabaseException, InvalidArgumentException;
+    int downvote(Long songId) throws DatabaseException, InvalidArgumentException;
 
 }

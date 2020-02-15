@@ -13,10 +13,10 @@ import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
@@ -50,6 +50,11 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
+    protected Class<FriendRequest> getClassOfEntity() {
+        return FriendRequest.class;
+    }
+
+    @Override
     public List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
         List<UserModel> userModels = new LinkedList<>();
@@ -58,8 +63,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
             // Does not matter who sent friend request
             friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friends for User[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
 
         for (FriendRequest fr : friendRequestList) {
@@ -82,8 +86,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         try {
             return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
     }
 
@@ -109,13 +112,12 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         try {
             return friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Friend Requests for User1[%s] and User2[%s]", senderId, receiverId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, senderId, receiverId);
         }
     }
 
     @Override
-    public boolean createFriendRequest(String senderId, String receiverId) throws DatabaseException, InvalidArgumentException {
+    public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
         Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
 
         if (!existingFriendRequest.isPresent()) {
@@ -135,17 +137,17 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean acceptFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean acceptFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.ACCEPTED);
     }
 
     @Override
-    public boolean ignoreFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean ignoreFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.IGNORED);
     }
 
     @Override
-    public boolean rejectFriendRequest(Long friendRequestId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public boolean rejectFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.REJECTED);
     }
 
@@ -163,7 +165,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
     }
 
-    private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
         FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NotFoundException("Friend request can not found"));
 
         if (status == FriendRequestStatus.ACCEPTED) {

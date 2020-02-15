@@ -11,7 +11,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;

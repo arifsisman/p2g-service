@@ -14,10 +14,10 @@ import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
@@ -67,6 +67,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
+    protected Class<Room> getClassOfEntity() {
+        return Room.class;
+    }
+
+    @Override
     protected Room preInsert(Room entity) {
         if (entity.getPassword() == null || entity.getPassword().equals("\"\"")) {
             entity.setPassword("");
@@ -101,8 +106,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         try {
             room = getById(roomUser.getRoomId());
         } catch (Exception exception) {
-            String err = String.format("An error occurred while getting Room with userId[%s]", userId);
-            throw new DatabaseReadException(err, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
 
         if (!room.isPresent()) {
@@ -169,7 +173,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Room createRoom(String ownerId, String roomName, String roomPassword) throws DatabaseException, InvalidArgumentException {
+    public Room createRoom(String ownerId, String roomName, String roomPassword) throws GeneralException {
         Room room = new Room();
 
         room.setOwnerId(ownerId);
@@ -181,7 +185,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Room create(Room room) throws DatabaseException, InvalidArgumentException {
+    public Room create(Room room) throws GeneralException {
         Room createdRoom = super.create(room);
         // Post create
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
@@ -189,30 +193,22 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public boolean deleteById(Long roomId) throws DatabaseException, InvalidArgumentException {
-        Optional<Room> roomOpt = getById(roomId);
-
-        boolean status = true;
-
-        if (roomOpt.isPresent()) {
-            status = delete(roomOpt.get());
-
+    public boolean deleteById(Long roomId) throws DatabaseException {
             //delete roomUsers
-            status &= roomUserService.deleteRoomUsers(roomId);
+            roomUserService.deleteRoomUsers(roomId);
 
             //delete Songs
-            status &= songService.deleteRoomSongList(roomId);
+            songService.deleteRoomSongList(roomId);
 
             //delete roomInvites
-            status &= roomInviteService.deleteRoomInvites(roomId);
-        }
+            roomInviteService.deleteRoomInvites(roomId);
 
         webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
-        return status;
+        return super.deleteById(roomId);
     }
 
     @Override
-    public Room update(Room room) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public Room update(Room room) throws DatabaseException, InvalidArgumentException {
         room = super.update(room);
         webSocketController.sendToRoom("status", room.getId(), RoomStatus.UPDATED);
         return room;

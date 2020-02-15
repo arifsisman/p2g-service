@@ -9,12 +9,12 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 import vip.yazilim.spring.core.service.ICrudService;
-import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,16 +69,15 @@ public class UserRest extends ARestCrud<User, String> {
         return super.update(request, response, entity);
     }
 
-    @Override
-    @HasSystemRole(role = Role.P2G_USER)
-    @DeleteMapping({"/{userId}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) {
-        return super.delete(request, response, userId);
-    }
-
     ///////////////////////////////
     // Custom controllers
     ///////////////////////////////
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @DeleteMapping({"/{id}"})
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) throws DatabaseException {
+        return RestResponseFactory.generateResponse(userService.deleteById(id), HttpStatus.OK, request, response);
+    }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userId}/model"})

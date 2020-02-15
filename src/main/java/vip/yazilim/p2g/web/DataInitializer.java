@@ -1,28 +1,20 @@
 package vip.yazilim.p2g.web;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -47,14 +39,8 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private ISongService songService;
 
-    @Autowired
-    private PasswordEncoderConfig passwordEncoderConfig;
-
-    @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
-
     @Override
-    public void run(String... args) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+    public void run(String... args) throws GeneralException {
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen", "0");
         User u2 = userService.createUser("2", "2@gmail.com", "Test User 2", "123");
@@ -78,6 +64,8 @@ public class DataInitializer implements CommandLineRunner {
 //        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1);
 //        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
 //        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
+
+//        roomUserService.joinRoom(roomId, "0", Role.P2G_USER);
 
         u2.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         userService.update(u2);
@@ -106,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
         createFriendRequest(u5, arif, FriendRequestStatus.ACCEPTED);
     }
 
-    private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws DatabaseException, InvalidArgumentException {
+    private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws GeneralException {
         RoomInvite roomInvite = new RoomInvite();
         roomInvite.setRoomId(testRoom2.getId());
         roomInvite.setInviterId(inviter.getId());
@@ -115,7 +103,7 @@ public class DataInitializer implements CommandLineRunner {
         roomInviteService.create(roomInvite);
     }
 
-    private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
+    private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws GeneralException {
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setSenderId(sender.getId());
         friendRequest.setReceiverId(receiver.getId());
@@ -124,33 +112,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Room> roomOpt = roomService.getById(roomId);
-
-        if (!roomOpt.isPresent()) {
-            String err = String.format("Room[%s] can not found", roomId);
-            throw new InvalidArgumentException(err);
-        }
-
-        Room room = roomOpt.get();
-        RoomUser roomUser = new RoomUser();
-
-        if (passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
-            roomUser.setRoomId(roomId);
-            roomUser.setUserId(userId);
-            roomUser.setRole(role.getRole());
-            roomUser.setActiveFlag(true);
-        } else {
-            throw new InvalidArgumentException("Wrong password");
-        }
-
-        RoomUser joinedUser = roomUserService.create(roomUser);
-        spotifyPlayerService.userSyncWithRoom(joinedUser);
-
-        return roomUser;
-    }
-
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws DatabaseException, InvalidArgumentException {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws GeneralException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);

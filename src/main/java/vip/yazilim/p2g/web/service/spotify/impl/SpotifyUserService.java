@@ -11,8 +11,8 @@ import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
@@ -80,7 +80,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(String userId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<UserDevice> updateUsersAvailableDevices(String userId) throws GeneralException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = getUsersAvailableDevices(userId);
 
         for (UserDevice userDevice : userDeviceList) {

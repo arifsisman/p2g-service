@@ -18,10 +18,10 @@ import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseDeleteException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
@@ -64,6 +64,11 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
+    protected Class<RoomInvite> getClassOfEntity() {
+        return RoomInvite.class;
+    }
+
+    @Override
     public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
 
         List<User> inviteList = new ArrayList<>();
@@ -72,8 +77,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         try {
             roomInviteList = roomInviteRepo.findByRoomId(roomId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Invites with roomName[%s]", roomId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
 
         for (RoomInvite invite : roomInviteList) {
@@ -89,8 +93,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         try {
             return roomInviteRepo.findByReceiverId(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Invites with userId[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
     }
 
@@ -109,7 +112,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(Long roomId, String userId) throws DatabaseException, InvalidArgumentException {
+    public RoomInvite invite(Long roomId, String userId) throws GeneralException {
         Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndReceiverId(roomId, userId);
 
         if (!existingInvite.isPresent()) {
@@ -130,22 +133,24 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomUser accept(RoomInvite roomInvite) throws DatabaseException, InvalidArgumentException {
+    public RoomUser accept(RoomInvite roomInvite) throws GeneralException {
         return roomUserService.acceptRoomInvite(roomInvite);
     }
 
     @Override
     public boolean reject(Long roomInviteId) throws DatabaseException {
-        try {
-            return deleteById(roomInviteId);
-        } catch (Exception e) {
-            throw new DatabaseDeleteException(e);
-        }
+        return deleteById(roomInviteId);
     }
 
     @Override
     public boolean deleteRoomInvites(Long roomId) throws DatabaseException {
-        List<RoomInvite> roomInviteList = roomInviteRepo.findByRoomId(roomId);
+        List<RoomInvite> roomInviteList;
+
+        try {
+            roomInviteList = roomInviteRepo.findByRoomId(roomId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
 
         for (RoomInvite roomInvite : roomInviteList) {
             delete(roomInvite);
@@ -158,8 +163,8 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     public boolean existsById(Long roomInviteId) throws DatabaseReadException {
         try {
             return roomInviteRepo.existsById(roomInviteId);
-        } catch (Exception e) {
-            throw new DatabaseReadException(e);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomInviteId);
         }
     }
 

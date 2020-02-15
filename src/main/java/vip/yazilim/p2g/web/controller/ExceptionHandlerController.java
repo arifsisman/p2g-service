@@ -14,11 +14,9 @@ import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidModelException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.MethodNotSupported;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.MethodNotSupported;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 
@@ -90,11 +88,6 @@ public class ExceptionHandlerController {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
-//    @ExceptionHandler({DatabaseDeleteException.class})
-//    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
-//        return error(NOT_MODIFIED, e);
-//    }
-
     @ExceptionHandler({ServiceException.class})
     public ResponseEntity<String> handleServiceException(ServiceException e) {
         return error(INTERNAL_SERVER_ERROR, e);
@@ -114,17 +107,6 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
         return error(BAD_REQUEST, e);
     }
-
-    @ExceptionHandler({InvalidModelException.class})
-    public ResponseEntity<String> handleInvalidModelException(InvalidModelException e) {
-        return error(BAD_REQUEST, e);
-    }
-
-    @ExceptionHandler({InvalidUpdateException.class})
-    public ResponseEntity<String> handleInvalidUpdateException(InvalidUpdateException e) {
-        return error(BAD_REQUEST, e);
-    }
-
 
     /////////////////////////////
     // Spotify Web Api Exceptions
