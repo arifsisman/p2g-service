@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
-import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface IFriendRequestService extends ICrudService<FriendRequest, Long> {
 
     List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException;
-    List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<FriendModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException;
 
     Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String user1, String user2) throws DatabaseReadException;
