@@ -10,7 +10,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
-import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -103,9 +103,10 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 
         for (RoomInvite ri : roomInvites) {
-            RoomModel rm = roomService.getRoomModelByRoomId(ri.getRoomId());
-            roomInviteModelList.add(new RoomInviteModel(ri, rm));
+            RoomModelSimplified rm = roomService.getRoomModelSimplifiedByRoomId(ri.getRoomId());
+            Optional<User> inviter = userService.getById(ri.getInviterId());
 
+            roomInviteModelList.add(new RoomInviteModel(ri, rm, inviter.orElse(null)));
         }
 
         return roomInviteModelList;
@@ -115,20 +116,25 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     public RoomInvite invite(Long roomId, String userId) throws GeneralException {
         Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndReceiverId(roomId, userId);
 
-        if (!existingInvite.isPresent()) {
+        if (existingInvite.isPresent()) {
+            throw new ConstraintViolationException("Invite already exists");
+        } else {
+            String inviterId = SecurityHelper.getUserId();
+
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomId(roomId);
-            roomInvite.setInviterId(SecurityHelper.getUserId());
+            roomInvite.setInviterId(inviterId);
             roomInvite.setReceiverId(userId);
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            RoomModel roomModel = roomService.getRoomModelByRoomId(roomId);
+            RoomModelSimplified roomModel = roomService.getRoomModelSimplifiedByRoomId(roomId);
+            Optional<User> inviter = userService.getById(inviterId);
 
-            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, new RoomInviteModel(createdRoomInvite, roomModel));
+            RoomInviteModel roomInviteModel = new RoomInviteModel(createdRoomInvite, roomModel, inviter.orElse(null));
+
+            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, roomInviteModel);
             return createdRoomInvite;
-        } else {
-            throw new ConstraintViolationException("Invite already exists");
         }
     }
 
