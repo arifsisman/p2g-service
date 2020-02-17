@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
-import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.Song;
 
 /**
  * @author mustafaarifsisman - 17.02.2020
@@ -9,6 +9,6 @@ import vip.yazilim.p2g.web.entity.User;
  */
 @Data
 public class FriendModel {
-    private User user;
-    private RoomModelSimplified roomModelSimplified;
+    private UserModel userModel;
+    private Song song;
 }

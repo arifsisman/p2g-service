@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
@@ -13,6 +14,7 @@ import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -44,6 +46,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     @Autowired
     private IRoomService roomService;
+
+    @Autowired
+    private ISongService songService;
 
     @Override
     protected JpaRepository<FriendRequest, Long> getRepository() {
@@ -79,11 +84,14 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
                 String frFriendIdId = fr.getReceiverId();
 
                 String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
-                userService.getById(queryId).ifPresent(fm::setUser);
+                fm.setUserModel(userService.getUserModelByUserId(queryId));
 
                 Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
                 if (roomOpt.isPresent()) {
-                    fm.setRoomModelSimplified(roomService.getRoomModelSimplifiedByRoomId(roomOpt.get().getId()));
+                    List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
+                    if (!songList.isEmpty()) {
+                        fm.setSong(songList.get(0));
+                    }
                 }
 
                 userModels.add(fm);
