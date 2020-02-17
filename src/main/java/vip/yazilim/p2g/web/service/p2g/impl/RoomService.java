@@ -119,12 +119,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public List<RoomModel> getRoomModels() throws DatabaseException, InvalidArgumentException {
-        List<RoomModel> roomModelList = new LinkedList<>();
+    public List<RoomModelSimplified> getSimplifiedRoomModels() throws DatabaseException, InvalidArgumentException {
+        List<RoomModelSimplified> roomModelList = new LinkedList<>();
         List<Room> roomList = getAll();
 
         for (Room r : roomList) {
-            roomModelList.add(getRoomModelByRoomId(r.getId()));
+            roomModelList.add(getRoomModelSimplifiedByRoomId(r.getId()));
         }
 
         return roomModelList;

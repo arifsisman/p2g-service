@@ -117,8 +117,8 @@ public class RoomRest extends ARestCrud<Room, Long> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/")
-    public RestResponse<List<RoomModel>> getRoomModels(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomService.getRoomModels(), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomModelSimplified>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomService.getSimplifiedRoomModels(), HttpStatus.OK, request, response);
     }
 
     // RoomInvite (Invite & Accept & Reject)
