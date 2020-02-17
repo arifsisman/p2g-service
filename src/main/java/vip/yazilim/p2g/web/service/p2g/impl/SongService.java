@@ -70,6 +70,15 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public Optional<Song> getSongByRoomId(Long roomId) throws DatabaseException {
+        try {
+            return songRepo.findFirstByRoomIdOrderByVotesDescQueuedTime(roomId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
+    }
+
+    @Override
     public int upvote(Long songId) throws DatabaseException, InvalidArgumentException {
         return updateVote(songId, true);
     }

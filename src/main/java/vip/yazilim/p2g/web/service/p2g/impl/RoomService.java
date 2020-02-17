@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -170,6 +171,31 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         roomModel.setInvitedUserList(invitedUserList);
 
         return roomModel;
+    }
+
+    @Override
+    public RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+        RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
+
+        // Set Room
+        Optional<Room> room = getById(roomId);
+        if (!room.isPresent()) {
+            String err = String.format("Room[%s] not found", roomId);
+            throw new NotFoundException(err);
+        } else {
+            roomModelSimplified.setRoom(room.get());
+        }
+
+        // Set owner
+        Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
+        if (roomOwnerOpt.isPresent()) {
+            Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
+            roomModelSimplified.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
+        }
+
+        songService.getSongByRoomId(roomId).ifPresent(roomModelSimplified::setSong);
+
+        return roomModelSimplified;
     }
 
     @Override
