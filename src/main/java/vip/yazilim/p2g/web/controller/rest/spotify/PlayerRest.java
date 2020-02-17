@@ -8,11 +8,10 @@ import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.rest.model.RestResponse;
-import vip.yazilim.spring.core.util.RestResponseFactory;
+import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,31 +33,31 @@ public class PlayerRest {
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/play")
-    public RestResponse<List<Song>> playSong(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> playSong(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomPlay(song, 0), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomId}/play")
-    public RestResponse<List<Song>> startResume(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> startResume(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomStartResume(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomId}/pause")
-    public RestResponse<List<Song>> pause(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> pause(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomPause(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomId}/next")
-    public RestResponse<List<Song>> next(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> next(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomNext(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomId}/previous")
-    public RestResponse<List<Song>> previous(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> previous(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomPrevious(roomId), HttpStatus.OK, request, response);
     }
 
@@ -70,7 +69,7 @@ public class PlayerRest {
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @PostMapping("/{roomId}/repeat")
-    public RestResponse<Boolean> repeat(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidUpdateException, InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<Boolean> repeat(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomRepeat(roomId), HttpStatus.OK, request, response);
     }
 }

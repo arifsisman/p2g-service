@@ -16,9 +16,8 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.model.PlayerModel;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
@@ -53,7 +52,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     // Room Based
     ///////////////////////
     @Override
-    public List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
 
         // JsonArray with song, because uris needs JsonArray as input
@@ -73,7 +72,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> roomStartResume(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<Song> roomStartResume(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (pausedOpt.isPresent()) {
@@ -95,7 +94,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> roomPause(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<Song> roomPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
 
         if (playingOpt.isPresent()) {
@@ -120,7 +119,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> roomNext(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<Song> roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> next = songService.getNextSong(roomId);
 
         if (next.isPresent()) {
@@ -138,7 +137,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> roomPrevious(Long roomId) throws DatabaseException, InvalidUpdateException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public List<Song> roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> previous = songService.getPreviousSong(roomId);
 
         if (previous.isPresent()) {
@@ -170,7 +169,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public boolean roomRepeat(Long roomId) throws DatabaseException, InvalidArgumentException, InvalidUpdateException, IOException, SpotifyWebApiException {
+    public boolean roomRepeat(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
@@ -183,7 +182,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         }
     }
 
-    private boolean roomRepeatHelper(Long roomId, Song song) throws InvalidUpdateException, DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    private boolean roomRepeatHelper(Long roomId, Song song) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         String repeatMode;
         Boolean repeatFlag = song.getRepeatFlag();
 

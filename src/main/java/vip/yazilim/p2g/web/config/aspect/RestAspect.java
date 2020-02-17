@@ -20,8 +20,8 @@ import vip.yazilim.p2g.web.service.p2g.impl.RoomUserService;
 import vip.yazilim.p2g.web.service.p2g.impl.SongService;
 import vip.yazilim.p2g.web.service.p2g.impl.UserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import java.lang.annotation.Annotation;

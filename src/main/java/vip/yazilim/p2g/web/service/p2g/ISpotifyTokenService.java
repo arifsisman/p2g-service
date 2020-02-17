@@ -1,9 +1,9 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.p2g.web.entity.OAuthToken;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
@@ -18,8 +18,8 @@ public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
     String getAccessTokenByUserId(String userId) throws DatabaseException;
     Optional<OAuthToken> getTokenByUserId(String userId) throws DatabaseException;
 
-    OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
-    OAuthToken saveUserToken(String userId, String accessToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException;
+    OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws GeneralException;
+    OAuthToken saveUserToken(String userId, String accessToken) throws GeneralException;
 
     List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 

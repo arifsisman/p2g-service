@@ -5,7 +5,6 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
@@ -21,9 +20,9 @@ import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
@@ -40,9 +39,6 @@ import java.util.Optional;
 @Transactional
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private IUserRepo userRepo;
@@ -73,6 +69,11 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     protected String getId(User entity) {
         return entity.getId();
+    }
+
+    @Override
+    protected Class<User> getClassOfEntity() {
+        return User.class;
     }
 
     @Override
@@ -143,7 +144,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String id, String email, String username, String password) throws DatabaseException, InvalidArgumentException {
+    public User createUser(String id, String email, String username, String password) throws GeneralException {
         User user = new User();
         user.setId(id);
         user.setEmail(email);
@@ -153,7 +154,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException, InvalidUpdateException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException, IOException, SpotifyWebApiException {
         String productType = spotifyUser.getProduct().getType();
 
         if (!productType.equals(ProductType.PREMIUM.getType())) {

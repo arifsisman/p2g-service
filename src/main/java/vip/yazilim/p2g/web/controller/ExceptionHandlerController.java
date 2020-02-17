@@ -14,11 +14,10 @@ import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidModelException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.MethodNotSupported;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.MethodNotSupported;
+import vip.yazilim.spring.core.exception.database.*;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.exception.web.ServiceException;
 
@@ -67,7 +66,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
-        return error(CONFLICT, e);
+        return error(CONFLICT, e, "Constraint violation!");
     }
 
     @ExceptionHandler({MessageDeliveryException.class})
@@ -85,15 +84,45 @@ public class ExceptionHandlerController {
     // Spring Core Lib Exceptions
     /////////////////////////////
 
+    @ExceptionHandler({GeneralException.class})
+    public ResponseEntity<String> handleGeneralException(GeneralException e) {
+        return error(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler({InvalidArgumentException.class})
+    public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
+        return error(BAD_REQUEST, e);
+    }
+
     @ExceptionHandler({DatabaseException.class})
     public ResponseEntity<String> handleDatabaseException(DatabaseException e) {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
-//    @ExceptionHandler({DatabaseDeleteException.class})
-//    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
-//        return error(NOT_MODIFIED, e);
-//    }
+    @ExceptionHandler({DatabaseCreateException.class})
+    public ResponseEntity<String> handleDatabaseCreateException(DatabaseCreateException e) {
+        return error(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler({DatabaseDeleteException.class})
+    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
+        return error(NOT_FOUND, e);
+    }
+
+    @ExceptionHandler({DatabaseReadException.class})
+    public ResponseEntity<String> handleDatabaseReadException(DatabaseReadException e) {
+        return error(NOT_FOUND, e);
+    }
+
+    @ExceptionHandler({DatabaseSaveException.class})
+    public ResponseEntity<String> handleDatabaseSaveException(DatabaseSaveException e) {
+        return error(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler({DatabaseUpdateException.class})
+    public ResponseEntity<String> handleDatabaseUpdateException(DatabaseUpdateException e) {
+        return error(NOT_FOUND, e);
+    }
 
     @ExceptionHandler({ServiceException.class})
     public ResponseEntity<String> handleServiceException(ServiceException e) {
@@ -109,22 +138,6 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handleMethodNotSupported(MethodNotSupported e) {
         return error(METHOD_NOT_ALLOWED, e);
     }
-
-    @ExceptionHandler({InvalidArgumentException.class})
-    public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
-        return error(BAD_REQUEST, e);
-    }
-
-    @ExceptionHandler({InvalidModelException.class})
-    public ResponseEntity<String> handleInvalidModelException(InvalidModelException e) {
-        return error(BAD_REQUEST, e);
-    }
-
-    @ExceptionHandler({InvalidUpdateException.class})
-    public ResponseEntity<String> handleInvalidUpdateException(InvalidUpdateException e) {
-        return error(BAD_REQUEST, e);
-    }
-
 
     /////////////////////////////
     // Spotify Web Api Exceptions
@@ -178,6 +191,11 @@ public class ExceptionHandlerController {
     private ResponseEntity<String> error(HttpStatus status, Exception e) {
         LOGGER.error("Exception : " + e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
+    }
+
+    private ResponseEntity<String> error(HttpStatus status,Exception e, String message) {
+        LOGGER.error("Exception : " + e.getMessage());
+        return ResponseEntity.status(status).body(message);
     }
 
 }

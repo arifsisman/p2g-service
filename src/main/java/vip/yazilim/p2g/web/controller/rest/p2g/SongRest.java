@@ -10,13 +10,13 @@ import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.rest.ARestCrud;
 import vip.yazilim.spring.core.rest.model.RestResponse;
+import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 import vip.yazilim.spring.core.service.ICrudService;
-import vip.yazilim.spring.core.util.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,17 +75,16 @@ public class SongRest extends ARestCrud<Song, Long> {
         return super.update(request, response, entity);
     }
 
-    @Override
-    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
-    @UpdateRoomSongs
-    @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
-        return super.delete(request, response, id);
-    }
-
     ///////////////////////////////
     // Custom controllers
     ///////////////////////////////
+
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
+    @UpdateRoomSongs
+    @DeleteMapping({"/{id}"})
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException {
+        return RestResponseFactory.generateResponse(songService.deleteById(id), HttpStatus.OK, request, response);
+    }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
     @GetMapping("/{roomId}/list")
@@ -96,28 +95,28 @@ public class SongRest extends ARestCrud<Song, Long> {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws GeneralException, SpotifyWebApiException, IOException {
         return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModelList), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @DeleteMapping("/{songId}")
-    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException {
         return RestResponseFactory.generateResponse(songService.removeSongFromRoom(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
     @PutMapping("/{songId}/upvote")
-    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(songService.upvote(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
     @PutMapping("/{songId}/downvote")
-    public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws InvalidUpdateException, DatabaseException, InvalidArgumentException {
+    public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(songService.downvote(songId), HttpStatus.OK, request, response);
     }
 

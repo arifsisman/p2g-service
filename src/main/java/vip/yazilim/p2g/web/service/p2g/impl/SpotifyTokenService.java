@@ -8,10 +8,10 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.general.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.general.InvalidUpdateException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseException;
-import vip.yazilim.spring.core.exception.general.database.DatabaseReadException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
@@ -45,13 +45,17 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
+    protected Class<OAuthToken> getClassOfEntity() {
+        return OAuthToken.class;
+    }
+
+    @Override
     public String getAccessTokenByUserId(String userId) throws DatabaseException {
         try {
             Optional<OAuthToken> spotifyToken = tokenRepo.findOAuthTokenByUserId(userId);
             return spotifyToken.map(OAuthToken::getAccessToken).orElseThrow(() -> new NotFoundException("Token not found for userId: " + userId));
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Tokens with userId[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
     }
 
@@ -60,13 +64,12 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
         try {
             return tokenRepo.findOAuthTokenByUserId(userId);
         } catch (Exception exception) {
-            String errorMessage = String.format("An error occurred while getting Tokens with userId[%s]", userId);
-            throw new DatabaseReadException(errorMessage, exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
     }
 
     @Override
-    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws GeneralException {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
@@ -84,7 +87,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public OAuthToken saveUserToken(String userId, String accessToken) throws DatabaseException, InvalidUpdateException, InvalidArgumentException {
+    public OAuthToken saveUserToken(String userId, String accessToken) throws GeneralException {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
