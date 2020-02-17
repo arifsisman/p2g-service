@@ -193,7 +193,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             roomModelSimplified.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
         }
 
-        songService.getSongByRoomId(roomId).ifPresent(roomModelSimplified::setSong);
+        List<Song> songList = songService.getSongListByRoomId(roomId);
+        if(!songList.isEmpty()){
+            roomModelSimplified.setSong(songList.get(0));
+        }
 
         return roomModelSimplified;
     }
