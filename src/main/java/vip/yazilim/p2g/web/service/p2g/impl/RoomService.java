@@ -208,6 +208,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
+    public boolean delete(Room room) throws DatabaseException {
+        return deleteById(room.getId());
+    }
+
+    @Override
     public Room update(Room room) throws DatabaseException, InvalidArgumentException {
         room = super.update(room);
         webSocketController.sendToRoom("status", room.getId(), RoomStatus.UPDATED);

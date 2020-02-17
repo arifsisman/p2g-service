@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
@@ -42,6 +46,12 @@ public class AuthorizationRest {
     @Autowired
     private ISpotifyUserService spotifyUserService;
 
+    @Autowired
+    private IRoomUserService roomUserService;
+
+    @Autowired
+    private IRoomService roomService;
+
     @GetMapping("/login")
     public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) throws GeneralException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
@@ -56,6 +66,27 @@ public class AuthorizationRest {
         } else {
             return register(request, response);
         }
+    }
+
+    @PostMapping("/logout")
+    public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) throws GeneralException {
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+
+        if (roomUserOpt.isPresent()) {
+            RoomUser roomUser = roomUserOpt.get();
+            Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
+            if (roomOpt.isPresent()) {
+                Room room = roomOpt.get();
+                if (room.getOwnerId().equals(userId)) {
+                    return RestResponseFactory.generateResponse(roomService.delete(room), HttpStatus.OK, request, response);
+                } else {
+                    return RestResponseFactory.generateResponse(roomUserService.delete(roomUser), HttpStatus.OK, request, response);
+                }
+            }
+        }
+
+        return RestResponseFactory.generateResponse(true, HttpStatus.OK, request, response);
     }
 
     @PostMapping("/token")
