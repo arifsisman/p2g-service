@@ -113,32 +113,65 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
+    /**
+     * If any old room exists, leave room
+     * Else if any old room exists and user is owner, delete room
+     *
+     * @param roomId   roomId
+     * @param password password
+     * @param role     role
+     * @return RoomUser
+     * @throws GeneralException       GeneralException
+     * @throws IOException            IOException
+     * @throws SpotifyWebApiException SpotifyWebApiException
+     */
     @Override
     public RoomUser joinRoom(Long roomId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
         String userId = SecurityHelper.getUserId();
-        Optional<Room> roomOpt = roomService.getById(roomId);
 
+        Optional<Room> roomOpt = roomService.getById(roomId);
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] can not found", roomId);
             throw new InvalidArgumentException(err);
-        }
-
-        Room room = roomOpt.get();
-        RoomUser roomUser = new RoomUser();
-
-        if (room.getPassword().equals("") || room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
-            roomUser.setRoomId(roomId);
-            roomUser.setUserId(userId);
-            roomUser.setRole(role.getRole());
-            roomUser.setActiveFlag(true);
         } else {
-            throw new InvalidArgumentException("Wrong password");
+            // Any room exists check
+            Optional<Room> existingRoomOpt = roomService.getRoomByUserId(userId);
+            if (existingRoomOpt.isPresent()) {
+                Room existingRoom = existingRoomOpt.get();
+
+                if (existingRoom.getOwnerId().equals(userId)) {
+                    roomService.delete(existingRoom);
+                } else {
+                    leaveRoom();
+                }
+            }
+
+            // Normal condition
+            Room room = roomOpt.get();
+            RoomUser roomUser = new RoomUser();
+
+            if (room.getPassword().equals("") || room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
+                roomUser.setRoomId(roomId);
+                roomUser.setUserId(userId);
+                roomUser.setRole(role.getRole());
+                roomUser.setActiveFlag(true);
+            } else {
+                throw new InvalidArgumentException("Wrong password");
+            }
+
+            RoomUser joinedUser = create(roomUser);
+            spotifyPlayerService.userSyncWithRoom(joinedUser);
+
+            return joinedUser;
         }
+    }
 
-        RoomUser joinedUser = create(roomUser);
-        spotifyPlayerService.userSyncWithRoom(joinedUser);
-
-        return joinedUser;
+    private Optional<RoomUser> getByUserId(String userId) throws DatabaseReadException {
+        try {
+            return roomUserRepo.findRoomUserByUserId(userId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+        }
     }
 
     @Override
