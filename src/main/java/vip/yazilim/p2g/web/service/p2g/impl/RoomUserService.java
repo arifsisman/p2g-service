@@ -25,7 +25,6 @@ import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 2.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements IRoomUserService {
 
@@ -181,7 +179,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
                 return roomService.deleteById(roomUser.get().getRoomId());
             } else {
-                return deleteById(roomUser.get().getId());
+                return delete(roomUser.get());
             }
         } else {
             throw new NotFoundException("User not in any room");

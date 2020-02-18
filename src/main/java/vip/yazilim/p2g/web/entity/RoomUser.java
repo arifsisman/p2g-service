@@ -21,7 +21,7 @@ public class RoomUser implements Serializable {
     @Column(name = "room_id", updatable = false, nullable = false)
     private Long roomId;
 
-    @Column(name = "user_id", updatable = false, nullable = false)
+    @Column(name = "user_id", unique = true, updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "role", length = 16)

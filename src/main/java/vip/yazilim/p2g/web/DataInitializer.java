@@ -53,9 +53,11 @@ public class DataInitializer implements CommandLineRunner {
         User u8 = userService.createUser("8", "8@gmail.com", "Test User 8");
 
         Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", null);
+
         Room testRoom2 = roomService.createRoom(u2.getId(), "Test Room 2", "123");
         Room testRoom3 = roomService.createRoom(u3.getId(), "Test Room 3", "123");
         Room testRoom4 = roomService.createRoom(u4.getId(), "Test Room 4", null);
+        Room testRoom5 = roomService.createRoom(u5.getId(), "Test Room 5", null);
         Room testRoom6 = roomService.createRoom(u6.getId(), "Test Room 6", null);
         Room testRoom7 = roomService.createRoom(u7.getId(), "Test Room 7", null);
         Room testRoom8 = roomService.createRoom(u8.getId(), "Test Room 8", null);
@@ -84,13 +86,18 @@ public class DataInitializer implements CommandLineRunner {
         createRoomInvite(u2, arif, testRoom2);
         createRoomInvite(u3, arif, testRoom3);
         createRoomInvite(u4, arif, testRoom4);
+        createRoomInvite(u5, arif, testRoom5);
+        createRoomInvite(u6, arif, testRoom6);
+        createRoomInvite(u7, arif, testRoom7);
         createRoomInvite(u8, arif, testRoom8);
 
-        createFriendRequest(u2, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u2, arif, FriendRequestStatus.WAITING);
         createFriendRequest(u3, arif, FriendRequestStatus.WAITING);
         createFriendRequest(u4, arif, FriendRequestStatus.WAITING);
-        createFriendRequest(u7, arif, FriendRequestStatus.WAITING);
-        createFriendRequest(u5, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u5, arif, FriendRequestStatus.WAITING);
+        createFriendRequest(u6, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u7, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u8, arif, FriendRequestStatus.ACCEPTED);
     }
 
     private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws GeneralException {
