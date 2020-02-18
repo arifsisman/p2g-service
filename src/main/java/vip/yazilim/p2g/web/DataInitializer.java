@@ -42,17 +42,17 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws GeneralException {
-        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
-        User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen", "0");
-        User u2 = userService.createUser("2", "2@gmail.com", "Test User 2", "123");
-        User u3 = userService.createUser("3", "3@gmail.com", "Test User 3", "123");
-        User u5 = userService.createUser("5", "5@gmail.com", "Test User 5", null);
-        User u6 = userService.createUser("6", "6@gmail.com", "Test User 6", null);
-        User u4 = userService.createUser("4", "4@gmail.com", "Test User 4", null);
-        User u7 = userService.createUser("7", "7@gmail.com", "Test User 7", null);
-        User u8 = userService.createUser("8", "8@gmail.com", "Test User 8", null);
+        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
+        User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
+        User u2 = userService.createUser("2", "2@gmail.com", "Test User 2");
+        User u3 = userService.createUser("3", "3@gmail.com", "Test User 3");
+        User u5 = userService.createUser("5", "5@gmail.com", "Test User 5");
+        User u6 = userService.createUser("6", "6@gmail.com", "Test User 6");
+        User u4 = userService.createUser("4", "4@gmail.com", "Test User 4");
+        User u7 = userService.createUser("7", "7@gmail.com", "Test User 7");
+        User u8 = userService.createUser("8", "8@gmail.com", "Test User 8");
 
-        Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", "0");
+        Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", null);
         Room testRoom2 = roomService.createRoom(u2.getId(), "Test Room 2", "123");
         Room testRoom3 = roomService.createRoom(u3.getId(), "Test Room 3", "123");
         Room testRoom4 = roomService.createRoom(u4.getId(), "Test Room 4", null);
@@ -65,8 +65,6 @@ public class DataInitializer implements CommandLineRunner {
         addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1);
         addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
         addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
-
-//        roomUserService.joinRoom(roomId, "0", Role.P2G_USER);
 
         u2.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         userService.update(u2);

@@ -100,7 +100,7 @@ public class AuthorizationRest {
         String email = SecurityHelper.getUserEmail();
         String userName = SecurityHelper.getUserDisplayName();
 
-        User user = userService.createUser(userId, email, userName, "0");
+        User user = userService.createUser(userId, email, userName);
 
         LOGGER.info("{}[{}] registered", userName, userId);
         updateUserAccessToken();

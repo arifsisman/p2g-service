@@ -135,15 +135,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             throw new InvalidArgumentException(err);
         } else {
             // Any room exists check
-            Optional<Room> existingRoomOpt = roomService.getRoomByUserId(userId);
-            if (existingRoomOpt.isPresent()) {
-                Room existingRoom = existingRoomOpt.get();
-
-                if (existingRoom.getOwnerId().equals(userId)) {
-                    roomService.delete(existingRoom);
-                } else {
-                    leaveRoom();
-                }
+            Optional<RoomUser> existingUserOpt = getRoomUser(userId);
+            if (existingUserOpt.isPresent()) {
+                leaveRoom();
             }
 
             // Normal condition
@@ -166,14 +160,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
-    private Optional<RoomUser> getByUserId(String userId) throws DatabaseReadException {
-        try {
-            return roomUserRepo.findRoomUserByUserId(userId);
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
-        }
-    }
-
     @Override
     public RoomUser joinRoomOwner(Long roomId, String userId) throws GeneralException {
         RoomUser roomUser = new RoomUser();
@@ -183,7 +169,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         roomUser.setRole(Role.ROOM_OWNER.getRole());
         roomUser.setActiveFlag(true);
 
-        return create(roomUser);
+        return super.create(roomUser);
     }
 
     @Override

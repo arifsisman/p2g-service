@@ -210,15 +210,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         room.setPassword(roomPassword);
         userService.getById(ownerId).ifPresent(u -> room.setCountryCode(u.getCountryCode()));
 
-        return create(room);
-    }
-
-    @Override
-    public Room create(Room room) throws GeneralException {
-        Room createdRoom = super.create(room);
-        // Post create
+        Room createdRoom = create(room);
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
-        return room;
+
+        return createdRoom;
     }
 
     @Override
