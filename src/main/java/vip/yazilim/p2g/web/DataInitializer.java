@@ -124,7 +124,6 @@ public class DataInitializer implements CommandLineRunner {
         song.setSongId(songId);
         song.setSongName(songName);
         song.setArtistNames(artistNames);
-        song.setCurrentMs(0);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
