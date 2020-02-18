@@ -72,41 +72,42 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         try {
             // Does not matter who sent friend request
-            friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
+            friendRequestList = friendRequestRepo.findBySenderIdOrReceiverIdAndRequestStatus(userId, userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
 
         for (FriendRequest fr : friendRequestList) {
-            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
-                FriendModel fm = new FriendModel();
-                String frUserId = fr.getSenderId();
-                String frFriendIdId = fr.getReceiverId();
+            FriendModel fm = new FriendModel();
+            String frUserId = fr.getSenderId();
+            String frFriendIdId = fr.getReceiverId();
 
-                //To determine who is friend
-                String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
+            //To determine who is friend
+            String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
 
-                fm.setUserModel(userService.getUserModelByUserId(queryId));
+            fm.setUserModel(userService.getUserModelByUserId(queryId));
 
-                Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
-                if (roomOpt.isPresent()) {
-                    List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
-                    if (!songList.isEmpty()) {
-                        fm.setSong(songList.get(0));
-                    }
+            Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
+            if (roomOpt.isPresent()) {
+                List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
+                if (!songList.isEmpty()) {
+                    fm.setSong(songList.get(0));
                 }
-
-                userModels.add(fm);
             }
+
+            userModels.add(fm);
         }
 
         return userModels;
     }
 
     @Override
-    public Integer getFriendsCountByUserId(String userId) {
-        //TODO: implement!!
-        return null;
+    public Integer getFriendsCountByUserId(String userId) throws DatabaseReadException {
+        try {
+            return friendRequestRepo.findBySenderIdOrReceiverIdAndRequestStatus(userId, userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus()).size();
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+        }
     }
 
 
