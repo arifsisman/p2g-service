@@ -83,10 +83,12 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
                 String frUserId = fr.getSenderId();
                 String frFriendIdId = fr.getReceiverId();
 
+                //To determine who is friend
                 String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
+
                 fm.setUserModel(userService.getUserModelByUserId(queryId));
 
-                Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
+                Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
                 if (roomOpt.isPresent()) {
                     List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
                     if (!songList.isEmpty()) {
@@ -100,6 +102,13 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         return userModels;
     }
+
+    @Override
+    public Integer getFriendsCountByUserId(String userId) {
+        //TODO: implement!!
+        return null;
+    }
+
 
     @Override
     public List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException {

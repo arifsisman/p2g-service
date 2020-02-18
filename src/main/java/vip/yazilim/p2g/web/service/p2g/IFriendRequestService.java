@@ -20,6 +20,7 @@ public interface IFriendRequestService extends ICrudService<FriendRequest, Long>
 
     List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException;
     List<FriendModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    Integer getFriendsCountByUserId(String userId);
     List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException;
 
     Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String user1, String user2) throws DatabaseReadException;
