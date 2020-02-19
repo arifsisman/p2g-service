@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ import java.util.Optional;
  */
 @Service
 public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements IRoomUserService {
+
+    private Logger LOGGER = LoggerFactory.getLogger(RoomUserService.class);
 
     @Autowired
     private IRoomUserRepo roomUserRepo;
@@ -154,6 +158,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             RoomUser joinedUser = create(roomUser);
             spotifyPlayerService.userSyncWithRoom(joinedUser);
 
+            LOGGER.info("User[{}] joined Room[{}]", userId, roomId);
             return joinedUser;
         }
     }
@@ -177,9 +182,17 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (roomUser.isPresent()) {
             if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
-                return roomService.deleteById(roomUser.get().getRoomId());
+                boolean status = roomService.deleteById(roomUser.get().getRoomId());
+                if (status) {
+                    LOGGER.info("Room[{}] closed by User[{}]", roomUser.get().getRoomId(), userId);
+                }
+                return status;
             } else {
-                return delete(roomUser.get());
+                boolean status = delete(roomUser.get());
+                if (status) {
+                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.get().getRoomId());
+                }
+                return status;
             }
         } else {
             throw new NotFoundException("User not in any room");
@@ -220,6 +233,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             RoomUser createdRoomUser = create(roomUser);
             roomInviteService.delete(roomInvite);
 
+            LOGGER.info("User[{}] accepted Room[{}] invite from User[{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
             return createdRoomUser;
         }
     }

@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ import java.util.Optional;
  */
 @Service
 public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
+
+    private Logger LOGGER = LoggerFactory.getLogger(RoomService.class);
 
     @Autowired
     private IRoomRepo roomRepo;
@@ -129,7 +133,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         Optional<Room> room;
         List<User> userList;
         List<Song> songList;
@@ -138,11 +142,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Set Room
         room = getById(roomId);
         if (!room.isPresent()) {
-            return Optional.empty();
+            String err = String.format("Room[%s] not found", roomId);
+            throw new NotFoundException(err);
         } else {
             RoomModel roomModel = new RoomModel();
             roomModel.setRoom(room.get());
-
 
             // Set User List
             userList = userService.getUsersByRoomId(roomId);
@@ -166,17 +170,17 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
             roomModel.setInvitedUserList(invitedUserList);
 
-            return Optional.of(roomModel);
+            return roomModel;
         }
     }
 
     @Override
-    public Optional<RoomModel> getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUser = roomUserService.getRoomUser(userId);
         if (roomUser.isPresent()) {
             return getRoomModelByRoomId(roomUser.get().getRoomId());
         } else {
-            return Optional.empty();
+            throw new NotFoundException("User not in room, acted normally.");
         }
     }
 
@@ -226,6 +230,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Room createdRoom = create(room);
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
 
+        LOGGER.info("User[{}] created Room[{}]", ownerId, createdRoom.getId());
         return createdRoom;
     }
 
