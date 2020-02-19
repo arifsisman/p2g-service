@@ -186,9 +186,30 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
+//    @Override
+//    public boolean leaveRoom(Optional<RoomUser> roomUser) throws DatabaseException {
+//        if (roomUser.isPresent()) {
+//            if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
+//                return roomService.deleteById(roomUser.get().getRoomId());
+//            } else {
+//                return delete(roomUser.get());
+//            }
+//        }
+//        return true;
+//    }
+
     @Override
     public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException {
-        if (roomInviteService.existsById(roomInvite.getId())) {
+        if (!roomInviteService.existsById(roomInvite.getId())) {
+            String err = String.format("Room Invite[%s] not found", roomInvite.getId());
+            throw new NotFoundException(err);
+        } else {
+            // Any room exists check
+            Optional<RoomUser> existingUserOpt = getRoomUser(roomInvite.getReceiverId());
+            if (existingUserOpt.isPresent()) {
+                leaveRoom();
+            }
+
             RoomUser roomUser = new RoomUser();
 
             roomUser.setRoomId(roomInvite.getRoomId());
@@ -200,9 +221,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             roomInviteService.delete(roomInvite);
 
             return createdRoomUser;
-        } else {
-            String err = String.format("Room Invite[%s] not found", roomInvite.getId());
-            throw new NotFoundException(err);
         }
     }
 

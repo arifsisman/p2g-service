@@ -22,7 +22,6 @@ import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import java.util.Optional;
  *
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
 
@@ -194,7 +192,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         List<Song> songList = songService.getSongListByRoomId(roomId);
-        if(!songList.isEmpty()){
+        if (!songList.isEmpty()) {
             roomModelSimplified.setSong(songList.get(0));
         }
 
@@ -203,6 +201,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public Room createRoom(String ownerId, String roomName, String roomPassword) throws GeneralException {
+        // Any room exists check
+        Optional<RoomUser> existingUserOpt = roomUserService.getRoomUser(ownerId);
+        if (existingUserOpt.isPresent()) {
+            roomUserService.leaveRoom();
+        }
+
         Room room = new Room();
 
         room.setOwnerId(ownerId);
@@ -218,14 +222,14 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public boolean deleteById(Long roomId) throws DatabaseException {
-            //delete roomUsers
-            roomUserService.deleteRoomUsers(roomId);
+        //delete roomUsers
+        roomUserService.deleteRoomUsers(roomId);
 
-            //delete Songs
-            songService.deleteRoomSongList(roomId);
+        //delete Songs
+        songService.deleteRoomSongList(roomId);
 
-            //delete roomInvites
-            roomInviteService.deleteRoomInvites(roomId);
+        //delete roomInvites
+        roomInviteService.deleteRoomInvites(roomId);
 
         webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
         return super.deleteById(roomId);
