@@ -129,9 +129,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
-        RoomModel roomModel = new RoomModel();
-
+    public Optional<RoomModel> getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         Optional<Room> room;
         List<User> userList;
         List<Song> songList;
@@ -140,35 +138,46 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Set Room
         room = getById(roomId);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", roomId);
-            throw new NotFoundException(err);
+            return Optional.empty();
         } else {
+            RoomModel roomModel = new RoomModel();
             roomModel.setRoom(room.get());
+
+
+            // Set User List
+            userList = userService.getUsersByRoomId(roomId);
+            roomModel.setUserList(userList);
+
+            // Set owner
+            Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
+            if (roomOwnerOpt.isPresent()) {
+                Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
+                roomModel.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
+            }
+
+            // Set Room Users
+            roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
+
+            // Set Song List
+            songList = songService.getSongListByRoomId(roomId);
+            roomModel.setSongList(songList);
+
+            // Set Invited User List
+            invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
+            roomModel.setInvitedUserList(invitedUserList);
+
+            return Optional.of(roomModel);
         }
+    }
 
-        // Set User List
-        userList = userService.getUsersByRoomId(roomId);
-        roomModel.setUserList(userList);
-
-        // Set owner
-        Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
-        if (roomOwnerOpt.isPresent()) {
-            Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
-            roomModel.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
+    @Override
+    public Optional<RoomModel> getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+        Optional<RoomUser> roomUser = roomUserService.getRoomUser(userId);
+        if (roomUser.isPresent()) {
+            return getRoomModelByRoomId(roomUser.get().getRoomId());
+        } else {
+            return Optional.empty();
         }
-
-        // Set Room Users
-        roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
-
-        // Set Song List
-        songList = songService.getSongListByRoomId(roomId);
-        roomModel.setSongList(songList);
-
-        // Set Invited User List
-        invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
-        roomModel.setInvitedUserList(invitedUserList);
-
-        return roomModel;
     }
 
     @Override
