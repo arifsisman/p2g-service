@@ -11,9 +11,11 @@ import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -39,6 +41,9 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private ISongService songService;
 
+    @Autowired
+    private ISpotifySearchService spotifySearchService;
+
     @Override
     public void run(String... args) throws GeneralException {
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
@@ -61,11 +66,14 @@ public class DataInitializer implements CommandLineRunner {
         Room testRoom7 = roomService.createRoom(u7.getId(), "Test Room 7", null);
         Room testRoom8 = roomService.createRoom(u8.getId(), "Test Room 8", null);
 
-//        Long roomId = testRoom1.getId();
-//        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 1200000, 0);
-//        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1);
-//        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
-//        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
+        Long roomId = testRoom1.getId();
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 1200000, 0, "https://www.darkside.ru/band/3919/cover/9075.jpg");
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1, "https://www.darkside.ru/band/3919/cover/32962.jpg");
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2, "https://www.darkside.ru/band/3919/cover/39357.jpg");
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0, "https://www.darkside.ru/band/3919/cover/9060.jpg");
+
+//        List<SearchModel> searchModelList = spotifySearchService.search("muse");
+//        songService.addSongToRoom(roomId, searchModelList);
 
         u2.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         userService.update(u2);
@@ -117,7 +125,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws GeneralException {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) throws GeneralException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
@@ -128,6 +136,7 @@ public class DataInitializer implements CommandLineRunner {
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
+        song.setImageUrl(imageUrl);
 
         song = songService.create(song);
 
