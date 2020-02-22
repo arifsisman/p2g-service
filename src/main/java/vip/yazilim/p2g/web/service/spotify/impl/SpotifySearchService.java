@@ -42,20 +42,20 @@ public class SpotifySearchService implements ISpotifySearchService {
         String accessToken = tokenService.getAccessTokenByUserId(userId);
 
         if (searchTypes.length == 0) {
-            SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, TRACK.getType()).limit(20).build(), accessToken);
+            SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, TRACK.getType()).limit(15).build(), accessToken);
             searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             return searchModelList;
         }
 
         for (SearchType s : searchTypes) {
             if (s == SearchType.TRACK) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.TRACK.getType()).limit(20).build(), accessToken);
+                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.TRACK.getType()).limit(15).build(), accessToken);
                 searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             } else if (s == SearchType.ALBUM) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(10).build(), accessToken);
+                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), accessToken);
                 searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getAlbums().getItems()));
             } else if (s == SearchType.PLAYLIST) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(10).build(), accessToken);
+                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(5).build(), accessToken);
                 searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getPlaylists().getItems()));
             }
         }

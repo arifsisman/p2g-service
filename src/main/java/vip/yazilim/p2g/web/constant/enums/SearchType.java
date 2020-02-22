@@ -10,8 +10,7 @@ public enum SearchType {
     ALBUM("album"),
     PLAYLIST("playlist"),
     TRACK("track"),
-    ARTIST("artist"),
-    USER("user");
+    ARTIST("artist");
 
     private static final HashMap<String, SearchType> map = new HashMap<>();
     public final String type;
