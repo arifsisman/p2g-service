@@ -33,8 +33,8 @@ public class SpotifyHelper {
     public static String convertIdToUri(String id, SearchType type) {
         String uri = "spotify:";
         switch (type) {
-            case TRACK:
-                uri += SearchType.TRACK.getType();
+            case SONG:
+                uri += SearchType.SONG.getType();
                 break;
             case ALBUM:
                 uri += SearchType.ALBUM.getType();

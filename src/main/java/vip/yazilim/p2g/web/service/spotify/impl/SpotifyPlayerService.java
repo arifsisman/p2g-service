@@ -187,7 +187,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Boolean repeatFlag = song.getRepeatFlag();
 
         if (repeatFlag == null || !repeatFlag) {
-            repeatMode = SearchType.TRACK.getType();
+            repeatMode = SearchType.SONG.getType();
             repeatFlag = true;
         } else {
             repeatMode = "off";

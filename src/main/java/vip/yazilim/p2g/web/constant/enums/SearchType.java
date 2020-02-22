@@ -7,9 +7,9 @@ import java.util.HashMap;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum SearchType {
+    SONG("track"),
     ALBUM("album"),
     PLAYLIST("playlist"),
-    TRACK("track"),
     ARTIST("artist");
 
     private static final HashMap<String, SearchType> map = new HashMap<>();

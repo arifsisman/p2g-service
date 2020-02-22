@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static vip.yazilim.p2g.web.constant.enums.SearchType.TRACK;
+import static vip.yazilim.p2g.web.constant.enums.SearchType.SONG;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -42,14 +42,14 @@ public class SpotifySearchService implements ISpotifySearchService {
         String accessToken = tokenService.getAccessTokenByUserId(userId);
 
         if (searchTypes.length == 0) {
-            SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, TRACK.getType()).limit(15).build(), accessToken);
+            SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SONG.getType()).limit(15).build(), accessToken);
             searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             return searchModelList;
         }
 
         for (SearchType s : searchTypes) {
-            if (s == SearchType.TRACK) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.TRACK.getType()).limit(15).build(), accessToken);
+            if (s == SearchType.SONG) {
+                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.SONG.getType()).limit(15).build(), accessToken);
                 searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
             } else if (s == SearchType.ALBUM) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), accessToken);

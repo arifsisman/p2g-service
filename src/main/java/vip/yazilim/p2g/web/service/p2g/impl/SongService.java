@@ -83,7 +83,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     public List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
-            if (s.getType() == SearchType.TRACK) {
+            if (s.getType() == SearchType.SONG) {
                 songList.addAll(getSongListFromSearchModelList(roomId, Collections.singletonList(s)));
             } else if (s.getType() == SearchType.ALBUM) {
                 List<SearchModel> searchModelList = spotifyAlbumService.getSongs(s.getId());
