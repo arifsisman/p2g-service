@@ -184,4 +184,10 @@ public class RoomRest extends ARestCrud<Room, Long> {
         return RestResponseFactory.generateResponse(roomInviteService.getRoomInviteModelListByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/user/me"})
+    public RestResponse<RoomUser> getRoomUserMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
+        return RestResponseFactory.generateResponse(roomUserService.getRoomUserMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
 }

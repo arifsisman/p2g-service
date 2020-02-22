@@ -98,6 +98,17 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
+    public RoomUser getRoomUserMe(String userId) throws DatabaseException {
+        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        if (roomUserOpt.isPresent()) {
+            return roomUserOpt.get();
+        } else {
+            String msg = String.format("User[%s] not in any room", userId);
+            throw new NotFoundException(msg);
+        }
+    }
+
+    @Override
     public Optional<RoomUser> getRoomUser(Long roomId, String userId) throws DatabaseException {
         try {
             return roomUserRepo.findRoomUserByRoomIdAndUserId(roomId, userId);
