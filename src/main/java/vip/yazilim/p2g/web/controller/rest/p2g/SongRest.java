@@ -95,7 +95,7 @@ public class SongRest extends ARestCrud<Song, Long> {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws GeneralException, SpotifyWebApiException, IOException {
+    public RestResponse<Boolean> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws GeneralException, SpotifyWebApiException, IOException {
         return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModelList), HttpStatus.OK, request, response);
     }
 

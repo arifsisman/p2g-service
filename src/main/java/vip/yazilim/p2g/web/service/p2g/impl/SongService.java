@@ -80,7 +80,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
+    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
             if (s.getType() == SearchType.SONG) {
@@ -94,7 +94,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
-        return songList;
+        for(Song s: songList){
+            create(s);
+        }
+
+        return true;
     }
 
     @Override
