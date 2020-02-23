@@ -60,7 +60,6 @@ public class SearchModel implements Serializable {
         this.id = trackSimplified.getId();
         this.uri = trackSimplified.getUri();
         this.durationMs = trackSimplified.getDurationMs();
-        this.imageUrl = trackSimplified.getPreviewUrl();
     }
 
     private void init(PlaylistSimplified playlistSimplified) {
