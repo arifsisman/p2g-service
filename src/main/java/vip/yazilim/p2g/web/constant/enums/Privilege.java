@@ -23,6 +23,7 @@ public enum Privilege {
     SONG_CONTROL("song_control"),
     SONG_UPDATE("song_update"),
     SONG_ADD_AND_REMOVE("song_add_and_remove"),
+    ROOM_CLEAR_QUEUE("room_clear_queue"),
     SPOTIFY_USER_SEARCH("spotify_user_search");
 
     private final String privilegeName;

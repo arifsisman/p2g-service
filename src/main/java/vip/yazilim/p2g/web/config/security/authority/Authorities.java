@@ -39,6 +39,7 @@ public class Authorities extends AAuthorityProvider {
         roomModeratorPrivileges.add(Privilege.ROOM_INVITE);
 
         List<Privilege> roomAdminPrivileges = new LinkedList<>(roomModeratorPrivileges);
+        roomAdminPrivileges.add(Privilege.ROOM_CLEAR_QUEUE);
         roomAdminPrivileges.add(Privilege.ROOM_MANAGE_ROLES);
         roomAdminPrivileges.add(Privilege.ROOM_UPDATE);
 

@@ -80,6 +80,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public boolean clearRoomSongList(Long roomId) throws DatabaseException {
+        List<Song> songList = getSongListByRoomId(roomId);
+
+        for (Song s : songList) {
+            delete(s);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
@@ -94,7 +105,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
-        for(Song s: songList){
+        for (Song s : songList) {
             create(s);
         }
 
@@ -124,7 +135,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         List<Song> songList;
 
         try {
-           songList = songRepo.findByRoomId(roomId);
+            songList = songRepo.findByRoomId(roomId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }

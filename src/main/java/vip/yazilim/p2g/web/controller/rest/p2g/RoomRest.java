@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
@@ -17,6 +18,7 @@ import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -49,6 +51,9 @@ public class RoomRest extends ARestCrud<Room, Long> {
 
     @Autowired
     private IRoomInviteService roomInviteService;
+
+    @Autowired
+    private ISongService songService;
 
     @Override
     protected ICrudService<Room, Long> getService() {
@@ -168,14 +173,14 @@ public class RoomRest extends ARestCrud<Room, Long> {
     // Authorities (Promote & Demote)
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserId}/promote")
-    public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(Long.valueOf(roomUserId)), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(roomUserId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @PutMapping("/user/{roomUserId}/demote")
-    public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(Long.valueOf(roomUserId)), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(roomUserId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
@@ -188,6 +193,14 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @GetMapping({"/user/me"})
     public RestResponse<RoomUser> getRoomUserMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
         return RestResponseFactory.generateResponse(roomUserService.getRoomUserMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    // Clear song list
+    @HasRoomPrivilege(privilege = Privilege.ROOM_CLEAR_QUEUE)
+    @UpdateRoomSongs
+    @PostMapping("/{roomId}/queue/clear")
+    public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(songService.clearRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
 }
