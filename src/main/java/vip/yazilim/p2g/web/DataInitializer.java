@@ -67,10 +67,10 @@ public class DataInitializer implements CommandLineRunner {
         Room testRoom8 = roomService.createRoom(u8.getId(), "Test Room 8", null);
 
         Long roomId = testRoom1.getId();
-        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 1200000, 0, "https://www.darkside.ru/band/3919/cover/9075.jpg");
-        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1, "https://www.darkside.ru/band/3919/cover/32962.jpg");
-        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2, "https://www.darkside.ru/band/3919/cover/39357.jpg");
-        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0, "https://www.darkside.ru/band/3919/cover/9060.jpg");
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400");
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4");
 
 //        List<SearchModel> searchModelList = spotifySearchService.search("muse");
 //        songService.addSongToRoom(roomId, searchModelList);

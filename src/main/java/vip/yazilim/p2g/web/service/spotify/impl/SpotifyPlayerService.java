@@ -52,7 +52,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     // Room Based
     ///////////////////////
     @Override
-    public List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
 
         // JsonArray with song, because uris needs JsonArray as input
@@ -67,12 +67,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         song.setSongStatus(SongStatus.PLAYING.getSongStatus());
         songService.update(song);
 
-
-        return songService.getSongListByRoomId(roomId);
+        return true;
     }
 
     @Override
-    public List<Song> roomStartResume(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomStartResume(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (pausedOpt.isPresent()) {
@@ -90,11 +89,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0);
         }
 
-        return songService.getSongListByRoomId(roomId);
+        return true;
     }
 
     @Override
-    public List<Song> roomPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
 
         if (playingOpt.isPresent()) {
@@ -115,11 +114,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             throw new NotFoundException(err);
         }
 
-        return songService.getSongListByRoomId(roomId);
+        return true;
     }
 
     @Override
-    public List<Song> roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> next = songService.getNextSong(roomId);
 
         if (next.isPresent()) {
@@ -130,6 +129,15 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
                 songService.update(playing);
             }
+
+            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+            if (pausedOpt.isPresent()) { // Set old paused as played, if present
+                Song paused = pausedOpt.get();
+                paused.setVotes(0);
+                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(paused);
+            }
+
             return roomPlay(next.get(), 0);
         } else {
             throw new NotFoundException("Next song is empty");
@@ -137,7 +145,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public List<Song> roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> previous = songService.getPreviousSong(roomId);
 
         if (previous.isPresent()) {
@@ -147,6 +155,15 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 playing.setSongStatus(SongStatus.NEXT.getSongStatus());
                 songService.update(playing);
             }
+
+            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+            if (pausedOpt.isPresent()) { // Set old paused as played, if present
+                Song paused = pausedOpt.get();
+                paused.setVotes(0);
+                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(paused);
+            }
+
             return roomPlay(previous.get(), 0);
         } else {
             throw new NotFoundException("Previous song is empty");
