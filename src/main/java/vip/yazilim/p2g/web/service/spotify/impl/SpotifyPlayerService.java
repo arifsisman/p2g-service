@@ -125,7 +125,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
             if (playingOpt.isPresent()) { // Set old playing as played, if present
                 Song playing = playingOpt.get();
-                playing.setVotes(0);
                 playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
                 songService.update(playing);
             }
@@ -133,7 +132,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Optional<Song> pausedOpt = songService.getPausedSong(roomId);
             if (pausedOpt.isPresent()) { // Set old paused as played, if present
                 Song paused = pausedOpt.get();
-                paused.setVotes(0);
                 paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
                 songService.update(paused);
             }
@@ -159,7 +157,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Optional<Song> pausedOpt = songService.getPausedSong(roomId);
             if (pausedOpt.isPresent()) { // Set old paused as played, if present
                 Song paused = pausedOpt.get();
-                paused.setVotes(0);
                 paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
                 songService.update(paused);
             }
