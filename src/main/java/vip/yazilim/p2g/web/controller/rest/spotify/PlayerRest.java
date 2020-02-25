@@ -40,16 +40,9 @@ public class PlayerRest {
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @UpdateRoomSongs
-    @PostMapping("/{roomId}/play")
-    public RestResponse<Boolean> startResume(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyPlayerService.roomStartResume(roomId), HttpStatus.OK, request, response);
-    }
-
-    @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
-    @UpdateRoomSongs
-    @PostMapping("/{roomId}/pause")
-    public RestResponse<Boolean> pause(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyPlayerService.roomPause(roomId), HttpStatus.OK, request, response);
+    @PostMapping("/{roomId}/playPause")
+    public RestResponse<Boolean> playPause(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+        return RestResponseFactory.generateResponse(spotifyPlayerService.roomPlayPause(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)

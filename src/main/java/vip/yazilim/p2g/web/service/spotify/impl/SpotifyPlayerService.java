@@ -71,30 +71,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public boolean roomStartResume(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
-
-        if (pausedOpt.isPresent()) {
-            Song paused = pausedOpt.get();
-            int currentMs = Math.toIntExact(paused.getCurrentMs());
-
-            // Resume playback
-            roomPlay(paused, currentMs);
-
-            // Update playing
-            paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
-            songService.update(paused);
-        } else if (!songService.getPlayingSong(roomId).isPresent()) {
-            Optional<Song> firstQueued = songService.getNextSong(roomId);
-            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean roomPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPlayPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
+        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (playingOpt.isPresent()) {
             Song playing = playingOpt.get();
@@ -109,9 +88,19 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
+        } else if (pausedOpt.isPresent()) {
+            Song paused = pausedOpt.get();
+            int currentMs = Math.toIntExact(paused.getCurrentMs());
+
+            // Resume playback
+            roomPlay(paused, currentMs);
+
+            // Update paused
+            paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
+            songService.update(paused);
         } else {
-            String err = String.format("Not playing any song in Room[%s]", roomId);
-            throw new NotFoundException(err);
+            Optional<Song> firstQueued = songService.getNextSong(roomId);
+            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0);
         }
 
         return true;
