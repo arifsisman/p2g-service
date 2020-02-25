@@ -69,7 +69,7 @@ public class PlayerRest {
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @UpdateRoomSongs
     @PostMapping("/{roomId}/seek/{ms}")
-    public RestResponse<Integer> seek(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @PathVariable Integer ms) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
+    public RestResponse<Boolean> seek(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @PathVariable Integer ms) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomSeek(roomId, ms), HttpStatus.OK, request, response);
     }
 

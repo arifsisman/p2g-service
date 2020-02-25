@@ -168,7 +168,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     }
 
     @Override
-    public int roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
@@ -179,7 +179,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             throw new NotFoundException(err);
         }
 
-        return ms;
+        return true;
     }
 
     @Override
