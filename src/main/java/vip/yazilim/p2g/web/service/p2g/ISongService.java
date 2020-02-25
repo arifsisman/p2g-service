@@ -30,7 +30,7 @@ public interface ISongService extends ICrudService<Song, Long> {
 
     // Rest
     boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws GeneralException, IOException, SpotifyWebApiException;
-    boolean removeSongFromRoom(Long songId) throws DatabaseException;
+    boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
     boolean deleteRoomSongList(Long roomId) throws DatabaseException;
     List<Song> getSongListByRoomId(Long roomId) throws DatabaseException;
 

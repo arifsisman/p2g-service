@@ -82,7 +82,7 @@ public class SongRest extends ARestCrud<Song, Long> {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException {
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(songService.removeSongFromRoom(id), HttpStatus.OK, request, response);
     }
 
