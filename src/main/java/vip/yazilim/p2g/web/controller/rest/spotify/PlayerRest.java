@@ -35,7 +35,7 @@ public class PlayerRest {
     @UpdateRoomSongs
     @PostMapping("/play")
     public RestResponse<Boolean> playSong(HttpServletRequest request, HttpServletResponse response, @RequestBody Song song) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyPlayerService.roomPlay(song, 0), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(spotifyPlayerService.roomPlay(song, 0, true), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)

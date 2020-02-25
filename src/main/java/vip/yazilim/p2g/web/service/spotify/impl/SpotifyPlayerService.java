@@ -55,37 +55,39 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     // Room Based
     ///////////////////////
     @Override
-    public boolean roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPlay(Song song, int ms, boolean updateCurrent) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
-        Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
-        if (playingOpt.isPresent()) {
-            Song playing = playingOpt.get();
+        if(updateCurrent){
+            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
+            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
-            playing.setCurrentMs(0);
-            playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
-            songService.update(playing);
-        } else if (pausedOpt.isPresent()) {
-            Song paused = pausedOpt.get();
+            if (playingOpt.isPresent()) {
+                Song playing = playingOpt.get();
 
-            paused.setCurrentMs(0);
-            paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
-            songService.update(paused);
+                playing.setCurrentMs(0);
+                playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(playing);
+            } else if (pausedOpt.isPresent()) {
+                Song paused = pausedOpt.get();
+
+                paused.setCurrentMs(0);
+                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(paused);
+            }
         }
 
         // JsonArray with song, because uris needs JsonArray as input
         List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
         JsonArray urisJson = gson.toJsonTree(songList).getAsJsonArray();
 
-        // Start playback
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
-
         // Update playing
         song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.PLAYING.getSongStatus());
         songService.update(song);
 
+        // Start playback
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
         return true;
     }
@@ -102,10 +104,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            long oldPassedMs = playing.getCurrentMs() == null ? 0L : playing.getCurrentMs();
             long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
-            playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
+            playing.setCurrentMs((int) (playing.getCurrentMs() + newPassedMs));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
         } else if (pausedOpt.isPresent()) {
@@ -113,14 +114,14 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             int currentMs = Math.toIntExact(paused.getCurrentMs());
 
             // Resume playback
-            roomPlay(paused, currentMs);
+            roomPlay(paused, currentMs, false);
 
             // Update paused
             paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
             songService.update(paused);
         } else {
             Optional<Song> firstQueued = songService.getNextSong(roomId);
-            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0);
+            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0, false);
         }
 
         return true;
@@ -145,7 +146,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 songService.update(paused);
             }
 
-            return roomPlay(next.get(), 0);
+            return roomPlay(next.get(), 0, false);
         } else {
             throw new NotFoundException("Next song is empty");
         }
@@ -170,7 +171,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 songService.update(paused);
             }
 
-            return roomPlay(previous.get(), 0);
+            return roomPlay(previous.get(), 0, false);
         } else {
             throw new NotFoundException("Previous song is empty");
         }

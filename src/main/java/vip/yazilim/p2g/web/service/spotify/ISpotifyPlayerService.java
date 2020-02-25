@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public interface ISpotifyPlayerService {
 
-    boolean roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
+    boolean roomPlay(Song song, int ms, boolean checkCurrent) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean roomPlayPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
