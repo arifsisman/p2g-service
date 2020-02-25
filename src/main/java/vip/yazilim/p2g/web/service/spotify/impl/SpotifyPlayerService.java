@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -48,16 +49,34 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Autowired
     private ISongService songService;
 
+    private Gson gson = new GsonBuilder().create();
+
     ///////////////////////
     // Room Based
     ///////////////////////
     @Override
     public boolean roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
+        Optional<Song> playingOpt = songService.getPlayingSong(roomId);
+        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+
+        if (playingOpt.isPresent()) {
+            Song playing = playingOpt.get();
+
+            playing.setCurrentMs(0);
+            playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
+            songService.update(playing);
+        } else if (pausedOpt.isPresent()) {
+            Song paused = pausedOpt.get();
+
+            paused.setCurrentMs(0);
+            paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+            songService.update(paused);
+        }
 
         // JsonArray with song, because uris needs JsonArray as input
         List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
-        JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
+        JsonArray urisJson = gson.toJsonTree(songList).getAsJsonArray();
 
         // Start playback
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
@@ -66,6 +85,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.PLAYING.getSongStatus());
         songService.update(song);
+
 
         return true;
     }
