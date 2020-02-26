@@ -106,7 +106,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             // Update playing
             long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
-            playing.setCurrentMs((int) (playing.getCurrentMs() + newPassedMs));
+            playing.setCurrentMs(playing.getCurrentMs() + (int) newPassedMs);
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
         } else if (pausedOpt.isPresent()) {
@@ -171,6 +171,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         if (playingOpt.isPresent()) {
             Song playing = playingOpt.get();
             playing.setCurrentMs(ms);
+            playing.setPlayingTime(TimeHelper.getLocalDateTimeNow());
             songService.update(playing);
 
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
@@ -234,7 +235,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         if (playingOpt.isPresent()) { // play currently playing song with current ms
             return play(roomUser, playingOpt.get());
         } else if (pausedOpt.isPresent()) { // seek to current ms
-            return seek(roomUser, pausedOpt.get());
+            return sync(roomUser, pausedOpt.get());
         } else { // noop
             return false;
         }
@@ -260,7 +261,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return false;
     }
 
-    private boolean seek(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
+    private boolean sync(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
         int ms = Math.toIntExact(song.getCurrentMs());
 
