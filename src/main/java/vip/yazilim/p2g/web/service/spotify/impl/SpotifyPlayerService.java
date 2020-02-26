@@ -58,7 +58,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     public boolean roomPlay(Song song, int ms, boolean skipCurrentSong) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
 
-        if(skipCurrentSong){
+        if (skipCurrentSong) {
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
             Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
@@ -168,7 +168,17 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
-        if (playingOpt.isPresent() || pausedOpt.isPresent()) {
+        if (playingOpt.isPresent()) {
+            Song playing = playingOpt.get();
+            playing.setCurrentMs(ms);
+            songService.update(playing);
+
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        } else if (pausedOpt.isPresent()) {
+            Song paused = pausedOpt.get();
+            paused.setCurrentMs(ms);
+            songService.update(paused);
+
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
         } else {
             String err = String.format("Not playing or paused any song in Room[%s]", roomId);
