@@ -117,6 +117,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             roomPlay(paused, currentMs, false);
 
             // Update paused
+            paused.setPlayingTime(TimeHelper.getLocalDateTimeNow());
             paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
             songService.update(paused);
         } else {
