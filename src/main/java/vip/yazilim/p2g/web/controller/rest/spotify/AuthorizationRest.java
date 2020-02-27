@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
@@ -68,6 +69,7 @@ public class AuthorizationRest {
         }
     }
 
+    @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/logout")
     public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) throws GeneralException {
         String userId = SecurityHelper.getUserId();
@@ -89,10 +91,11 @@ public class AuthorizationRest {
         return RestResponseFactory.generateResponse(true, HttpStatus.OK, request, response);
     }
 
+    @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/token")
-    public RestResponse<OAuthToken> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) throws GeneralException {
+    public String updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) throws GeneralException {
         String userId = SecurityHelper.getUserId();
-        return RestResponseFactory.generateResponse(tokenService.saveUserToken(userId, accessToken), HttpStatus.OK, request, response);
+        return tokenService.saveUserToken(userId, accessToken);
     }
 
     private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) throws GeneralException, IOException, SpotifyWebApiException {
