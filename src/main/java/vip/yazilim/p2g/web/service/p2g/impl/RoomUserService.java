@@ -189,20 +189,28 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public boolean leaveRoom() throws DatabaseException {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUser = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
 
-        if (roomUser.isPresent()) {
-            if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
-                boolean status = roomService.deleteById(roomUser.get().getRoomId());
+        if (roomUserOpt.isPresent()) {
+            RoomUser roomUser = roomUserOpt.get();
+            if (roomUserOpt.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
+                boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
-                    LOGGER.info("Room[{}] closed by User[{}]", roomUser.get().getRoomId(), userId);
+                    LOGGER.info("Room[{}] closed by User[{}]", roomUser.getRoomId(), userId);
                 }
                 return status;
             } else {
-                boolean status = delete(roomUser.get());
+                boolean status = delete(roomUser);
                 if (status) {
-                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.get().getRoomId());
+                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.getRoomId());
                 }
+
+                try {
+                    spotifyPlayerService.userDeSyncWithRoom(roomUser);
+                } catch (IOException | SpotifyWebApiException e) {
+                    LOGGER.info("An error occurred when User[{}] desync with Room[{}]", userId, roomUser.getRoomId());
+                }
+
                 return status;
             }
         } else {

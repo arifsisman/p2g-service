@@ -14,7 +14,6 @@ import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.service.p2g.impl.RoomUserService;
 import vip.yazilim.p2g.web.service.p2g.impl.SongService;
@@ -22,11 +21,9 @@ import vip.yazilim.p2g.web.service.p2g.impl.UserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -137,10 +134,7 @@ public class RestAspect {
 
         if (roomUserOpt.isPresent()) {
             Long roomId = roomUserOpt.get().getRoomId();
-            List<Song> songList = songService.getSongListByRoomId(roomId);
-            webSocketController.sendToRoom("songs", roomId, songList);
-        } else {
-            throw new NotFoundException("Room not found.");
+            webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));
         }
     }
 }

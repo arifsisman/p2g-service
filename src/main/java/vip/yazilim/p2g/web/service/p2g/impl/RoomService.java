@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -24,6 +26,7 @@ import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +61,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Autowired
     private WebSocketController webSocketController;
+
+    @Autowired
+    private ISpotifyPlayerService spotifyPlayerService;
 
     @Override
     protected JpaRepository<Room, Long> getRepository() {
@@ -237,6 +243,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public boolean deleteById(Long roomId) throws DatabaseException {
+        try {
+            spotifyPlayerService.roomStop(roomId);
+        } catch (InvalidArgumentException | IOException | SpotifyWebApiException e) {
+            LOGGER.warn("An error occurred when stopping Room[{}]", roomId);
+        }
+
         //delete roomUsers
         roomUserService.deleteRoomUsers(roomId);
 
@@ -247,6 +259,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         roomInviteService.deleteRoomInvites(roomId);
 
         webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
+
         return super.deleteById(roomId);
     }
 
