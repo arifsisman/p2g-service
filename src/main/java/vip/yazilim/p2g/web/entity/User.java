@@ -41,17 +41,8 @@ public class User implements Serializable {
     @Column(name = "image_url", length = 128)
     private String imageUrl;
 
-    @Column(length = 128)
-    private String anthem;
-
-    @Column(name = "spotify_product_type", length = 16)
-    private String spotifyProductType;
-
-    @Column(name = "show_activity_flag")
-    private Boolean showActivityFlag;
-
-    @Column(name = "show_friends_flag")
-    private Boolean showFriendsFlag;
+    @Column(length = 20)
+    private String anthemSongId;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;

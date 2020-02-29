@@ -14,7 +14,6 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.UserDevice;
-import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
@@ -80,17 +79,9 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Override
     protected User preInsert(User entity) {
-        Optional<User> existingUser = getUserById(entity.getId());
-        if (existingUser.isPresent()) {
-            String err = String.format("Account with ID [%s] already exists.", existingUser.get().getId());
-            throw new AccountException(err);
-        }
-
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         entity.setRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
-        entity.setShowActivityFlag(true);
-        entity.setShowFriendsFlag(true);
         return entity;
     }
 
@@ -167,7 +158,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setName(spotifyUser.getDisplayName());
         user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
-        user.setSpotifyProductType(productType);
 
         Image[] images = spotifyUser.getImages();
         if (images.length > 0) {

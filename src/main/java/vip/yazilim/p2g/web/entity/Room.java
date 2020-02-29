@@ -36,19 +36,6 @@ public class Room implements Serializable {
     @Column(name = "max_users")
     private Integer maxUsers;
 
-    @Column(name = "users_allowed_queue_flag")
-    private Boolean usersAllowedQueueFlag;
-
-    @Column(name = "users_allowed_control_flag")
-    private Boolean usersAllowedControlFlag;
-
-    @Column(name = "show_room_activity_flag")
-    private Boolean showRoomActivityFlag;
-
     @Column(name = "active_flag")
     private Boolean activeFlag;
-
-    @Column(name = "country_code", length = 4)
-    private String countryCode;
-
 }
