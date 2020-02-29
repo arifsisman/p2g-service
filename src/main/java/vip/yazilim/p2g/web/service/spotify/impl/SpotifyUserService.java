@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseUpdateException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
@@ -58,9 +59,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     @Override
     public List<UserDevice> getUsersAvailableDevices(String userId) throws DatabaseException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = new LinkedList<>();
-
         String accessToken = tokenService.getAccessTokenByUserId(userId);
-
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
 
         if (devices.length == 0) {
@@ -75,9 +74,8 @@ public class SpotifyUserService implements ISpotifyUserService {
             userDevice.setId(d.getId());
             userDevice.setPlatform(Platform.SPOTIFY.getName());
             userDevice.setDeviceName(d.getName());
-            userDevice.setDeviceName(d.getName());
-            userDevice.setActiveFlag(d.getIs_active());
             userDevice.setDeviceType(d.getType());
+            userDevice.setActiveFlag(d.getIs_active());
 
             userDeviceList.add(userDevice);
         }
@@ -86,11 +84,15 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public List<UserDevice> updateUsersAvailableDevices(String userId) throws GeneralException, IOException, SpotifyWebApiException {
+    public List<UserDevice> saveUsersAvailableDevices(String userId) throws GeneralException, IOException, SpotifyWebApiException {
         List<UserDevice> userDeviceList = getUsersAvailableDevices(userId);
 
-        for (UserDevice userDevice : userDeviceList) {
-            userDeviceService.create(userDevice);
+        try {
+            for (UserDevice userDevice : userDeviceList) {
+                userDeviceService.save(userDevice);
+            }
+        } catch (Exception exception) {
+            throw new DatabaseUpdateException(getClass(), userId, exception);
         }
 
         return userDeviceList;

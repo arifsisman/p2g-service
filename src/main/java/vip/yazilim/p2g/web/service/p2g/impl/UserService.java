@@ -171,7 +171,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             user.setImageUrl(images[0].getUrl());
         }
 
-        spotifyUserService.updateUsersAvailableDevices(user.getId());
+        spotifyUserService.saveUsersAvailableDevices(user.getId());
         return update(user);
     }
 

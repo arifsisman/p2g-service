@@ -18,7 +18,6 @@ import java.util.Optional;
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
     Optional<UserDevice> getUsersActiveDevice(String userId) throws DatabaseReadException;
-
     boolean setUsersActiveDevice(String userId, UserDevice userDevice) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
 
     List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
