@@ -16,6 +16,7 @@ import vip.yazilim.spring.core.service.ACrudServiceImpl;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -31,6 +32,18 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
 
     @Autowired
     private IUserService userService;
+
+    @Override
+    public Optional<UserDevice> getUsersActiveDevice(String userId) {
+        //TODO
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean setUsersActiveDevice(String userId, UserDevice userDevice) {
+        //TODO
+        return false;
+    }
 
     @Override
     public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {

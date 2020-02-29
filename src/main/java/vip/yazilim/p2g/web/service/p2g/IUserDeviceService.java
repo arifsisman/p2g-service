@@ -6,6 +6,7 @@ import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -13,8 +14,10 @@ import java.util.List;
  */
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
-    List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
+    Optional<UserDevice> getUsersActiveDevice(String userId);
 
+    boolean setUsersActiveDevice(String userId, UserDevice userDevice);
+    List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
     List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
 }

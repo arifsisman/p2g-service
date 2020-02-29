@@ -20,10 +20,8 @@ public interface ISpotifyPlayerService {
     boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
     boolean roomRepeat(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-
     boolean userSyncWithRoom(RoomUser roomUser) throws DatabaseException, IOException, SpotifyWebApiException;
-
     boolean roomStop(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException;
-
     boolean userDeSyncWithRoom(RoomUser roomUser) throws DatabaseException, IOException, SpotifyWebApiException;
+
 }

@@ -89,4 +89,10 @@ public class SpotifyUserService implements ISpotifyUserService {
 
         return userDeviceList;
     }
+
+    @Override
+    public boolean selectUserDevice(UserDevice userDevice) {
+        //TODO
+        return false;
+    }
 }
