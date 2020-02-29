@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
     Optional<UserDevice> getUsersActiveDevice(String userId);
-
     boolean setUsersActiveDevice(String userId, UserDevice userDevice);
+
     List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
     List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 

@@ -64,9 +64,8 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
         List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
-            List<UserDevice> userDevices = getUserDevicesByUserId(u.getId());
-            if (!userDevices.isEmpty())
-                userDeviceList.add(userDevices.get(0));
+            Optional<UserDevice> userDeviceOpt = getUsersActiveDevice(u.getId());
+            userDeviceOpt.ifPresent(userDeviceList::add);
         }
 
         return userDeviceList;

@@ -4,13 +4,11 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
@@ -35,6 +33,9 @@ public class SpotifyUserRest {
     @Autowired
     private ISpotifyUserService spotifyUserService;
 
+    @Autowired
+    private IUserDeviceService userDeviceService;
+
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{userId}")
     public RestResponse<User> getSpotifyUser(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws IOException, SpotifyWebApiException, DatabaseException {
@@ -51,5 +52,17 @@ public class SpotifyUserRest {
     @GetMapping("/{userId}/devices")
     public RestResponse<List<UserDevice>> getSpotifyUserDevices(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, IOException, SpotifyWebApiException {
         return RestResponseFactory.generateResponse(spotifyUserService.getUsersAvailableDevices(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/device"})
+    public RestResponse<List<UserDevice>> getUserDeviceList(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
+        return RestResponseFactory.generateResponse(userDeviceService.getUserDevicesByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PutMapping({"/device"})
+    public RestResponse<Boolean> selectUsersActiveDevice(HttpServletRequest request, HttpServletResponse response, @RequestBody UserDevice userDevice) {
+        return RestResponseFactory.generateResponse(userDeviceService.setUsersActiveDevice(SecurityHelper.getUserId(), userDevice), HttpStatus.OK, request, response);
     }
 }
