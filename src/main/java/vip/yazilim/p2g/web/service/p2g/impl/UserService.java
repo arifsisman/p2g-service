@@ -13,6 +13,7 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -22,6 +23,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
+import vip.yazilim.spring.core.exception.database.DatabaseCreateException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
@@ -155,6 +157,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Override
     public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException, IOException, SpotifyWebApiException {
+        String userId = user.getId();
         String productType = spotifyUser.getProduct().getType();
 
         if (!productType.equals(ProductType.PREMIUM.getType())) {
@@ -171,7 +174,28 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             user.setImageUrl(images[0].getUrl());
         }
 
-        spotifyUserService.saveUsersAvailableDevices(user.getId());
+        Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
+        if (oldUserDeviceOpt.isPresent()) {
+            userDeviceService.delete(oldUserDeviceOpt.get());
+        }
+
+        List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
+
+        if (userDeviceList.isEmpty()) {
+            String err = String.format("Can not found any device logged into Spotify App for userId[%s]. Please restart Spotify App first!", userId);
+            throw new NotFoundException(err);
+        }
+
+        try {
+            for (UserDevice userDevice : userDeviceList) {
+                if (userDevice.getActiveFlag()) {
+                    userDeviceService.create(userDevice);
+                }
+            }
+        } catch (Exception exception) {
+            throw new DatabaseCreateException(getClass(), userId, exception);
+        }
+
         return update(user);
     }
 

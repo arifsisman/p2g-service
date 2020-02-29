@@ -4,22 +4,17 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,7 +45,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public boolean setUsersActiveDevice(String userId, UserDevice userDevice) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws GeneralException, IOException, SpotifyWebApiException {
         Optional<UserDevice> oldUserDeviceOpt;
 
         try {
@@ -65,39 +60,42 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             update(oldUserDevice);
 
             userDevice.setActiveFlag(true);
-            update(userDevice);
+            UserDevice updatedUserDevice = create(userDevice);
 
-            return spotifyUserService.transferUsersPlayback(userDevice);
+            spotifyUserService.transferUsersPlayback(userDevice);
+
+            return updatedUserDevice;
         } else {
-            throw new NotFoundException("Active device cannot found");
+            userDevice.setActiveFlag(true);
+            return create(userDevice);
         }
     }
 
-    @Override
-    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
-        List<UserDevice> userDeviceList;
+//    @Override
+//    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
+//        List<UserDevice> userDeviceList;
+//
+//        try {
+//            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
+//        } catch (Exception exception) {
+//            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+//        }
+//
+//        return userDeviceList;
+//    }
 
-        try {
-            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
-        }
-
-        return userDeviceList;
-    }
-
-    @Override
-    public List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
-        List<UserDevice> userDeviceList = new LinkedList<>();
-        List<User> userList = userService.getUsersByRoomId(roomId);
-
-        for (User u : userList) {
-            Optional<UserDevice> userDeviceOpt = getUsersActiveDevice(u.getId());
-            userDeviceOpt.ifPresent(userDeviceList::add);
-        }
-
-        return userDeviceList;
-    }
+//    @Override
+//    public List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+//        List<UserDevice> userDeviceList = new LinkedList<>();
+//        List<User> userList = userService.getUsersByRoomId(roomId);
+//
+//        for (User u : userList) {
+//            Optional<UserDevice> userDeviceOpt = getUsersActiveDevice(u.getId());
+//            userDeviceOpt.ifPresent(userDeviceList::add);
+//        }
+//
+//        return userDeviceList;
+//    }
 
     @Override
     protected JpaRepository<UserDevice, String> getRepository() {

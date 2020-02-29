@@ -1,8 +1,11 @@
 package vip.yazilim.p2g.web.util;
 
 import com.wrapper.spotify.model_objects.AbstractModelObject;
+import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import vip.yazilim.p2g.web.constant.enums.Platform;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.LinkedList;
@@ -44,6 +47,19 @@ public class SpotifyHelper {
                 break;
         }
         return uri + id;
+    }
+
+    public static UserDevice convertDeviceToUserDevice(String userId, Device device) {
+        UserDevice userDevice = new UserDevice();
+
+        userDevice.setUserId(userId);
+        userDevice.setId(device.getId());
+        userDevice.setPlatform(Platform.SPOTIFY.getName());
+        userDevice.setDeviceName(device.getName());
+        userDevice.setDeviceType(device.getType());
+        userDevice.setActiveFlag(device.getIs_active());
+
+        return userDevice;
     }
 
 }

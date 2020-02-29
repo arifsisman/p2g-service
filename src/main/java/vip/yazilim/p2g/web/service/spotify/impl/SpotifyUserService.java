@@ -8,16 +8,13 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.enums.Platform;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseUpdateException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -62,37 +59,8 @@ public class SpotifyUserService implements ISpotifyUserService {
         String accessToken = tokenService.getAccessTokenByUserId(userId);
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
 
-        if (devices.length == 0) {
-            String err = String.format("Can not found any device logged into Spotify App for userId[%s]. Please restart Spotify App first!", userId);
-            throw new NotFoundException(err);
-        }
-
         for (Device d : devices) {
-            UserDevice userDevice = new UserDevice();
-
-            userDevice.setUserId(userId);
-            userDevice.setId(d.getId());
-            userDevice.setPlatform(Platform.SPOTIFY.getName());
-            userDevice.setDeviceName(d.getName());
-            userDevice.setDeviceType(d.getType());
-            userDevice.setActiveFlag(d.getIs_active());
-
-            userDeviceList.add(userDevice);
-        }
-
-        return userDeviceList;
-    }
-
-    @Override
-    public List<UserDevice> saveUsersAvailableDevices(String userId) throws GeneralException, IOException, SpotifyWebApiException {
-        List<UserDevice> userDeviceList = getUsersAvailableDevices(userId);
-
-        try {
-            for (UserDevice userDevice : userDeviceList) {
-                userDeviceService.save(userDevice);
-            }
-        } catch (Exception exception) {
-            throw new DatabaseUpdateException(getClass(), userId, exception);
+            userDeviceList.add(SpotifyHelper.convertDeviceToUserDevice(userId, d));
         }
 
         return userDeviceList;
