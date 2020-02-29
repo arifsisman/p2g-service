@@ -78,8 +78,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         }
 
         // JsonArray with song, because uris needs JsonArray as input
-        List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
-        JsonArray urisJson = gson.toJsonTree(songList).getAsJsonArray();
+        JsonArray urisJson = gson.toJsonTree(Collections.singletonList("spotify:track:" + song.getSongId())).getAsJsonArray();
 
         // Update playing
         song.setPlayingTime(TimeHelper.getLocalDateTimeNow());

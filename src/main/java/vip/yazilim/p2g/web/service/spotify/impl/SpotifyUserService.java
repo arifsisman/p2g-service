@@ -1,5 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
@@ -17,6 +20,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,6 +40,8 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Autowired
     private IUserDeviceService userDeviceService;
+
+    private Gson gson = new GsonBuilder().create();
 
     @Override
     public User getSpotifyUser(String userId) throws IOException, SpotifyWebApiException, DatabaseException {
@@ -91,8 +97,12 @@ public class SpotifyUserService implements ISpotifyUserService {
     }
 
     @Override
-    public boolean selectUserDevice(UserDevice userDevice) {
-        //TODO
-        return false;
+    public boolean transferUsersPlayback(UserDevice userDevice) throws DatabaseException, IOException, SpotifyWebApiException {
+        String accessToken = tokenService.getAccessTokenByUserId(userDevice.getUserId());
+        JsonArray deviceJson = gson.toJsonTree(Collections.singletonList(userDevice.getId())).getAsJsonArray();
+        spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), accessToken);
+
+        return true;
     }
+
 }

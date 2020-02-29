@@ -21,6 +21,6 @@ public interface ISpotifyUserService {
     List<UserDevice> getUsersAvailableDevices(String userId) throws DatabaseException, IOException, SpotifyWebApiException;
     List<UserDevice> updateUsersAvailableDevices(String userId) throws GeneralException, IOException, SpotifyWebApiException;
 
-    boolean selectUserDevice(UserDevice userDevice);
+    boolean transferUsersPlayback(UserDevice userDevice) throws DatabaseException, IOException, SpotifyWebApiException;
 
 }

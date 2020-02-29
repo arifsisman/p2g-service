@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.rest.model.RestResponse;
 import vip.yazilim.spring.core.rest.model.RestResponseFactory;
@@ -62,7 +63,7 @@ public class SpotifyUserRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PutMapping({"/device"})
-    public RestResponse<Boolean> selectUsersActiveDevice(HttpServletRequest request, HttpServletResponse response, @RequestBody UserDevice userDevice) {
+    public RestResponse<Boolean> selectUsersActiveDevice(HttpServletRequest request, HttpServletResponse response, @RequestBody UserDevice userDevice) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(userDeviceService.setUsersActiveDevice(SecurityHelper.getUserId(), userDevice), HttpStatus.OK, request, response);
     }
 }
