@@ -6,12 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
-import vip.yazilim.p2g.web.service.spotify.impl.SpotifyAlbumService;
-import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlaylistService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -39,10 +43,16 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private ISongRepo songRepo;
 
     @Autowired
-    private SpotifyAlbumService spotifyAlbumService;
+    private ISpotifyAlbumService spotifyAlbumService;
 
     @Autowired
-    private SpotifyPlaylistService spotifyPlaylistService;
+    private ISpotifyPlaylistService spotifyPlaylistService;
+
+    @Autowired
+    private IRoomUserService roomUserService;
+
+    @Autowired
+    private ISpotifyPlayerService spotifyPlayerService;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -80,10 +90,21 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
+    public boolean clearRoomSongList(Long roomId) throws DatabaseException {
+        List<Song> songList = getSongListByRoomId(roomId);
+
+        for (Song s : songList) {
+            delete(s);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
-            if (s.getType() == SearchType.TRACK) {
+            if (s.getType() == SearchType.SONG) {
                 songList.addAll(getSongListFromSearchModelList(roomId, Collections.singletonList(s)));
             } else if (s.getType() == SearchType.ALBUM) {
                 List<SearchModel> searchModelList = spotifyAlbumService.getSongs(s.getId());
@@ -94,14 +115,22 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
-        return songList;
+        for (Song s : songList) {
+            create(s);
+        }
+
+        return true;
     }
 
     @Override
-    public boolean removeSongFromRoom(Long songId) throws DatabaseException {
+    public boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
+        String userId = SecurityHelper.getUserId();
         Optional<Song> songOpt;
+        Optional<Song> nowPlayingOpt;
+        Optional<RoomUser> roomUserOpt;
 
         try {
+            roomUserOpt = roomUserService.getRoomUser(userId);
             songOpt = getById(songId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, songId);
@@ -112,6 +141,23 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             throw new NotFoundException(err);
         }
 
+        if (!roomUserOpt.isPresent()) {
+            String err = String.format("RoomUser not found with UserId[%s]", userId);
+            throw new NotFoundException(err);
+        }
+
+        Long roomId = roomUserOpt.get().getRoomId();
+
+        try{
+            nowPlayingOpt = getPlayingSong(roomId);
+        }catch (Exception exception){
+            throw new DatabaseReadException(getClassOfEntity(), exception, songId);
+        }
+
+        if(nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)){
+            spotifyPlayerService.roomPlayPause(roomId);
+        }
+
         return delete(songOpt.get());
     }
 
@@ -120,7 +166,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         List<Song> songList;
 
         try {
-           songList = songRepo.findByRoomId(roomId);
+            songList = songRepo.findByRoomId(roomId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }

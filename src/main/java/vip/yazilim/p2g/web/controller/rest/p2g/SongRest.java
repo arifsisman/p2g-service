@@ -82,8 +82,8 @@ public class SongRest extends ARestCrud<Song, Long> {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException {
-        return RestResponseFactory.generateResponse(songService.deleteById(id), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(songService.removeSongFromRoom(id), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
@@ -95,15 +95,8 @@ public class SongRest extends ARestCrud<Song, Long> {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}")
-    public RestResponse<List<Song>> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws GeneralException, SpotifyWebApiException, IOException {
+    public RestResponse<Boolean> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) throws GeneralException, SpotifyWebApiException, IOException {
         return RestResponseFactory.generateResponse(songService.addSongToRoom(roomId, searchModelList), HttpStatus.OK, request, response);
-    }
-
-    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
-    @UpdateRoomSongs
-    @DeleteMapping("/{songId}")
-    public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) throws DatabaseException {
-        return RestResponseFactory.generateResponse(songService.removeSongFromRoom(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)

@@ -39,7 +39,7 @@ public class SearchModel implements Serializable {
     }
 
     private void init(Track track) {
-        this.type = SearchType.TRACK;
+        this.type = SearchType.SONG;
         this.name = track.getName();
         this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(track.getArtists());
         this.albumName = track.getAlbum().getName();
@@ -54,13 +54,12 @@ public class SearchModel implements Serializable {
     }
 
     private void init(TrackSimplified trackSimplified) {
-        this.type = SearchType.TRACK;
+        this.type = SearchType.SONG;
         this.name = trackSimplified.getName();
         this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(trackSimplified.getArtists());
         this.id = trackSimplified.getId();
         this.uri = trackSimplified.getUri();
         this.durationMs = trackSimplified.getDurationMs();
-        this.imageUrl = trackSimplified.getPreviewUrl();
     }
 
     private void init(PlaylistSimplified playlistSimplified) {

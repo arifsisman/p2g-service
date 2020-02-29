@@ -1,6 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.specification.Album;
+import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,20 @@ public class SpotifyAlbumService implements ISpotifyAlbumService {
         String userId = SecurityHelper.getUserId();
         String accessToken = tokenService.getAccessTokenByUserId(userId);
 
+        Album album = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
+
         Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
         TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 
+        String imageUrl = null;
+        Image[] albumImages = album.getImages();
+        if(albumImages.length > 0 ){
+            imageUrl = albumImages[0].getUrl();
+        }
+
         for(TrackSimplified t: tracks){
             SearchModel searchModel = new SearchModel(t);
+            searchModel.setImageUrl(imageUrl);
             searchModelList.add(searchModel);
         }
 

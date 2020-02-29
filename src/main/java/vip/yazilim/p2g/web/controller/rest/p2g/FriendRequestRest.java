@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
-import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -106,14 +106,26 @@ public class FriendRequestRest extends ARestRead<FriendRequest, Long> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/friends"})
-    public RestResponse<List<UserModel>> getFriends(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<List<FriendModel>> getFriends(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.getFriendsByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/friends/counts"})
+    public RestResponse<Integer> getFriendsCounts(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendsCountByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userId}/friends"})
-    public RestResponse<List<UserModel>> getFriends(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
+    public RestResponse<List<FriendModel>> getFriends(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(friendRequestService.getFriendsByUserId(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping({"/{userId}/friends/counts"})
+    public RestResponse<Integer> getFriendsCounts(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) throws DatabaseException {
+        return RestResponseFactory.generateResponse(friendRequestService.getFriendsCountByUserId(userId), HttpStatus.OK, request, response);
     }
 
 }

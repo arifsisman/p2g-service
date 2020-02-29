@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -48,54 +49,53 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     @Autowired
     private ISongService songService;
 
+    private Gson gson = new GsonBuilder().create();
+
     ///////////////////////
     // Room Based
     ///////////////////////
     @Override
-    public List<Song> roomPlay(Song song, int ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPlay(Song song, int ms, boolean skipCurrentSong) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Long roomId = song.getRoomId();
+
+        if (skipCurrentSong) {
+            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
+            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+
+            if (playingOpt.isPresent()) {
+                Song playing = playingOpt.get();
+
+                playing.setCurrentMs(0);
+                playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(playing);
+            } else if (pausedOpt.isPresent()) {
+                Song paused = pausedOpt.get();
+
+                paused.setCurrentMs(0);
+                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(paused);
+            }
+        }
 
         // JsonArray with song, because uris needs JsonArray as input
         List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
-        JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
-
-        // Start playback
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        JsonArray urisJson = gson.toJsonTree(songList).getAsJsonArray();
 
         // Update playing
         song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.PLAYING.getSongStatus());
         songService.update(song);
 
+        // Start playback
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
-        return songService.getSongListByRoomId(roomId);
+        return true;
     }
 
     @Override
-    public List<Song> roomStartResume(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
-
-        if (pausedOpt.isPresent()) {
-            Song paused = pausedOpt.get();
-            int currentMs = Math.toIntExact(paused.getCurrentMs());
-
-            // Resume playback
-            roomPlay(paused, currentMs);
-
-            // Update playing
-            paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
-            songService.update(paused);
-        } else if (!songService.getPlayingSong(roomId).isPresent()) {
-            Optional<Song> firstQueued = songService.getNextSong(roomId);
-            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0);
-        }
-
-        return songService.getSongListByRoomId(roomId);
-    }
-
-    @Override
-    public List<Song> roomPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPlayPause(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
+        Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (playingOpt.isPresent()) {
             Song playing = playingOpt.get();
@@ -104,40 +104,43 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            long oldPassedMs = playing.getCurrentMs() == null ? 0L : playing.getCurrentMs();
             long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
-            playing.setCurrentMs((int) (oldPassedMs + newPassedMs));
+            playing.setCurrentMs(playing.getCurrentMs() + (int) newPassedMs);
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
+        } else if (pausedOpt.isPresent()) {
+            Song paused = pausedOpt.get();
+            int currentMs = Math.toIntExact(paused.getCurrentMs());
+
+            // Resume playback
+            roomPlay(paused, currentMs, false);
+
+            // Update paused
+            paused.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
+            songService.update(paused);
         } else {
-            String err = String.format("Not playing any song in Room[%s]", roomId);
-            throw new NotFoundException(err);
+            Optional<Song> firstQueued = songService.getNextSong(roomId);
+            roomPlay(firstQueued.orElseThrow(() -> new NotFoundException("Queue is empty")), 0, false);
         }
 
-        return songService.getSongListByRoomId(roomId);
+        return true;
     }
 
     @Override
-    public List<Song> roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomNext(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> next = songService.getNextSong(roomId);
 
         if (next.isPresent()) {
-            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-            if (playingOpt.isPresent()) { // Set old playing as played, if present
-                Song playing = playingOpt.get();
-                playing.setVotes(0);
-                playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
-                songService.update(playing);
-            }
-            return roomPlay(next.get(), 0);
+            return roomPlay(next.get(), 0, true);
         } else {
             throw new NotFoundException("Next song is empty");
         }
     }
 
     @Override
-    public List<Song> roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> previous = songService.getPreviousSong(roomId);
 
         if (previous.isPresent()) {
@@ -147,25 +150,44 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 playing.setSongStatus(SongStatus.NEXT.getSongStatus());
                 songService.update(playing);
             }
-            return roomPlay(previous.get(), 0);
+
+            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+            if (pausedOpt.isPresent()) { // Set old paused as played, if present
+                Song paused = pausedOpt.get();
+                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
+                songService.update(paused);
+            }
+
+            return roomPlay(previous.get(), 0, false);
         } else {
             throw new NotFoundException("Previous song is empty");
         }
     }
 
     @Override
-    public int roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+    public boolean roomSeek(Long roomId, Integer ms) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
-        if (playingOpt.isPresent() || pausedOpt.isPresent()) {
+        if (playingOpt.isPresent()) {
+            Song playing = playingOpt.get();
+            playing.setCurrentMs(ms);
+            playing.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            songService.update(playing);
+
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        } else if (pausedOpt.isPresent()) {
+            Song paused = pausedOpt.get();
+            paused.setCurrentMs(ms);
+            songService.update(paused);
+
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
         } else {
             String err = String.format("Not playing or paused any song in Room[%s]", roomId);
             throw new NotFoundException(err);
         }
 
-        return ms;
+        return true;
     }
 
     @Override
@@ -187,7 +209,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Boolean repeatFlag = song.getRepeatFlag();
 
         if (repeatFlag == null || !repeatFlag) {
-            repeatMode = SearchType.TRACK.getType();
+            repeatMode = SearchType.SONG.getType();
             repeatFlag = true;
         } else {
             repeatMode = "off";
@@ -214,10 +236,16 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         if (playingOpt.isPresent()) { // play currently playing song with current ms
             return play(roomUser, playingOpt.get());
         } else if (pausedOpt.isPresent()) { // seek to current ms
-            return seek(roomUser, pausedOpt.get());
+            return sync(roomUser, pausedOpt.get());
         } else { // noop
             return false;
         }
+    }
+
+    @Override
+    public boolean roomStop(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        return true;
     }
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
@@ -240,7 +268,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return false;
     }
 
-    private boolean seek(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
+    private boolean sync(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
         int ms = Math.toIntExact(song.getCurrentMs());
 
@@ -252,6 +280,23 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             String deviceId = userDevices.get(0).getId();
 
             spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(deviceId).build(), accessToken);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean userDeSyncWithRoom(RoomUser roomUser) throws DatabaseException, IOException, SpotifyWebApiException {
+        String userId = roomUser.getUserId();
+
+        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+        List<UserDevice> userDevices = userDeviceService.getUserDevicesByUserId(userId);
+
+        if (token.isPresent() && !userDevices.isEmpty()) {
+            String accessToken = token.get().getAccessToken();
+            String deviceId = userDevices.get(0).getId();
+
+            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.pauseUsersPlayback().device_id(deviceId).build(), accessToken);
             return true;
         }
         return false;

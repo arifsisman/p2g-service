@@ -51,7 +51,7 @@ public class SearchRest {
     public RestResponse<List<SearchModel>> search(HttpServletRequest request, HttpServletResponse response, @PathVariable String query) throws IOException, SpotifyWebApiException, DatabaseException {
         return RestResponseFactory
                 .generateResponse(spotifySearchService
-                .search(query, SearchType.TRACK, SearchType.ALBUM, SearchType.PLAYLIST),
+                .search(query, SearchType.SONG, SearchType.ALBUM, SearchType.PLAYLIST),
                 HttpStatus.OK, request, response);
     }
 

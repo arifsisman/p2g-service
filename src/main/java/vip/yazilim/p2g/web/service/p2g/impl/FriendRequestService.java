@@ -5,11 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -39,6 +44,12 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private IRoomService roomService;
+
+    @Autowired
+    private ISongService songService;
+
     @Override
     protected JpaRepository<FriendRequest, Long> getRepository() {
         return friendRequestRepo;
@@ -55,9 +66,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<UserModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<FriendModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<FriendRequest> friendRequestList;
-        List<UserModel> userModels = new LinkedList<>();
+        List<FriendModel> userModels = new LinkedList<>();
 
         try {
             // Does not matter who sent friend request
@@ -68,18 +79,46 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         for (FriendRequest fr : friendRequestList) {
             if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
-                UserModel um;
+                FriendModel fm = new FriendModel();
                 String frUserId = fr.getSenderId();
                 String frFriendIdId = fr.getReceiverId();
 
+                //To determine who is friend
                 String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
-                um = userService.getUserModelByUserId(queryId);
-                userModels.add(um);
+
+                fm.setUserModel(userService.getUserModelByUserId(queryId));
+
+                Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
+                if (roomOpt.isPresent()) {
+                    List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
+                    if (!songList.isEmpty()) {
+                        fm.setSong(songList.get(0));
+                    }
+                }
+
+                userModels.add(fm);
             }
         }
 
         return userModels;
     }
+
+    @Override
+    public Integer getFriendsCountByUserId(String userId) throws DatabaseReadException {
+        int count = 0;
+        try {
+            List<FriendRequest> friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
+            for (FriendRequest fr : friendRequestList) {
+                if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
+                    count++;
+                }
+            }
+            return count;
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+        }
+    }
+
 
     @Override
     public List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException {
@@ -157,9 +196,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         Optional<FriendRequest> friendRequestOpt1 = getFriendRequestBySenderIdAndReceiverId(friendId, userId);
         Optional<FriendRequest> friendRequestOpt2 = getFriendRequestBySenderIdAndReceiverId(userId, friendId);
 
-        if(!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()){
+        if (!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()) {
             throw new NotFoundException("Friend can not found");
-        }else{
+        } else {
             FriendRequest friendRequest = friendRequestOpt1.orElseGet(friendRequestOpt2::get);
             return delete(friendRequest);
         }

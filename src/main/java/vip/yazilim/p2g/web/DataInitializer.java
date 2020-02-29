@@ -11,9 +11,11 @@ import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -39,33 +41,39 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private ISongService songService;
 
+    @Autowired
+    private ISpotifySearchService spotifySearchService;
+
     @Override
     public void run(String... args) throws GeneralException {
-        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman", "0");
-        User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen", "0");
-        User u2 = userService.createUser("2", "2@gmail.com", "Test User 2", "123");
-        User u3 = userService.createUser("3", "3@gmail.com", "Test User 3", "123");
-        User u5 = userService.createUser("5", "5@gmail.com", "Test User 5", null);
-        User u6 = userService.createUser("6", "6@gmail.com", "Test User 6", null);
-        User u4 = userService.createUser("4", "4@gmail.com", "Test User 4", null);
-        User u7 = userService.createUser("7", "7@gmail.com", "Test User 7", null);
-        User u8 = userService.createUser("8", "8@gmail.com", "Test User 8", null);
+        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
+        User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
+        User u2 = userService.createUser("2", "2@gmail.com", "Test User 2");
+        User u3 = userService.createUser("3", "3@gmail.com", "Test User 3");
+        User u5 = userService.createUser("5", "5@gmail.com", "Test User 5");
+        User u6 = userService.createUser("6", "6@gmail.com", "Test User 6");
+        User u4 = userService.createUser("4", "4@gmail.com", "Test User 4");
+        User u7 = userService.createUser("7", "7@gmail.com", "Test User 7");
+        User u8 = userService.createUser("8", "8@gmail.com", "Test User 8");
 
-        Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", "0");
+        Room testRoom1 = roomService.createRoom(arif.getId(), "Test Room 1", null);
+
         Room testRoom2 = roomService.createRoom(u2.getId(), "Test Room 2", "123");
         Room testRoom3 = roomService.createRoom(u3.getId(), "Test Room 3", "123");
         Room testRoom4 = roomService.createRoom(u4.getId(), "Test Room 4", null);
+        Room testRoom5 = roomService.createRoom(u5.getId(), "Test Room 5", null);
         Room testRoom6 = roomService.createRoom(u6.getId(), "Test Room 6", null);
         Room testRoom7 = roomService.createRoom(u7.getId(), "Test Room 7", null);
         Room testRoom8 = roomService.createRoom(u8.getId(), "Test Room 8", null);
 
         Long roomId = testRoom1.getId();
-//        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 1200000, 0);
-//        songService.addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 1200000, 1);
-//        songService.addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 1200000, 2);
-//        songService.addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 1200000, 0);
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400");
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4");
 
-//        roomUserService.joinRoom(roomId, "0", Role.P2G_USER);
+//        List<SearchModel> searchModelList = spotifySearchService.search("muse");
+//        songService.addSongToRoom(roomId, searchModelList);
 
         u2.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         userService.update(u2);
@@ -85,13 +93,18 @@ public class DataInitializer implements CommandLineRunner {
         createRoomInvite(u2, arif, testRoom2);
         createRoomInvite(u3, arif, testRoom3);
         createRoomInvite(u4, arif, testRoom4);
+        createRoomInvite(u5, arif, testRoom5);
+        createRoomInvite(u6, arif, testRoom6);
+        createRoomInvite(u7, arif, testRoom7);
         createRoomInvite(u8, arif, testRoom8);
 
-        createFriendRequest(u2, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u2, arif, FriendRequestStatus.WAITING);
         createFriendRequest(u3, arif, FriendRequestStatus.WAITING);
         createFriendRequest(u4, arif, FriendRequestStatus.WAITING);
-        createFriendRequest(u7, arif, FriendRequestStatus.WAITING);
-        createFriendRequest(u5, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u5, arif, FriendRequestStatus.WAITING);
+        createFriendRequest(u6, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u7, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(u8, arif, FriendRequestStatus.ACCEPTED);
     }
 
     private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws GeneralException {
@@ -112,16 +125,18 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes) throws GeneralException {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) throws GeneralException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
         song.setSongName(songName);
         song.setArtistNames(artistNames);
+        song.setCurrentMs(0);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(SongStatus.NEXT.getSongStatus());
         song.setVotes(votes);
+        song.setImageUrl(imageUrl);
 
         song = songService.create(song);
 

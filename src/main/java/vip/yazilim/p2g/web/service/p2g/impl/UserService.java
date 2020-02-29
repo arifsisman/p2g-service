@@ -144,7 +144,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String id, String email, String username, String password) throws GeneralException {
+    public User createUser(String id, String email, String username) throws GeneralException {
         User user = new User();
         user.setId(id);
         user.setEmail(email);

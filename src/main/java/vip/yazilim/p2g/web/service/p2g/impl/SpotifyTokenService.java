@@ -87,19 +87,19 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public OAuthToken saveUserToken(String userId, String accessToken) throws GeneralException {
+    public String saveUserToken(String userId, String accessToken) throws GeneralException {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
             OAuthToken token = spotifyToken.get();
             token.setAccessToken(accessToken);
-            return update(token);
+            return update(token).getAccessToken();
         }
 
         OAuthToken entity = new OAuthToken();
         entity.setUserId(userId);
         entity.setAccessToken(accessToken);
-        return create(entity);
+        return create(entity).getAccessToken();
     }
 
     @Override
