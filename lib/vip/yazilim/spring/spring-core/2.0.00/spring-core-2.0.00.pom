@@ -4,32 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <!-- Project Info -->
-    <groupId>vip.yazilim.libs</groupId>
+    <groupId>vip.yazilim.spring</groupId>
     <artifactId>spring-core</artifactId>
     <version>2.0.00</version>
     <packaging>jar</packaging>
+
 
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lib-java-version>1.8</lib-java-version>
-        <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>c0ba366775bb-releases</name>
-            <url>http://artifactory.yazilim.vip/artifactory/libs-release-local</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>c0ba366775bb-snapshots</name>
-            <url>http://artifactory.yazilim.vip/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 
     <dependencyManagement>
@@ -39,7 +26,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-parent</artifactId>
-                <version>2.2.0.RELEASE</version>
+                <version>2.2.2.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -49,6 +36,7 @@
 
 
     <dependencies>
+
 
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
         <dependency>
@@ -62,6 +50,10 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -86,6 +78,7 @@
             <scope>provided</scope>
         </dependency>
 
+
         <!--Database -->
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
         <dependency>
@@ -98,6 +91,7 @@
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
         </dependency>
+
 
         <!--lombok -->
         <dependency>
@@ -120,6 +114,7 @@
         </dependency>
 
     </dependencies>
+
 
     <build>
         <plugins>
