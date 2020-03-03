@@ -4,10 +4,12 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
@@ -25,15 +27,17 @@ import java.util.Optional;
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 
-    // injected dependencies
     @Autowired
     private IUserDeviceRepo userDeviceRepo;
 
     @Autowired
-    private IUserService userService;
+    private ISpotifyUserService spotifyUserService;
 
     @Autowired
-    private ISpotifyUserService spotifyUserService;
+    private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private IRoomUserService roomUserService;
 
     @Override
     public Optional<UserDevice> getUsersActiveDevice(String userId) throws DatabaseReadException {
@@ -63,6 +67,11 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             UserDevice updatedUserDevice = create(userDevice);
 
             spotifyUserService.transferUsersPlayback(userDevice);
+
+            Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+            if (roomUserOpt.isPresent()) {
+                spotifyPlayerService.userSyncWithRoom(roomUserOpt.get());
+            }
 
             return updatedUserDevice;
         } else {

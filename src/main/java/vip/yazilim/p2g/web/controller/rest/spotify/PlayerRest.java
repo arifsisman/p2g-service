@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -71,5 +74,11 @@ public class PlayerRest {
     @PostMapping("/{roomId}/repeat")
     public RestResponse<Boolean> repeat(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws InvalidArgumentException, SpotifyWebApiException, IOException, DatabaseException {
         return RestResponseFactory.generateResponse(spotifyPlayerService.roomRepeat(roomId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PostMapping("/sync")
+    public RestResponse<Boolean> sync(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser) throws SpotifyWebApiException, IOException, DatabaseException {
+        return RestResponseFactory.generateResponse(spotifyPlayerService.userSyncWithRoom(roomUser), HttpStatus.OK, request, response);
     }
 }
