@@ -37,5 +37,5 @@ public interface ISongService extends ICrudService<Song, Long> {
     int upvote(Long songId) throws DatabaseException, InvalidArgumentException;
     int downvote(Long songId) throws DatabaseException, InvalidArgumentException;
 
-    boolean clearRoomSongList(Long roomId) throws DatabaseException;
+    boolean clearRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
 }

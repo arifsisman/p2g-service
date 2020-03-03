@@ -249,7 +249,8 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
-        int ms = song.getCurrentMs() + Math.toIntExact(song.getCurrentMs() + ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()));
+
+        int ms = song.getCurrentMs() + (int) ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
 
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);

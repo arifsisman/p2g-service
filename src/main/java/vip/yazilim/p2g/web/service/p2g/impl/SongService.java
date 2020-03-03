@@ -90,14 +90,14 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean clearRoomSongList(Long roomId) throws DatabaseException {
+    public boolean clearRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
         List<Song> songList = getSongListByRoomId(roomId);
 
         for (Song s : songList) {
             delete(s);
         }
 
-        return true;
+        return spotifyPlayerService.roomStop(roomId);
     }
 
     @Override
