@@ -75,14 +75,12 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
         if (spotifyToken.isPresent()) {
             OAuthToken token = spotifyToken.get();
             token.setAccessToken(accessToken);
-            token.setRefreshToken(refreshToken);
             return update(token);
         }
 
         OAuthToken entity = new OAuthToken();
         entity.setUserId(userId);
         entity.setAccessToken(accessToken);
-        entity.setRefreshToken(refreshToken);
         return create(entity);
     }
 

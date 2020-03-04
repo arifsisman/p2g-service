@@ -23,13 +23,8 @@ public interface IUserService extends ICrudService<User, String> {
     Optional<User> getUserById(String id);
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     List<User> getUsersByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
-
     User createUser(String id, String email, String username) throws GeneralException;
-
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException, IOException, SpotifyWebApiException;
-
-    // Rest
     boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException;
-
     boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException;
 }

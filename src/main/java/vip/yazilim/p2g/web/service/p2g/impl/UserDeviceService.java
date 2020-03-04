@@ -1,21 +1,23 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
+import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -25,39 +27,84 @@ import java.util.List;
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 
-    // injected dependencies
     @Autowired
     private IUserDeviceRepo userDeviceRepo;
 
     @Autowired
-    private IUserService userService;
+    private ISpotifyUserService spotifyUserService;
+
+    @Autowired
+    private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private IRoomUserService roomUserService;
 
     @Override
-    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
-        List<UserDevice> userDeviceList;
+    public Optional<UserDevice> getUsersActiveDevice(String userId) throws DatabaseReadException {
+        try {
+            return userDeviceRepo.findByUserIdAndActiveFlag(userId, true);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+        }
+    }
+
+    @Override
+    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws GeneralException, IOException, SpotifyWebApiException {
+        Optional<UserDevice> oldUserDeviceOpt;
 
         try {
-            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
+            oldUserDeviceOpt = userDeviceRepo.findByUserIdAndActiveFlag(userId, true);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
 
-        return userDeviceList;
-    }
+        if (oldUserDeviceOpt.isPresent()) {
+            UserDevice oldUserDevice = oldUserDeviceOpt.get();
+            oldUserDevice.setActiveFlag(false);
+            update(oldUserDevice);
 
-    @Override
-    public List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
-        List<UserDevice> userDeviceList = new LinkedList<>();
-        List<User> userList = userService.getUsersByRoomId(roomId);
+            userDevice.setActiveFlag(true);
+            UserDevice updatedUserDevice = create(userDevice);
 
-        for (User u : userList) {
-            List<UserDevice> userDevices = getUserDevicesByUserId(u.getId());
-            if (!userDevices.isEmpty())
-                userDeviceList.add(userDevices.get(0));
+            spotifyUserService.transferUsersPlayback(userDevice);
+
+            Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+            if (roomUserOpt.isPresent()) {
+                spotifyPlayerService.userSyncWithRoom(roomUserOpt.get());
+            }
+
+            return updatedUserDevice;
+        } else {
+            userDevice.setActiveFlag(true);
+            return create(userDevice);
         }
-
-        return userDeviceList;
     }
+
+//    @Override
+//    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
+//        List<UserDevice> userDeviceList;
+//
+//        try {
+//            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
+//        } catch (Exception exception) {
+//            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+//        }
+//
+//        return userDeviceList;
+//    }
+
+//    @Override
+//    public List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+//        List<UserDevice> userDeviceList = new LinkedList<>();
+//        List<User> userList = userService.getUsersByRoomId(roomId);
+//
+//        for (User u : userList) {
+//            Optional<UserDevice> userDeviceOpt = getUsersActiveDevice(u.getId());
+//            userDeviceOpt.ifPresent(userDeviceList::add);
+//        }
+//
+//        return userDeviceList;
+//    }
 
     @Override
     protected JpaRepository<UserDevice, String> getRepository() {

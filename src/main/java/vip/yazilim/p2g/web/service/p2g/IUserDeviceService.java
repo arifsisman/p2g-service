@@ -1,11 +1,13 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.entity.UserDevice;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.GeneralException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ICrudService;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 30.11.2019
@@ -13,8 +15,11 @@ import java.util.List;
  */
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
 
-    List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
+    Optional<UserDevice> getUsersActiveDevice(String userId) throws DatabaseReadException;
 
-    List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws GeneralException, IOException, SpotifyWebApiException;
+
+//    List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException;
+//    List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
 }

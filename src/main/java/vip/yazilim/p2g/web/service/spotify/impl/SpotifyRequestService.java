@@ -9,9 +9,9 @@ import vip.yazilim.p2g.web.service.spotify.model.RequestFunction;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -48,16 +48,16 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
-    public <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, HashMap<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException {
+    public <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException {
         execRequestList(dataRequestBuilder, tokenDeviceMap, false);
     }
 
     @Override
-    public <R> void execRequestListAsync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, HashMap<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException {
+    public <R> void execRequestListAsync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException {
         execRequestList(dataRequestBuilder, tokenDeviceMap, true);
     }
 
-    private <R> void execRequestList(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, HashMap<String, String> tokenDeviceMap, boolean async) throws IOException, SpotifyWebApiException {
+    private <R> void execRequestList(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap, boolean async) throws IOException, SpotifyWebApiException {
         List<AbstractDataRequest<R>> abstractDataRequests = new LinkedList<>();
 
         // create requests

@@ -91,9 +91,6 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
         entity.setActiveFlag(true);
-        entity.setUsersAllowedQueueFlag(false);
-        entity.setUsersAllowedControlFlag(false);
-        entity.setShowRoomActivityFlag(true);
         entity.setMaxUsers(50);
 
         return entity;
@@ -228,11 +225,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         Room room = new Room();
-
         room.setOwnerId(ownerId);
         room.setName(roomName);
         room.setPassword(roomPassword);
-        userService.getById(ownerId).ifPresent(u -> room.setCountryCode(u.getCountryCode()));
 
         Room createdRoom = create(room);
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());

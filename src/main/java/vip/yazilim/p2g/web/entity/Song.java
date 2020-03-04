@@ -22,7 +22,6 @@ public class Song implements Serializable {
     @Column(name = "room_id", nullable = false, length = 128)
     private Long roomId;
 
-    // Song
     @Column(name = "song_id", length = 128)
     private String songId;
 
@@ -42,7 +41,6 @@ public class Song implements Serializable {
     @Column(name = "duration_ms", nullable = false)
     private Integer durationMs;
 
-    // Queue
     @Column(name = "song_status", nullable = false)
     private String songStatus;
 

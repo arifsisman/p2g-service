@@ -24,9 +24,6 @@ public class UserDevice {
     @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
-    @Column(name = "platform", updatable = false, nullable = false, length = 16)
-    private String platform;
-
     @Column(name = "device_name", length = 128)
     private String deviceName;
 

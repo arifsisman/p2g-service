@@ -199,7 +199,7 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @HasRoomPrivilege(privilege = Privilege.ROOM_CLEAR_QUEUE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}/queue/clear")
-    public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
+    public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(songService.clearRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
