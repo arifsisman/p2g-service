@@ -344,6 +344,15 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
     }
 
+    @Override
+    public int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException {
+        try {
+            return roomUserRepo.countRoomUserByRoomId(roomId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
+    }
+
     private RoomUser getSafeRoomUser(Long roomUserId) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = getById(roomUserId);
 

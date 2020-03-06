@@ -17,4 +17,5 @@ public interface IRoomUserRepo extends JpaRepository<RoomUser, Long> {
     Optional<RoomUser> findRoomUserByRoomIdAndRole(Long roomId, String role);
     Optional<RoomUser> findRoomUserByUserId(String userId);
 
+    int countRoomUserByRoomId(Long roomId);
 }
