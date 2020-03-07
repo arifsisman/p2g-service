@@ -13,10 +13,13 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -28,6 +31,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +61,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Autowired
     private SpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     protected JpaRepository<RoomUser, Long> getRepository() {
@@ -216,17 +223,21 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
-//    @Override
-//    public boolean leaveRoom(Optional<RoomUser> roomUser) throws DatabaseException {
-//        if (roomUser.isPresent()) {
-//            if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
-//                return roomService.deleteById(roomUser.get().getRoomId());
-//            } else {
-//                return delete(roomUser.get());
-//            }
-//        }
-//        return true;
-//    }
+    @Override
+    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException {
+        List<RoomUserModel> roomUserModels = new LinkedList<>();
+        List<RoomUser> roomUsers = getRoomUsersByRoomId(roomId);
+
+        for (RoomUser ru : roomUsers) {
+            RoomUserModel roomUserModel = new RoomUserModel();
+            roomUserModel.setRoomUser(ru);
+            Optional<User> roomUserOpt = userService.getUserById(ru.getUserId());
+            roomUserOpt.ifPresent(roomUserModel::setUser);
+            roomUserModels.add(roomUserModel);
+        }
+
+        return roomUserModels;
+    }
 
     @Override
     public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException {

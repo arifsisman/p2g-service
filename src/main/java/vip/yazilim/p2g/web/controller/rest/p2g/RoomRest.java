@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.model.RoomModelSimplified;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
@@ -169,6 +170,13 @@ public class RoomRest extends ARestCrud<Room, Long> {
     public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
         return RestResponseFactory.generateResponse(roomUserService.getRoomUsersByRoomId(roomId), HttpStatus.OK, request, response);
     }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @GetMapping("/{roomId}/roomUserModels")
+    public RestResponse<List<RoomUserModel>> getRoomUserModels(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomUserService.getRoomUserModelsByRoomId(roomId), HttpStatus.OK, request, response);
+    }
+
 
     // Authorities (Promote & Demote)
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
