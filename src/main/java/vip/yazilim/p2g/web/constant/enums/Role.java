@@ -3,12 +3,12 @@ package vip.yazilim.p2g.web.constant.enums;
 import java.util.HashMap;
 
 public enum Role {
-    UNDEFINED("undefined"),
-    P2G_USER("p2g_user"),
-    ROOM_USER("room_user"),
-    ROOM_MODERATOR("room_moderator"),
-    ROOM_ADMIN("room_admin"),
-    ROOM_OWNER("room_owner");
+    UNDEFINED("Undefined"),
+    P2G_USER("P2G_User"),
+    ROOM_USER("User"),
+    ROOM_MODERATOR("Moderator"),
+    ROOM_ADMIN("Admin"),
+    ROOM_OWNER("Owner");
 
     private static final HashMap<String, Role> map = new HashMap<>();
     public final String role;
