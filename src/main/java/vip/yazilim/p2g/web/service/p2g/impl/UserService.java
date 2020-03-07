@@ -177,10 +177,19 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         try {
+            boolean userDeviceCreated = false;
+
             for (UserDevice userDevice : userDeviceList) {
                 if (userDevice.getActiveFlag()) {
                     userDeviceService.create(userDevice);
+                    userDeviceCreated = true;
                 }
+            }
+
+            if (!userDeviceCreated) {
+                UserDevice userDevice = userDeviceList.get(0);
+                userDevice.setActiveFlag(true);
+                userDeviceService.create(userDevice);
             }
         } catch (Exception exception) {
             throw new DatabaseCreateException(getClass(), userId, exception);
