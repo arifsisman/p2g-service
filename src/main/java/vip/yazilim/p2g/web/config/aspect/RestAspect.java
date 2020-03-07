@@ -86,6 +86,8 @@ public class RestAspect {
         for (Annotation annotation : method.getDeclaredAnnotations()) {
             if (annotation instanceof UpdateRoomSongs) {
                 handleUpdateRoomSongs();
+            } else if (annotation instanceof UpdateRoomUsers) {
+                handleUpdateRoomUsers();
             }
         }
     }
@@ -135,6 +137,16 @@ public class RestAspect {
         if (roomUserOpt.isPresent()) {
             Long roomId = roomUserOpt.get().getRoomId();
             webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));
+        }
+    }
+
+    private void handleUpdateRoomUsers() throws DatabaseException {
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+
+        if (roomUserOpt.isPresent()) {
+            Long roomId = roomUserOpt.get().getRoomId();
+            webSocketController.sendToRoom("users", roomId, roomUserService.getRoomUserModelsByRoomId(roomId));
         }
     }
 }

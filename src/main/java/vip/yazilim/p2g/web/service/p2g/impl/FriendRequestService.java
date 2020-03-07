@@ -157,6 +157,10 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     @Override
     public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
+        if (senderId.equals(receiverId)) {
+            throw new ConstraintViolationException("You can not add yourself as friend.");
+        }
+
         Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
 
         if (!existingFriendRequest.isPresent()) {

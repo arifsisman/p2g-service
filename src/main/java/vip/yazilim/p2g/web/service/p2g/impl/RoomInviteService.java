@@ -112,6 +112,10 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
     @Override
     public RoomInvite invite(Long roomId, String userId) throws GeneralException {
+        if (SecurityHelper.getUserId().equals(userId)) {
+            throw new ConstraintViolationException("You can not invite yourself.");
+        }
+
         Optional<RoomInvite> existingInvite = roomInviteRepo.findByRoomIdAndReceiverId(roomId, userId);
 
         if (existingInvite.isPresent()) {
