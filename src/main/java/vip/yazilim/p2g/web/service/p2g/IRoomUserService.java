@@ -24,7 +24,9 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     List<RoomUser> getRoomUsersByRoomId(Long roomId) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String userId) throws DatabaseException;
-    RoomUser getRoomUserMe(String userId) throws DatabaseException;
+
+    RoomUserModel getRoomUserModelMe(String userId) throws DatabaseException, InvalidArgumentException;
+
     Optional<RoomUser> getRoomUser(Long roomId, String userId) throws DatabaseException;
     Optional<RoomUser> getRoomOwner(Long roomId) throws DatabaseException;
     RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException;

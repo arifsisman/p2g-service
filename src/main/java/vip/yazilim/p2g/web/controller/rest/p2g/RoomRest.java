@@ -204,8 +204,8 @@ public class RoomRest extends ARestCrud<Room, Long> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/user/me"})
-    public RestResponse<RoomUser> getRoomUserMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
-        return RestResponseFactory.generateResponse(roomUserService.getRoomUserMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    public RestResponse<RoomUserModel> getRoomUserModelMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
+        return RestResponseFactory.generateResponse(roomUserService.getRoomUserModelMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     // Clear song list
