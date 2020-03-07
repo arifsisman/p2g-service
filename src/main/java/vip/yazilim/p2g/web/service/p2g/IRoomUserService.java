@@ -8,6 +8,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.io.IOException;
@@ -22,29 +23,22 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     List<RoomUser> getRoomUsersByRoomId(Long roomId) throws DatabaseException;
     Optional<RoomUser> getRoomUser(String userId) throws DatabaseException;
-
     RoomUser getRoomUserMe(String userId) throws DatabaseException;
-
     Optional<RoomUser> getRoomUser(Long roomId, String userId) throws DatabaseException;
     Optional<RoomUser> getRoomOwner(Long roomId) throws DatabaseException;
 
-    RoomUser joinRoom(Long roomId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException;
+    RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException;
 
     RoomUser joinRoomOwner(Long roomId, String userId) throws GeneralException;
-
     boolean leaveRoom() throws DatabaseException;
-
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException;
-
     Role getRoleByRoomIdAndUserId(Long roomId, String userId) throws DatabaseException;
-
-    // Rest
     boolean deleteRoomUsers(Long roomId) throws DatabaseException;
-
     RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException;
     RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException;
-
     boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException;
 
     boolean hasRoomRole(String userId, Role role) throws DatabaseException;
+
+    int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException;
 }

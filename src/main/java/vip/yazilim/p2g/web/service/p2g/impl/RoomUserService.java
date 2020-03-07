@@ -139,9 +139,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
      * @throws SpotifyWebApiException SpotifyWebApiException
      */
     @Override
-    public RoomUser joinRoom(Long roomId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
-        String userId = SecurityHelper.getUserId();
-
+    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomId);
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] can not found", roomId);
@@ -157,7 +155,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             Room room = roomOpt.get();
             RoomUser roomUser = new RoomUser();
 
-            if (room.getPassword().equals("") || room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
+            if (room.getPassword() == null || room.getPassword().equals("") || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
                 roomUser.setRoomId(roomId);
                 roomUser.setUserId(userId);
                 roomUser.setRole(role.getRole());
@@ -342,6 +340,15 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public boolean hasRoomRole(String userId, Role role) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
+    }
+
+    @Override
+    public int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException {
+        try {
+            return roomUserRepo.countRoomUsersByRoomId(roomId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
     }
 
     private RoomUser getSafeRoomUser(Long roomUserId) throws DatabaseException, InvalidArgumentException {

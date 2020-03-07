@@ -16,4 +16,5 @@ public class RoomModelSimplified implements Serializable {
     private Room room;
     private User owner;
     private Song song;
+    private Integer userCount;
 }
