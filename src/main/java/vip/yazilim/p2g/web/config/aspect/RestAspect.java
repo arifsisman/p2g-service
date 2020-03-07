@@ -15,9 +15,9 @@ import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
-import vip.yazilim.p2g.web.service.p2g.impl.RoomUserService;
-import vip.yazilim.p2g.web.service.p2g.impl.SongService;
-import vip.yazilim.p2g.web.service.p2g.impl.UserService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
@@ -38,13 +38,13 @@ public class RestAspect {
     private final Logger LOGGER = LoggerFactory.getLogger(RestAspect.class);
 
     @Autowired
-    private RoomUserService roomUserService;
+    private IRoomUserService roomUserService;
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @Autowired
-    private SongService songService;
+    private ISongService songService;
 
     @Autowired
     private WebSocketController webSocketController;
@@ -80,7 +80,7 @@ public class RestAspect {
      * @param jpoint point where aspect joins
      */
     @After(ASPECT_PACKAGE_PATTERN)
-    public void after(JoinPoint jpoint) throws DatabaseException {
+    public void after(JoinPoint jpoint) throws DatabaseException, InvalidArgumentException {
         MethodSignature signature = (MethodSignature) jpoint.getSignature();
         Method method = signature.getMethod();
         for (Annotation annotation : method.getDeclaredAnnotations()) {
@@ -140,7 +140,7 @@ public class RestAspect {
         }
     }
 
-    private void handleUpdateRoomUsers() throws DatabaseException {
+    private void handleUpdateRoomUsers() throws DatabaseException, InvalidArgumentException {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 

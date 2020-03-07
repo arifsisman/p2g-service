@@ -163,7 +163,6 @@ public class RoomRest extends ARestCrud<Room, Long> {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @UpdateRoomUsers
     @DeleteMapping("/leave")
     public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
         return RestResponseFactory.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);

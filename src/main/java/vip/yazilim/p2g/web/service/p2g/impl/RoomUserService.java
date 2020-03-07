@@ -10,6 +10,7 @@ import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -64,6 +65,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<RoomUser, Long> getRepository() {
@@ -205,6 +209,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 }
                 return status;
             } else {
+                // Update room users before user leaves
+                updateRoomUsers(roomUserOpt.get());
+
                 boolean status = delete(roomUser);
                 if (status) {
                     LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.getRoomId());
@@ -370,5 +377,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         } else {
             throw new NotFoundException("Room user not found");
         }
+    }
+
+    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException {
+        Long roomId = roomUser.getRoomId();
+        List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
+        roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
+        webSocketController.sendToRoom("users", roomId, roomUserModels);
     }
 }
