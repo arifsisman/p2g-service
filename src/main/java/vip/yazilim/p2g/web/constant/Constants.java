@@ -14,6 +14,6 @@ public class Constants {
     public static final Integer WEBSOCKET_THREAD_POOL_SIZE = 100;
     public static final Integer WEBSOCKET_THREAD_POOL_SIZE_MAX = 1000;
 
-    public static final Integer ROOM_SONG_LIMIT = 20;
+    public static final Integer ROOM_SONG_LIMIT = 50;
 
 }
