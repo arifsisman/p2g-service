@@ -8,6 +8,7 @@ import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
@@ -17,7 +18,6 @@ import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;

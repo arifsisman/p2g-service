@@ -4,10 +4,14 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
@@ -24,12 +28,12 @@ import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -53,6 +57,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -101,7 +108,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    @Transactional(noRollbackFor = ConstraintViolationException.class)
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
+        List<Song> currentList = getSongListByRoomId(roomId);
+        int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();
+        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentSongCount;
+
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
             if (s.getType() == SearchType.SONG) {
@@ -115,8 +127,16 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
-        for (Song s : songList) {
+        List<Song> filteredSongList = songList.stream().limit(remainingSongCount).collect(Collectors.toList());
+        System.out.println(filteredSongList.size());
+
+        for (Song s : filteredSongList) {
             create(s);
+        }
+
+        if (filteredSongList.size() + currentSongCount == Constants.ROOM_SONG_LIMIT) {
+            String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
+            throw new ConstraintViolationException(err);
         }
 
         return true;
@@ -148,13 +168,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         Long roomId = roomUserOpt.get().getRoomId();
 
-        try{
+        try {
             nowPlayingOpt = getPlayingSong(roomId);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, songId);
         }
 
-        if(nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)){
+        if (nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)) {
             spotifyPlayerService.roomPlayPause(roomId);
         }
 
@@ -220,7 +240,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
-    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) throws GeneralException {
+    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) {
         List<Song> songList = new LinkedList<>();
 
         for (SearchModel s : searchModelList) {
@@ -236,7 +256,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
             song.setVotes(0);
             song.setSongStatus(SongStatus.NEXT.getSongStatus());
-            songList.add(create(song));
+            songList.add(song);
         }
 
         return songList;

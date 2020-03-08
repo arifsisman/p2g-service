@@ -4,6 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
@@ -13,7 +14,6 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

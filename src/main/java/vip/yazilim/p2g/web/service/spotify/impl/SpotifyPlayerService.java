@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
@@ -21,7 +22,6 @@ import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;

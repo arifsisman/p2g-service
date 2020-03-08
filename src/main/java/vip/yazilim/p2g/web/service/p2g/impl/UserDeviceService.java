@@ -4,6 +4,7 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
@@ -15,7 +16,6 @@ import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
