@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
 import com.wrapper.spotify.enums.ProductType;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,7 +27,6 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +145,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException, IOException, SpotifyWebApiException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException {
         String userId = user.getId();
         String productType = spotifyUser.getProduct().getType();
 
@@ -169,14 +167,8 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
             userDeviceService.delete(oldUserDeviceOpt.get());
         }
 
-        List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
-
-        if (userDeviceList.isEmpty()) {
-            String err = String.format("Can not found any device logged into Spotify App for userId[%s]. Please restart Spotify App first!", userId);
-            throw new NotFoundException(err);
-        }
-
         try {
+            List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
             boolean userDeviceCreated = false;
 
             for (UserDevice userDevice : userDeviceList) {

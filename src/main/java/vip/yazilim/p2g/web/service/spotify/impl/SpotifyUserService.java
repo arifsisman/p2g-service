@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
+import vip.yazilim.spring.core.exception.web.NotFoundException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -58,6 +59,11 @@ public class SpotifyUserService implements ISpotifyUserService {
         List<UserDevice> userDeviceList = new LinkedList<>();
         String accessToken = tokenService.getAccessTokenByUserId(userId);
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
+
+        if (devices.length == 0) {
+            String err = String.format("Can not found any active Spotify device for userId[%s], please start Spotify first.", userId);
+            throw new NotFoundException(err);
+        }
 
         for (Device d : devices) {
             userDeviceList.add(SpotifyHelper.convertDeviceToUserDevice(userId, d));
