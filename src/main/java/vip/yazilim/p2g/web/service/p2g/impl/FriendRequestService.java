@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -91,9 +92,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
                 Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
                 if (roomOpt.isPresent()) {
                     List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
-                    if (!songList.isEmpty()) {
-                        fm.setSong(songList.get(0));
-                    }
+                    fm.setSong(RoomHelper.getRoomCurrentSong(songList));
                 }
 
                 userModels.add(fm);
@@ -156,23 +155,36 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
+    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) throws DatabaseReadException {
+        try {
+            return friendRequestRepo.findBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, requestStatus.getFriendRequestStatus());
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, senderId, receiverId);
+        }
+    }
 
-        if (!existingFriendRequest.isPresent()) {
+    @Override
+    public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
+        if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, FriendRequestStatus.ACCEPTED).isPresent()) {
+            throw new ConstraintViolationException("You are already friends.");
+        } else if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(receiverId, senderId, FriendRequestStatus.ACCEPTED).isPresent()) {
+            throw new ConstraintViolationException("You are already friends.");
+        } else if (senderId.equals(receiverId)) {
+            throw new ConstraintViolationException("You can not add yourself as friend.");
+        } else if (getFriendRequestBySenderIdAndReceiverId(senderId, receiverId).isPresent()) {
+            throw new ConstraintViolationException("Friend request already sent.");
+        } else {
             FriendRequest friendRequest = new FriendRequest();
 
             friendRequest.setSenderId(senderId);
             friendRequest.setReceiverId(receiverId);
+            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
 
             return true;
-        } else {
-            throw new ConstraintViolationException("Friend request already exists");
         }
-
     }
 
     @Override
@@ -215,18 +227,24 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         // if request replied, search for counter friend request then delete matching request
-        return deleteCounterFriendRequest(friendRequest);
-    }
-
-    private boolean deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
-        // Search for counter friend request and delete if it exists
-        Optional<FriendRequest> counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
-
-        if (counterFriendRequest.isPresent()) {
-            return delete(counterFriendRequest.get());
-        }
+        deleteCounterFriendRequest(friendRequest);
 
         return true;
+    }
+
+    // Search for counter friend request and delete if it exists
+    private void deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
+        Optional<FriendRequest> counterFriendRequest1 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
+        if (counterFriendRequest1.isPresent()) {
+            delete(counterFriendRequest1.get());
+            return;
+        }
+
+        Optional<FriendRequest> counterFriendRequest2 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getSenderId(), friendRequest.getReceiverId());
+        if (counterFriendRequest2.isPresent()) {
+            delete(counterFriendRequest2.get());
+        }
+
     }
 
 }

@@ -66,7 +66,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
-        return error(CONFLICT, e, "Constraint violation!");
+        return error(CONFLICT, e);
     }
 
     @ExceptionHandler({MessageDeliveryException.class})

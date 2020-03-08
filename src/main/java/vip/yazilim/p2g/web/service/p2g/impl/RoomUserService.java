@@ -10,13 +10,17 @@ import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -28,6 +32,7 @@ import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +62,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Autowired
     private SpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private IUserService userService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<RoomUser, Long> getRepository() {
@@ -98,10 +109,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser getRoomUserMe(String userId) throws DatabaseException {
+    public RoomUserModel getRoomUserModelMe(String userId) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
         if (roomUserOpt.isPresent()) {
-            return roomUserOpt.get();
+            RoomUserModel roomUserModel = new RoomUserModel();
+            roomUserModel.setRoomUser(roomUserOpt.get());
+            userService.getById(userId).ifPresent(roomUserModel::setUser);
+            return roomUserModel;
         } else {
             String msg = String.format("User[%s] not in any room", userId);
             throw new NotFoundException(msg);
@@ -139,9 +153,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
      * @throws SpotifyWebApiException SpotifyWebApiException
      */
     @Override
-    public RoomUser joinRoom(Long roomId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
-        String userId = SecurityHelper.getUserId();
-
+    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomId);
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] can not found", roomId);
@@ -157,7 +169,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             Room room = roomOpt.get();
             RoomUser roomUser = new RoomUser();
 
-            if (room.getPassword().equals("") || room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
+            if (room.getPassword() == null || room.getPassword().equals("") || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
                 roomUser.setRoomId(roomId);
                 roomUser.setUserId(userId);
                 roomUser.setRole(role.getRole());
@@ -200,6 +212,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 }
                 return status;
             } else {
+                // Update room users before user leaves
+                updateRoomUsers(roomUserOpt.get());
+
                 boolean status = delete(roomUser);
                 if (status) {
                     LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.getRoomId());
@@ -218,17 +233,21 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
-//    @Override
-//    public boolean leaveRoom(Optional<RoomUser> roomUser) throws DatabaseException {
-//        if (roomUser.isPresent()) {
-//            if (roomUser.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
-//                return roomService.deleteById(roomUser.get().getRoomId());
-//            } else {
-//                return delete(roomUser.get());
-//            }
-//        }
-//        return true;
-//    }
+    @Override
+    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException {
+        List<RoomUserModel> roomUserModels = new LinkedList<>();
+        List<RoomUser> roomUsers = getRoomUsersByRoomId(roomId);
+
+        for (RoomUser ru : roomUsers) {
+            RoomUserModel roomUserModel = new RoomUserModel();
+            roomUserModel.setRoomUser(ru);
+            Optional<User> roomUserOpt = userService.getUserById(ru.getUserId());
+            roomUserOpt.ifPresent(roomUserModel::setUser);
+            roomUserModels.add(roomUserModel);
+        }
+
+        return roomUserModels;
+    }
 
     @Override
     public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException {
@@ -344,6 +363,15 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
     }
 
+    @Override
+    public int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException {
+        try {
+            return roomUserRepo.countRoomUsersByRoomId(roomId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
+    }
+
     private RoomUser getSafeRoomUser(Long roomUserId) throws DatabaseException, InvalidArgumentException {
         Optional<RoomUser> roomUserOpt = getById(roomUserId);
 
@@ -352,5 +380,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         } else {
             throw new NotFoundException("Room user not found");
         }
+    }
+
+    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException {
+        Long roomId = roomUser.getRoomId();
+        List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
+        roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
+        webSocketController.sendToRoom("users", roomId, roomUserModels);
     }
 }

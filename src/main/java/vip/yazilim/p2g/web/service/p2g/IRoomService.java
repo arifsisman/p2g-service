@@ -21,9 +21,17 @@ public interface IRoomService extends ICrudService<Room, Long> {
 
     //Rest
     List<RoomModelSimplified> getSimplifiedRoomModels() throws DatabaseException, InvalidArgumentException;
+
     RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+
+    RoomModel getRoomModelWithRoom(Room room) throws DatabaseException, InvalidArgumentException;
+
     RoomModel getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+
     RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+
+    RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room) throws DatabaseException, InvalidArgumentException;
+
     Room createRoom(String ownerId, String roomName, String roomPassword) throws GeneralException;
 
 }

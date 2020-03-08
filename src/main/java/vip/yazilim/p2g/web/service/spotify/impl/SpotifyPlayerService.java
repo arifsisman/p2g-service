@@ -103,9 +103,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            long newPassedMs = ChronoUnit.MILLIS.between(playing.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
-
-            playing.setCurrentMs(playing.getCurrentMs() + (int) newPassedMs);
+            playing.setCurrentMs(getCumulativePassedMs(playing));
             playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
             songService.update(playing);
         } else if (pausedOpt.isPresent()) {
@@ -195,12 +193,22 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (playingOpt.isPresent()) {
-            return roomRepeatHelper(roomId, playingOpt.get());
+            Song playing = playingOpt.get();
+
+            playing.setCurrentMs(getCumulativePassedMs(playing));
+            playing.setSongStatus(SongStatus.PLAYING.getSongStatus());
+            songService.update(playing);
+
+            return roomRepeatHelper(roomId, playing);
         } else if (pausedOpt.isPresent()) {
             return roomRepeatHelper(roomId, pausedOpt.get());
         } else {
             throw new NotFoundException("Song not found for repeat");
         }
+    }
+
+    private int getCumulativePassedMs(Song song) {
+        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
     }
 
     private boolean roomRepeatHelper(Long roomId, Song song) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
@@ -250,8 +258,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private boolean play(RoomUser roomUser, Song song) throws DatabaseException, IOException, SpotifyWebApiException {
         String userId = roomUser.getUserId();
 
-        int ms = song.getCurrentMs() + (int) ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow());
-
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
 
@@ -262,7 +268,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
             JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
 
-            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(deviceId).build(), accessToken);
+            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(getCumulativePassedMs(song)).device_id(deviceId).build(), accessToken);
             return true;
         }
 

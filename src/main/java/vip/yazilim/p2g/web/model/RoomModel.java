@@ -21,4 +21,5 @@ public class RoomModel implements Serializable {
     private List<RoomUser> roomUserList;
     private List<Song> songList;
     private List<User> invitedUserList;
+    private Integer userCount;
 }

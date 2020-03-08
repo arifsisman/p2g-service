@@ -18,6 +18,7 @@ import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -129,7 +130,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         List<Room> roomList = getAll();
 
         for (Room r : roomList) {
-            roomModelList.add(getRoomModelSimplifiedByRoomId(r.getId()));
+            roomModelList.add(getRoomModelSimplifiedWithRoom(r));
         }
 
         return roomModelList;
@@ -138,9 +139,6 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         Optional<Room> room;
-        List<User> userList;
-        List<Song> songList;
-        List<User> invitedUserList;
 
         // Set Room
         room = getById(roomId);
@@ -151,30 +149,50 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             RoomModel roomModel = new RoomModel();
             roomModel.setRoom(room.get());
 
-            // Set User List
-            userList = userService.getUsersByRoomId(roomId);
-            roomModel.setUserList(userList);
-
-            // Set owner
-            Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
-            if (roomOwnerOpt.isPresent()) {
-                Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
-                roomModel.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
-            }
-
-            // Set Room Users
-            roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
-
-            // Set Song List
-            songList = songService.getSongListByRoomId(roomId);
-            roomModel.setSongList(songList);
-
-            // Set Invited User List
-            invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
-            roomModel.setInvitedUserList(invitedUserList);
-
-            return roomModel;
+            return getRoomModelBase(roomModel);
         }
+    }
+
+    @Override
+    public RoomModel getRoomModelWithRoom(Room room) throws DatabaseException, InvalidArgumentException {
+        // Set Room
+        RoomModel roomModel = new RoomModel();
+        roomModel.setRoom(room);
+
+        return getRoomModelBase(roomModel);
+    }
+
+    private RoomModel getRoomModelBase(RoomModel roomModel) throws DatabaseException, InvalidArgumentException {
+        Room room = roomModel.getRoom();
+        Long roomId = room.getId();
+
+        // Set User List
+        List<User> userList = userService.getUsersByRoomId(roomId);
+        roomModel.setUserList(userList);
+
+        // Set owner
+        Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
+        if (roomOwnerOpt.isPresent()) {
+            Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
+            roomModel.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
+        }
+
+        // Set Room Users
+        roomModel.setRoomUserList(roomUserService.getRoomUsersByRoomId(roomId));
+
+        // Set Song List
+        List<Song> songList = songService.getSongListByRoomId(roomId);
+        roomModel.setSongList(songList);
+
+        // Set Invited User List
+        List<User> invitedUserList = roomInviteService.getInvitedUserListByRoomId(roomId);
+        roomModel.setInvitedUserList(invitedUserList);
+
+        // Set user count
+        Integer userCount = roomUserService.getRoomUserCountByRoomId(roomId);
+        roomModel.setUserCount(userCount);
+
+        return roomModel;
     }
 
     @Override
@@ -190,16 +208,27 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
-        RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
-
         // Set Room
         Optional<Room> room = getById(roomId);
         if (!room.isPresent()) {
             String err = String.format("Room[%s] not found", roomId);
             throw new NotFoundException(err);
         } else {
+            RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
             roomModelSimplified.setRoom(room.get());
+            return getRoomModelSimplifiedBase(roomModelSimplified);
         }
+    }
+
+    @Override
+    public RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room) throws DatabaseException, InvalidArgumentException {
+        RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
+        roomModelSimplified.setRoom(room);
+        return getRoomModelSimplifiedBase(roomModelSimplified);
+    }
+
+    private RoomModelSimplified getRoomModelSimplifiedBase(RoomModelSimplified roomModelSimplified) throws DatabaseException, InvalidArgumentException {
+        Long roomId = roomModelSimplified.getRoom().getId();
 
         // Set owner
         Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
@@ -208,10 +237,13 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             roomModelSimplified.setOwner(roomUser.orElseThrow(() -> new NotFoundException("Room owner not found")));
         }
 
+        // Set song list
         List<Song> songList = songService.getSongListByRoomId(roomId);
-        if (!songList.isEmpty()) {
-            roomModelSimplified.setSong(songList.get(0));
-        }
+        roomModelSimplified.setSong(RoomHelper.getRoomCurrentSong(songList));
+
+        // Set user count
+        Integer userCount = roomUserService.getRoomUserCountByRoomId(roomId);
+        roomModelSimplified.setUserCount(userCount);
 
         return roomModelSimplified;
     }
