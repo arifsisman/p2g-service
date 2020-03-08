@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
@@ -56,9 +55,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
-
-    @Autowired
-    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -190,7 +186,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             if (songStatus.equals(SongStatus.PLAYED)) {
                 return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, songStatus.getSongStatus());
             } else {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
+                return getSongListByRoomId(roomId).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
