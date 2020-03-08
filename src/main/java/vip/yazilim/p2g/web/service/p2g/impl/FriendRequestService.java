@@ -165,20 +165,14 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     @Override
     public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
-        Optional<FriendRequest> existingRequestOpt = getFriendRequestBySenderIdAndReceiverId(senderId, receiverId);
-        if (senderId.equals(receiverId)) {
-            throw new ConstraintViolationException("You can not add yourself as friend.");
-        } else if (existingRequestOpt.isPresent()) {
-            FriendRequest existingRequest = existingRequestOpt.get();
-            if (existingRequest.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
-                throw new ConstraintViolationException("You are already friends.");
-            } else {
-                throw new ConstraintViolationException("Friend request already sent.");
-            }
-        } else if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, FriendRequestStatus.ACCEPTED).isPresent()) {
+        if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, FriendRequestStatus.ACCEPTED).isPresent()) {
             throw new ConstraintViolationException("You are already friends.");
         } else if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(receiverId, senderId, FriendRequestStatus.ACCEPTED).isPresent()) {
             throw new ConstraintViolationException("You are already friends.");
+        } else if (senderId.equals(receiverId)) {
+            throw new ConstraintViolationException("You can not add yourself as friend.");
+        } else if (getFriendRequestBySenderIdAndReceiverId(senderId, receiverId).isPresent()) {
+            throw new ConstraintViolationException("Friend request already sent.");
         } else {
             FriendRequest friendRequest = new FriendRequest();
 
