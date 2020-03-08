@@ -96,17 +96,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean clearRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
-        List<Song> songList = getSongListByRoomId(roomId);
-
-        for (Song s : songList) {
-            delete(s);
-        }
-
-        return spotifyPlayerService.roomStop(roomId);
-    }
-
-    @Override
     @Transactional(noRollbackFor = ConstraintViolationException.class)
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> currentList = getSongListByRoomId(roomId);
@@ -179,7 +168,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean deleteRoomSongList(Long roomId) throws DatabaseException {
+    public boolean deleteRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
         List<Song> songList;
 
         try {
@@ -192,16 +181,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             delete(song);
         }
 
-        return true;
-    }
-
-    @Override
-    public List<Song> getSongListByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
-        try {
-            return songRepo.findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
-        }
+        return spotifyPlayerService.roomStop(roomId);
     }
 
     @Override

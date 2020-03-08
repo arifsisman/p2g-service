@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,8 +269,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         return createdRoom;
     }
 
+    @SneakyThrows
     @Override
-    public boolean deleteById(Long roomId) throws DatabaseException {
+    public boolean deleteById(Long roomId) {
         try {
             spotifyPlayerService.roomStop(roomId);
         } catch (InvalidArgumentException | IOException | SpotifyWebApiException e) {
@@ -291,7 +293,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public boolean delete(Room room) throws DatabaseException {
+    public boolean delete(Room room) {
         return deleteById(room.getId());
     }
 

@@ -213,7 +213,7 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @UpdateRoomSongs
     @PostMapping("/{roomId}/queue/clear")
     public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.clearRoomSongList(roomId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(songService.deleteRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
 }
