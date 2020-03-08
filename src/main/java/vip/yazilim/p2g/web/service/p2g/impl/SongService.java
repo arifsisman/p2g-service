@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -127,16 +126,14 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
-        List<Song> filteredSongList = songList.stream().limit(remainingSongCount).collect(Collectors.toList());
-        System.out.println(filteredSongList.size());
-
-        for (Song s : filteredSongList) {
-            create(s);
-        }
-
-        if (filteredSongList.size() + currentSongCount == Constants.ROOM_SONG_LIMIT) {
-            String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
-            throw new ConstraintViolationException(err);
+        for (Song s : songList) {
+            if (remainingSongCount > 0) {
+                create(s);
+                remainingSongCount--;
+            } else {
+                String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
+                throw new ConstraintViolationException(err);
+            }
         }
 
         return true;
