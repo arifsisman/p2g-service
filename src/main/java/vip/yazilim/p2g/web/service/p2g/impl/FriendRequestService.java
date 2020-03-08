@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -91,9 +92,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
                 Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
                 if (roomOpt.isPresent()) {
                     List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
-                    if (!songList.isEmpty()) {
-                        fm.setSong(songList.get(0));
-                    }
+                    fm.setSong(RoomHelper.getRoomCurrentSong(songList));
                 }
 
                 userModels.add(fm);
@@ -159,24 +158,20 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
         if (senderId.equals(receiverId)) {
             throw new ConstraintViolationException("You can not add yourself as friend.");
-        }
-
-        Optional<FriendRequest> existingFriendRequest = friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
-
-        if (!existingFriendRequest.isPresent()) {
+        } else if (getFriendRequestBySenderIdAndReceiverId(senderId, receiverId).isPresent()) {
+            throw new ConstraintViolationException("Friend request already exists");
+        } else {
             FriendRequest friendRequest = new FriendRequest();
 
             friendRequest.setSenderId(senderId);
             friendRequest.setReceiverId(receiverId);
+            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
 
             return true;
-        } else {
-            throw new ConstraintViolationException("Friend request already exists");
         }
-
     }
 
     @Override

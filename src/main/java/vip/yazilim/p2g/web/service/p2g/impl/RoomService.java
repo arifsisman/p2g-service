@@ -18,6 +18,7 @@ import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
@@ -238,9 +239,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
         // Set song list
         List<Song> songList = songService.getSongListByRoomId(roomId);
-        if (!songList.isEmpty()) {
-            roomModelSimplified.setSong(songList.get(0));
-        }
+        roomModelSimplified.setSong(RoomHelper.getRoomCurrentSong(songList));
 
         // Set user count
         Integer userCount = roomUserService.getRoomUserCountByRoomId(roomId);
