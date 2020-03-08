@@ -159,7 +159,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         if (senderId.equals(receiverId)) {
             throw new ConstraintViolationException("You can not add yourself as friend.");
         } else if (getFriendRequestBySenderIdAndReceiverId(senderId, receiverId).isPresent()) {
-            throw new ConstraintViolationException("Friend request already exists");
+            throw new ConstraintViolationException("Already exists.");
         } else {
             FriendRequest friendRequest = new FriendRequest();
 
@@ -214,18 +214,24 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         // if request replied, search for counter friend request then delete matching request
-        return deleteCounterFriendRequest(friendRequest);
-    }
-
-    private boolean deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
-        // Search for counter friend request and delete if it exists
-        Optional<FriendRequest> counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
-
-        if (counterFriendRequest.isPresent()) {
-            return delete(counterFriendRequest.get());
-        }
+        deleteCounterFriendRequest(friendRequest);
 
         return true;
+    }
+
+    // Search for counter friend request and delete if it exists
+    private boolean deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
+        Optional<FriendRequest> counterFriendRequest1 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
+        if (counterFriendRequest1.isPresent()) {
+            return delete(counterFriendRequest1.get());
+        }
+
+        Optional<FriendRequest> counterFriendRequest2 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getSenderId(), friendRequest.getReceiverId());
+        if (counterFriendRequest2.isPresent()) {
+            return delete(counterFriendRequest2.get());
+        }
+
+        return false;
     }
 
 }
