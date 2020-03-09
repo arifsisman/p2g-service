@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
@@ -323,22 +324,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
-        Role oldRole = Role.getRole(roomUser.getRole());
-        Role newRole;
-
-        switch (oldRole) {
-            case ROOM_USER:
-                newRole = Role.ROOM_MODERATOR;
-                break;
-            case ROOM_MODERATOR:
-                newRole = Role.ROOM_ADMIN;
-                break;
-            default:
-                newRole = oldRole;
-                break;
+        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
+            throw new ConstraintViolationException("You can not change your own role.");
         }
 
-        roomUser.setRole(newRole.getRole());
+        Role oldRole = Role.getRole(roomUser.getRole());
+        roomUser.setRole(getNewRole(oldRole, true).role);
         return update(roomUser);
     }
 
@@ -346,22 +337,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
-        Role oldRole = Role.getRole(roomUser.getRole());
-        Role newRole;
-
-        switch (oldRole) {
-            case ROOM_MODERATOR:
-                newRole = Role.ROOM_USER;
-                break;
-            case ROOM_ADMIN:
-                newRole = Role.ROOM_MODERATOR;
-                break;
-            default:
-                newRole = oldRole;
-                break;
+        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
+            throw new ConstraintViolationException("You can not change your own role.");
         }
 
-        roomUser.setRole(newRole.getRole());
+        Role oldRole = Role.getRole(roomUser.getRole());
+        roomUser.setRole(getNewRole(oldRole, false).role);
         return update(roomUser);
     }
 
@@ -401,5 +382,27 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
         roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
         webSocketController.sendToRoom("users", roomId, roomUserModels);
+    }
+
+    private Role getNewRole(Role oldRole, boolean promoteFlag) {
+        switch (oldRole) {
+            case ROOM_USER:
+                if (promoteFlag)
+                    return Role.ROOM_MODERATOR;
+                else
+                    return Role.ROOM_USER;
+            case ROOM_MODERATOR:
+                if (promoteFlag)
+                    return Role.ROOM_ADMIN;
+                else
+                    return Role.ROOM_USER;
+            case ROOM_ADMIN:
+                if (promoteFlag)
+                    return Role.ROOM_ADMIN;
+                else
+                    return Role.ROOM_MODERATOR;
+            default:
+                return oldRole;
+        }
     }
 }
