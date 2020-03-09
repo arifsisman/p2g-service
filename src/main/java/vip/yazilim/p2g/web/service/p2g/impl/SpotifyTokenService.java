@@ -3,12 +3,12 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.controller.rest.spotify.AuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
@@ -32,6 +32,9 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private AuthorizationRest authorizationRest;
+
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {
         return tokenRepo;
@@ -54,11 +57,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
             if (spotifyToken.isPresent()) {
                 return spotifyToken.get().getAccessToken();
             } else {
-                String newAccessToken = SecurityHelper.getUserAccessToken();
-                OAuthToken oAuthToken = new OAuthToken();
-                oAuthToken.setUserId(userId);
-                oAuthToken.setAccessToken(newAccessToken);
-                return create(oAuthToken).getAccessToken();
+                return authorizationRest.updateUserAccessToken();
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
