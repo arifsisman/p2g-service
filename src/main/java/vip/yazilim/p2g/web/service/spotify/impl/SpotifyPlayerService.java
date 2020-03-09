@@ -6,7 +6,6 @@ import com.google.gson.JsonArray;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
@@ -30,7 +29,6 @@ import java.util.*;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifyPlayerService implements ISpotifyPlayerService {
 
@@ -138,9 +136,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Song> previous = songService.getPreviousSong(roomId);
+        Optional<Song> previousOpt = songService.getPreviousSong(roomId);
 
-        if (previous.isPresent()) {
+        if (previousOpt.isPresent()) {
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
             if (playingOpt.isPresent()) { // Set old playing as next, if present
                 Song playing = playingOpt.get();
@@ -155,7 +153,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 songService.update(paused);
             }
 
-            return roomPlay(previous.get(), 0, false);
+            return roomPlay(previousOpt.get(), 0, false);
         } else {
             throw new NotFoundException("Previous song is empty");
         }

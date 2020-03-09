@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
@@ -35,7 +34,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> implements IFriendRequestService {
 

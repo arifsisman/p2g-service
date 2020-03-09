@@ -4,7 +4,6 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
@@ -37,7 +36,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SongService extends ACrudServiceImpl<Song, Long> implements ISongService {
 
@@ -92,7 +90,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    @Transactional(noRollbackFor = ConstraintViolationException.class)
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
         List<Song> currentList = getSongListByRoomId(roomId);
         int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();

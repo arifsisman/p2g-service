@@ -5,7 +5,6 @@ import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
@@ -35,7 +34,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 

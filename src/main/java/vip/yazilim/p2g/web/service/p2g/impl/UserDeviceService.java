@@ -4,7 +4,6 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
@@ -23,7 +22,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 30.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 
