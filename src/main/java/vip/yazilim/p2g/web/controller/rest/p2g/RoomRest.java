@@ -186,14 +186,14 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/promote")
     public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(roomUserId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, true), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/demote")
     public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(roomUserId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

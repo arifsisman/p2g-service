@@ -321,7 +321,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
+    public RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
         if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
@@ -329,20 +329,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         Role oldRole = Role.getRole(roomUser.getRole());
-        roomUser.setRole(getNewRole(oldRole, true).role);
-        return update(roomUser);
-    }
-
-    @Override
-    public RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        RoomUser roomUser = getSafeRoomUser(roomUserId);
-
-        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
-            throw new ConstraintViolationException("You can not change your own role.");
-        }
-
-        Role oldRole = Role.getRole(roomUser.getRole());
-        roomUser.setRole(getNewRole(oldRole, false).role);
+        roomUser.setRole(getNewRole(oldRole, promoteDemoteFlag).role);
         return update(roomUser);
     }
 
