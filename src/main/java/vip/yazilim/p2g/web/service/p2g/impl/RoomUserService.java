@@ -246,6 +246,20 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             roomUserModels.add(roomUserModel);
         }
 
+        roomUserModels.sort((o1, o2) -> {
+            if (o1.getRoomUser().getRole().equals(Role.ROOM_OWNER.role)) {
+                return 3;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_ADMIN.role)) {
+                return 2;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_MODERATOR.role)) {
+                return 1;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_USER.role)) {
+                return 0;
+            } else {
+                return o1.getRoomUser().getRole().compareTo(o2.getRoomUser().getRole());
+            }
+        });
+
         return roomUserModels;
     }
 
