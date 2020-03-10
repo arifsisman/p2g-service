@@ -10,7 +10,6 @@ import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 29.10.2019
@@ -18,11 +17,10 @@ import java.util.Optional;
  */
 public interface IUserService extends ICrudService<User, String> {
 
-    Optional<User> getUserById(String id);
     UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
     List<User> getUsersByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
-    User createUser(String id, String email, String username) throws GeneralException;
 
+    User createUser(String id, String email, String username) throws GeneralException;
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException;
 
     boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException;

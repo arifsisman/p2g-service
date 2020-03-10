@@ -32,7 +32,7 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
     RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException;
     RoomUser joinRoomOwner(Long roomId, String userId) throws GeneralException;
 
-    boolean leaveRoom() throws DatabaseException;
+    boolean leaveRoom() throws DatabaseException, InvalidArgumentException;
 
     List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 

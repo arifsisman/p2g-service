@@ -16,7 +16,10 @@ import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
-import vip.yazilim.p2g.web.service.p2g.*;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -45,9 +48,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private IRoomUserService roomUserService;
-
-    @Autowired
-    private IFriendRequestService friendRequestService;
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
@@ -79,11 +79,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         entity.setRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         return entity;
-    }
-
-    @Override
-    public Optional<User> getUserById(String id) {
-        return userRepo.findById(id);
     }
 
     @Override

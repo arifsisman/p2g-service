@@ -11,9 +11,8 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import vip.yazilim.p2g.web.model.websocket.ChatMessage;
+import vip.yazilim.p2g.web.model.ChatMessage;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.p2g.web.util.TimeHelper;
 
 /**
  * @author mustafaarifsisman - 24.12.2019
@@ -33,9 +32,8 @@ public class WebSocketController {
         String userDisplayName = SecurityHelper.getUserDisplayName(oAuth2Authentication);
 
         LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
-        ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString()
-                , userDisplayName + " joined!", TimeHelper.getLocalDateTimeNow());
-        sendToRoom("messages", roomId, joinMessage);
+//        ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString(), userDisplayName + " joined!", TimeHelper.getDateNow());
+//        sendToRoom("messages", roomId, joinMessage);
     }
 
     @SubscribeMapping("/p2g/user/{userId}")

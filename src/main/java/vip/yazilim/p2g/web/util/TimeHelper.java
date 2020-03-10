@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.util;
 
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -13,4 +14,7 @@ public class TimeHelper {
         return LocalDateTime.now();
     }
 
+    public static Date getDateNow() {
+        return new Date();
+    }
 }

@@ -88,6 +88,19 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     protected RoomUser preInsert(RoomUser entity) {
         entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
+//        entity.setUserName(SecurityHelper.getUserDisplayName());
+//        entity.setUserImageUrl(SecurityHelper.getUserImageUrl());
+
+        try {
+            Optional<User> userOpt = userService.getById(entity.getUserId());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                entity.setUserName(user.getName());
+                entity.setUserImageUrl(user.getImageUrl());
+            }
+        } catch (Exception ignored) {
+        }
+
         return entity;
     }
 
@@ -200,7 +213,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public boolean leaveRoom() throws DatabaseException {
+    public boolean leaveRoom() throws DatabaseException, InvalidArgumentException {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
 
@@ -235,14 +248,14 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException {
+    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<RoomUserModel> roomUserModels = new LinkedList<>();
         List<RoomUser> roomUsers = getRoomUsersByRoomId(roomId);
 
         for (RoomUser ru : roomUsers) {
             RoomUserModel roomUserModel = new RoomUserModel();
             roomUserModel.setRoomUser(ru);
-            Optional<User> roomUserOpt = userService.getUserById(ru.getUserId());
+            Optional<User> roomUserOpt = userService.getById(ru.getUserId());
             roomUserOpt.ifPresent(roomUserModel::setUser);
             roomUserModels.add(roomUserModel);
         }
@@ -364,7 +377,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
-    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException {
+    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException, InvalidArgumentException {
         Long roomId = roomUser.getRoomId();
         List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
         roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);

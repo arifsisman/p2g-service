@@ -24,6 +24,12 @@ public class RoomUser implements Serializable {
     @Column(name = "user_id", unique = true, updatable = false, nullable = false)
     private String userId;
 
+    @Column(name = "user_name", updatable = false, nullable = false)
+    private String userName;
+
+    @Column(name = "user_image_url", updatable = false)
+    private String userImageUrl;
+
     @Column(name = "role", length = 16)
     private String role;
 

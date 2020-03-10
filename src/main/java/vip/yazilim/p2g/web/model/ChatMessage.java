@@ -1,10 +1,11 @@
-package vip.yazilim.p2g.web.model.websocket;
+package vip.yazilim.p2g.web.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import vip.yazilim.p2g.web.entity.RoomUser;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 
 /**
@@ -14,9 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class ChatMessage implements Serializable {
-    private String userId;
-    private String userName;
-    private String roomId;
+    private RoomUser roomUser;
     private String message;
-    private LocalDateTime timestamp;
+    private Date timestamp;
 }
