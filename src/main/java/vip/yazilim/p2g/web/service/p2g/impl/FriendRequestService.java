@@ -79,11 +79,11 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         for (FriendRequest fr : friendRequestList) {
             if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                 FriendModel fm = new FriendModel();
-                String frUserId = fr.getSenderId();
-                String frFriendIdId = fr.getReceiverId();
+                String senderId = fr.getSenderId();
+                String receiverId = fr.getReceiverId();
 
                 //To determine who is friend
-                String queryId = frUserId.equals(SecurityHelper.getUserId()) ? frFriendIdId : frUserId;
+                String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
 
                 fm.setUserModel(userService.getUserModelByUserId(queryId));
 
@@ -232,15 +232,19 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
     // Search for counter friend request and delete if it exists
     private void deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
-        Optional<FriendRequest> counterFriendRequest1 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getReceiverId(), friendRequest.getSenderId());
-        if (counterFriendRequest1.isPresent()) {
-            delete(counterFriendRequest1.get());
-            return;
+        String senderId = friendRequest.getSenderId();
+        String receiverId = friendRequest.getReceiverId();
+
+        Optional<FriendRequest> counterFriendRequest;
+
+        if (senderId.equals(SecurityHelper.getUserId())) {
+            counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(senderId, receiverId);
+        } else {
+            counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(receiverId, senderId);
         }
 
-        Optional<FriendRequest> counterFriendRequest2 = getFriendRequestBySenderIdAndReceiverId(friendRequest.getSenderId(), friendRequest.getReceiverId());
-        if (counterFriendRequest2.isPresent()) {
-            delete(counterFriendRequest2.get());
+        if (counterFriendRequest.isPresent()) {
+            delete(counterFriendRequest.get());
         }
 
     }

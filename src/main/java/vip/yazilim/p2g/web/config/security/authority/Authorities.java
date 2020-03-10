@@ -16,8 +16,8 @@ import java.util.List;
 public class Authorities extends AAuthorityProvider {
 
     @Override
-    protected HashMap<Role, List<Privilege>> initPrivileges() {
-        HashMap<Role, List<Privilege>> rolePrivilegesMap = new HashMap<>();
+    protected HashMap<String, List<Privilege>> initPrivileges() {
+        HashMap<String, List<Privilege>> rolePrivilegesMap = new HashMap<>();
 
         List<Privilege> p2gUserPrivileges = new LinkedList<>();
         p2gUserPrivileges.add(Privilege.ROOM_GET);
@@ -47,11 +47,11 @@ public class Authorities extends AAuthorityProvider {
         roomOwnerPrivileges.add(Privilege.ROOM_DELETE);
 
         // Set HashMap
-        rolePrivilegesMap.put(Role.P2G_USER, p2gUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_USER, roomUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_MODERATOR, roomModeratorPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_ADMIN, roomAdminPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_OWNER, roomOwnerPrivileges);
+        rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_USER.role, roomUserPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_MODERATOR.role, roomModeratorPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_ADMIN.role, roomAdminPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_OWNER.role, roomOwnerPrivileges);
 
         return rolePrivilegesMap;
     }
