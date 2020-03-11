@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.model.ChatMessage;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
@@ -43,10 +43,10 @@ public class WebSocketController {
     }
 
     @MessageMapping("/p2g/room/{roomId}/send")
-    @SendTo("/p2g/room/{roomId}/messages")
-    public ChatMessage chatMessageMapping(@PathVariable ChatMessage chatMessage) {
-        LOGGER.debug("Received Message from {}[{}]: {}", chatMessage.getRoomUser().getUserName(), chatMessage.getRoomUser().getUserId(), chatMessage.getMessage());
-        return chatMessage;
+    public void chatMessageMapping(@PathVariable ChatMessage chatMessage) {
+        RoomUser roomUser = chatMessage.getRoomUser();
+        LOGGER.info("{}[{}] sending message to Room[{}]: {}", roomUser.getUserName(), roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
+        sendToRoom("messages", roomUser.getRoomId(), chatMessage);
     }
 
     public void sendToRoom(String destination, Long roomId, Object payload) {
