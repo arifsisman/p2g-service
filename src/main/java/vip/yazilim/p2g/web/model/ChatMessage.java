@@ -5,7 +5,7 @@ import lombok.Data;
 import vip.yazilim.p2g.web.entity.RoomUser;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 /**
@@ -17,5 +17,5 @@ import java.util.Date;
 public class ChatMessage implements Serializable {
     private RoomUser roomUser;
     private String message;
-    private Date timestamp;
+    private LocalDateTime timestamp;
 }

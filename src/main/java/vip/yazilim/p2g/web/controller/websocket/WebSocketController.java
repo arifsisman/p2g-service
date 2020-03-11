@@ -42,10 +42,10 @@ public class WebSocketController {
         LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
     }
 
-    @MessageMapping("/p2g/room/{roomId}")
+    @MessageMapping("/p2g/room/{roomId}/send")
     @SendTo("/p2g/room/{roomId}/messages")
     public ChatMessage chatMessageMapping(@PathVariable ChatMessage chatMessage) {
-        LOGGER.debug("Received Message: {}", chatMessage.getMessage());
+        LOGGER.debug("Received Message from {}[{}]: {}", chatMessage.getRoomUser().getUserName(), chatMessage.getRoomUser().getUserId(), chatMessage.getMessage());
         return chatMessage;
     }
 
