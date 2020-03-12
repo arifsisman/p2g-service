@@ -345,8 +345,21 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         Role oldRole = Role.getRole(roomUser.getRole());
-        roomUser.setRole(getNewRole(oldRole, promoteDemoteFlag).role);
-        return update(roomUser);
+        Role newRole = getNewRole(oldRole, promoteDemoteFlag);
+
+        if (oldRole.equals(newRole)) {
+            return roomUser;
+        } else {
+            roomUser.setRole(newRole.role);
+            RoomUser updatedRoomUser = update(roomUser);
+
+            String operation = (promoteDemoteFlag) ? " promoted " : " demoted ";
+            String userName = SecurityHelper.getUserDisplayName();
+            String infoMessage = userName + operation + roomUser.getUserName() + "'s role to " + newRole.role;
+            webSocketController.sendInfoToRoom(roomUser.getRoomId(), infoMessage);
+
+            return updatedRoomUser;
+        }
     }
 
     @Override

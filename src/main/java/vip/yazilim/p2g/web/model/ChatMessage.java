@@ -2,6 +2,7 @@ package vip.yazilim.p2g.web.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  * @contact mustafaarifsisman@gmail.com
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class ChatMessage implements Serializable {
     private RoomUser roomUser;
