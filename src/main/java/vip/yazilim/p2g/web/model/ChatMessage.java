@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,7 +20,9 @@ public class ChatMessage implements Serializable {
     private String message;
     private LocalDateTime timestamp;
 
-    public ChatMessage(RoomUser roomUser) {
+    public ChatMessage(RoomUser roomUser, String message) {
         this.roomUser = roomUser;
+        this.message = message;
+        this.timestamp = TimeHelper.getLocalDateTimeNow();
     }
 }

@@ -9,13 +9,13 @@ import vip.yazilim.p2g.web.entity.RoomUser;
  * @contact mustafaarifsisman@gmail.com
  */
 @Configuration
-public class SystemInfoConfig {
+public class RoomInfoMessageConfig {
 
-    private RoomUser systemUser = new RoomUser(true);
+    private RoomUser roomInfoUser = new RoomUser(true);
 
     @Bean
-    public RoomUser getSystemUser() {
-        return systemUser;
+    public RoomUser getRoomInfoUser() {
+        return roomInfoUser;
     }
 
 }

@@ -7,10 +7,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import vip.yazilim.p2g.web.config.SystemInfoConfig;
+import vip.yazilim.p2g.web.config.RoomInfoMessageConfig;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.model.ChatMessage;
-import vip.yazilim.p2g.web.util.TimeHelper;
 
 /**
  * @author mustafaarifsisman - 24.12.2019
@@ -25,7 +24,7 @@ public class WebSocketController {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    private SystemInfoConfig systemInfoConfig;
+    private RoomInfoMessageConfig roomInfoMessageConfig;
 
     @MessageMapping("/p2g/room/{roomId}/send")
     public void chatMessageMapping(@PathVariable ChatMessage chatMessage) {
@@ -35,10 +34,8 @@ public class WebSocketController {
     }
 
     public void sendInfoToRoom(Long roomId, String message) {
-        ChatMessage infoChatMessage = new ChatMessage(systemInfoConfig.getSystemUser());
-        infoChatMessage.setMessage(message);
-        infoChatMessage.setTimestamp(TimeHelper.getLocalDateTimeNow());
-        messagingTemplate.convertAndSend("/p2g/room/" + roomId + "/messages", infoChatMessage);
+        ChatMessage roomInfoMessage = new ChatMessage(roomInfoMessageConfig.getRoomInfoUser(), message);
+        messagingTemplate.convertAndSend("/p2g/room/" + roomId + "/messages", roomInfoMessage);
     }
 
     public void sendToRoom(String destination, Long roomId, Object payload) {
