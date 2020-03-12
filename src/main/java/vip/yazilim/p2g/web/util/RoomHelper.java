@@ -37,4 +37,14 @@ public class RoomHelper {
             } else return next;
         }
     }
+
+    public static String getQueuedSongNames(List<Song> songs) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Song s : songs) {
+            stringBuilder.append("\n").append(s);
+        }
+
+        return stringBuilder.toString();
+    }
 }

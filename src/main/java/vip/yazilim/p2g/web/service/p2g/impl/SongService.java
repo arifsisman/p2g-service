@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
@@ -17,6 +18,7 @@ import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -53,6 +55,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -108,15 +113,21 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
+        List<Song> queuedList = new LinkedList<>();
+
         for (Song s : songList) {
             if (remainingSongCount > 0) {
-                create(s);
+                queuedList.add(create(s));
                 remainingSongCount--;
             } else {
                 String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
                 throw new ConstraintViolationException(err);
             }
         }
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
+        webSocketController.sendInfoToRoom(roomId, infoMessage);
 
         return true;
     }
@@ -156,6 +167,10 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         if (nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)) {
             spotifyPlayerService.roomPlayPause(roomId);
         }
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + " removed '" + songOpt.get().toString() + "' from queue.";
+        webSocketController.sendInfoToRoom(roomId, infoMessage);
 
         return delete(songOpt.get());
     }
@@ -240,11 +255,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException {
         Song song = getSafeSong(songId);
         int votes = song.getVotes();
+        String operation;
 
         votes = (upvote) ? votes + 1 : votes - 1;
+        operation = (upvote) ? " upvoted " : " downvoted ";
 
         song.setVotes(votes);
         update(song);
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + operation + "'" + song.toString() + "'";
+        webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
 
         return votes;
     }
