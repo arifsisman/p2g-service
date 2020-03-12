@@ -18,4 +18,8 @@ public class ChatMessage implements Serializable {
     private RoomUser roomUser;
     private String message;
     private LocalDateTime timestamp;
+
+    public ChatMessage(RoomUser roomUser) {
+        this.roomUser = roomUser;
+    }
 }

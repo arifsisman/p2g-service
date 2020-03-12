@@ -194,6 +194,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             RoomUser joinedUser = create(roomUser);
             spotifyPlayerService.userSyncWithRoom(joinedUser);
+            webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
             LOGGER.info("User[{}] joined Room[{}]", userId, roomId);
             return joinedUser;
@@ -231,7 +232,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
                 boolean status = delete(roomUser);
                 if (status) {
-                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.getRoomId());
+                    Long roomId = roomUser.getRoomId();
+                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomId);
+                    webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
                 try {

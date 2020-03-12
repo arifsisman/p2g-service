@@ -3,16 +3,14 @@ package vip.yazilim.p2g.web.controller.websocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import vip.yazilim.p2g.web.config.SystemInfoConfig;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.model.ChatMessage;
-import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 
 /**
  * @author mustafaarifsisman - 24.12.2019
@@ -26,27 +24,21 @@ public class WebSocketController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @SubscribeMapping("/p2g/room/{roomId}")
-    public void subscribeToRoomWebSocket(@DestinationVariable Long roomId, OAuth2Authentication oAuth2Authentication) {
-        String userId = SecurityHelper.getUserId(oAuth2Authentication);
-        String userDisplayName = SecurityHelper.getUserDisplayName(oAuth2Authentication);
-
-        LOGGER.info("{}[{}] subscribed to /p2g/room/{}", userDisplayName, userId, roomId);
-//        ChatMessage joinMessage = new ChatMessage("-1", "INFO", roomId.toString(), userDisplayName + " joined!", TimeHelper.getDateNow());
-//        sendToRoom("messages", roomId, joinMessage);
-    }
-
-    @SubscribeMapping("/p2g/user/{userId}")
-    public void subscribeToUserWebSocket(@DestinationVariable String userId, OAuth2Authentication oAuth2Authentication) {
-        String userDisplayName = SecurityHelper.getUserDisplayName(oAuth2Authentication);
-        LOGGER.info("{}[{}] subscribed to /p2g/user/{}", userDisplayName, userId, userId);
-    }
+    @Autowired
+    private SystemInfoConfig systemInfoConfig;
 
     @MessageMapping("/p2g/room/{roomId}/send")
     public void chatMessageMapping(@PathVariable ChatMessage chatMessage) {
         RoomUser roomUser = chatMessage.getRoomUser();
         LOGGER.info("{}[{}] sending message to Room[{}]: {}", roomUser.getUserName(), roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
         sendToRoom("messages", roomUser.getRoomId(), chatMessage);
+    }
+
+    public void sendInfoToRoom(Long roomId, String message) {
+        ChatMessage infoChatMessage = new ChatMessage(systemInfoConfig.getSystemUser());
+        infoChatMessage.setMessage(message);
+        infoChatMessage.setTimestamp(TimeHelper.getLocalDateTimeNow());
+        messagingTemplate.convertAndSend("/p2g/room/" + roomId + "/messages", infoChatMessage);
     }
 
     public void sendToRoom(String destination, Long roomId, Object payload) {
