@@ -164,7 +164,7 @@ public class RoomRest extends ARestCrud<Room, Long> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/leave")
-    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) throws DatabaseException {
+    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
         return RestResponseFactory.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);
     }
 
@@ -186,14 +186,14 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/promote")
     public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.promoteUserRole(roomUserId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, true), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/demote")
     public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.demoteUserRole(roomUserId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
@@ -213,7 +213,7 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @UpdateRoomSongs
     @PostMapping("/{roomId}/queue/clear")
     public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.clearRoomSongList(roomId), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(songService.deleteRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
 }

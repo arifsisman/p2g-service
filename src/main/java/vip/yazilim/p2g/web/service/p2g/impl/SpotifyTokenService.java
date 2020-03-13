@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.controller.rest.spotify.AuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
@@ -12,10 +13,8 @@ import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 31.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> implements ISpotifyTokenService {
 
@@ -33,6 +31,9 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private AuthorizationRest authorizationRest;
 
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {
@@ -53,7 +54,11 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     public String getAccessTokenByUserId(String userId) throws DatabaseException {
         try {
             Optional<OAuthToken> spotifyToken = tokenRepo.findOAuthTokenByUserId(userId);
-            return spotifyToken.map(OAuthToken::getAccessToken).orElseThrow(() -> new NotFoundException("Token not found for userId: " + userId));
+            if (spotifyToken.isPresent()) {
+                return spotifyToken.get().getAccessToken();
+            } else {
+                return authorizationRest.updateUserAccessToken();
+            }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }

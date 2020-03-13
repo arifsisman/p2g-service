@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vip.yazilim.p2g.web.constant.Constants;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "room_user")
 @Data
+@NoArgsConstructor
 public class RoomUser implements Serializable {
 
     @Id
@@ -24,6 +26,9 @@ public class RoomUser implements Serializable {
     @Column(name = "user_id", unique = true, updatable = false, nullable = false)
     private String userId;
 
+    @Column(name = "user_name", updatable = false, nullable = false)
+    private String userName;
+
     @Column(name = "role", length = 16)
     private String role;
 
@@ -32,4 +37,11 @@ public class RoomUser implements Serializable {
 
     @Column(name = "active_flag")
     private Boolean activeFlag;
+
+    public RoomUser(boolean isSystem) {
+        this.setId(-1L);
+        this.setRoomId(-1L);
+        this.setUserId("p2g");
+        this.setUserName("Info");
+    }
 }

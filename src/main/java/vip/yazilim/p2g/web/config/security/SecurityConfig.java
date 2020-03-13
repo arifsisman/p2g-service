@@ -17,7 +17,8 @@ public class SecurityConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests().antMatchers("/swagger-ui**", "/api/spotify/token**")
+                .authorizeRequests()
+                .antMatchers("/swagger-ui**")
                 .permitAll();
     }
 

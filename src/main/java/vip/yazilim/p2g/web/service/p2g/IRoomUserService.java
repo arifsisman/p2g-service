@@ -32,15 +32,16 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
     RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException;
     RoomUser joinRoomOwner(Long roomId, String userId) throws GeneralException;
 
-    boolean leaveRoom() throws DatabaseException;
+    boolean leaveRoom() throws DatabaseException, InvalidArgumentException;
 
     List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
     RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException;
     Role getRoleByRoomIdAndUserId(Long roomId, String userId) throws DatabaseException;
     boolean deleteRoomUsers(Long roomId) throws DatabaseException;
-    RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException;
-    RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException;
+
+    RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) throws DatabaseException, InvalidArgumentException;
+
     boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException;
     boolean hasRoomRole(String userId, Role role) throws DatabaseException;
     int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException;

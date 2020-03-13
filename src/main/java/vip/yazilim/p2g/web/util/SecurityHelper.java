@@ -21,6 +21,11 @@ public class SecurityHelper {
         return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("display_name").toString();
     }
 
+    public static String getUserImageUrl() {
+        //todo fix
+        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("images").toString();
+    }
+
     public static String getUserEmail() {
         return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("email").toString();
     }

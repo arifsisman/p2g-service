@@ -4,10 +4,13 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
+import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
@@ -15,6 +18,7 @@ import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
+import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -24,7 +28,6 @@ import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -35,7 +38,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SongService extends ACrudServiceImpl<Song, Long> implements ISongService {
 
@@ -53,6 +55,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private WebSocketController webSocketController;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -90,18 +95,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean clearRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
-        List<Song> songList = getSongListByRoomId(roomId);
-
-        for (Song s : songList) {
-            delete(s);
-        }
-
-        return spotifyPlayerService.roomStop(roomId);
-    }
-
-    @Override
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
+        List<Song> currentList = getSongListByRoomId(roomId);
+        int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();
+        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentSongCount;
+
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {
             if (s.getType() == SearchType.SONG) {
@@ -115,9 +113,21 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             }
         }
 
+        List<Song> queuedList = new LinkedList<>();
+
         for (Song s : songList) {
-            create(s);
+            if (remainingSongCount > 0) {
+                queuedList.add(create(s));
+                remainingSongCount--;
+            } else {
+                String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
+                throw new ConstraintViolationException(err);
+            }
         }
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
+        webSocketController.sendInfoToRoom(roomId, infoMessage);
 
         return true;
     }
@@ -148,21 +158,25 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         Long roomId = roomUserOpt.get().getRoomId();
 
-        try{
+        try {
             nowPlayingOpt = getPlayingSong(roomId);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, songId);
         }
 
-        if(nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)){
+        if (nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)) {
             spotifyPlayerService.roomPlayPause(roomId);
         }
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + " removed '" + songOpt.get().toString() + "' from queue.";
+        webSocketController.sendInfoToRoom(roomId, infoMessage);
 
         return delete(songOpt.get());
     }
 
     @Override
-    public boolean deleteRoomSongList(Long roomId) throws DatabaseException {
+    public boolean deleteRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
         List<Song> songList;
 
         try {
@@ -175,16 +189,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             delete(song);
         }
 
-        return true;
-    }
-
-    @Override
-    public List<Song> getSongListByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
-        try {
-            return songRepo.findByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
-        }
+        return spotifyPlayerService.roomStop(roomId);
     }
 
     @Override
@@ -193,7 +198,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             if (songStatus.equals(SongStatus.PLAYED)) {
                 return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, songStatus.getSongStatus());
             } else {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByVotesDescQueuedTime(roomId, songStatus.getSongStatus());
+                return getSongListByRoomId(roomId).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
@@ -220,7 +225,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
-    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) throws GeneralException {
+    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) {
         List<Song> songList = new LinkedList<>();
 
         for (SearchModel s : searchModelList) {
@@ -236,7 +241,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
             song.setVotes(0);
             song.setSongStatus(SongStatus.NEXT.getSongStatus());
-            songList.add(create(song));
+            songList.add(song);
         }
 
         return songList;
@@ -250,11 +255,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException {
         Song song = getSafeSong(songId);
         int votes = song.getVotes();
+        String operation;
 
         votes = (upvote) ? votes + 1 : votes - 1;
+        operation = (upvote) ? " upvoted " : " downvoted ";
 
         song.setVotes(votes);
         update(song);
+
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + operation + "'" + song.toString() + "'";
+        webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
 
         return votes;
     }

@@ -13,7 +13,6 @@ import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
 
@@ -43,9 +42,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private ISongService songService;
-
-    @Autowired
-    private ISpotifySearchService spotifySearchService;
 
     @Override
     public void run(String... args) throws GeneralException, IOException, SpotifyWebApiException {
@@ -101,8 +97,14 @@ public class DataInitializer implements CommandLineRunner {
         roomUserService.joinRoom(testRoom2.getId(), u6.getId(), "123", Role.ROOM_USER);
         roomUserService.joinRoom(testRoom2.getId(), u7.getId(), "123", Role.ROOM_USER);
 
-        roomUserService.joinRoom(testRoom3.getId(), u8.getId(), "''", Role.ROOM_USER);
-        roomUserService.joinRoom(testRoom3.getId(), u5.getId(), "", Role.ROOM_USER);
+        RoomUser r3u8 = roomUserService.joinRoom(testRoom3.getId(), u8.getId(), "''", Role.ROOM_USER);
+        RoomUser r3u5 = roomUserService.joinRoom(testRoom3.getId(), u5.getId(), "", Role.ROOM_USER);
+
+        r3u8.setRole(Role.ROOM_ADMIN.role);
+        roomUserService.update(r3u8);
+
+        r3u5.setRole(Role.ROOM_MODERATOR.role);
+        roomUserService.update(r3u5);
     }
 
     private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws GeneralException {

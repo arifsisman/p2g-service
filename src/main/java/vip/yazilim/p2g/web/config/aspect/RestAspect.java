@@ -92,6 +92,7 @@ public class RestAspect {
         }
     }
 
+
     // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
         Privilege privilege = hasRoomPrivilege.privilege();
@@ -110,6 +111,7 @@ public class RestAspect {
             throw new ForbiddenException("Insufficient Privileges");
         }
     }
+
 
     // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
@@ -130,6 +132,8 @@ public class RestAspect {
         }
     }
 
+
+    // Handle room events
     private void handleUpdateRoomSongs() throws DatabaseException {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);

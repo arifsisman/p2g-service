@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
@@ -87,6 +88,18 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     protected RoomUser preInsert(RoomUser entity) {
         entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
+
+        try {
+            userService.getById(entity.getUserId());
+            Optional<User> userOpt = userService.getById(entity.getUserId());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                entity.setUserName(user.getName());
+            }
+        } catch (Exception ignored) {
+            entity.setUserName("UNKNOWN");
+        }
+
         return entity;
     }
 
@@ -180,6 +193,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             RoomUser joinedUser = create(roomUser);
             spotifyPlayerService.userSyncWithRoom(joinedUser);
+            webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
             LOGGER.info("User[{}] joined Room[{}]", userId, roomId);
             return joinedUser;
@@ -199,7 +213,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public boolean leaveRoom() throws DatabaseException {
+    public boolean leaveRoom() throws DatabaseException, InvalidArgumentException {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
 
@@ -217,7 +231,9 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
                 boolean status = delete(roomUser);
                 if (status) {
-                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomUser.getRoomId());
+                    Long roomId = roomUser.getRoomId();
+                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomId);
+                    webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
                 try {
@@ -234,17 +250,31 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException {
+    public List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
         List<RoomUserModel> roomUserModels = new LinkedList<>();
         List<RoomUser> roomUsers = getRoomUsersByRoomId(roomId);
 
         for (RoomUser ru : roomUsers) {
             RoomUserModel roomUserModel = new RoomUserModel();
             roomUserModel.setRoomUser(ru);
-            Optional<User> roomUserOpt = userService.getUserById(ru.getUserId());
+            Optional<User> roomUserOpt = userService.getById(ru.getUserId());
             roomUserOpt.ifPresent(roomUserModel::setUser);
             roomUserModels.add(roomUserModel);
         }
+
+        roomUserModels.sort((o1, o2) -> {
+            if (o1.getRoomUser().getRole().equals(Role.ROOM_OWNER.role)) {
+                return 3;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_ADMIN.role)) {
+                return 2;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_MODERATOR.role)) {
+                return 1;
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_USER.role)) {
+                return 0;
+            } else {
+                return o1.getRoomUser().getRole().compareTo(o2.getRoomUser().getRole());
+            }
+        });
 
         return roomUserModels;
     }
@@ -306,55 +336,35 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser promoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
+    public RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) throws DatabaseException, InvalidArgumentException {
         RoomUser roomUser = getSafeRoomUser(roomUserId);
 
-        Role oldRole = Role.getRole(roomUser.getRole());
-        Role newRole;
-
-        switch (oldRole) {
-            case ROOM_USER:
-                newRole = Role.ROOM_MODERATOR;
-                break;
-            case ROOM_MODERATOR:
-                newRole = Role.ROOM_ADMIN;
-                break;
-            default:
-                newRole = oldRole;
-                break;
+        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
+            throw new ConstraintViolationException("You can not change your own role.");
         }
 
-        roomUser.setRole(newRole.getRole());
-        return update(roomUser);
-    }
-
-    @Override
-    public RoomUser demoteUserRole(Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        RoomUser roomUser = getSafeRoomUser(roomUserId);
-
         Role oldRole = Role.getRole(roomUser.getRole());
-        Role newRole;
+        Role newRole = getNewRole(oldRole, promoteDemoteFlag);
 
-        switch (oldRole) {
-            case ROOM_MODERATOR:
-                newRole = Role.ROOM_USER;
-                break;
-            case ROOM_ADMIN:
-                newRole = Role.ROOM_MODERATOR;
-                break;
-            default:
-                newRole = oldRole;
-                break;
+        if (oldRole.equals(newRole)) {
+            return roomUser;
+        } else {
+            roomUser.setRole(newRole.role);
+            RoomUser updatedRoomUser = update(roomUser);
+
+            String operation = (promoteDemoteFlag) ? " promoted " : " demoted ";
+            String userName = SecurityHelper.getUserDisplayName();
+            String infoMessage = userName + operation + roomUser.getUserName() + "'s role to " + newRole.role;
+            webSocketController.sendInfoToRoom(roomUser.getRoomId(), infoMessage);
+
+            return updatedRoomUser;
         }
-
-        roomUser.setRole(newRole.getRole());
-        return update(roomUser);
     }
 
     @Override
     public boolean hasRoomPrivilege(String userId, Privilege privilege) throws DatabaseException {
         Optional<RoomUser> roomUserOpt = getRoomUser(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
     }
 
     @Override
@@ -382,10 +392,32 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
     }
 
-    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException {
+    private void updateRoomUsers(RoomUser roomUser) throws DatabaseException, InvalidArgumentException {
         Long roomId = roomUser.getRoomId();
         List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
         roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
         webSocketController.sendToRoom("users", roomId, roomUserModels);
+    }
+
+    private Role getNewRole(Role oldRole, boolean promoteFlag) {
+        switch (oldRole) {
+            case ROOM_USER:
+                if (promoteFlag)
+                    return Role.ROOM_MODERATOR;
+                else
+                    return Role.ROOM_USER;
+            case ROOM_MODERATOR:
+                if (promoteFlag)
+                    return Role.ROOM_ADMIN;
+                else
+                    return Role.ROOM_USER;
+            case ROOM_ADMIN:
+                if (promoteFlag)
+                    return Role.ROOM_ADMIN;
+                else
+                    return Role.ROOM_MODERATOR;
+            default:
+                return oldRole;
+        }
     }
 }

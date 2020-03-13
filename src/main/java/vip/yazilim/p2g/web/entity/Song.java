@@ -32,7 +32,7 @@ public class Song implements Serializable {
     private String albumName;
 
     @Column(name = "artist_names")
-    @ElementCollection(targetClass=String.class)
+    @ElementCollection(targetClass = String.class)
     private List<String> artistNames;
 
     @Column(name = "image_url", length = 128)
@@ -58,4 +58,8 @@ public class Song implements Serializable {
 
     private Integer votes;
 
+    @Override
+    public String toString() {
+        return (getSongName() + " - " + getArtistNames()).replace("[", "").replace("]", "");
+    }
 }

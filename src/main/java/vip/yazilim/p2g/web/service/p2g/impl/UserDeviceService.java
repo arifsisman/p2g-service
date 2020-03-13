@@ -15,7 +15,6 @@ import vip.yazilim.spring.core.exception.GeneralException;
 import vip.yazilim.spring.core.exception.database.DatabaseReadException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -23,7 +22,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 30.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 

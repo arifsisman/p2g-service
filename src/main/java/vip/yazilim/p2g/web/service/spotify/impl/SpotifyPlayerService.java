@@ -21,7 +21,6 @@ import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -30,7 +29,6 @@ import java.util.*;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifyPlayerService implements ISpotifyPlayerService {
 
@@ -138,9 +136,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public boolean roomPrevious(Long roomId) throws DatabaseException, InvalidArgumentException, IOException, SpotifyWebApiException {
-        Optional<Song> previous = songService.getPreviousSong(roomId);
+        Optional<Song> previousOpt = songService.getPreviousSong(roomId);
 
-        if (previous.isPresent()) {
+        if (previousOpt.isPresent()) {
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
             if (playingOpt.isPresent()) { // Set old playing as next, if present
                 Song playing = playingOpt.get();
@@ -155,7 +153,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
                 songService.update(paused);
             }
 
-            return roomPlay(previous.get(), 0, false);
+            return roomPlay(previousOpt.get(), 0, false);
         } else {
             throw new NotFoundException("Previous song is empty");
         }

@@ -94,8 +94,7 @@ public class AuthorizationRest {
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/token")
     public RestResponse<String> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) throws GeneralException {
-        String userId = SecurityHelper.getUserId();
-        return RestResponseFactory.generateResponse(tokenService.saveUserToken(userId, accessToken), HttpStatus.OK, request, response);
+        return RestResponseFactory.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }
 
     private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) throws GeneralException, IOException, SpotifyWebApiException {
@@ -114,8 +113,8 @@ public class AuthorizationRest {
         return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(user.getId()), user);
     }
 
-    private void updateUserAccessToken() throws GeneralException {
-        tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
+    public String updateUserAccessToken() throws GeneralException {
+        return tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
     }
 
 }

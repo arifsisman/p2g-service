@@ -12,7 +12,6 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  * @author mustafaarifsisman - 29.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifyTrackService implements ISpotifyTrackService {
 

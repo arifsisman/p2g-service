@@ -16,7 +16,10 @@ import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
-import vip.yazilim.p2g.web.service.p2g.*;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
+import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 import vip.yazilim.spring.core.exception.GeneralException;
@@ -26,7 +29,6 @@ import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
-import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +37,6 @@ import java.util.Optional;
  * @author mustafaarifsisman - 29.10.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
@@ -47,9 +48,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private IRoomUserService roomUserService;
-
-    @Autowired
-    private IFriendRequestService friendRequestService;
 
     @Autowired
     private ISpotifyUserService spotifyUserService;
@@ -81,11 +79,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         entity.setRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         return entity;
-    }
-
-    @Override
-    public Optional<User> getUserById(String id) {
-        return userRepo.findById(id);
     }
 
     @Override
@@ -199,6 +192,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException {
         Optional<User> roomUserOpt = getById(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(Role.getRole(roomUserOpt.get().getRole()), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
     }
 }

@@ -10,14 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
-import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 import vip.yazilim.spring.core.exception.web.NotFoundException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,7 +25,6 @@ import java.util.List;
  * @author mustafaarifsisman - 26.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifyUserService implements ISpotifyUserService {
 
@@ -36,9 +33,6 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Autowired
     private ISpotifyTokenService tokenService;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
 
     private Gson gson = new GsonBuilder().create();
 
@@ -61,7 +55,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
 
         if (devices.length == 0) {
-            String err = String.format("Can not found any active Spotify device for userId[%s], please start Spotify first.", userId);
+            String err = String.format("Can not found any active Spotify device for %s, please start Spotify first.", userId);
             throw new NotFoundException(err);
         }
 

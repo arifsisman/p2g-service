@@ -19,23 +19,25 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISongService extends ICrudService<Song, Long> {
-    Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException;
-
-    Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException;
-    List<Song> getSongListByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseException;
-
-    Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException;
-    Optional<Song> getNextSong(Long roomId) throws DatabaseReadException;
-    Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException;
-
-    // Rest
-    boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws GeneralException, IOException, SpotifyWebApiException;
-    boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
-    boolean deleteRoomSongList(Long roomId) throws DatabaseException;
     List<Song> getSongListByRoomId(Long roomId) throws DatabaseException;
 
-    int upvote(Long songId) throws DatabaseException, InvalidArgumentException;
-    int downvote(Long songId) throws DatabaseException, InvalidArgumentException;
+    Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException;
 
-    boolean clearRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
+    Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException;
+
+    Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException;
+
+    Optional<Song> getNextSong(Long roomId) throws DatabaseReadException;
+
+    Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException;
+
+    boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws GeneralException, IOException, SpotifyWebApiException;
+
+    boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
+
+    boolean deleteRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
+
+    int upvote(Long songId) throws DatabaseException, InvalidArgumentException;
+
+    int downvote(Long songId) throws DatabaseException, InvalidArgumentException;
 }

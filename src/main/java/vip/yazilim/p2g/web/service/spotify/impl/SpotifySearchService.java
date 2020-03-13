@@ -13,7 +13,6 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 import vip.yazilim.spring.core.exception.database.DatabaseException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +23,6 @@ import static vip.yazilim.p2g.web.constant.enums.SearchType.SONG;
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
-@Transactional
 @Service
 public class SpotifySearchService implements ISpotifySearchService {
 
