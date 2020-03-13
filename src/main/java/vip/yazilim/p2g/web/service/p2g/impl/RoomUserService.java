@@ -88,17 +88,16 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     protected RoomUser preInsert(RoomUser entity) {
         entity.setJoinDate(TimeHelper.getLocalDateTimeNow());
-//        entity.setUserName(SecurityHelper.getUserDisplayName());
-//        entity.setUserImageUrl(SecurityHelper.getUserImageUrl());
 
         try {
+            userService.getById(entity.getUserId());
             Optional<User> userOpt = userService.getById(entity.getUserId());
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 entity.setUserName(user.getName());
-                entity.setUserImageUrl(user.getImageUrl());
             }
         } catch (Exception ignored) {
+            entity.setUserName("UNKNOWN");
         }
 
         return entity;
