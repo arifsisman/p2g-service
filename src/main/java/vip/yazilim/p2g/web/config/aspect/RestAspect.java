@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
@@ -19,8 +21,6 @@ import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

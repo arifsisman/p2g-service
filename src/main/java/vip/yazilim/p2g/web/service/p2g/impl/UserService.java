@@ -5,6 +5,11 @@ import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
@@ -22,12 +27,7 @@ import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
 import vip.yazilim.spring.core.exception.database.DatabaseCreateException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         // Set User
         userOpt = getById(userId);
         if (!userOpt.isPresent()) {
-            throw new NotFoundException("User not found");
+            throw new ResourceNotFoundException("User not found");
         } else {
             userModel.setUser(userOpt.get());
         }
@@ -128,7 +128,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String id, String email, String username) throws GeneralException {
+    public User createUser(String id, String email, String username) throws BusinessLogicException {
         User user = new User();
         user.setId(id);
         user.setEmail(email);
@@ -138,7 +138,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws BusinessLogicException {
         String userId = user.getId();
         String productType = spotifyUser.getProduct().getType();
 

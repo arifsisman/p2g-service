@@ -1,14 +1,14 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,8 @@ public interface IFriendRequestService extends ICrudService<FriendRequest, Long>
 
     Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) throws DatabaseReadException;
 
-    boolean createFriendRequest(String senderId, String receiverId) throws GeneralException;
+    boolean createFriendRequest(String senderId, String receiverId) throws BusinessLogicException;
+
     boolean acceptFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;
     boolean ignoreFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;
     boolean rejectFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;

@@ -4,6 +4,9 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
@@ -11,9 +14,6 @@ import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws GeneralException, IOException, SpotifyWebApiException {
+    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws BusinessLogicException, IOException, SpotifyWebApiException {
         Optional<UserDevice> oldUserDeviceOpt;
 
         try {
@@ -77,32 +77,6 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             return create(userDevice);
         }
     }
-
-//    @Override
-//    public List<UserDevice> getUserDevicesByUserId(String userId) throws DatabaseException {
-//        List<UserDevice> userDeviceList;
-//
-//        try {
-//            userDeviceList = userDeviceRepo.findByUserIdOrderByActiveFlagDesc(userId);
-//        } catch (Exception exception) {
-//            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
-//        }
-//
-//        return userDeviceList;
-//    }
-
-//    @Override
-//    public List<UserDevice> getUserDevicesByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
-//        List<UserDevice> userDeviceList = new LinkedList<>();
-//        List<User> userList = userService.getUsersByRoomId(roomId);
-//
-//        for (User u : userList) {
-//            Optional<UserDevice> userDeviceOpt = getUsersActiveDevice(u.getId());
-//            userDeviceOpt.ifPresent(userDeviceList::add);
-//        }
-//
-//        return userDeviceList;
-//    }
 
     @Override
     protected JpaRepository<UserDevice, String> getRepository() {

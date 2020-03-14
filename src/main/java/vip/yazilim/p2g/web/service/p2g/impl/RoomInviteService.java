@@ -3,6 +3,10 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.enums.WebSocketDestinations;
 import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomInvite;
@@ -18,11 +22,6 @@ import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -67,7 +66,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException {
 
         List<User> inviteList = new ArrayList<>();
         List<RoomInvite> roomInviteList;
@@ -96,7 +95,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException {
         List<RoomInviteModel> roomInviteModelList = new LinkedList<>();
         List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 
@@ -111,7 +110,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomInvite invite(Long roomId, String userId) throws GeneralException {
+    public RoomInvite invite(Long roomId, String userId) throws BusinessLogicException {
         if (SecurityHelper.getUserId().equals(userId)) {
             throw new ConstraintViolationException("You can not invite yourself.");
         }
@@ -141,7 +140,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomUser accept(RoomInvite roomInvite) throws GeneralException {
+    public RoomUser accept(RoomInvite roomInvite) throws BusinessLogicException {
         return roomUserService.acceptRoomInvite(roomInvite);
     }
 

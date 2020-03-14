@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
@@ -15,9 +17,6 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.rest.model.RestResponse;
-import vip.yazilim.spring.core.rest.model.RestResponseFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,34 +48,34 @@ public class SearchRest {
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/{query}")
     public RestResponse<List<SearchModel>> search(HttpServletRequest request, HttpServletResponse response, @PathVariable String query) throws IOException, SpotifyWebApiException, DatabaseException {
-        return RestResponseFactory
+        return RestResponse
                 .generateResponse(spotifySearchService
-                .search(query, SearchType.SONG, SearchType.ALBUM, SearchType.PLAYLIST),
-                HttpStatus.OK, request, response);
+                                .search(query, SearchType.SONG, SearchType.ALBUM, SearchType.PLAYLIST),
+                        HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/song/{id}")
     public RestResponse<SearchModel> getSong(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) throws IOException, SpotifyWebApiException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyTrackService.getTrack(id), HttpStatus.OK, request, response);
+        return RestResponse.generateResponse(spotifyTrackService.getTrack(id), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/songs/{ids}")
     public RestResponse<List<SearchModel>> getSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String ids) throws IOException, SpotifyWebApiException, DatabaseException {
         String[] idArray = ids.split(",");
-        return RestResponseFactory.generateResponse(spotifyTrackService.getSeveralTracks(idArray), HttpStatus.OK, request, response);
+        return RestResponse.generateResponse(spotifyTrackService.getSeveralTracks(idArray), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/album/{albumId}/songs")
     public RestResponse<List<SearchModel>> getAlbumSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String albumId) throws IOException, SpotifyWebApiException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyAlbumService.getSongs(albumId), HttpStatus.OK, request, response);
+        return RestResponse.generateResponse(spotifyAlbumService.getSongs(albumId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/playlist/{playlistId}/songs")
     public RestResponse<List<SearchModel>> getPlaylistSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable String playlistId) throws IOException, SpotifyWebApiException, DatabaseException {
-        return RestResponseFactory.generateResponse(spotifyPlaylistService.getSongs(playlistId), HttpStatus.OK, request, response);
+        return RestResponse.generateResponse(spotifyPlaylistService.getSongs(playlistId), HttpStatus.OK, request, response);
     }
 }

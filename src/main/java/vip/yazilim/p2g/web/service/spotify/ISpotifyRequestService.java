@@ -19,9 +19,7 @@ public interface ISpotifyRequestService {
 
     <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) throws IOException, SpotifyWebApiException;
     <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) throws IOException, SpotifyWebApiException;
-
     <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException;
-
     <R> void execRequestListAsync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) throws IOException, SpotifyWebApiException;
 
 }

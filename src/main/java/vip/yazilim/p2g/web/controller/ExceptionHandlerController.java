@@ -10,16 +10,16 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.*;
+import vip.yazilim.libs.springcore.exception.service.MethodNotSupported;
+import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.exception.service.RestException;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.MethodNotSupported;
-import vip.yazilim.spring.core.exception.database.*;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.io.IOException;
 
@@ -84,8 +84,8 @@ public class ExceptionHandlerController {
     // Spring Core Lib Exceptions
     /////////////////////////////
 
-    @ExceptionHandler({GeneralException.class})
-    public ResponseEntity<String> handleGeneralException(GeneralException e) {
+    @ExceptionHandler({BusinessLogicException.class})
+    public ResponseEntity<String> handleBusinessLogicException(BusinessLogicException e) {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
@@ -114,23 +114,19 @@ public class ExceptionHandlerController {
         return error(NOT_FOUND, e);
     }
 
-    @ExceptionHandler({DatabaseSaveException.class})
-    public ResponseEntity<String> handleDatabaseSaveException(DatabaseSaveException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
 
     @ExceptionHandler({DatabaseUpdateException.class})
     public ResponseEntity<String> handleDatabaseUpdateException(DatabaseUpdateException e) {
         return error(NOT_FOUND, e);
     }
 
-    @ExceptionHandler({ServiceException.class})
-    public ResponseEntity<String> handleServiceException(ServiceException e) {
+    @ExceptionHandler({RestException.class})
+    public ResponseEntity<String> handleRestException(RestException e) {
         return error(INTERNAL_SERVER_ERROR, e);
     }
 
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+    @ExceptionHandler({ResourceNotFoundException.class})
+    public ResponseEntity<String> handleNotFoundException(ResourceNotFoundException e) {
         return error(NOT_FOUND, e);
     }
 

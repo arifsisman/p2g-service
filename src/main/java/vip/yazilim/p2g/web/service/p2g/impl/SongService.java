@@ -4,6 +4,13 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.InvalidUpdateException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
@@ -21,12 +28,6 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -95,7 +96,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws GeneralException, IOException, SpotifyWebApiException {
+    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws BusinessLogicException, IOException, SpotifyWebApiException {
         List<Song> currentList = getSongListByRoomId(roomId);
         int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();
         int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentSongCount;
@@ -133,7 +134,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
+    public boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException {
         String userId = SecurityHelper.getUserId();
         Optional<Song> songOpt;
         Optional<Song> nowPlayingOpt;
@@ -148,12 +149,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         if (!songOpt.isPresent()) {
             String err = String.format("Song[%s] not found", songId);
-            throw new NotFoundException(err);
+            throw new ResourceNotFoundException(err);
         }
 
         if (!roomUserOpt.isPresent()) {
             String err = String.format("RoomUser not found with UserId[%s]", userId);
-            throw new NotFoundException(err);
+            throw new ResourceNotFoundException(err);
         }
 
         Long roomId = roomUserOpt.get().getRoomId();
@@ -249,10 +250,10 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     private Song getSafeSong(Long songId) throws DatabaseException, InvalidArgumentException {
         Optional<Song> songOpt = getById(songId);
-        return songOpt.orElseThrow(() -> new NotFoundException("Song not found"));
+        return songOpt.orElseThrow(() -> new ResourceNotFoundException("Song not found"));
     }
 
-    private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException {
+    private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
         Song song = getSafeSong(songId);
         int votes = song.getVotes();
         String operation;

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Role;
@@ -14,7 +15,6 @@ import vip.yazilim.p2g.web.entity.*;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
     private ISongService songService;
 
     @Override
-    public void run(String... args) throws GeneralException, IOException, SpotifyWebApiException {
+    public void run(String... args) throws BusinessLogicException, IOException, SpotifyWebApiException {
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
         User u2 = userService.createUser("2", "2@gmail.com", "Test User 2");
@@ -107,7 +107,7 @@ public class DataInitializer implements CommandLineRunner {
         roomUserService.update(r3u5);
     }
 
-    private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws GeneralException {
+    private void createRoomInvite(User inviter, User receiver, Room testRoom2) throws BusinessLogicException {
         RoomInvite roomInvite = new RoomInvite();
         roomInvite.setRoomId(testRoom2.getId());
         roomInvite.setInviterId(inviter.getId());
@@ -116,7 +116,7 @@ public class DataInitializer implements CommandLineRunner {
         roomInviteService.create(roomInvite);
     }
 
-    private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws GeneralException {
+    private void createFriendRequest(User sender, User receiver, FriendRequestStatus status) throws BusinessLogicException {
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setSenderId(sender.getId());
         friendRequest.setReceiverId(receiver.getId());
@@ -125,7 +125,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) throws GeneralException {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) throws BusinessLogicException {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);

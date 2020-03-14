@@ -45,14 +45,6 @@
         </profile>
     </profiles>
 
-    <repositories>
-        <repository>
-            <id>p2g-web-dep</id>
-            <name>Play2Gether Project Dependencies</name>
-            <url>file://${project.basedir}/lib</url>
-        </repository>
-    </repositories>
-
     <dependencies>
 
         <!-- Core -->
@@ -66,7 +58,9 @@
         <dependency>
             <groupId>vip.yazilim.spring</groupId>
             <artifactId>spring-core</artifactId>
-            <version>2.0.00</version>
+            <version>2.2.00.220</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spring-core-2.2.00.220.jar</systemPath>
         </dependency>
 
 
@@ -206,10 +200,35 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <includeSystemScope>true</includeSystemScope>
                     <mainClass>vip.yazilim.p2g.web.Play2GetherWebApplication</mainClass>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <groupId>vip.yazilim.libs</groupId>
+                    <artifactId>spring-core</artifactId>
+                    <version>2.2.00.220</version>
+                    <packaging>jar</packaging>
+                    <file>${basedir}/lib/spring-core-2.2.00.220.jar</file>
+                    <generatePom>true</generatePom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-jar-lib</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
         <finalName>${project.artifactId}-${project.version}</finalName>
     </build>
 

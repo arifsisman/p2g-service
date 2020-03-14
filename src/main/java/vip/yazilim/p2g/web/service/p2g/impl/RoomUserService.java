@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
@@ -25,12 +30,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -131,7 +130,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             return roomUserModel;
         } else {
             String msg = String.format("User[%s] not in any room", userId);
-            throw new NotFoundException(msg);
+            throw new ResourceNotFoundException(msg);
         }
     }
 
@@ -161,12 +160,12 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
      * @param password password
      * @param role     role
      * @return RoomUser
-     * @throws GeneralException       GeneralException
+     * @throws BusinessLogicException BusinessLogicException
      * @throws IOException            IOException
      * @throws SpotifyWebApiException SpotifyWebApiException
      */
     @Override
-    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws GeneralException, IOException, SpotifyWebApiException {
+    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) throws BusinessLogicException, IOException, SpotifyWebApiException {
         Optional<Room> roomOpt = roomService.getById(roomId);
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] can not found", roomId);
@@ -201,7 +200,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser joinRoomOwner(Long roomId, String userId) throws GeneralException {
+    public RoomUser joinRoomOwner(Long roomId, String userId) throws BusinessLogicException {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomId(roomId);
@@ -245,7 +244,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 return status;
             }
         } else {
-            throw new NotFoundException("User not in any room");
+            throw new ResourceNotFoundException("User not in any room");
         }
     }
 
@@ -280,10 +279,10 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws GeneralException {
+    public RoomUser acceptRoomInvite(RoomInvite roomInvite) throws BusinessLogicException {
         if (!roomInviteService.existsById(roomInvite.getId())) {
             String err = String.format("Room Invite[%s] not found", roomInvite.getId());
-            throw new NotFoundException(err);
+            throw new ResourceNotFoundException(err);
         } else {
             // Any room exists check
             Optional<RoomUser> existingUserOpt = getRoomUser(roomInvite.getReceiverId());
@@ -388,7 +387,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         if (roomUserOpt.isPresent()) {
             return roomUserOpt.get();
         } else {
-            throw new NotFoundException("Room user not found");
+            throw new ResourceNotFoundException("Room user not found");
         }
     }
 

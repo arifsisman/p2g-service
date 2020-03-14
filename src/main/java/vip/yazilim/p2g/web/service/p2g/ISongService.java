@@ -1,14 +1,14 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ICrudService;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,9 +31,9 @@ public interface ISongService extends ICrudService<Song, Long> {
 
     Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException;
 
-    boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws GeneralException, IOException, SpotifyWebApiException;
+    boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList) throws BusinessLogicException, IOException, SpotifyWebApiException;
 
-    boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
+    boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException;
 
     boolean deleteRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException;
 

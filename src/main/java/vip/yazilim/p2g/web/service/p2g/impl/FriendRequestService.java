@@ -3,6 +3,12 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
@@ -19,12 +25,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -162,7 +162,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
+    public boolean createFriendRequest(String senderId, String receiverId) throws BusinessLogicException {
         if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, FriendRequestStatus.ACCEPTED).isPresent()) {
             throw new ConstraintViolationException("You are already friends.");
         } else if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(receiverId, senderId, FriendRequestStatus.ACCEPTED).isPresent()) {
@@ -207,7 +207,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         Optional<FriendRequest> friendRequestOpt2 = getFriendRequestBySenderIdAndReceiverId(userId, friendId);
 
         if (!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()) {
-            throw new NotFoundException("Friend can not found");
+            throw new ResourceNotFoundException("Friend can not found");
         } else {
             FriendRequest friendRequest = friendRequestOpt1.orElseGet(friendRequestOpt2::get);
             return delete(friendRequest);
@@ -215,7 +215,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
-        FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NotFoundException("Friend request can not found"));
+        FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new ResourceNotFoundException("Friend request can not found"));
 
         if (status == FriendRequestStatus.ACCEPTED) {
             friendRequest.setRequestStatus(status.getFriendRequestStatus());

@@ -3,17 +3,16 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
+import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.controller.rest.spotify.AuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +73,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws GeneralException {
+    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws BusinessLogicException {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
@@ -90,7 +89,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public String saveUserToken(String userId, String accessToken) throws GeneralException {
+    public String saveUserToken(String userId, String accessToken) throws BusinessLogicException {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
