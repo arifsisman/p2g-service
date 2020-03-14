@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
 import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
@@ -66,7 +67,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException {
+    public List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
 
         List<User> inviteList = new ArrayList<>();
         List<RoomInvite> roomInviteList;
@@ -95,7 +96,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException {
+    public List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException {
         List<RoomInviteModel> roomInviteModelList = new LinkedList<>();
         List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 

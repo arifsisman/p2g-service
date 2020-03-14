@@ -1,6 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
+import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
 import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ICrudService;
@@ -17,11 +18,11 @@ import java.util.List;
  */
 public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
-    List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException;
+    List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
 
     List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException;
 
-    List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException;
+    List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException;
 
     RoomInvite invite(Long roomId, String userId) throws BusinessLogicException;
 
