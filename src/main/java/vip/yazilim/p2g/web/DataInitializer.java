@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@ConditionalOnProperty(value = "DATA_INIT_FLAG", havingValue = "true")
 public class DataInitializer implements CommandLineRunner {
 
     private Logger LOGGER = LoggerFactory.getLogger(DataInitializer.class);
