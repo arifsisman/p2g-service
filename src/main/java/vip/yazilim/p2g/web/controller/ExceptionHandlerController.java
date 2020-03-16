@@ -10,16 +10,11 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import vip.yazilim.libs.springcore.exception.*;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.MethodNotSupported;
-import vip.yazilim.spring.core.exception.database.*;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.exception.web.ServiceException;
 
 import java.io.IOException;
 
@@ -84,13 +79,8 @@ public class ExceptionHandlerController {
     // Spring Core Lib Exceptions
     /////////////////////////////
 
-    @ExceptionHandler({GeneralException.class})
-    public ResponseEntity<String> handleGeneralException(GeneralException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({InvalidArgumentException.class})
-    public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<String> handleInvalidArgumentException(IllegalArgumentException e) {
         return error(BAD_REQUEST, e);
     }
 
@@ -114,29 +104,15 @@ public class ExceptionHandlerController {
         return error(NOT_FOUND, e);
     }
 
-    @ExceptionHandler({DatabaseSaveException.class})
-    public ResponseEntity<String> handleDatabaseSaveException(DatabaseSaveException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
 
     @ExceptionHandler({DatabaseUpdateException.class})
     public ResponseEntity<String> handleDatabaseUpdateException(DatabaseUpdateException e) {
         return error(NOT_FOUND, e);
     }
 
-    @ExceptionHandler({ServiceException.class})
-    public ResponseEntity<String> handleServiceException(ServiceException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+    @ExceptionHandler({NoSuchMethodException.class})
+    public ResponseEntity<String> handleNoSuchMethodException(NoSuchMethodException e) {
         return error(NOT_FOUND, e);
-    }
-
-    @ExceptionHandler({MethodNotSupported.class})
-    public ResponseEntity<String> handleMethodNotSupported(MethodNotSupported e) {
-        return error(METHOD_NOT_ALLOWED, e);
     }
 
     /////////////////////////////
@@ -144,7 +120,7 @@ public class ExceptionHandlerController {
     /////////////////////////////
 
     @ExceptionHandler({IOException.class})
-    public ResponseEntity<String> handleIOException(DatabaseException e) {
+    public ResponseEntity<String> handleIOException(IOException e) {
         return error(BAD_REQUEST, e);
     }
 

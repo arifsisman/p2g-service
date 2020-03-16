@@ -1,13 +1,10 @@
 package vip.yazilim.p2g.web.service.p2g;
 
+import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.UserModel;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.service.ICrudService;
 
 import java.util.List;
 
@@ -17,12 +14,15 @@ import java.util.List;
  */
 public interface IUserService extends ICrudService<User, String> {
 
-    UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
-    List<User> getUsersByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    UserModel getUserModelByUserId(String userId);
 
-    User createUser(String id, String email, String username) throws GeneralException;
-    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws GeneralException;
+    List<User> getUsersByRoomId(Long roomId);
 
-    boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException;
-    boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException;
+    User createUser(String id, String email, String username);
+
+    User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user);
+
+    boolean hasSystemRole(String userId, Role role);
+
+    boolean hasSystemPrivilege(String userId, Privilege privilege);
 }

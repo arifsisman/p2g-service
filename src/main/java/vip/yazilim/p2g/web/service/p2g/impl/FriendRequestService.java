@@ -3,6 +3,8 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
@@ -19,15 +21,10 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.exception.web.NotFoundException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -65,7 +62,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<FriendModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<FriendModel> getFriendsByUserId(String userId) {
         List<FriendRequest> friendRequestList;
         List<FriendModel> userModels = new LinkedList<>();
 
@@ -101,7 +98,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Integer getFriendsCountByUserId(String userId) throws DatabaseReadException {
+    public Integer getFriendsCountByUserId(String userId) {
         int count = 0;
         try {
             List<FriendRequest> friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
@@ -118,7 +115,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
 
     @Override
-    public List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException {
+    public List<FriendRequest> getFriendRequestsByReceiverId(String userId) {
         try {
             return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
@@ -127,7 +124,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException {
+    public List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) {
         List<FriendRequestModel> friendRequestModels = new LinkedList<>();
         List<FriendRequest> friendRequests = getFriendRequestsByReceiverId(userId);
 
@@ -144,7 +141,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String senderId, String receiverId) throws DatabaseReadException {
+    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String senderId, String receiverId) {
         try {
             return friendRequestRepo.findBySenderIdAndReceiverId(senderId, receiverId);
         } catch (Exception exception) {
@@ -153,7 +150,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) throws DatabaseReadException {
+    public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) {
         try {
             return friendRequestRepo.findBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, requestStatus.getFriendRequestStatus());
         } catch (Exception exception) {
@@ -162,7 +159,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean createFriendRequest(String senderId, String receiverId) throws GeneralException {
+    public boolean createFriendRequest(String senderId, String receiverId) {
         if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, FriendRequestStatus.ACCEPTED).isPresent()) {
             throw new ConstraintViolationException("You are already friends.");
         } else if (getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(receiverId, senderId, FriendRequestStatus.ACCEPTED).isPresent()) {
@@ -186,36 +183,36 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public boolean acceptFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
+    public boolean acceptFriendRequest(Long friendRequestId) {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.ACCEPTED);
     }
 
     @Override
-    public boolean ignoreFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
+    public boolean ignoreFriendRequest(Long friendRequestId) {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.IGNORED);
     }
 
     @Override
-    public boolean rejectFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException {
+    public boolean rejectFriendRequest(Long friendRequestId) {
         return replyFriendRequest(friendRequestId, FriendRequestStatus.REJECTED);
     }
 
     @Override
-    public boolean deleteFriend(String friendId) throws DatabaseException {
+    public boolean deleteFriend(String friendId) {
         String userId = SecurityHelper.getUserId();
         Optional<FriendRequest> friendRequestOpt1 = getFriendRequestBySenderIdAndReceiverId(friendId, userId);
         Optional<FriendRequest> friendRequestOpt2 = getFriendRequestBySenderIdAndReceiverId(userId, friendId);
 
         if (!friendRequestOpt1.isPresent() && !friendRequestOpt2.isPresent()) {
-            throw new NotFoundException("Friend can not found");
+            throw new NoSuchElementException("Friend can not found");
         } else {
             FriendRequest friendRequest = friendRequestOpt1.orElseGet(friendRequestOpt2::get);
             return delete(friendRequest);
         }
     }
 
-    private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) throws DatabaseException, InvalidArgumentException {
-        FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NotFoundException("Friend request can not found"));
+    private boolean replyFriendRequest(Long friendRequestId, FriendRequestStatus status) {
+        FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NoSuchElementException("Friend request can not found"));
 
         if (status == FriendRequestStatus.ACCEPTED) {
             friendRequest.setRequestStatus(status.getFriendRequestStatus());
@@ -231,7 +228,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     // Search for counter friend request and delete if it exists
-    private void deleteCounterFriendRequest(FriendRequest friendRequest) throws DatabaseException {
+    private void deleteCounterFriendRequest(FriendRequest friendRequest) {
         String senderId = friendRequest.getSenderId();
         String receiverId = friendRequest.getReceiverId();
 
@@ -243,10 +240,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
             counterFriendRequest = getFriendRequestBySenderIdAndReceiverId(receiverId, senderId);
         }
 
-        if (counterFriendRequest.isPresent()) {
-            delete(counterFriendRequest.get());
-        }
-
+        counterFriendRequest.ifPresent(this::delete);
     }
 
 }

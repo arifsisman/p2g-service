@@ -1,10 +1,7 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -12,7 +9,5 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISpotifyAlbumService {
-
-    List<SearchModel> getSongs(String albumId) throws IOException, SpotifyWebApiException, DatabaseException;
-
+    List<SearchModel> getSongs(String albumId);
 }

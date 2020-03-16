@@ -1,9 +1,11 @@
 package vip.yazilim.p2g.web.controller.rest.p2g;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vip.yazilim.libs.springcore.rest.ARestCru;
+import vip.yazilim.libs.springcore.rest.model.RestResponse;
+import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
@@ -22,17 +24,9 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.rest.ARestCrud;
-import vip.yazilim.spring.core.rest.model.RestResponse;
-import vip.yazilim.spring.core.rest.model.RestResponseFactory;
-import vip.yazilim.spring.core.service.ICrudService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
@@ -43,7 +37,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  */
 @RestController
 @RequestMapping(API_P2G + "/room")
-public class RoomRest extends ARestCrud<Room, Long> {
+public class RoomRest extends ARestCru<Room, Long> {
 
     @Autowired
     private IRoomService roomService;
@@ -60,6 +54,11 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @Override
     protected ICrudService<Room, Long> getService() {
         return roomService;
+    }
+
+    @Override
+    protected Class<Room> getClassOfEntity() {
+        return Room.class;
     }
 
     ///////////////////////////////
@@ -100,84 +99,84 @@ public class RoomRest extends ARestCrud<Room, Long> {
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_DELETE)
     @DeleteMapping({"/{id}"})
-    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws DatabaseException {
-        return RestResponseFactory.generateResponse(roomService.deleteById(id), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
+        return RestResponse.generateResponse(roomService.deleteById(id), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping({"/create/{roomName}"})
-    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody String roomPassword) throws GeneralException {
-        return RestResponseFactory.generateResponse(roomService.createRoom(SecurityHelper.getUserId(), roomName, roomPassword), HttpStatus.OK, request, response);
+    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody String roomPassword) {
+        return RestResponse.generateResponse(roomService.createRoom(SecurityHelper.getUserId(), roomName, roomPassword), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/{roomId}")
-    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomService.getRoomModelByRoomId(roomId), HttpStatus.OK, request, response);
+    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+        return RestResponse.generateResponse(roomService.getRoomModelByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/me")
-    public RestResponse<RoomModel> getRoomModelByUser(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomService.getRoomModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    public RestResponse<RoomModel> getRoomModelByUser(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomService.getRoomModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/smodel/{roomId}")
-    public RestResponse<RoomModelSimplified> getRoomModelSimplified(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomService.getRoomModelSimplifiedByRoomId(roomId), HttpStatus.OK, request, response);
+    public RestResponse<RoomModelSimplified> getRoomModelSimplified(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+        return RestResponse.generateResponse(roomService.getRoomModelSimplifiedByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/")
-    public RestResponse<List<RoomModelSimplified>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomService.getSimplifiedRoomModels(), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomModelSimplified>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomService.getSimplifiedRoomModels(), HttpStatus.OK, request, response);
     }
 
     // RoomInvite (Invite & Accept & Reject)
     @HasRoomPrivilege(privilege = Privilege.ROOM_INVITE)
     @PostMapping("/{roomId}/invite/{userId}")
-    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @PathVariable String userId) throws GeneralException {
-        return RestResponseFactory.generateResponse(roomInviteService.invite(roomId, userId), HttpStatus.OK, request, response);
+    public RestResponse<RoomInvite> invite(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @PathVariable String userId) {
+        return RestResponse.generateResponse(roomInviteService.invite(roomId, userId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @UpdateRoomUsers
     @PostMapping("/invite/accept")
-    public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) throws GeneralException {
-        return RestResponseFactory.generateResponse(roomInviteService.accept(roomInvite), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
+        return RestResponse.generateResponse(roomInviteService.accept(roomInvite), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/invite/{roomInviteId}/reject")
-    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomInviteId) throws DatabaseException {
-        return RestResponseFactory.generateResponse(roomInviteService.reject(roomInviteId), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomInviteId) {
+        return RestResponse.generateResponse(roomInviteService.reject(roomInviteId), HttpStatus.OK, request, response);
     }
 
     // RoomUser (Join & Leave & Get Users)
     @HasSystemRole(role = Role.P2G_USER)
     @UpdateRoomUsers
     @PostMapping("/{roomId}/join")
-    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody String password) throws GeneralException, IOException, SpotifyWebApiException {
-        return RestResponseFactory.generateResponse(roomUserService.joinRoom(roomId, SecurityHelper.getUserId(), password, Role.ROOM_USER), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody String password) {
+        return RestResponse.generateResponse(roomUserService.joinRoom(roomId, SecurityHelper.getUserId(), password, Role.ROOM_USER), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @DeleteMapping("/leave")
-    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> leaveRoom(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomId}/users")
-    public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException {
-        return RestResponseFactory.generateResponse(roomUserService.getRoomUsersByRoomId(roomId), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomUser>> getRoomUsers(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+        return RestResponse.generateResponse(roomUserService.getRoomUsersByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/{roomId}/roomUserModels")
-    public RestResponse<List<RoomUserModel>> getRoomUserModels(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.getRoomUserModelsByRoomId(roomId), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomUserModel>> getRoomUserModels(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+        return RestResponse.generateResponse(roomUserService.getRoomUserModelsByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
 
@@ -185,35 +184,35 @@ public class RoomRest extends ARestCrud<Room, Long> {
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/promote")
-    public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, true), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
+        return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, true), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @UpdateRoomUsers
     @PutMapping("/user/{roomUserId}/demote")
-    public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
+    public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
+        return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/invite/model"})
-    public RestResponse<List<RoomInviteModel>> getRoomInviteModel(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomInviteService.getRoomInviteModelListByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomInviteModel>> getRoomInviteModel(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomInviteService.getRoomInviteModelListByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/user/me"})
-    public RestResponse<RoomUserModel> getRoomUserModelMe(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(roomUserService.getRoomUserModelMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    public RestResponse<RoomUserModel> getRoomUserModelMe(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomUserService.getRoomUserModelMe(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     // Clear song list
     @HasRoomPrivilege(privilege = Privilege.ROOM_CLEAR_QUEUE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}/queue/clear")
-    public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
-        return RestResponseFactory.generateResponse(songService.deleteRoomSongList(roomId), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+        return RestResponse.generateResponse(songService.deleteRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
 }

@@ -3,17 +3,14 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
+import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.controller.rest.spotify.AuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.spring.core.exception.GeneralException;
-import vip.yazilim.spring.core.exception.InvalidArgumentException;
-import vip.yazilim.spring.core.exception.database.DatabaseException;
-import vip.yazilim.spring.core.exception.database.DatabaseReadException;
-import vip.yazilim.spring.core.service.ACrudServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +48,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public String getAccessTokenByUserId(String userId) throws DatabaseException {
+    public String getAccessTokenByUserId(String userId) {
         try {
             Optional<OAuthToken> spotifyToken = tokenRepo.findOAuthTokenByUserId(userId);
             if (spotifyToken.isPresent()) {
@@ -65,7 +62,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public Optional<OAuthToken> getTokenByUserId(String userId) throws DatabaseException {
+    public Optional<OAuthToken> getTokenByUserId(String userId) {
         try {
             return tokenRepo.findOAuthTokenByUserId(userId);
         } catch (Exception exception) {
@@ -74,7 +71,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws GeneralException {
+    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
@@ -90,7 +87,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public String saveUserToken(String userId, String accessToken) throws GeneralException {
+    public String saveUserToken(String userId, String accessToken) {
         Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
 
         if (spotifyToken.isPresent()) {
@@ -106,7 +103,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public List<OAuthToken> getTokenListByRoomId(Long roomId) {
         List<OAuthToken> OAuthTokenList = new LinkedList<>();
         List<User> userList = userService.getUsersByRoomId(roomId);
 
