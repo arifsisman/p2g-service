@@ -11,4 +11,4 @@
 
 #docker build -t ${IMAGE_NAME} --build-arg ARTIFACT_NAME=${ARTIFACT_NAME} --no-cache .
 #docker rm -vf ${CONTAINER_NAME}
-#docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${IMAGE_NAME}
+#docker run -d --name ${CONTAINER_NAME} -p 8097:8097 ${IMAGE_NAME}

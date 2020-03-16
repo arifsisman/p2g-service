@@ -43,6 +43,6 @@ deploy_to_server:
     - ssh-keyscan 142.93.239.61 >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ssh arif@142.93.239.61 "hostname -I && (docker rm -vf p2g-web || true) && docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG && docker run -d --name p2g-web -p 8080:8080 $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG && exit"
+    - ssh arif@142.93.239.61 "hostname -I && (docker rm -vf p2g-web || true) && docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG && docker run -d --name p2g-web -p 8097:8097 $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG && exit"
   after_script:
     - echo
