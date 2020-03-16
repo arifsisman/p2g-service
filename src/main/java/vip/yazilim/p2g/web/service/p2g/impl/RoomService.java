@@ -1,17 +1,11 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.InvalidUpdateException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
-import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.constant.enums.RoomStatus;
@@ -28,9 +22,9 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -99,7 +93,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Optional<Room> getRoomByUserId(String userId) throws DatabaseException {
+    public Optional<Room> getRoomByUserId(String userId) {
         Optional<Room> room;
         RoomUser roomUser;
 
@@ -119,14 +113,14 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
         if (!room.isPresent()) {
             String err = String.format("Room[%s] not found", userId);
-            throw new ResourceNotFoundException(err);
+            throw new NoSuchElementException(err);
         }
 
         return room;
     }
 
     @Override
-    public List<RoomModelSimplified> getSimplifiedRoomModels() throws DatabaseException, InvalidArgumentException {
+    public List<RoomModelSimplified> getSimplifiedRoomModels() {
         List<RoomModelSimplified> roomModelList = new LinkedList<>();
         List<Room> roomList = getAll();
 
@@ -138,14 +132,14 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByRoomId(Long roomId) {
         Optional<Room> room;
 
         // Set Room
         room = getById(roomId);
         if (!room.isPresent()) {
             String err = String.format("Room[%s] not found", roomId);
-            throw new ResourceNotFoundException(err);
+            throw new NoSuchElementException(err);
         } else {
             RoomModel roomModel = new RoomModel();
             roomModel.setRoom(room.get());
@@ -154,16 +148,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
     }
 
-    @Override
-    public RoomModel getRoomModelWithRoom(Room room) throws DatabaseException, InvalidArgumentException {
-        // Set Room
-        RoomModel roomModel = new RoomModel();
-        roomModel.setRoom(room);
-
-        return getRoomModelBase(roomModel);
-    }
-
-    private RoomModel getRoomModelBase(RoomModel roomModel) throws DatabaseException, InvalidArgumentException {
+    private RoomModel getRoomModelBase(RoomModel roomModel) {
         Room room = roomModel.getRoom();
         Long roomId = room.getId();
 
@@ -175,7 +160,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
         if (roomOwnerOpt.isPresent()) {
             Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
-            roomModel.setOwner(roomUser.orElseThrow(() -> new ResourceNotFoundException("Room owner not found")));
+            roomModel.setOwner(roomUser.orElseThrow(() -> new NoSuchElementException("Room owner not found")));
         }
 
         // Set Room Users
@@ -197,23 +182,23 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModel getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public RoomModel getRoomModelByUserId(String userId) {
         Optional<RoomUser> roomUser = roomUserService.getRoomUser(userId);
         if (roomUser.isPresent()) {
             return getRoomModelByRoomId(roomUser.get().getRoomId());
         } else {
             String msg = String.format("User[%s] not in room, acted normally.", userId);
-            throw new ResourceNotFoundException(msg);
+            throw new NoSuchElementException(msg);
         }
     }
 
     @Override
-    public RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) {
         // Set Room
         Optional<Room> room = getById(roomId);
         if (!room.isPresent()) {
             String err = String.format("Room[%s] not found", roomId);
-            throw new ResourceNotFoundException(err);
+            throw new NoSuchElementException(err);
         } else {
             RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
             roomModelSimplified.setRoom(room.get());
@@ -222,20 +207,20 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room) throws DatabaseException, InvalidArgumentException {
+    public RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room) {
         RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
         roomModelSimplified.setRoom(room);
         return getRoomModelSimplifiedBase(roomModelSimplified);
     }
 
-    private RoomModelSimplified getRoomModelSimplifiedBase(RoomModelSimplified roomModelSimplified) throws DatabaseException, InvalidArgumentException {
+    private RoomModelSimplified getRoomModelSimplifiedBase(RoomModelSimplified roomModelSimplified) {
         Long roomId = roomModelSimplified.getRoom().getId();
 
         // Set owner
         Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
         if (roomOwnerOpt.isPresent()) {
             Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
-            roomModelSimplified.setOwner(roomUser.orElseThrow(() -> new ResourceNotFoundException("Room owner not found")));
+            roomModelSimplified.setOwner(roomUser.orElseThrow(() -> new NoSuchElementException("Room owner not found")));
         }
 
         // Set song list
@@ -250,7 +235,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Room createRoom(String ownerId, String roomName, String roomPassword) throws BusinessLogicException {
+    public Room createRoom(String ownerId, String roomName, String roomPassword) {
         // Any room exists check
         Optional<RoomUser> existingUserOpt = roomUserService.getRoomUser(ownerId);
         if (existingUserOpt.isPresent()) {
@@ -270,10 +255,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public boolean deleteById(Long roomId) throws DatabaseException {
+    public boolean deleteById(Long roomId) {
         try {
             spotifyPlayerService.roomStop(roomId);
-        } catch (InvalidArgumentException | IOException | SpotifyWebApiException e) {
+        } catch (Exception e) {
             LOGGER.warn("An error occurred when stopping Room[{}]", roomId);
         }
 
@@ -283,7 +268,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         //delete Songs
         try {
             songService.deleteRoomSongList(roomId);
-        } catch (SpotifyWebApiException | IOException | InvalidArgumentException e) {
+        } catch (Exception e) {
             LOGGER.error("An error occurred when deleting Room[{}] songs", roomId);
         }
 
@@ -296,12 +281,12 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public boolean delete(Room room) throws DatabaseException {
+    public boolean delete(Room room) {
         return deleteById(room.getId());
     }
 
     @Override
-    public Room update(Room room) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+    public Room update(Room room) {
         room = super.update(room);
         webSocketController.sendToRoom("status", room.getId(), RoomStatus.UPDATED);
         return room;

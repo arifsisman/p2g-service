@@ -1,15 +1,9 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.InvalidUpdateException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
-import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
@@ -29,11 +23,7 @@ import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -76,7 +66,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> getSongListByRoomId(Long roomId) throws DatabaseReadException {
+    public List<Song> getSongListByRoomId(Long roomId) {
         try {
             // order by votes and queued time
             return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
@@ -86,17 +76,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public int upvote(Long songId) throws DatabaseException, InvalidArgumentException {
+    public int upvote(Long songId) {
         return updateVote(songId, true);
     }
 
     @Override
-    public int downvote(Long songId) throws DatabaseException, InvalidArgumentException {
+    public int downvote(Long songId) {
         return updateVote(songId, false);
     }
 
     @Override
-    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) throws BusinessLogicException, IOException, SpotifyWebApiException {
+    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) {
         List<Song> currentList = getSongListByRoomId(roomId);
         int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();
         int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentSongCount;
@@ -134,7 +124,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean removeSongFromRoom(Long songId) throws DatabaseException, SpotifyWebApiException, IOException {
+    public boolean removeSongFromRoom(Long songId) {
         String userId = SecurityHelper.getUserId();
         Optional<Song> songOpt;
         Optional<Song> nowPlayingOpt;
@@ -149,12 +139,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         if (!songOpt.isPresent()) {
             String err = String.format("Song[%s] not found", songId);
-            throw new ResourceNotFoundException(err);
+            throw new NoSuchElementException(err);
         }
 
         if (!roomUserOpt.isPresent()) {
             String err = String.format("RoomUser not found with UserId[%s]", userId);
-            throw new ResourceNotFoundException(err);
+            throw new NoSuchElementException(err);
         }
 
         Long roomId = roomUserOpt.get().getRoomId();
@@ -177,7 +167,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean deleteRoomSongList(Long roomId) throws DatabaseException, SpotifyWebApiException, IOException, InvalidArgumentException {
+    public boolean deleteRoomSongList(Long roomId) {
         List<Song> songList;
 
         try {
@@ -248,12 +238,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return songList;
     }
 
-    private Song getSafeSong(Long songId) throws DatabaseException, InvalidArgumentException {
+    private Song getSafeSong(Long songId) {
         Optional<Song> songOpt = getById(songId);
-        return songOpt.orElseThrow(() -> new ResourceNotFoundException("Song not found"));
+        return songOpt.orElseThrow(() -> new NoSuchElementException("Song not found"));
     }
 
-    private int updateVote(Long songId, boolean upvote) throws DatabaseException, InvalidArgumentException, InvalidUpdateException {
+    private int updateVote(Long songId, boolean upvote) {
         Song song = getSafeSong(songId);
         int votes = song.getVotes();
         String operation;

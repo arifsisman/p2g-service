@@ -1,8 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 
@@ -15,14 +12,13 @@ import java.util.Optional;
  */
 public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
 
-    String getAccessTokenByUserId(String userId) throws DatabaseException;
+    String getAccessTokenByUserId(String userId);
 
-    Optional<OAuthToken> getTokenByUserId(String userId) throws DatabaseException;
+    Optional<OAuthToken> getTokenByUserId(String userId);
 
-    OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) throws BusinessLogicException;
+    OAuthToken saveUserToken(String userId, String accessToken, String refreshToken);
 
-    String saveUserToken(String userId, String accessToken) throws BusinessLogicException;
+    String saveUserToken(String userId, String accessToken);
 
-    List<OAuthToken> getTokenListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
-
+    List<OAuthToken> getTokenListByRoomId(Long roomId);
 }

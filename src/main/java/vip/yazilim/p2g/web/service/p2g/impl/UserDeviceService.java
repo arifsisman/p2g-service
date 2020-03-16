@@ -1,11 +1,9 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.UserDevice;
@@ -15,7 +13,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 
-import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -38,7 +35,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     private IRoomUserService roomUserService;
 
     @Override
-    public Optional<UserDevice> getUsersActiveDevice(String userId) throws DatabaseReadException {
+    public Optional<UserDevice> getUsersActiveDevice(String userId) {
         try {
             return userDeviceRepo.findByUserIdAndActiveFlag(userId, true);
         } catch (Exception exception) {
@@ -47,7 +44,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) throws BusinessLogicException, IOException, SpotifyWebApiException {
+    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) {
         Optional<UserDevice> oldUserDeviceOpt;
 
         try {
@@ -67,9 +64,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             spotifyUserService.transferUsersPlayback(userDevice);
 
             Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
-            if (roomUserOpt.isPresent()) {
-                spotifyPlayerService.userSyncWithRoom(roomUserOpt.get());
-            }
+            roomUserOpt.ifPresent(roomUser -> spotifyPlayerService.userSyncWithRoom(roomUser));
 
             return updatedUserDevice;
         } else {

@@ -5,10 +5,7 @@ import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
-import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
+import vip.yazilim.libs.springcore.exception.DatabaseCreateException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
@@ -27,10 +24,10 @@ import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
-import vip.yazilim.spring.core.exception.database.DatabaseCreateException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -82,7 +79,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public UserModel getUserModelByUserId(String userId) throws DatabaseException, InvalidArgumentException {
+    public UserModel getUserModelByUserId(String userId) {
         UserModel userModel = new UserModel();
 
         Optional<User> userOpt;
@@ -92,7 +89,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         // Set User
         userOpt = getById(userId);
         if (!userOpt.isPresent()) {
-            throw new ResourceNotFoundException("User not found");
+            throw new NoSuchElementException("User not found");
         } else {
             userModel.setUser(userOpt.get());
         }
@@ -115,7 +112,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public List<User> getUsersByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException {
+    public List<User> getUsersByRoomId(Long roomId) {
         List<User> userList = new LinkedList<>();
         List<RoomUser> roomUserList = roomUserService.getRoomUsersByRoomId(roomId);
 
@@ -128,7 +125,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String id, String email, String username) throws BusinessLogicException {
+    public User createUser(String id, String email, String username) {
         User user = new User();
         user.setId(id);
         user.setEmail(email);
@@ -138,7 +135,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) throws BusinessLogicException {
+    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
         String userId = user.getId();
         String productType = spotifyUser.getProduct().getType();
 
@@ -156,9 +153,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-        if (oldUserDeviceOpt.isPresent()) {
-            userDeviceService.delete(oldUserDeviceOpt.get());
-        }
+        oldUserDeviceOpt.ifPresent(userDevice -> userDeviceService.delete(userDevice));
 
         try {
             List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
@@ -177,20 +172,20 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
                 userDeviceService.create(userDevice);
             }
         } catch (Exception exception) {
-            throw new DatabaseCreateException(getClass(), userId, exception);
+            throw new DatabaseCreateException(getClass(), exception);
         }
 
         return update(user);
     }
 
     @Override
-    public boolean hasSystemRole(String userId, Role role) throws DatabaseException, InvalidArgumentException {
+    public boolean hasSystemRole(String userId, Role role) {
         Optional<User> userOpt = getById(userId);
         return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
     }
 
     @Override
-    public boolean hasSystemPrivilege(String userId, Privilege privilege) throws DatabaseException, InvalidArgumentException {
+    public boolean hasSystemPrivilege(String userId, Privilege privilege) {
         Optional<User> roomUserOpt = getById(userId);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
     }

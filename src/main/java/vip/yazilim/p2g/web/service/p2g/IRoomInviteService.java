@@ -1,9 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -18,19 +14,19 @@ import java.util.List;
  */
 public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
-    List<User> getInvitedUserListByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    List<User> getInvitedUserListByRoomId(Long roomId);
 
-    List<RoomInvite> getRoomInvitesByUserId(String userId) throws DatabaseReadException;
+    List<RoomInvite> getRoomInvitesByUserId(String userId);
 
-    List<RoomInviteModel> getRoomInviteModelListByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<RoomInviteModel> getRoomInviteModelListByUserId(String userId);
 
-    RoomInvite invite(Long roomId, String userId) throws BusinessLogicException;
+    RoomInvite invite(Long roomId, String userId);
 
-    RoomUser accept(RoomInvite roomInvite) throws BusinessLogicException;
+    RoomUser accept(RoomInvite roomInvite);
 
-    boolean reject(Long roomInviteId) throws DatabaseException;
+    boolean reject(Long roomInviteId);
 
-    boolean deleteRoomInvites(Long roomId) throws DatabaseException;
+    boolean deleteRoomInvites(Long roomId);
 
-    boolean existsById(Long roomInviteId) throws DatabaseException;
+    boolean existsById(Long roomInviteId);
 }

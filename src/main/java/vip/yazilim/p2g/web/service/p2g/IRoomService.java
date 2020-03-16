@@ -1,8 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
@@ -17,21 +14,18 @@ import java.util.Optional;
  */
 public interface IRoomService extends ICrudService<Room, Long> {
 
-    Optional<Room> getRoomByUserId(String userId) throws DatabaseException;
+    Optional<Room> getRoomByUserId(String userId);
 
-    //Rest
-    List<RoomModelSimplified> getSimplifiedRoomModels() throws DatabaseException, InvalidArgumentException;
+    List<RoomModelSimplified> getSimplifiedRoomModels();
 
-    RoomModel getRoomModelByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    RoomModel getRoomModelByRoomId(Long roomId);
 
-    RoomModel getRoomModelWithRoom(Room room) throws DatabaseException, InvalidArgumentException;
+    RoomModel getRoomModelByUserId(String userId);
 
-    RoomModel getRoomModelByUserId(String userId) throws DatabaseException, InvalidArgumentException;
+    RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId);
 
-    RoomModelSimplified getRoomModelSimplifiedByRoomId(Long roomId) throws DatabaseException, InvalidArgumentException;
+    RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room);
 
-    RoomModelSimplified getRoomModelSimplifiedWithRoom(Room room) throws DatabaseException, InvalidArgumentException;
-
-    Room createRoom(String ownerId, String roomName, String roomPassword) throws BusinessLogicException;
+    Room createRoom(String ownerId, String roomName, String roomPassword);
 
 }

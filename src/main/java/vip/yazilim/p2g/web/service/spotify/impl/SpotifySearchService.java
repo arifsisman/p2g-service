@@ -1,10 +1,8 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
@@ -13,7 +11,6 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +30,7 @@ public class SpotifySearchService implements ISpotifySearchService {
     private ISpotifyTokenService tokenService;
 
     @Override
-    public List<SearchModel> search(String q, SearchType... searchTypes) throws DatabaseException, IOException, SpotifyWebApiException {
+    public List<SearchModel> search(String q, SearchType... searchTypes) {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         String userId = SecurityHelper.getUserId();

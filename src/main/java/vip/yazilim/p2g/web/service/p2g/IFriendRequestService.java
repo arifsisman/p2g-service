@@ -1,9 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g;
 
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
@@ -19,19 +15,25 @@ import java.util.Optional;
  */
 public interface IFriendRequestService extends ICrudService<FriendRequest, Long> {
 
-    List<FriendRequest> getFriendRequestsByReceiverId(String userId) throws DatabaseException;
-    List<FriendModel> getFriendsByUserId(String userId) throws DatabaseException, InvalidArgumentException;
-    Integer getFriendsCountByUserId(String userId) throws DatabaseReadException;
-    List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId) throws DatabaseException, InvalidArgumentException;
+    List<FriendRequest> getFriendRequestsByReceiverId(String userId);
 
-    Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String user1, String user2) throws DatabaseReadException;
+    List<FriendModel> getFriendsByUserId(String userId);
 
-    Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) throws DatabaseReadException;
+    Integer getFriendsCountByUserId(String userId);
 
-    boolean createFriendRequest(String senderId, String receiverId) throws BusinessLogicException;
+    List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId);
 
-    boolean acceptFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;
-    boolean ignoreFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;
-    boolean rejectFriendRequest(Long friendRequestId) throws DatabaseException, InvalidArgumentException;
-    boolean deleteFriend(String friendId) throws DatabaseException;
+    Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverId(String user1, String user2);
+
+    Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus);
+
+    boolean createFriendRequest(String senderId, String receiverId);
+
+    boolean acceptFriendRequest(Long friendRequestId);
+
+    boolean ignoreFriendRequest(Long friendRequestId);
+
+    boolean rejectFriendRequest(Long friendRequestId);
+
+    boolean deleteFriend(String friendId);
 }

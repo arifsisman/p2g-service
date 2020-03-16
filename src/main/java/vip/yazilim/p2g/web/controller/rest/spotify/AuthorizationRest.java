@@ -1,12 +1,10 @@
 package vip.yazilim.p2g.web.controller.rest.spotify;
 
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.constant.enums.Role;
@@ -22,7 +20,6 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
@@ -53,7 +50,7 @@ public class AuthorizationRest {
     private IRoomService roomService;
 
     @GetMapping("/login")
-    public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) throws BusinessLogicException, IOException, SpotifyWebApiException {
+    public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
         String userName = SecurityHelper.getUserDisplayName();
         Optional<User> userOpt = userService.getById(userId);
@@ -70,7 +67,7 @@ public class AuthorizationRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/logout")
-    public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) throws BusinessLogicException {
+    public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
@@ -92,11 +89,11 @@ public class AuthorizationRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/token")
-    public RestResponse<String> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) throws BusinessLogicException {
+    public RestResponse<String> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) {
         return RestResponse.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }
 
-    private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) throws BusinessLogicException, IOException, SpotifyWebApiException {
+    private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
         String email = SecurityHelper.getUserEmail();
         String userName = SecurityHelper.getUserDisplayName();
@@ -108,11 +105,11 @@ public class AuthorizationRest {
         return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
     }
 
-    private User updateUserSpotifyInfos(User user) throws BusinessLogicException, IOException, SpotifyWebApiException {
+    private User updateUserSpotifyInfos(User user) {
         return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(user.getId()), user);
     }
 
-    public String updateUserAccessToken() throws BusinessLogicException {
+    public String updateUserAccessToken() {
         return tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
     }
 

@@ -10,12 +10,6 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import vip.yazilim.libs.springcore.exception.general.BusinessLogicException;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.*;
-import vip.yazilim.libs.springcore.exception.service.MethodNotSupported;
-import vip.yazilim.libs.springcore.exception.service.ResourceNotFoundException;
-import vip.yazilim.libs.springcore.exception.service.RestException;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
@@ -84,63 +78,63 @@ public class ExceptionHandlerController {
     // Spring Core Lib Exceptions
     /////////////////////////////
 
-    @ExceptionHandler({BusinessLogicException.class})
-    public ResponseEntity<String> handleBusinessLogicException(BusinessLogicException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({InvalidArgumentException.class})
-    public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
-        return error(BAD_REQUEST, e);
-    }
-
-    @ExceptionHandler({DatabaseException.class})
-    public ResponseEntity<String> handleDatabaseException(DatabaseException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({DatabaseCreateException.class})
-    public ResponseEntity<String> handleDatabaseCreateException(DatabaseCreateException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({DatabaseDeleteException.class})
-    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
-        return error(NOT_FOUND, e);
-    }
-
-    @ExceptionHandler({DatabaseReadException.class})
-    public ResponseEntity<String> handleDatabaseReadException(DatabaseReadException e) {
-        return error(NOT_FOUND, e);
-    }
-
-
-    @ExceptionHandler({DatabaseUpdateException.class})
-    public ResponseEntity<String> handleDatabaseUpdateException(DatabaseUpdateException e) {
-        return error(NOT_FOUND, e);
-    }
-
-    @ExceptionHandler({RestException.class})
-    public ResponseEntity<String> handleRestException(RestException e) {
-        return error(INTERNAL_SERVER_ERROR, e);
-    }
-
-    @ExceptionHandler({ResourceNotFoundException.class})
-    public ResponseEntity<String> handleNotFoundException(ResourceNotFoundException e) {
-        return error(NOT_FOUND, e);
-    }
-
-    @ExceptionHandler({MethodNotSupported.class})
-    public ResponseEntity<String> handleMethodNotSupported(MethodNotSupported e) {
-        return error(METHOD_NOT_ALLOWED, e);
-    }
+//    @ExceptionHandler({BusinessLogicException.class})
+//    public ResponseEntity<String> handleBusinessLogicException(BusinessLogicException e) {
+//        return error(INTERNAL_SERVER_ERROR, e);
+//    }
+//
+//    @ExceptionHandler({InvalidArgumentException.class})
+//    public ResponseEntity<String> handleInvalidArgumentException(InvalidArgumentException e) {
+//        return error(BAD_REQUEST, e);
+//    }
+//
+//    @ExceptionHandler({DatabaseException.class})
+//    public ResponseEntity<String> handleDatabaseException(DatabaseException e) {
+//        return error(INTERNAL_SERVER_ERROR, e);
+//    }
+//
+//    @ExceptionHandler({DatabaseCreateException.class})
+//    public ResponseEntity<String> handleDatabaseCreateException(DatabaseCreateException e) {
+//        return error(INTERNAL_SERVER_ERROR, e);
+//    }
+//
+//    @ExceptionHandler({DatabaseDeleteException.class})
+//    public ResponseEntity<String> handleDatabaseDeleteException(DatabaseDeleteException e) {
+//        return error(NOT_FOUND, e);
+//    }
+//
+//    @ExceptionHandler({DatabaseReadException.class})
+//    public ResponseEntity<String> handleDatabaseReadException(DatabaseReadException e) {
+//        return error(NOT_FOUND, e);
+//    }
+//
+//
+//    @ExceptionHandler({DatabaseUpdateException.class})
+//    public ResponseEntity<String> handleDatabaseUpdateException(DatabaseUpdateException e) {
+//        return error(NOT_FOUND, e);
+//    }
+//
+//    @ExceptionHandler({RestException.class})
+//    public ResponseEntity<String> handleRestException(RestException e) {
+//        return error(INTERNAL_SERVER_ERROR, e);
+//    }
+//
+//    @ExceptionHandler({ResourceNotFoundException.class})
+//    public ResponseEntity<String> handleNotFoundException(ResourceNotFoundException e) {
+//        return error(NOT_FOUND, e);
+//    }
+//
+//    @ExceptionHandler({MethodNotSupported.class})
+//    public ResponseEntity<String> handleMethodNotSupported(MethodNotSupported e) {
+//        return error(METHOD_NOT_ALLOWED, e);
+//    }
 
     /////////////////////////////
     // Spotify Web Api Exceptions
     /////////////////////////////
 
     @ExceptionHandler({IOException.class})
-    public ResponseEntity<String> handleIOException(DatabaseException e) {
+    public ResponseEntity<String> handleIOException(IOException e) {
         return error(BAD_REQUEST, e);
     }
 

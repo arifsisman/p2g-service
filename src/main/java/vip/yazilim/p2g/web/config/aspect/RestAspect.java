@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import vip.yazilim.libs.springcore.exception.general.InvalidArgumentException;
-import vip.yazilim.libs.springcore.exception.general.database.DatabaseException;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
@@ -56,7 +54,7 @@ public class RestAspect {
      * @param jpoint point where aspect joins
      */
     @Before(ASPECT_PACKAGE_PATTERN)
-    public void before(JoinPoint jpoint) throws DatabaseException, InvalidArgumentException, ForbiddenException {
+    public void before(JoinPoint jpoint) {
 
         MethodSignature signature = (MethodSignature) jpoint.getSignature();
         Method method = signature.getMethod();
@@ -80,7 +78,7 @@ public class RestAspect {
      * @param jpoint point where aspect joins
      */
     @After(ASPECT_PACKAGE_PATTERN)
-    public void after(JoinPoint jpoint) throws DatabaseException, InvalidArgumentException {
+    public void after(JoinPoint jpoint) {
         MethodSignature signature = (MethodSignature) jpoint.getSignature();
         Method method = signature.getMethod();
         for (Annotation annotation : method.getDeclaredAnnotations()) {
@@ -94,7 +92,7 @@ public class RestAspect {
 
 
     // Handle by Privileges
-    private void handle(HasRoomPrivilege hasRoomPrivilege) throws DatabaseException {
+    private void handle(HasRoomPrivilege hasRoomPrivilege) {
         Privilege privilege = hasRoomPrivilege.privilege();
         String userId = SecurityHelper.getUserId();
 
@@ -103,7 +101,7 @@ public class RestAspect {
         }
     }
 
-    private void handle(HasSystemPrivilege hasRoomPrivilege) throws DatabaseException, InvalidArgumentException {
+    private void handle(HasSystemPrivilege hasRoomPrivilege) {
         Privilege privilege = hasRoomPrivilege.privilege();
         String userId = SecurityHelper.getUserId();
 
@@ -114,7 +112,7 @@ public class RestAspect {
 
 
     // Handle by Roles
-    private void handle(HasRoomRole hasRoomRole) throws DatabaseException {
+    private void handle(HasRoomRole hasRoomRole) {
         Role role = hasRoomRole.role();
         String userId = SecurityHelper.getUserId();
 
@@ -123,7 +121,7 @@ public class RestAspect {
         }
     }
 
-    private void handle(HasSystemRole hasSystemRole) throws DatabaseException, InvalidArgumentException {
+    private void handle(HasSystemRole hasSystemRole) {
         Role role = hasSystemRole.role();
         String userId = SecurityHelper.getUserId();
 
@@ -134,7 +132,7 @@ public class RestAspect {
 
 
     // Handle room events
-    private void handleUpdateRoomSongs() throws DatabaseException {
+    private void handleUpdateRoomSongs() {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
@@ -144,7 +142,7 @@ public class RestAspect {
         }
     }
 
-    private void handleUpdateRoomUsers() throws DatabaseException, InvalidArgumentException {
+    private void handleUpdateRoomUsers() {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
