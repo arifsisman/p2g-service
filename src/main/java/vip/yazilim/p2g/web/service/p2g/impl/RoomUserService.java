@@ -259,7 +259,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 return 3;
             } else if (o1.getRoomUser().getRole().equals(Role.ROOM_ADMIN.role)) {
                 return 2;
-            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_MODERATOR.role)) {
+            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_DJ.role)) {
                 return 1;
             } else if (o1.getRoomUser().getRole().equals(Role.ROOM_USER.role)) {
                 return 0;
@@ -395,10 +395,10 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         switch (oldRole) {
             case ROOM_USER:
                 if (promoteFlag)
-                    return Role.ROOM_MODERATOR;
+                    return Role.ROOM_DJ;
                 else
                     return Role.ROOM_USER;
-            case ROOM_MODERATOR:
+            case ROOM_DJ:
                 if (promoteFlag)
                     return Role.ROOM_ADMIN;
                 else
@@ -407,7 +407,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 if (promoteFlag)
                     return Role.ROOM_ADMIN;
                 else
-                    return Role.ROOM_MODERATOR;
+                    return Role.ROOM_DJ;
             default:
                 return oldRole;
         }

@@ -49,7 +49,7 @@ public class Authorities extends AAuthorityProvider {
         // Set HashMap
         rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);
         rolePrivilegesMap.put(Role.ROOM_USER.role, roomUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_MODERATOR.role, roomModeratorPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_DJ.role, roomModeratorPrivileges);
         rolePrivilegesMap.put(Role.ROOM_ADMIN.role, roomAdminPrivileges);
         rolePrivilegesMap.put(Role.ROOM_OWNER.role, roomOwnerPrivileges);
 
