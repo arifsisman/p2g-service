@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.exception.SpotifyAccountException;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import java.io.IOException;
 
@@ -165,13 +166,7 @@ public class ExceptionHandlerController {
     }
 
     private ResponseEntity<String> error(HttpStatus status, Exception e) {
-        LOGGER.error("Exception : " + e.getMessage());
+        LOGGER.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
-
-    private ResponseEntity<String> error(HttpStatus status,Exception e, String message) {
-        LOGGER.error("Exception : " + e.getMessage());
-        return ResponseEntity.status(status).body(message);
-    }
-
 }

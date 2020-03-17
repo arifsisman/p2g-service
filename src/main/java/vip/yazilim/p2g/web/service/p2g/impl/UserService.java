@@ -5,7 +5,6 @@ import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.DatabaseCreateException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
@@ -155,24 +154,20 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
         oldUserDeviceOpt.ifPresent(userDevice -> userDeviceService.delete(userDevice));
 
-        try {
-            List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
-            boolean userDeviceCreated = false;
+        List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
+        boolean userDeviceCreated = false;
 
-            for (UserDevice userDevice : userDeviceList) {
-                if (userDevice.getActiveFlag()) {
-                    userDeviceService.create(userDevice);
-                    userDeviceCreated = true;
-                }
-            }
-
-            if (!userDeviceCreated) {
-                UserDevice userDevice = userDeviceList.get(0);
-                userDevice.setActiveFlag(true);
+        for (UserDevice userDevice : userDeviceList) {
+            if (userDevice.getActiveFlag()) {
                 userDeviceService.create(userDevice);
+                userDeviceCreated = true;
             }
-        } catch (Exception exception) {
-            throw new DatabaseCreateException(getClass(), exception);
+        }
+
+        if (!userDeviceCreated) {
+            UserDevice userDevice = userDeviceList.get(0);
+            userDevice.setActiveFlag(true);
+            userDeviceService.create(userDevice);
         }
 
         return update(user);
