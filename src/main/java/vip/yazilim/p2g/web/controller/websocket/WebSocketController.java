@@ -29,7 +29,7 @@ public class WebSocketController {
     @MessageMapping("/p2g/room/{roomId}/send")
     public void chatMessageMapping(@PathVariable ChatMessage chatMessage) {
         RoomUser roomUser = chatMessage.getRoomUser();
-        LOGGER.info("{}[{}] sending message to Room[{}]: {}", roomUser.getUserName(), roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
+        LOGGER.debug("{}[{}] sending message to Room[{}]: {}", roomUser.getUserName(), roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
         sendToRoom("messages", roomUser.getRoomId(), chatMessage);
     }
 

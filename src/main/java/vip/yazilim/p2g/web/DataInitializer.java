@@ -54,13 +54,12 @@ public class DataInitializer implements CommandLineRunner {
         User u7 = userService.createUser("7", "8@gmail.com", "Test User 7");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
-        Room testRoom1 = roomService.createRoom(arif.getId(), "Main Test Room", null);
-
+        Room demoRoom = roomService.createRoom(arif.getId(), "Demo Room", null);
         Room testRoom2 = roomService.createRoom(u1.getId(), "Test Room 1", "123");
         Room testRoom3 = roomService.createRoom(u2.getId(), "Test Room 2", null);
         Room testRoom4 = roomService.createRoom(u3.getId(), "Test Room 3", null);
 
-        Long roomId = testRoom1.getId();
+        Long roomId = demoRoom.getId();
         addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
         addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");
         addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400");
@@ -81,6 +80,9 @@ public class DataInitializer implements CommandLineRunner {
         u4.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
         userService.update(u4);
 
+        emre.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
+        userService.update(emre);
+
         createRoomInvite(u1, arif, testRoom2);
         createRoomInvite(u2, arif, testRoom3);
         createRoomInvite(u3, arif, testRoom4);
@@ -92,6 +94,7 @@ public class DataInitializer implements CommandLineRunner {
         createFriendRequest(u5, arif, FriendRequestStatus.ACCEPTED);
         createFriendRequest(u6, arif, FriendRequestStatus.ACCEPTED);
         createFriendRequest(u7, arif, FriendRequestStatus.ACCEPTED);
+        createFriendRequest(emre, arif, FriendRequestStatus.ACCEPTED);
 
         roomUserService.joinRoom(testRoom2.getId(), u5.getId(), "123", Role.ROOM_USER);
         roomUserService.joinRoom(testRoom2.getId(), u6.getId(), "123", Role.ROOM_USER);

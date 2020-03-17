@@ -67,7 +67,7 @@ public class SongRest extends ARestCru<Song, Long> {
     }
 
     @Override
-    @HasRoomPrivilege(privilege = Privilege.SONG_UPDATE)
+    @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PutMapping({"/"})
     public RestResponse<Song> update(HttpServletRequest request, HttpServletResponse response, @RequestBody Song entity) {
