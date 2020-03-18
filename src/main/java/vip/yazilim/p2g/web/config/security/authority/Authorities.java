@@ -20,26 +20,21 @@ public class Authorities extends AAuthorityProvider {
         HashMap<String, List<Privilege>> rolePrivilegesMap = new HashMap<>();
 
         List<Privilege> p2gUserPrivileges = new LinkedList<>();
-        p2gUserPrivileges.add(Privilege.ROOM_GET);
         p2gUserPrivileges.add(Privilege.ROOM_CREATE);
         p2gUserPrivileges.add(Privilege.ROOM_JOIN_AND_LEAVE);
-        p2gUserPrivileges.add(Privilege.ROOM_INVITE_REPLY);
-        p2gUserPrivileges.add(Privilege.SPOTIFY_USER_SEARCH);
+        p2gUserPrivileges.add(Privilege.ROOM_INVITE_AND_REPLY);
 
         List<Privilege> roomUserPrivileges = new LinkedList<>(p2gUserPrivileges);
-        roomUserPrivileges.add(Privilege.ROOM_CHAT);
         roomUserPrivileges.add(Privilege.SONG_GET);
         roomUserPrivileges.add(Privilege.SONG_VOTE);
-        roomUserPrivileges.add(Privilege.SONG_SEARCH);
 
-        List<Privilege> roomModeratorPrivileges = new LinkedList<>(roomUserPrivileges);
-        roomModeratorPrivileges.add(Privilege.SONG_ADD_AND_REMOVE);
-        roomModeratorPrivileges.add(Privilege.SONG_CONTROL);
-        roomModeratorPrivileges.add(Privilege.SONG_UPDATE);
-        roomModeratorPrivileges.add(Privilege.ROOM_INVITE);
+        List<Privilege> roomDjPrivileges = new LinkedList<>(roomUserPrivileges);
+        roomDjPrivileges.add(Privilege.ROOM_CLEAR_QUEUE);
+        roomDjPrivileges.add(Privilege.SONG_ADD_AND_REMOVE);
+        roomDjPrivileges.add(Privilege.SONG_CONTROL);
+        roomDjPrivileges.add(Privilege.SONG_SEARCH);
 
-        List<Privilege> roomAdminPrivileges = new LinkedList<>(roomModeratorPrivileges);
-        roomAdminPrivileges.add(Privilege.ROOM_CLEAR_QUEUE);
+        List<Privilege> roomAdminPrivileges = new LinkedList<>(roomDjPrivileges);
         roomAdminPrivileges.add(Privilege.ROOM_MANAGE_ROLES);
         roomAdminPrivileges.add(Privilege.ROOM_UPDATE);
 
@@ -49,7 +44,7 @@ public class Authorities extends AAuthorityProvider {
         // Set HashMap
         rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);
         rolePrivilegesMap.put(Role.ROOM_USER.role, roomUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_MODERATOR.role, roomModeratorPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_DJ.role, roomDjPrivileges);
         rolePrivilegesMap.put(Role.ROOM_ADMIN.role, roomAdminPrivileges);
         rolePrivilegesMap.put(Role.ROOM_OWNER.role, roomOwnerPrivileges);
 

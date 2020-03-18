@@ -78,8 +78,8 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     protected Room preInsert(Room entity) {
-        if (entity.getPassword() == null || entity.getPassword().equals("\"\"")) {
-            entity.setPassword("");
+        if (entity.getPassword() == null || entity.getPassword().isEmpty()) {
+            entity.setPassword(null);
             entity.setPrivateFlag(false);
         } else {
             entity.setPassword(passwordEncoderConfig.passwordEncoder().encode(entity.getPassword()));

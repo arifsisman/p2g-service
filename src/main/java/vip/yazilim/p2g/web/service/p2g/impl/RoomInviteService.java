@@ -109,7 +109,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
     @Override
     public RoomInvite invite(Long roomId, String userId) {
-        if (SecurityHelper.getUserId().equals(userId)) {
+        String inviterId = SecurityHelper.getUserId();
+
+        if (inviterId.equals(userId)) {
             throw new ConstraintViolationException("You can not invite yourself.");
         }
 
@@ -118,8 +120,6 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         if (existingInvite.isPresent()) {
             throw new ConstraintViolationException("Invite already exists");
         } else {
-            String inviterId = SecurityHelper.getUserId();
-
             RoomInvite roomInvite = new RoomInvite();
             roomInvite.setRoomId(roomId);
             roomInvite.setInviterId(inviterId);
