@@ -105,7 +105,7 @@ public class RoomRest extends ARestCru<Room, Long> {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping({"/create/{roomName}"})
-    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody String roomPassword) {
+    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody(required = false) String roomPassword) {
         return RestResponse.generateResponse(roomService.createRoom(SecurityHelper.getUserId(), roomName, roomPassword), HttpStatus.OK, request, response);
     }
 

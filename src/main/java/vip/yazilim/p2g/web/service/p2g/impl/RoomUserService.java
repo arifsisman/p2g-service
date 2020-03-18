@@ -174,7 +174,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             Room room = roomOpt.get();
             RoomUser roomUser = new RoomUser();
 
-            if (room.getPassword() == null || room.getPassword().equals("") || passwordEncoderConfig.passwordEncoder().matches(password.replace("\"", ""), room.getPassword())) {
+            if (room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
                 roomUser.setRoomId(roomId);
                 roomUser.setUserId(userId);
                 roomUser.setRole(role.getRole());
