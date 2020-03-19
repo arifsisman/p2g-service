@@ -112,8 +112,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         }
 
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", userId);
-            throw new NoSuchElementException(err);
+            throw new NoSuchElementException("Room :: Not found");
         }
 
         return room;
@@ -138,7 +137,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Set Room
         room = getById(roomId);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", roomId);
+            String err = String.format("Room[%s] :: Not found", roomId);
             throw new NoSuchElementException(err);
         } else {
             RoomModel roomModel = new RoomModel();
@@ -187,8 +186,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         if (roomUser.isPresent()) {
             return getRoomModelByRoomId(roomUser.get().getRoomId());
         } else {
-            String msg = String.format("User[%s] not in room, acted normally.", userId);
-            throw new NoSuchElementException(msg);
+            throw new NoSuchElementException("User not in room, acted normally.");
         }
     }
 
@@ -197,7 +195,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Set Room
         Optional<Room> room = getById(roomId);
         if (!room.isPresent()) {
-            String err = String.format("Room[%s] not found", roomId);
+            String err = String.format("Room[%s] :: Not found", roomId);
             throw new NoSuchElementException(err);
         } else {
             RoomModelSimplified roomModelSimplified = new RoomModelSimplified();
@@ -250,7 +248,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Room createdRoom = create(room);
         roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
 
-        LOGGER.info("User[{}] created Room[{}]", ownerId, createdRoom.getId());
+        LOGGER.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
         return createdRoom;
     }
 
@@ -259,7 +257,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         try {
             spotifyPlayerService.roomStop(roomId);
         } catch (Exception e) {
-            LOGGER.warn("An error occurred when stopping Room[{}]", roomId);
+            LOGGER.warn("Room[{}] :: An error occurred when stopping playback", roomId);
         }
 
         //delete roomUsers
@@ -269,7 +267,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         try {
             songService.deleteRoomSongList(roomId);
         } catch (Exception e) {
-            LOGGER.error("An error occurred when deleting Room[{}] songs", roomId);
+            LOGGER.error("Room[{}] :: An error occurred when deleting songs", roomId);
         }
 
         //delete roomInvites
