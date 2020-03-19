@@ -125,7 +125,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             userService.getById(userId).ifPresent(roomUserModel::setUser);
             return roomUserModel;
         } else {
-            String msg = String.format("User[%s] not in any room", userId);
+            String msg = String.format("[%s] :: Not in any room", userId);
             throw new NoSuchElementException(msg);
         }
     }
@@ -161,7 +161,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     public RoomUser joinRoom(Long roomId, String userId, String password, Role role) {
         Optional<Room> roomOpt = roomService.getById(roomId);
         if (!roomOpt.isPresent()) {
-            String err = String.format("Room[%s] can not found", roomId);
+            String err = String.format("Room[%s] :: Not found", roomId);
             throw new IllegalArgumentException(err);
         } else {
             // Any room exists check
@@ -187,7 +187,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             spotifyPlayerService.userSyncWithRoom(joinedUser);
             webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
-            LOGGER.info("User[{}] joined Room[{}]", userId, roomId);
+            LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);
             return joinedUser;
         }
     }
@@ -214,7 +214,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomUserOpt.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
                 boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
-                    LOGGER.info("Room[{}] closed by User[{}]", roomUser.getRoomId(), userId);
+                    LOGGER.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
                 }
                 return status;
             } else {
@@ -224,14 +224,14 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 boolean status = delete(roomUser);
                 if (status) {
                     Long roomId = roomUser.getRoomId();
-                    LOGGER.info("User[{}] leaved Room[{}]", userId, roomId);
+                    LOGGER.info("[{}] :: Leaved Room[{}]", userId, roomId);
                     webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
                 try {
                     spotifyPlayerService.userDeSyncWithRoom(roomUser);
                 } catch (Exception e) {
-                    LOGGER.info("An error occurred when User[{}] desync with Room[{}]", userId, roomUser.getRoomId());
+                    LOGGER.warn("[{}] :: An error occurred when desync with Room[{}]", userId, roomUser.getRoomId());
                 }
 
                 return status;
@@ -293,7 +293,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             RoomUser createdRoomUser = create(roomUser);
             roomInviteService.delete(roomInvite);
 
-            LOGGER.info("User[{}] accepted Room[{}] invite from User[{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
+            LOGGER.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
             return createdRoomUser;
         }
     }

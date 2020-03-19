@@ -173,8 +173,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
         } else {
-            String err = String.format("Not playing or paused any song in Room[%s]", roomId);
-            throw new NoSuchElementException(err);
+            throw new NoSuchElementException("No playing or paused song found in the room");
         }
 
         return true;

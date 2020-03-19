@@ -53,12 +53,11 @@ public class AuthorizationRest {
     @GetMapping("/login")
     public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
-        String userName = SecurityHelper.getUserDisplayName();
         Optional<User> userOpt = userService.getById(userId);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            LOGGER.info("{}[{}] logged in", userName, userId);
+            LOGGER.info("[{}] :: Logged in", userId);
             updateUserAccessToken();
 
             user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
@@ -74,7 +73,6 @@ public class AuthorizationRest {
     @PostMapping("/logout")
     public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
-        String userName = SecurityHelper.getUserDisplayName();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
 
         Optional<User> userOpt = userService.getById(userId);
@@ -84,7 +82,7 @@ public class AuthorizationRest {
             userService.update(user);
         }
 
-        LOGGER.info("{}[{}] logged out", userName, userId);
+        LOGGER.info("[{}] :: Logged out", userId);
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
@@ -115,7 +113,7 @@ public class AuthorizationRest {
 
         User user = userService.createUser(userId, email, userName);
 
-        LOGGER.info("{}[{}] registered and logged in", userName, userId);
+        LOGGER.info("[{}] :: Registered and logged in", userId);
         updateUserAccessToken();
 
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
