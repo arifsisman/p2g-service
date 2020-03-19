@@ -14,7 +14,7 @@ import vip.yazilim.libs.springcore.exception.*;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
-import vip.yazilim.p2g.web.exception.SpotifyAccountException;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({ForbiddenException.class})
     public ResponseEntity<String> handleForbiddenException(ForbiddenException e) {
-        return error(FORBIDDEN, e);
+        return noLog(FORBIDDEN, e);
     }
 
     @ExceptionHandler({AccountException.class})
@@ -55,9 +55,9 @@ public class ExceptionHandlerController {
         return error(CONFLICT, e);
     }
 
-    @ExceptionHandler({SpotifyAccountException.class})
-    public ResponseEntity<String> handleSpotifyAccountException(SpotifyAccountException e) {
-        return error(NOT_ACCEPTABLE, e);
+    @ExceptionHandler({SpotifyException.class})
+    public ResponseEntity<String> handleSpotifyAccountException(SpotifyException e) {
+        return noLog(NOT_ACCEPTABLE, e);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
@@ -167,6 +167,10 @@ public class ExceptionHandlerController {
 
     private ResponseEntity<String> error(HttpStatus status, Exception e) {
         LOGGER.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        return ResponseEntity.status(status).body(e.getMessage());
+    }
+
+    private ResponseEntity<String> noLog(HttpStatus status, Exception e) {
         return ResponseEntity.status(status).body(e.getMessage());
     }
 }

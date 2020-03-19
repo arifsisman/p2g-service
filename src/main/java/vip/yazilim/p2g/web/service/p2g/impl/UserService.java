@@ -14,7 +14,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.UserDevice;
-import vip.yazilim.p2g.web.exception.SpotifyAccountException;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -139,7 +139,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         String productType = spotifyUser.getProduct().getType();
 
         if (!productType.equals(ProductType.PREMIUM.getType())) {
-            throw new SpotifyAccountException("Spotify account must be premium");
+            throw new SpotifyException("Spotify account must be premium");
         }
 
         user.setName(spotifyUser.getDisplayName());

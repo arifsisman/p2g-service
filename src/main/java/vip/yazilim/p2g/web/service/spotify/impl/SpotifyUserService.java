@@ -8,6 +8,7 @@ import com.wrapper.spotify.model_objects.specification.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
@@ -16,7 +17,6 @@ import vip.yazilim.p2g.web.util.SpotifyHelper;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * @author mustafaarifsisman - 26.11.2019
@@ -53,7 +53,7 @@ public class SpotifyUserService implements ISpotifyUserService {
 
         if (devices.length == 0) {
             String err = String.format("Can not found any active Spotify device for %s, please start Spotify first.", userId);
-            throw new NoSuchElementException(err);
+            throw new SpotifyException(err);
         }
 
         for (Device d : devices) {

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
+import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -59,6 +60,10 @@ public class AuthorizationRest {
             User user = userOpt.get();
             LOGGER.info("{}[{}] logged in", userName, userId);
             updateUserAccessToken();
+
+            user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+            userService.update(user);
+
             return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
         } else {
             return register(request, response);
@@ -69,7 +74,17 @@ public class AuthorizationRest {
     @PostMapping("/logout")
     public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
+        String userName = SecurityHelper.getUserDisplayName();
         Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+
+        Optional<User> userOpt = userService.getById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+            userService.update(user);
+        }
+
+        LOGGER.info("{}[{}] logged out", userName, userId);
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
@@ -100,8 +115,12 @@ public class AuthorizationRest {
 
         User user = userService.createUser(userId, email, userName);
 
-        LOGGER.info("{}[{}] registered", userName, userId);
+        LOGGER.info("{}[{}] registered and logged in", userName, userId);
         updateUserAccessToken();
+
+        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+        userService.update(user);
+
         return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
     }
 

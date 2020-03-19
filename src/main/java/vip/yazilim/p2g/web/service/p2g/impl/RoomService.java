@@ -187,8 +187,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         if (roomUser.isPresent()) {
             return getRoomModelByRoomId(roomUser.get().getRoomId());
         } else {
-            String msg = String.format("User[%s] not in room, acted normally.", userId);
-            throw new NoSuchElementException(msg);
+            throw new NoSuchElementException("User not in room, acted normally.");
         }
     }
 
