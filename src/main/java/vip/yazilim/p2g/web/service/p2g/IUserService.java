@@ -22,6 +22,8 @@ public interface IUserService extends ICrudService<User, String> {
 
     User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user);
 
+    List<User> getUsersNameLike(String userNameQuery);
+
     boolean hasSystemRole(String userId, Role role);
 
     boolean hasSystemPrivilege(String userId, Privilege privilege);

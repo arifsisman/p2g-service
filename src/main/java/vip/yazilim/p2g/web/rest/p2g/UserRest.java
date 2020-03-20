@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
+import vip.yazilim.p2g.web.config.annotation.HasSystemPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
@@ -60,6 +62,12 @@ public class UserRest {
     @GetMapping({"/me/model"})
     public RestResponse<UserModel> getUserModelMe(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(userService.getUserModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemPrivilege(privilege = Privilege.ROOM_INVITE_AND_REPLY)
+    @GetMapping({"/search/name/{userNameQuery}"})
+    public RestResponse<List<User>> getUsersNameLike(HttpServletRequest request, HttpServletResponse response, @PathVariable String userNameQuery) {
+        return RestResponse.generateResponse(userService.getUsersNameLike(userNameQuery), HttpStatus.OK, request, response);
     }
 
 }
