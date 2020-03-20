@@ -44,7 +44,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User u1 = userService.createUser("1", "2@gmail.com", "Test User 1");
         User u2 = userService.createUser("2", "3@gmail.com", "Test User 2");
         User u3 = userService.createUser("3", "4@gmail.com", "Test User 3");
@@ -52,6 +51,10 @@ public class DataInitializer implements CommandLineRunner {
         User u5 = userService.createUser("5", "6@gmail.com", "Test User 5");
         User u6 = userService.createUser("6", "7@gmail.com", "Test User 6");
         User u7 = userService.createUser("7", "8@gmail.com", "Test User 7");
+        User u8 = userService.createUser("8", "9@gmail.com", "Test User 8");
+        User u9 = userService.createUser("9", "10@gmail.com", "Test User 9");
+        User u10 = userService.createUser("10", "11@gmail.com", "Test User 10");
+        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
         Room demoRoom = roomService.createRoom(arif.getId(), "Demo Room", null);
