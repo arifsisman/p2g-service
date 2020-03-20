@@ -316,25 +316,38 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) {
-        RoomUser roomUser = getSafeRoomUser(roomUserId);
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> changerOpt = getRoomUserByUserId(userId);
 
-        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
-            throw new ConstraintViolationException("You can not change your own role.");
+        if (!changerOpt.isPresent()) {
+            String err = String.format("[%s] :: Not in room", userId);
+            throw new ConstraintViolationException(err);
         }
 
-        Role oldRole = Role.getRole(roomUser.getRole());
+        RoomUser changer = changerOpt.get();
+        RoomUser changingUser = getSafeRoomUser(roomUserId);
+
+        if (changingUser.getUserId().equals(SecurityHelper.getUserId())) {
+            throw new ConstraintViolationException("You can not change your own role.");
+        } else if (changingUser.getRole().equals(Role.ROOM_OWNER.role)) {
+            throw new ConstraintViolationException(Role.ROOM_OWNER.role + " role can not changed.");
+        } else if (changingUser.getRole().equals(changer.getRole())) {
+            throw new ConstraintViolationException("You can not change the role of users who have the same role as you.");
+        }
+
+        Role oldRole = Role.getRole(changingUser.getRole());
         Role newRole = getNewRole(oldRole, promoteDemoteFlag);
 
         if (oldRole.equals(newRole)) {
-            return roomUser;
+            return changingUser;
         } else {
-            roomUser.setRole(newRole.role);
-            RoomUser updatedRoomUser = update(roomUser);
+            changingUser.setRole(newRole.role);
+            RoomUser updatedRoomUser = update(changingUser);
 
             String operation = (promoteDemoteFlag) ? " promoted " : " demoted ";
             String userName = SecurityHelper.getUserDisplayName();
-            String infoMessage = userName + operation + roomUser.getUserName() + "'s role to " + newRole.role;
-            webSocketController.sendInfoToRoom(roomUser.getRoomId(), infoMessage);
+            String infoMessage = userName + operation + changingUser.getUserName() + "'s role to " + newRole.role;
+            webSocketController.sendInfoToRoom(changingUser.getRoomId(), infoMessage);
 
             return updatedRoomUser;
         }
