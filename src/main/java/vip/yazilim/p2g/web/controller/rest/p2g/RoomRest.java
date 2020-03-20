@@ -50,7 +50,7 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/me")
-    public RestResponse<RoomModel> getRoomModelByUser(HttpServletRequest request, HttpServletResponse response) {
+    public RestResponse<RoomModel> getRoomModelMe(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(roomService.getRoomModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 

@@ -39,7 +39,7 @@ public class SpotifyDeviceRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PutMapping({"/device"})
-    public RestResponse<UserDevice> saveUsersActiveDevice(HttpServletRequest request, HttpServletResponse response, @RequestBody UserDevice userDevice) {
-        return RestResponse.generateResponse(userDeviceService.saveUsersActiveDevice(SecurityHelper.getUserId(), userDevice), HttpStatus.OK, request, response);
+    public RestResponse<UserDevice> changeUsersActiveDevice(HttpServletRequest request, HttpServletResponse response, @RequestBody UserDevice userDevice) {
+        return RestResponse.generateResponse(userDeviceService.changeUsersActiveDevice(SecurityHelper.getUserId(), userDevice), HttpStatus.OK, request, response);
     }
 }

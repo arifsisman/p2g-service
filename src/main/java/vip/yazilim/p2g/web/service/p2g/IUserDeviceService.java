@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface IUserDeviceService extends ICrudService<UserDevice, String> {
     Optional<UserDevice> getUsersActiveDevice(String userId);
 
-    UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice);
+    UserDevice changeUsersActiveDevice(String userId, UserDevice userDevice);
 }

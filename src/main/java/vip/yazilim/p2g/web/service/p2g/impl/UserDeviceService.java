@@ -44,7 +44,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     }
 
     @Override
-    public UserDevice saveUsersActiveDevice(String userId, UserDevice userDevice) {
+    public UserDevice changeUsersActiveDevice(String userId, UserDevice userDevice) {
         Optional<UserDevice> oldUserDeviceOpt;
 
         try {
