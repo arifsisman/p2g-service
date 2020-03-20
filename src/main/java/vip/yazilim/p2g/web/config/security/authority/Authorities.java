@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.config.security.authority;
 
 import org.springframework.stereotype.Component;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,10 +36,9 @@ public class Authorities extends AAuthorityProvider {
 
         List<Privilege> roomAdminPrivileges = new LinkedList<>(roomDjPrivileges);
         roomAdminPrivileges.add(Privilege.ROOM_MANAGE_ROLES);
-        roomAdminPrivileges.add(Privilege.ROOM_UPDATE);
 
         List<Privilege> roomOwnerPrivileges = new LinkedList<>(roomAdminPrivileges);
-        roomOwnerPrivileges.add(Privilege.ROOM_DELETE);
+        roomOwnerPrivileges.add(Privilege.ROOM_UPDATE);
 
         // Set HashMap
         rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);

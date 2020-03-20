@@ -10,6 +10,7 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import vip.yazilim.libs.springcore.exception.*;
 import vip.yazilim.p2g.web.exception.AccountException;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
@@ -73,6 +74,11 @@ public class ExceptionHandlerController {
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         return error(FORBIDDEN, e);
+    }
+
+    @ExceptionHandler({HttpClientErrorException.class})
+    public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException e) {
+        return noLog(UNAUTHORIZED, e);
     }
 
 

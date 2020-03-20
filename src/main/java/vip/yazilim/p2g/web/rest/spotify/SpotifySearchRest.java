@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.rest.spotify;
+package vip.yazilim.p2g.web.rest.spotify;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
@@ -28,7 +28,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY + "/search")
-public class SearchRest {
+public class SpotifySearchRest {
 
     @Autowired
     private ISpotifyTrackService spotifyTrackService;

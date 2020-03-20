@@ -4,7 +4,7 @@ import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.specification.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.io.Serializable;

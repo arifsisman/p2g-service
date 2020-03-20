@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.config.annotation;
 
-import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.enums.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

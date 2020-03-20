@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.rest.spotify;
+package vip.yazilim.p2g.web.rest.spotify;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,10 +7,10 @@ import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,8 +23,8 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_SPOTIFY + "/player")
-public class PlayerRest {
+@RequestMapping(API_SPOTIFY + "/room")
+public class SpotifyRoomPlayerRest {
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;

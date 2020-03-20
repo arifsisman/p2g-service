@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.rest.spotify;
+package vip.yazilim.p2g.web.rest.spotify;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.enums.OnlineStatus;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
@@ -31,9 +31,9 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY)
-public class AuthorizationRest {
+public class SpotifyAuthorizationRest {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AuthorizationRest.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SpotifyAuthorizationRest.class);
 
     @Autowired
     private ISpotifyTokenService tokenService;
@@ -73,7 +73,7 @@ public class AuthorizationRest {
     @PostMapping("/logout")
     public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         Optional<User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {
@@ -101,7 +101,7 @@ public class AuthorizationRest {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/token")
+    @PutMapping("/token")
     public RestResponse<String> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) {
         return RestResponse.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }

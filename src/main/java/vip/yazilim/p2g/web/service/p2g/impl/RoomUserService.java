@@ -9,13 +9,13 @@ import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomUserRepo;
@@ -108,7 +108,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(String userId) {
+    public Optional<RoomUser> getRoomUserByUserId(String userId) {
         try {
             return roomUserRepo.findRoomUserByUserId(userId);
         } catch (Exception exception) {
@@ -118,7 +118,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public RoomUserModel getRoomUserModelMe(String userId) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         if (roomUserOpt.isPresent()) {
             RoomUserModel roomUserModel = new RoomUserModel();
             roomUserModel.setRoomUser(roomUserOpt.get());
@@ -131,7 +131,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(Long roomId, String userId) {
+    public Optional<RoomUser> getRoomUserByUserId(Long roomId, String userId) {
         try {
             return roomUserRepo.findRoomUserByRoomIdAndUserId(roomId, userId);
         } catch (Exception exception) {
@@ -165,7 +165,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             throw new IllegalArgumentException(err);
         } else {
             // Any room exists check
-            Optional<RoomUser> existingUserOpt = getRoomUser(userId);
+            Optional<RoomUser> existingUserOpt = getRoomUserByUserId(userId);
             if (existingUserOpt.isPresent()) {
                 leaveRoom();
             }
@@ -193,7 +193,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser joinRoomOwner(Long roomId, String userId) {
+    public void joinRoomOwner(Long roomId, String userId) {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomId(roomId);
@@ -201,13 +201,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         roomUser.setRole(Role.ROOM_OWNER.getRole());
         roomUser.setActiveFlag(true);
 
-        return super.create(roomUser);
+        super.create(roomUser);
     }
 
     @Override
     public boolean leaveRoom() {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
@@ -278,7 +278,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             throw new NoSuchElementException(err);
         } else {
             // Any room exists check
-            Optional<RoomUser> existingUserOpt = getRoomUser(roomInvite.getReceiverId());
+            Optional<RoomUser> existingUserOpt = getRoomUserByUserId(roomInvite.getReceiverId());
             if (existingUserOpt.isPresent()) {
                 leaveRoom();
             }
@@ -299,19 +299,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Role getRoleByRoomIdAndUserId(Long roomId, String userId) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
-
-        if (!roomUserOpt.isPresent()) {
-            return null;
-        }
-
-        String role = roomUserOpt.get().getRole();
-        return Role.getRole(role);
-    }
-
-    @Override
-    public boolean deleteRoomUsers(Long roomId) {
+    public void deleteRoomUsers(Long roomId) {
         List<RoomUser> roomUserList;
 
         try {
@@ -324,44 +312,92 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             delete(roomUser);
         }
 
-        return true;
     }
 
     @Override
     public RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) {
-        RoomUser roomUser = getSafeRoomUser(roomUserId);
+        String userId = SecurityHelper.getUserId();
+        Optional<RoomUser> changerOpt = getRoomUserByUserId(userId);
 
-        if (roomUser.getUserId().equals(SecurityHelper.getUserId())) {
-            throw new ConstraintViolationException("You can not change your own role.");
+        if (!changerOpt.isPresent()) {
+            String err = String.format("[%s] :: Not in room", userId);
+            throw new ConstraintViolationException(err);
         }
 
-        Role oldRole = Role.getRole(roomUser.getRole());
+        RoomUser changer = changerOpt.get();
+        RoomUser changingUser = getSafeRoomUser(roomUserId);
+
+        if (changingUser.getUserId().equals(SecurityHelper.getUserId())) {
+            throw new ConstraintViolationException("You can not change your own role.");
+        } else if (changingUser.getRole().equals(Role.ROOM_OWNER.role)) {
+            throw new ConstraintViolationException(Role.ROOM_OWNER.role + " role can not changed.");
+        } else if (changingUser.getRole().equals(changer.getRole())) {
+            throw new ConstraintViolationException("You can not change the role of users who have the same role as you.");
+        }
+
+        Role oldRole = Role.getRole(changingUser.getRole());
         Role newRole = getNewRole(oldRole, promoteDemoteFlag);
 
         if (oldRole.equals(newRole)) {
-            return roomUser;
+            return changingUser;
         } else {
-            roomUser.setRole(newRole.role);
-            RoomUser updatedRoomUser = update(roomUser);
+            changingUser.setRole(newRole.role);
+            RoomUser updatedRoomUser = update(changingUser);
 
             String operation = (promoteDemoteFlag) ? " promoted " : " demoted ";
             String userName = SecurityHelper.getUserDisplayName();
-            String infoMessage = userName + operation + roomUser.getUserName() + "'s role to " + newRole.role;
-            webSocketController.sendInfoToRoom(roomUser.getRoomId(), infoMessage);
+            String infoMessage = userName + operation + changingUser.getUserName() + "'s role to " + newRole.role;
+            webSocketController.sendInfoToRoom(changingUser.getRoomId(), infoMessage);
 
             return updatedRoomUser;
         }
     }
 
     @Override
+    public boolean changeRoomOwner(Long roomUserId) {
+        Optional<RoomUser> oldRoomOwnerOpt = getRoomUserByUserId(SecurityHelper.getUserId());
+        Optional<RoomUser> newRoomOwnerOpt = getById(roomUserId);
+
+        if (newRoomOwnerOpt.isPresent() && oldRoomOwnerOpt.isPresent()) {
+            RoomUser oldRoomOwner = oldRoomOwnerOpt.get();
+            RoomUser newRoomOwner = newRoomOwnerOpt.get();
+            Long roomId = oldRoomOwner.getRoomId();
+            Optional<Room> roomOpt = roomService.getById(roomId);
+            if (roomOpt.isPresent()) {
+                Room room = roomOpt.get();
+
+                oldRoomOwner.setRole(Role.ROOM_ADMIN.getRole());
+                newRoomOwner.setRole(Role.ROOM_OWNER.getRole());
+                room.setOwnerId(newRoomOwner.getUserId());
+
+                update(oldRoomOwner);
+                update(newRoomOwner);
+                roomService.update(room);
+
+                String userName = SecurityHelper.getUserDisplayName();
+                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.role;
+                webSocketController.sendInfoToRoom(newRoomOwner.getRoomId(), infoMessage);
+
+                return true;
+            } else {
+                String err = String.format("Room[%s] :: Not Found", roomId);
+                throw new NoSuchElementException(err);
+            }
+        } else {
+            String err = String.format("RoomUser[%s] :: Not Found", roomUserId);
+            throw new NoSuchElementException(err);
+        }
+    }
+
+    @Override
     public boolean hasRoomPrivilege(String userId, Privilege privilege) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
     }
 
     @Override
     public boolean hasRoomRole(String userId, Role role) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
     }
 

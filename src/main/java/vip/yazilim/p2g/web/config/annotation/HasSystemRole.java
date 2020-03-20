@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.config.annotation;
 
 import org.springframework.core.annotation.AliasFor;
-import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.enums.Role;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

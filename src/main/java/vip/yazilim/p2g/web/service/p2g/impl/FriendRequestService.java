@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
-import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
@@ -62,9 +63,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<FriendModel> getFriendsByUserId(String userId) {
+    public List<FriendModel> getFriendsModelByUserId(String userId) {
         List<FriendRequest> friendRequestList;
-        List<FriendModel> userModels = new LinkedList<>();
+        List<FriendModel> friendModels = new LinkedList<>();
 
         try {
             // Does not matter who sent friend request
@@ -90,11 +91,39 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
                     fm.setSong(RoomHelper.getRoomCurrentSong(songList));
                 }
 
-                userModels.add(fm);
+                friendModels.add(fm);
             }
         }
 
-        return userModels;
+        return friendModels;
+    }
+
+    @Override
+    public List<User> getFriendsByUserId(String userId) {
+        List<FriendRequest> friendRequestList;
+        List<User> friends = new LinkedList<>();
+
+        try {
+            // Does not matter who sent friend request
+            friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
+        }
+
+        for (FriendRequest fr : friendRequestList) {
+            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
+                Optional<User> userOpt;
+                String senderId = fr.getSenderId();
+                String receiverId = fr.getReceiverId();
+
+                //To determine who is friend
+                String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
+                userOpt = userService.getById(queryId);
+                userOpt.ifPresent(friends::add);
+            }
+        }
+
+        return friends;
     }
 
     @Override

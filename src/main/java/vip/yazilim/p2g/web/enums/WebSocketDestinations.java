@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.constant.enums;
+package vip.yazilim.p2g.web.enums;
 
 /**
  * @author mustafaarifsisman - 14.02.2020

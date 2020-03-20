@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
-import vip.yazilim.p2g.web.constant.enums.SearchType;
-import vip.yazilim.p2g.web.constant.enums.SongStatus;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.SearchType;
+import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
@@ -131,7 +131,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         Optional<RoomUser> roomUserOpt;
 
         try {
-            roomUserOpt = roomUserService.getRoomUser(userId);
+            roomUserOpt = roomUserService.getRoomUserByUserId(userId);
             songOpt = getById(songId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, songId);

@@ -5,15 +5,17 @@ import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
-import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.enums.OnlineStatus;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
+import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
@@ -103,7 +105,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
             Long roomId = roomOpt.get().getId();
 
-            roomUser = roomUserService.getRoomUser(roomId, userId);
+            roomUser = roomUserService.getRoomUserByUserId(roomId, userId);
             roomUser.ifPresent(userModel::setRoomUser);
         }
 
@@ -171,6 +173,19 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         }
 
         return update(user);
+    }
+
+    @Override
+    public List<User> getUsersNameLike(String userNameQuery) {
+        if (userNameQuery.length() > 2) {
+            try {
+                return userRepo.findByNameContainsIgnoreCase(userNameQuery);
+            } catch (Exception e) {
+                throw new DatabaseReadException(getClassOfEntity(), e, userNameQuery);
+            }
+        } else {
+            throw new ConstraintViolationException("Search query must be greater than 3 characters.");
+        }
     }
 
     @Override
