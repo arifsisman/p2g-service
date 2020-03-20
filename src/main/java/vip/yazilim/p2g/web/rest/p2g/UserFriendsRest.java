@@ -1,11 +1,11 @@
-package vip.yazilim.p2g.web.controller.rest.p2g;
+package vip.yazilim.p2g.web.rest.p2g;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;

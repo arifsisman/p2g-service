@@ -3,8 +3,8 @@ package vip.yazilim.p2g.web.util;
 import com.wrapper.spotify.model_objects.AbstractModelObject;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import vip.yazilim.p2g.web.constant.enums.SearchType;
 import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.LinkedList;

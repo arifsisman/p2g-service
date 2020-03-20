@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.config.security.authority;
 
 import org.springframework.stereotype.Component;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 
 import java.util.HashMap;
 import java.util.LinkedList;

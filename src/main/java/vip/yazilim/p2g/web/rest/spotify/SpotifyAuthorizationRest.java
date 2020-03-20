@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.rest.spotify;
+package vip.yazilim.p2g.web.rest.spotify;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.enums.OnlineStatus;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.enums.OnlineStatus;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;

@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.controller.rest.p2g;
+package vip.yazilim.p2g.web.rest.p2g;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 

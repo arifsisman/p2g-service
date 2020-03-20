@@ -1,10 +1,10 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.libs.springcore.service.ICrudService;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.RoomInvite;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.model.RoomUserModel;
 
 import java.util.List;

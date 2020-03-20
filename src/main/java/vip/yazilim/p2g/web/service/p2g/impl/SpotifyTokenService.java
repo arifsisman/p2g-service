@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
-import vip.yazilim.p2g.web.controller.rest.spotify.SpotifyAuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
+import vip.yazilim.p2g.web.rest.spotify.SpotifyAuthorizationRest;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 

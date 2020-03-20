@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.libs.springcore.service.ICrudService;
-import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.model.SearchModel;
 
 import java.util.List;

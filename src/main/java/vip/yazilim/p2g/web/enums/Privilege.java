@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.constant.enums;
+package vip.yazilim.p2g.web.enums;
 
 import java.util.HashMap;
 

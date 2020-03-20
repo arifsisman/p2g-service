@@ -1,8 +1,8 @@
 package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.libs.springcore.service.ICrudService;
-import vip.yazilim.p2g.web.constant.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.entity.FriendRequest;
+import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 

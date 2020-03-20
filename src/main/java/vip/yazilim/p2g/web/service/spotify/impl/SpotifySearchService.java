@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.constant.enums.SearchType;
+import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -14,7 +14,7 @@ import vip.yazilim.p2g.web.util.SpotifyHelper;
 import java.util.LinkedList;
 import java.util.List;
 
-import static vip.yazilim.p2g.web.constant.enums.SearchType.SONG;
+import static vip.yazilim.p2g.web.enums.SearchType.SONG;
 
 /**
  * @author mustafaarifsisman - 28.11.2019

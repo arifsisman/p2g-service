@@ -1,12 +1,12 @@
-package vip.yazilim.p2g.web.controller.rest.spotify;
+package vip.yazilim.p2g.web.rest.spotify;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
-import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.UserDevice;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;

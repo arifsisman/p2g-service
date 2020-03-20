@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.config.security.authority;
 
-import vip.yazilim.p2g.web.constant.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Privilege;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -20,11 +20,11 @@ public abstract class AAuthorityProvider {
     }
 
     /**
-     * P2G User       -> ROOM_GET, ROOM_JOIN_AND_LEAVE, ROOM_CREATE, ROOM_INVITE_REPLY
-     * Room User      -> (P2G User) + SONG_GET
-     * Room Moderator -> (Room User) + SONG_CONTROL, ROOM_INVITE, SONG_UPDATE
-     * Room Admin     -> (Room Moderator) + SONG_ADD_AND_REMOVE, ROOM_MANAGE_ROLES, ROOM_UPDATE
-     * Room Owner     -> (Room Admin) + ROOM_DELETE
+     * P2G User       ->
+     * Room User      -> (P2G User) + ...
+     * Room Moderator -> (Room User) + ...
+     * Room Admin     -> (Room Moderator) + ...
+     * Room Owner     -> (Room Admin) + ...
      *
      * @return map of roles and privileges
      */

@@ -1,7 +1,7 @@
 package vip.yazilim.p2g.web.util;
 
-import vip.yazilim.p2g.web.constant.enums.SongStatus;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.SongStatus;
 
 import java.util.List;
 

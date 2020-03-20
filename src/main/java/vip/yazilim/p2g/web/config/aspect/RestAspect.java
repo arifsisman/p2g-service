@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
-import vip.yazilim.p2g.web.constant.enums.Privilege;
-import vip.yazilim.p2g.web.constant.enums.Role;
-import vip.yazilim.p2g.web.controller.websocket.WebSocketController;
+import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.enums.Privilege;
+import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Aspect
 public class RestAspect {
 
-    private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.controller.rest.*.*.*(..))";
+    private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.rest.*.*.*(..))";
     private final Logger LOGGER = LoggerFactory.getLogger(RestAspect.class);
 
     @Autowired
