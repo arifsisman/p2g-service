@@ -23,8 +23,8 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_SPOTIFY + "/player")
-public class PlayerRest {
+@RequestMapping(API_SPOTIFY + "/room")
+public class RoomPlayerRest {
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;

@@ -22,49 +22,49 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_P2G + "/room/queue")
+@RequestMapping(API_P2G + "/room")
 public class RoomQueueRest {
 
     @Autowired
     private ISongService songService;
 
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
-    @GetMapping("/{roomId}")
+    @GetMapping("/{roomId}/queue")
     public RestResponse<List<Song>> getSongListByRoomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
         return RestResponse.generateResponse(songService.getSongListByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
-    @PostMapping("/{roomId}/add")
+    @PostMapping("/{roomId}/queue")
     public RestResponse<Boolean> addSongToRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) {
         return RestResponse.generateResponse(songService.addSongToRoom(roomId, searchModelList), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_CLEAR_QUEUE)
     @UpdateRoomSongs
-    @DeleteMapping("/{roomId}/clear")
+    @DeleteMapping("/{roomId}/queue")
     public RestResponse<Boolean> clearSongList(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
         return RestResponse.generateResponse(songService.deleteRoomSongList(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
-    @DeleteMapping({"/{songId}/remove"})
+    @DeleteMapping({"/queue/{songId}/remove"})
     public RestResponse<Boolean> removeSongFromRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) {
         return RestResponse.generateResponse(songService.removeSongFromRoom(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
-    @PutMapping("/{songId}/upvote")
+    @PutMapping("/queue/{songId}/upvote")
     public RestResponse<Integer> upvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) {
         return RestResponse.generateResponse(songService.upvote(songId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_VOTE)
     @UpdateRoomSongs
-    @PutMapping("/{songId}/downvote")
+    @PutMapping("/queue/{songId}/downvote")
     public RestResponse<Integer> downvote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long songId) {
         return RestResponse.generateResponse(songService.downvote(songId), HttpStatus.OK, request, response);
     }

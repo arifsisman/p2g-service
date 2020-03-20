@@ -101,7 +101,7 @@ public class AuthorizationRest {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PostMapping("/token")
+    @PutMapping("/token")
     public RestResponse<String> updateUserAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) {
         return RestResponse.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }

@@ -39,7 +39,7 @@ public class SpotifyUserRest {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping("/current")
+    @GetMapping("/me")
     public RestResponse<User> getCurrentSpotifyUser(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(spotifyUserService.getCurrentSpotifyUser(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
