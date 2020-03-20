@@ -96,7 +96,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Optional<Room> room;
         RoomUser roomUser;
 
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             roomUser = roomUserOpt.get();
@@ -174,7 +174,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public Room createRoom(String ownerId, String roomName, String roomPassword) {
         // Any room exists check
-        Optional<RoomUser> existingUserOpt = roomUserService.getRoomUser(ownerId);
+        Optional<RoomUser> existingUserOpt = roomUserService.getRoomUserByUserId(ownerId);
         if (existingUserOpt.isPresent()) {
             roomUserService.leaveRoom();
         }
@@ -193,7 +193,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public RoomModel getRoomModelByUserId(String userId) {
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             return getRoomModelByRoomId(roomUserOpt.get().getRoomId());

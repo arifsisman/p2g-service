@@ -63,7 +63,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
 
             spotifyUserService.transferUsersPlayback(userDevice);
 
-            Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+            Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
             roomUserOpt.ifPresent(roomUser -> spotifyPlayerService.userSyncWithRoom(roomUser));
 
             return updatedUserDevice;

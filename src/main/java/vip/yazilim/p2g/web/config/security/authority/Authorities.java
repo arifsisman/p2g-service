@@ -36,10 +36,9 @@ public class Authorities extends AAuthorityProvider {
 
         List<Privilege> roomAdminPrivileges = new LinkedList<>(roomDjPrivileges);
         roomAdminPrivileges.add(Privilege.ROOM_MANAGE_ROLES);
-        roomAdminPrivileges.add(Privilege.ROOM_UPDATE);
 
         List<Privilege> roomOwnerPrivileges = new LinkedList<>(roomAdminPrivileges);
-        roomOwnerPrivileges.add(Privilege.ROOM_DELETE);
+        roomOwnerPrivileges.add(Privilege.ROOM_UPDATE);
 
         // Set HashMap
         rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);

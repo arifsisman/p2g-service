@@ -18,17 +18,17 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     List<RoomUser> getRoomUsersByRoomId(Long roomId);
 
-    Optional<RoomUser> getRoomUser(String userId);
+    Optional<RoomUser> getRoomUserByUserId(String userId);
 
     RoomUserModel getRoomUserModelMe(String userId);
 
-    Optional<RoomUser> getRoomUser(Long roomId, String userId);
+    Optional<RoomUser> getRoomUserByUserId(Long roomId, String userId);
 
     Optional<RoomUser> getRoomOwner(Long roomId);
 
     RoomUser joinRoom(Long roomId, String userId, String password, Role role);
 
-    RoomUser joinRoomOwner(Long roomId, String userId);
+    void joinRoomOwner(Long roomId, String userId);
 
     boolean leaveRoom();
 
@@ -36,15 +36,13 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     RoomUser acceptRoomInvite(RoomInvite roomInvite);
 
-    Role getRoleByRoomIdAndUserId(Long roomId, String userId);
-
-    boolean deleteRoomUsers(Long roomId);
+    void deleteRoomUsers(Long roomId);
 
     RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag);
 
+    boolean changeRoomOwner(Long roomUserId);
+
     boolean hasRoomPrivilege(String userId, Privilege privilege);
-
     boolean hasRoomRole(String userId, Role role);
-
     int getRoomUserCountByRoomId(Long roomId);
 }

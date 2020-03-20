@@ -10,7 +10,6 @@ public enum Privilege {
     UNDEFINED("undefined"),
     ROOM_JOIN_AND_LEAVE("room_join"),
     ROOM_CREATE("room_create"),
-    ROOM_DELETE("room_delete"),
     ROOM_UPDATE("room_update"),
     ROOM_INVITE_AND_REPLY("room_invite"),
     ROOM_MANAGE_ROLES("room_manage_roles"),

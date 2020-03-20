@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
+import vip.yazilim.p2g.web.config.annotation.HasRoomRole;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomUsers;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -69,6 +70,13 @@ public class RoomUserRest {
     @PutMapping("/user/{roomUserId}/demote")
     public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
         return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
+    }
+
+    @HasRoomRole(role = Role.ROOM_OWNER)
+    @UpdateRoomUsers
+    @PutMapping("/user/{roomUserId}/makeOwner")
+    public RestResponse<Boolean> changeRoomOwner(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
+        return RestResponse.generateResponse(roomUserService.changeRoomOwner(roomUserId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)

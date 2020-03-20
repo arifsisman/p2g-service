@@ -73,7 +73,7 @@ public class SpotifyAuthorizationRest {
     @PostMapping("/logout")
     public RestResponse<Boolean> logout(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         Optional<User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {

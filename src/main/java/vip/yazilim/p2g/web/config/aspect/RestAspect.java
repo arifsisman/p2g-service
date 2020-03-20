@@ -134,7 +134,7 @@ public class RestAspect {
     // Handle room events
     private void handleUpdateRoomSongs() {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             Long roomId = roomUserOpt.get().getRoomId();
@@ -144,7 +144,7 @@ public class RestAspect {
 
     private void handleUpdateRoomUsers() {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             Long roomId = roomUserOpt.get().getRoomId();

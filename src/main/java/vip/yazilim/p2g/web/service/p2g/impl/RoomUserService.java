@@ -108,7 +108,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(String userId) {
+    public Optional<RoomUser> getRoomUserByUserId(String userId) {
         try {
             return roomUserRepo.findRoomUserByUserId(userId);
         } catch (Exception exception) {
@@ -118,7 +118,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public RoomUserModel getRoomUserModelMe(String userId) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         if (roomUserOpt.isPresent()) {
             RoomUserModel roomUserModel = new RoomUserModel();
             roomUserModel.setRoomUser(roomUserOpt.get());
@@ -131,7 +131,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Optional<RoomUser> getRoomUser(Long roomId, String userId) {
+    public Optional<RoomUser> getRoomUserByUserId(Long roomId, String userId) {
         try {
             return roomUserRepo.findRoomUserByRoomIdAndUserId(roomId, userId);
         } catch (Exception exception) {
@@ -165,7 +165,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             throw new IllegalArgumentException(err);
         } else {
             // Any room exists check
-            Optional<RoomUser> existingUserOpt = getRoomUser(userId);
+            Optional<RoomUser> existingUserOpt = getRoomUserByUserId(userId);
             if (existingUserOpt.isPresent()) {
                 leaveRoom();
             }
@@ -193,7 +193,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser joinRoomOwner(Long roomId, String userId) {
+    public void joinRoomOwner(Long roomId, String userId) {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomId(roomId);
@@ -201,13 +201,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         roomUser.setRole(Role.ROOM_OWNER.getRole());
         roomUser.setActiveFlag(true);
 
-        return super.create(roomUser);
+        super.create(roomUser);
     }
 
     @Override
     public boolean leaveRoom() {
         String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
@@ -278,7 +278,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             throw new NoSuchElementException(err);
         } else {
             // Any room exists check
-            Optional<RoomUser> existingUserOpt = getRoomUser(roomInvite.getReceiverId());
+            Optional<RoomUser> existingUserOpt = getRoomUserByUserId(roomInvite.getReceiverId());
             if (existingUserOpt.isPresent()) {
                 leaveRoom();
             }
@@ -299,19 +299,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public Role getRoleByRoomIdAndUserId(Long roomId, String userId) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
-
-        if (!roomUserOpt.isPresent()) {
-            return null;
-        }
-
-        String role = roomUserOpt.get().getRole();
-        return Role.getRole(role);
-    }
-
-    @Override
-    public boolean deleteRoomUsers(Long roomId) {
+    public void deleteRoomUsers(Long roomId) {
         List<RoomUser> roomUserList;
 
         try {
@@ -324,7 +312,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             delete(roomUser);
         }
 
-        return true;
     }
 
     @Override
@@ -354,14 +341,50 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
+    public boolean changeRoomOwner(Long roomUserId) {
+        Optional<RoomUser> oldRoomOwnerOpt = getRoomUserByUserId(SecurityHelper.getUserId());
+        Optional<RoomUser> newRoomOwnerOpt = getById(roomUserId);
+
+        if (newRoomOwnerOpt.isPresent() && oldRoomOwnerOpt.isPresent()) {
+            RoomUser oldRoomOwner = oldRoomOwnerOpt.get();
+            RoomUser newRoomOwner = newRoomOwnerOpt.get();
+            Long roomId = oldRoomOwner.getRoomId();
+            Optional<Room> roomOpt = roomService.getById(roomId);
+            if (roomOpt.isPresent()) {
+                Room room = roomOpt.get();
+
+                oldRoomOwner.setRole(Role.ROOM_ADMIN.getRole());
+                newRoomOwner.setRole(Role.ROOM_OWNER.getRole());
+                room.setOwnerId(newRoomOwner.getUserId());
+
+                update(oldRoomOwner);
+                update(newRoomOwner);
+                roomService.update(room);
+
+                String userName = SecurityHelper.getUserDisplayName();
+                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.role;
+                webSocketController.sendInfoToRoom(newRoomOwner.getRoomId(), infoMessage);
+
+                return true;
+            } else {
+                String err = String.format("Room[%s] :: Not Found", roomId);
+                throw new NoSuchElementException(err);
+            }
+        } else {
+            String err = String.format("RoomUser[%s] :: Not Found", roomUserId);
+            throw new NoSuchElementException(err);
+        }
+    }
+
+    @Override
     public boolean hasRoomPrivilege(String userId, Privilege privilege) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
     }
 
     @Override
     public boolean hasRoomRole(String userId, Role role) {
-        Optional<RoomUser> roomUserOpt = getRoomUser(userId);
+        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
         return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
     }
 

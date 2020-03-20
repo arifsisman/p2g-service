@@ -131,7 +131,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         Optional<RoomUser> roomUserOpt;
 
         try {
-            roomUserOpt = roomUserService.getRoomUser(userId);
+            roomUserOpt = roomUserService.getRoomUserByUserId(userId);
             songOpt = getById(songId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, songId);

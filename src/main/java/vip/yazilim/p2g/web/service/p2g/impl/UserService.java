@@ -103,7 +103,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
             Long roomId = roomOpt.get().getId();
 
-            roomUser = roomUserService.getRoomUser(roomId, userId);
+            roomUser = roomUserService.getRoomUserByUserId(roomId, userId);
             roomUser.ifPresent(userModel::setRoomUser);
         }
 
