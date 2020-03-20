@@ -22,7 +22,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
  * @contact mustafaarifsisman@gmail.com
  */
 @RestController
-@RequestMapping(API_P2G + "/user/friends")
+@RequestMapping(API_P2G + "/user")
 public class UserFriendsRest {
 
     @Autowired
@@ -41,45 +41,45 @@ public class UserFriendsRest {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/requests/{friendRequestId}/accept")
-    public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
-        return RestResponse.generateResponse(friendRequestService.acceptFriendRequest(friendRequestId), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/requests/{friendRequestId}/reject")
-    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
-        return RestResponse.generateResponse(friendRequestService.rejectFriendRequest(friendRequestId), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
-    @PutMapping("/requests/{friendRequestId}/ignore")
-    public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
-        return RestResponse.generateResponse(friendRequestService.ignoreFriendRequest(friendRequestId), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/model"})
+    @GetMapping({"/me/friends/requests"})
     public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/me"})
+    @GetMapping({"/me/friends"})
     public RestResponse<List<FriendModel>> getFriends(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(friendRequestService.getFriendsByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/counts"})
+    @GetMapping({"/me/friends/counts"})
     public RestResponse<Integer> getFriendsCounts(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(friendRequestService.getFriendsCountByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/{userId}/counts"})
+    @GetMapping({"/{userId}/friends/counts"})
     public RestResponse<Integer> getFriendsCounts(HttpServletRequest request, HttpServletResponse response, @PathVariable String userId) {
         return RestResponse.generateResponse(friendRequestService.getFriendsCountByUserId(userId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PutMapping("/friends/{friendRequestId}/accept")
+    public RestResponse<Boolean> accept(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
+        return RestResponse.generateResponse(friendRequestService.acceptFriendRequest(friendRequestId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PutMapping("/friends/{friendRequestId}/reject")
+    public RestResponse<Boolean> reject(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
+        return RestResponse.generateResponse(friendRequestService.rejectFriendRequest(friendRequestId), HttpStatus.OK, request, response);
+    }
+
+    @HasSystemRole(role = Role.P2G_USER)
+    @PutMapping("/friends/{friendRequestId}/ignore")
+    public RestResponse<Boolean> ignore(HttpServletRequest request, HttpServletResponse response, @PathVariable Long friendRequestId) {
+        return RestResponse.generateResponse(friendRequestService.ignoreFriendRequest(friendRequestId), HttpStatus.OK, request, response);
     }
 
 }
