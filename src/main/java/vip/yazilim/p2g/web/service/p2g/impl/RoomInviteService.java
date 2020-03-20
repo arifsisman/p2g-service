@@ -12,7 +12,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
-import vip.yazilim.p2g.web.model.RoomModelSimplified;
+import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -98,7 +98,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 
         for (RoomInvite ri : roomInvites) {
-            RoomModelSimplified rm = roomService.getRoomModelSimplifiedByRoomId(ri.getRoomId());
+            RoomModel rm = roomService.getRoomModelByRoomId(ri.getRoomId());
             Optional<User> inviter = userService.getById(ri.getInviterId());
 
             roomInviteModelList.add(new RoomInviteModel(ri, rm, inviter.orElse(null)));
@@ -127,7 +127,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            RoomModelSimplified roomModel = roomService.getRoomModelSimplifiedByRoomId(roomId);
+            RoomModel roomModel = roomService.getRoomModelByRoomId(roomId);
             Optional<User> inviter = userService.getById(inviterId);
 
             RoomInviteModel roomInviteModel = new RoomInviteModel(createdRoomInvite, roomModel, inviter.orElse(null));

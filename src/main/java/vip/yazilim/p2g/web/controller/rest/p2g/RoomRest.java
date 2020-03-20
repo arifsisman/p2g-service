@@ -10,7 +10,6 @@ import vip.yazilim.p2g.web.constant.enums.Privilege;
 import vip.yazilim.p2g.web.constant.enums.Role;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.model.RoomModel;
-import vip.yazilim.p2g.web.model.RoomModelSimplified;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
@@ -45,14 +44,8 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/{roomId}")
-    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+    public RestResponse<RoomModel> getRoomModelSimplified(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
         return RestResponse.generateResponse(roomService.getRoomModelByRoomId(roomId), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping("/model/{roomId}/simplified")
-    public RestResponse<RoomModelSimplified> getRoomModelSimplified(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
-        return RestResponse.generateResponse(roomService.getRoomModelSimplifiedByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
@@ -63,7 +56,7 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/")
-    public RestResponse<List<RoomModelSimplified>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) {
+    public RestResponse<List<RoomModel>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(roomService.getSimplifiedRoomModels(), HttpStatus.OK, request, response);
     }
 
