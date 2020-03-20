@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
-import vip.yazilim.p2g.web.controller.rest.spotify.AuthorizationRest;
+import vip.yazilim.p2g.web.controller.rest.spotify.SpotifyAuthorizationRest;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
@@ -30,7 +30,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     private IUserService userService;
 
     @Autowired
-    private AuthorizationRest authorizationRest;
+    private SpotifyAuthorizationRest spotifyAuthorizationRest;
 
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {
@@ -54,7 +54,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
             if (spotifyToken.isPresent()) {
                 return spotifyToken.get().getAccessToken();
             } else {
-                return authorizationRest.updateUserAccessToken();
+                return spotifyAuthorizationRest.updateUserAccessToken();
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);

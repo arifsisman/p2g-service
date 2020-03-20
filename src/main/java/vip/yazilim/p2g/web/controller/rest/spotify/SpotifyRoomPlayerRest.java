@@ -24,7 +24,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY + "/room")
-public class RoomPlayerRest {
+public class SpotifyRoomPlayerRest {
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;

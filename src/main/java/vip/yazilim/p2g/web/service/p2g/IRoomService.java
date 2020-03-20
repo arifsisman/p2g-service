@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface IRoomService extends ICrudService<Room, Long> {
     Optional<Room> getRoomByUserId(String userId);
 
-    List<RoomModel> getSimplifiedRoomModels();
+    List<RoomModel> getRoomModels();
 
     RoomModel getRoomModelByRoomId(Long roomId);
 

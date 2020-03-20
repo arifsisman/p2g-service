@@ -44,7 +44,7 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/{roomId}")
-    public RestResponse<RoomModel> getRoomModelSimplified(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
         return RestResponse.generateResponse(roomService.getRoomModelByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
@@ -56,8 +56,8 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/")
-    public RestResponse<List<RoomModel>> getSimplifiedRoomModels(HttpServletRequest request, HttpServletResponse response) {
-        return RestResponse.generateResponse(roomService.getSimplifiedRoomModels(), HttpStatus.OK, request, response);
+    public RestResponse<List<RoomModel>> getRoomModels(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(roomService.getRoomModels(), HttpStatus.OK, request, response);
     }
 
 }

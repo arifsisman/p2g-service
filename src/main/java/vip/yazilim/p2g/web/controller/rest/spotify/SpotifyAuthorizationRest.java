@@ -31,9 +31,9 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
  */
 @RestController
 @RequestMapping(API_SPOTIFY)
-public class AuthorizationRest {
+public class SpotifyAuthorizationRest {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AuthorizationRest.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SpotifyAuthorizationRest.class);
 
     @Autowired
     private ISpotifyTokenService tokenService;

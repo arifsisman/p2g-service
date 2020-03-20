@@ -118,7 +118,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public List<RoomModel> getSimplifiedRoomModels() {
+    public List<RoomModel> getRoomModels() {
         List<RoomModel> roomModelList = new LinkedList<>();
         List<Room> roomList = getAll();
 
