@@ -180,6 +180,10 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             delete(song);
         }
 
+        String userName = SecurityHelper.getUserDisplayName();
+        String infoMessage = userName + " cleared room queue.";
+        webSocketController.sendInfoToRoom(roomId, infoMessage);
+
         return spotifyPlayerService.roomStop(roomId);
     }
 

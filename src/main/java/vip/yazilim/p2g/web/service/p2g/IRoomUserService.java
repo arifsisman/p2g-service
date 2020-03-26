@@ -38,11 +38,13 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     void deleteRoomUsers(Long roomId);
 
-    RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag);
+    RoomUser changeRoomUserRole(Long roomUserId, String roleName);
 
-    boolean changeRoomOwner(Long roomUserId);
+    RoomUser changeRoomOwner(Long roomUserId);
 
     boolean hasRoomPrivilege(String userId, Privilege privilege);
+
     boolean hasRoomRole(String userId, Role role);
+
     int getRoomUserCountByRoomId(Long roomId);
 }

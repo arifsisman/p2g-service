@@ -315,7 +315,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser changeRoomUserRole(Long roomUserId, boolean promoteDemoteFlag) {
+    public RoomUser changeRoomUserRole(Long roomUserId, String roleName) {
         String userId = SecurityHelper.getUserId();
         Optional<RoomUser> changerOpt = getRoomUserByUserId(userId);
 
@@ -336,17 +336,17 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         Role oldRole = Role.getRole(changingUser.getRole());
-        Role newRole = getNewRole(oldRole, promoteDemoteFlag);
 
-        if (oldRole.equals(newRole)) {
+        if (oldRole.equals(Role.getRole(roleName))) {
             return changingUser;
+        } else if (Role.getRole(roleName).equals(Role.ROOM_OWNER)) {
+            return changeRoomOwner(roomUserId);
         } else {
-            changingUser.setRole(newRole.role);
+            changingUser.setRole(Role.getRole(roleName).getRole());
             RoomUser updatedRoomUser = update(changingUser);
 
-            String operation = (promoteDemoteFlag) ? " promoted " : " demoted ";
             String userName = SecurityHelper.getUserDisplayName();
-            String infoMessage = userName + operation + changingUser.getUserName() + "'s role to " + newRole.role;
+            String infoMessage = userName + " changed " + changingUser.getUserName() + "'s role to " + roleName;
             webSocketController.sendInfoToRoom(changingUser.getRoomId(), infoMessage);
 
             return updatedRoomUser;
@@ -354,7 +354,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public boolean changeRoomOwner(Long roomUserId) {
+    public RoomUser changeRoomOwner(Long roomUserId) {
         Optional<RoomUser> oldRoomOwnerOpt = getRoomUserByUserId(SecurityHelper.getUserId());
         Optional<RoomUser> newRoomOwnerOpt = getById(roomUserId);
 
@@ -378,7 +378,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.role;
                 webSocketController.sendInfoToRoom(newRoomOwner.getRoomId(), infoMessage);
 
-                return true;
+                return newRoomOwner;
             } else {
                 String err = String.format("Room[%s] :: Not Found", roomId);
                 throw new NoSuchElementException(err);
