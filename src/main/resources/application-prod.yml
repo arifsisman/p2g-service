@@ -11,7 +11,7 @@ spring:
     password: -$aSpOW$gUd$epO2O5p6
     initialization-mode: always
   jpa:
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: update
     database: postgresql
     properties:
       hibernate:

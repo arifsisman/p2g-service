@@ -44,23 +44,23 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User u1 = userService.createUser("1", "2@gmail.com", "Test User 1");
-        User u2 = userService.createUser("2", "3@gmail.com", "Test User 2");
-        User u3 = userService.createUser("3", "4@gmail.com", "Test User 3");
-        User u4 = userService.createUser("4", "5@gmail.com", "Test User 4");
-        User u5 = userService.createUser("5", "6@gmail.com", "Test User 5");
-        User u6 = userService.createUser("6", "7@gmail.com", "Test User 6");
-        User u7 = userService.createUser("7", "8@gmail.com", "Test User 7");
-        User u8 = userService.createUser("8", "9@gmail.com", "Test User 8");
-        User u9 = userService.createUser("9", "10@gmail.com", "Test User 9");
+        User u1 = userService.createUser("1", "2@gmail.com", "Tobias Schulze");
+        User u2 = userService.createUser("2", "3@gmail.com", "Wendy Reynolds");
+        User u3 = userService.createUser("3", "4@gmail.com", "Melinda Gardner");
+        User u4 = userService.createUser("4", "5@gmail.com", "Clara Martin");
+        User u5 = userService.createUser("5", "6@gmail.com", "Austin Jimenez");
+        User u6 = userService.createUser("6", "7@gmail.com", "Carter Gonzales");
+        User u7 = userService.createUser("7", "8@gmail.com", "Edgar Davidson");
+        User u8 = userService.createUser("8", "9@gmail.com", "Edward Daniels");
+        User u9 = userService.createUser("9", "10@gmail.com", "Julia Kim");
         User u10 = userService.createUser("10", "11@gmail.com", "Test User 10");
         User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
         Room demoRoom = roomService.createRoom(arif.getId(), "Demo Room", null);
-        Room testRoom2 = roomService.createRoom(u1.getId(), "Test Room 1", "123");
-        Room testRoom3 = roomService.createRoom(u2.getId(), "Test Room 2", null);
-        Room testRoom4 = roomService.createRoom(u3.getId(), "Test Room 3", null);
+        Room testRoom2 = roomService.createRoom(u1.getId(), "My Private Room", "123");
+        Room testRoom3 = roomService.createRoom(u2.getId(), "Chill", null);
+        Room testRoom4 = roomService.createRoom(u3.getId(), "Only top 50", null);
 
         Long roomId = demoRoom.getId();
         addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
@@ -69,15 +69,30 @@ public class DataInitializer implements CommandLineRunner {
         addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4");
 
         u1.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
+        u1.setCountryCode("DE");
         userService.update(u1);
 
-        u2.setImageUrl("https://randomuser.me/api/portraits/women/40.jpg");
+        u2.setImageUrl("https://randomuser.me/api/portraits/women/33.jpg");
+        u2.setCountryCode("GB");
         userService.update(u2);
 
-        u3.setImageUrl("https://randomuser.me/api/portraits/men/42.jpg");
-        userService.update(u3);
+        u4.setImageUrl("https://randomuser.me/api/portraits/men/42.jpg");
+        userService.update(u4);
+
+        u5.setImageUrl("https://randomuser.me/api/portraits/men/54.jpg");
+        userService.update(u5);
+
+        u5.setImageUrl("https://randomuser.me/api/portraits/men/54.jpg");
+        userService.update(u5);
+
+        u6.setImageUrl("https://randomuser.me/api/portraits/men/17.jpg");
+        userService.update(u6);
+
+        u9.setImageUrl("https://randomuser.me/api/portraits/women/82.jpg");
+        userService.update(u9);
 
         u3.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
+        u3.setCountryCode("TR");
         userService.update(u3);
 
         u4.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
@@ -102,8 +117,8 @@ public class DataInitializer implements CommandLineRunner {
         roomUserService.joinRoom(testRoom2.getId(), u5.getId(), "123", Role.ROOM_USER);
         roomUserService.joinRoom(testRoom2.getId(), u6.getId(), "123", Role.ROOM_USER);
 
-        RoomUser r3u8 = roomUserService.joinRoom(testRoom3.getId(), u7.getId(), "''", Role.ROOM_USER);
-        RoomUser r3u5 = roomUserService.joinRoom(testRoom3.getId(), u4.getId(), "", Role.ROOM_USER);
+        RoomUser r3u8 = roomUserService.joinRoom(testRoom3.getId(), u7.getId(), null, Role.ROOM_USER);
+        RoomUser r3u5 = roomUserService.joinRoom(testRoom3.getId(), u4.getId(), null, Role.ROOM_USER);
 
         r3u8.setRole(Role.ROOM_ADMIN.role);
         roomUserService.update(r3u8);
