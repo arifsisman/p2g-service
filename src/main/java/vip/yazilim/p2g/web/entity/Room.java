@@ -21,7 +21,7 @@ public class Room implements Serializable {
     @Column(nullable = false, length = 32)
     private String name;
 
-    @Column(name = "owner_id", unique = true, updatable = false, nullable = false)
+    @Column(name = "owner_id", unique = true, nullable = false)
     private String ownerId;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")

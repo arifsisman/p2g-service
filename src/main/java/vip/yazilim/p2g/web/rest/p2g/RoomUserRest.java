@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
-import vip.yazilim.p2g.web.config.annotation.HasRoomRole;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomUsers;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -57,26 +56,11 @@ public class RoomUserRest {
         return RestResponse.generateResponse(roomUserService.leaveRoom(), HttpStatus.OK, request, response);
     }
 
-    // Authorities (Promote & Demote)
     @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
     @UpdateRoomUsers
-    @PutMapping("/user/{roomUserId}/promote")
-    public RestResponse<RoomUser> promote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
-        return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, true), HttpStatus.OK, request, response);
-    }
-
-    @HasRoomPrivilege(privilege = Privilege.ROOM_MANAGE_ROLES)
-    @UpdateRoomUsers
-    @PutMapping("/user/{roomUserId}/demote")
-    public RestResponse<RoomUser> demote(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
-        return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, false), HttpStatus.OK, request, response);
-    }
-
-    @HasRoomRole(role = Role.ROOM_OWNER)
-    @UpdateRoomUsers
-    @PutMapping("/user/{roomUserId}/makeOwner")
-    public RestResponse<Boolean> changeRoomOwner(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId) {
-        return RestResponse.generateResponse(roomUserService.changeRoomOwner(roomUserId), HttpStatus.OK, request, response);
+    @PutMapping("/user/{roomUserId}/changeRole")
+    public RestResponse<RoomUser> changeRoomUserRole(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomUserId, @RequestBody String roleName) {
+        return RestResponse.generateResponse(roomUserService.changeRoomUserRole(roomUserId, roleName), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
