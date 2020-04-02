@@ -66,9 +66,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public List<Song> getSongListByRoomIdClient(Long roomId) {
+        try {
+            return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
+        }
+    }
+
+    @Override
     public List<Song> getSongListByRoomId(Long roomId) {
         try {
-            // order by votes and queued time
             return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);

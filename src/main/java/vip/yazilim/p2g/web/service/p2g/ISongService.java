@@ -13,6 +13,16 @@ import java.util.Optional;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISongService extends ICrudService<Song, Long> {
+    /**
+     * @param roomId roomId
+     * @return songList order by playing status, votes and queued time. Not includes played songs.
+     */
+    List<Song> getSongListByRoomIdClient(Long roomId);
+
+    /**
+     * @param roomId roomId
+     * @return songList order by votes and queued time. Includes all songs.
+     */
     List<Song> getSongListByRoomId(Long roomId);
 
     Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus);
