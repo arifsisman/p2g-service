@@ -66,18 +66,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public List<Song> getSongListByRoomIdClient(Long roomId) {
-        try {
-            return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
-        }
-    }
-
-    @Override
     public List<Song> getSongListByRoomId(Long roomId) {
         try {
-            return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
+            return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
@@ -96,8 +87,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) {
         List<Song> currentList = getSongListByRoomId(roomId);
-        int currentSongCount = (int) currentList.stream().filter(song -> !song.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())).count();
-        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentSongCount;
+        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
 
         List<Song> songList = new LinkedList<>();
         for (SearchModel s : searchModel) {

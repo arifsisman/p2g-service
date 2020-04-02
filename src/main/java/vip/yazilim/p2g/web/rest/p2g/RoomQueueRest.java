@@ -31,7 +31,7 @@ public class RoomQueueRest {
     @HasRoomPrivilege(privilege = Privilege.SONG_GET)
     @GetMapping("/{roomId}/queue")
     public RestResponse<List<Song>> getSongListByRoomId(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
-        return RestResponse.generateResponse(songService.getSongListByRoomIdClient(roomId), HttpStatus.OK, request, response);
+        return RestResponse.generateResponse(songService.getSongListByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
