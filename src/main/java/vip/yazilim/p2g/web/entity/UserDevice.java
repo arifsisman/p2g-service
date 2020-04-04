@@ -18,16 +18,16 @@ import javax.persistence.Table;
 public class UserDevice {
 
     @Id
-    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 128)
+    @Column(name = "id", unique = true, updatable = false, nullable = false, length = 512)
     private String id;
 
     @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
-    @Column(name = "device_name", length = 128)
+    @Column(name = "device_name", length = 256)
     private String deviceName;
 
-    @Column(name = "device_type", length = 16)
+    @Column(name = "device_type", length = 32)
     private String deviceType;
 
     @Column(name = "active_flag")
