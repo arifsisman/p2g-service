@@ -19,6 +19,7 @@ import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
+import vip.yazilim.p2g.web.util.TimeHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,10 +63,12 @@ public class SpotifyAuthorizationRest {
 
         Optional<User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            return RestResponse.generateResponse(updateUser(spotifyUser, user), HttpStatus.OK, request, response);
+            return RestResponse.generateResponse(saveUser(spotifyUser, userOpt.get()), HttpStatus.OK, request, response);
         } else {
-            return RestResponse.generateResponse(updateUser(spotifyUser, new User()), HttpStatus.OK, request, response);
+            User newUser = new User();
+            newUser.setCreationDate(TimeHelper.getLocalDateTimeNow());
+            newUser.setRole(Role.P2G_USER.getRole());
+            return RestResponse.generateResponse(saveUser(spotifyUser, newUser), HttpStatus.OK, request, response);
         }
     }
 
@@ -106,7 +109,7 @@ public class SpotifyAuthorizationRest {
         return RestResponse.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }
 
-    private User updateUser(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
+    private User saveUser(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
         if (!isAccountPremium(spotifyUser)) {
             throw new SpotifyException("Spotify account must be premium");
         }
@@ -124,8 +127,8 @@ public class SpotifyAuthorizationRest {
             user.setImageUrl(images[0].getUrl());
         }
 
-        Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-        oldUserDeviceOpt.ifPresent(userDevice -> userDeviceService.delete(userDevice));
+        // delete old or inactive device if present
+        userDeviceService.getUsersActiveDevice(userId).ifPresent(userDevice -> userDeviceService.delete(userDevice));
 
         List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
         boolean userDeviceCreated = false;
@@ -144,10 +147,10 @@ public class SpotifyAuthorizationRest {
         }
 
         tokenService.saveUserToken(userId, SecurityHelper.getUserAccessToken());
-        User updatedUser = userService.update(user);
+        User savedUser = userService.save(user);
 
         LOGGER.info("[{}] :: Logged in", userId);
-        return updatedUser;
+        return savedUser;
     }
 
     private boolean isAccountPremium(com.wrapper.spotify.model_objects.specification.User spotifyUser) {

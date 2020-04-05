@@ -1,4 +1,4 @@
-package vip.yazilim.p2g.web.service.spotify.model;
+package vip.yazilim.p2g.web.service.spotify;
 
 /**
  * @author mustafaarifsisman - 1.12.2019

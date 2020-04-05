@@ -6,11 +6,16 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
-import vip.yazilim.p2g.web.rest.spotify.SpotifyAuthorizationRest;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,7 +32,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     private IUserService userService;
 
     @Autowired
-    private SpotifyAuthorizationRest spotifyAuthorizationRest;
+    private IUserDeviceService userDeviceService;
 
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {
@@ -67,5 +72,24 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
         entity.setUserId(userId);
         entity.setAccessToken(accessToken);
         return create(entity).getAccessToken();
+    }
+
+    @Override
+    public Map<String, String> getRoomTokenDeviceMap(Long roomId) {
+        Map<String, String> map = new HashMap<>();
+
+        List<User> userList = userService.getUsersByRoomId(roomId);
+
+        for (User u : userList) {
+            String userId = u.getId();
+            Optional<OAuthToken> token = getTokenByUserId(userId);
+            Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
+
+            if (token.isPresent() && userDeviceOpt.isPresent()) {
+                map.put(token.get().getAccessToken(), userDeviceOpt.get().getId());
+            }
+        }
+
+        return map;
     }
 }

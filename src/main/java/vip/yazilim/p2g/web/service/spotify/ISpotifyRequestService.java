@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.service.spotify;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
-import vip.yazilim.p2g.web.service.spotify.model.RequestFunction;
 
 import java.util.Map;
 import java.util.function.Function;
