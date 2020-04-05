@@ -4,7 +4,6 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -22,23 +21,14 @@ public class SpotifyTrackService implements ISpotifyTrackService {
     @Autowired
     private ISpotifyRequestService spotifyRequest;
 
-    @Autowired
-    private ISpotifyTokenService tokenService;
-
     @Override
     public SearchModel getTrack(String id) {
-        String userId = SecurityHelper.getUserId();
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-
-        return new SearchModel(spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getTrack(id).build(), accessToken));
+        return new SearchModel(spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getTrack(id).build(), SecurityHelper.getUserAccessToken()));
     }
 
     @Override
     public List<SearchModel> getSeveralTracks(String[] ids) {
-        String userId = SecurityHelper.getUserId();
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-
-        Track[] tracks = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getSeveralTracks(ids).build(), accessToken);
+        Track[] tracks = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getSeveralTracks(ids).build(), SecurityHelper.getUserAccessToken());
         return SpotifyHelper.convertAbstractModelObjectToSearchModelList(tracks);
     }
 }

@@ -5,7 +5,6 @@ import com.wrapper.spotify.model_objects.specification.PlaylistTrack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -23,17 +22,11 @@ public class SpotifyPlaylistService implements ISpotifyPlaylistService {
     @Autowired
     private ISpotifyRequestService spotifyRequest;
 
-    @Autowired
-    private ISpotifyTokenService tokenService;
-
     @Override
     public List<SearchModel> getSongs(String playlistId) {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        String userId = SecurityHelper.getUserId();
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-
-        Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build(), accessToken);
+        Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build(), SecurityHelper.getUserAccessToken());
         PlaylistTrack[] playlistTracks = dataRequest.getItems();
 
         for (PlaylistTrack p : playlistTracks) {
