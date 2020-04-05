@@ -18,7 +18,7 @@ public class Room implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 127)
     private String name;
 
     @Column(name = "owner_id", unique = true, nullable = false)

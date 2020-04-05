@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.SpotifyException;
-import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -28,9 +27,6 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Autowired
     private ISpotifyRequestService spotifyRequest;
-
-    @Autowired
-    private ISpotifyTokenService tokenService;
 
     private Gson gson = new GsonBuilder().create();
 

@@ -24,7 +24,7 @@ public class FriendRequest implements Serializable {
     @Column(name = "receiver_id", updatable = false, nullable = false)
     private String receiverId;
 
-    @Column(name = "request_status", length = 16)
+    @Column(name = "request_status", length = 32)
     private String requestStatus;
 
     @Column(name = "request_date", columnDefinition = "TIMESTAMP")

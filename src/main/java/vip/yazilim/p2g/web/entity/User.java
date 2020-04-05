@@ -29,19 +29,19 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "role", nullable = false, length = 16)
+    @Column(name = "role", nullable = false, length = 31)
     private String role;
 
-    @Column(name = "online_status", length = 16)
+    @Column(name = "online_status", length = 31)
     private String onlineStatus;
 
-    @Column(name = "country_code", length = 4)
+    @Column(name = "country_code", length = 7)
     private String countryCode;
 
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(length = 20)
+    @Column(length = 31)
     private String anthemSongId;
 
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP")

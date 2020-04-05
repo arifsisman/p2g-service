@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
@@ -57,6 +58,7 @@ public class SpotifyAuthorizationRest {
     private IUserDeviceService userDeviceService;
 
     @GetMapping("/login")
+    @Transactional
     public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
         com.wrapper.spotify.model_objects.specification.User spotifyUser = spotifyUserService.getCurrentSpotifyUser();

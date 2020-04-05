@@ -4,6 +4,8 @@ import com.wrapper.spotify.exceptions.detailed.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessageDeliveryException;
@@ -27,6 +29,7 @@ import static org.springframework.http.HttpStatus.*;
  * @contact mustafaarifsisman@gmail.com
  */
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionHandlerController {
 
     private Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);

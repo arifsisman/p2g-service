@@ -18,7 +18,7 @@ public class OAuthToken implements Serializable {
     @Column(name = "user_id", unique = true, nullable = false)
     private String userId;
 
-    @Column(name = "access_token", length = 512)
+    @Column(name = "access_token", length = 511)
     private String accessToken;
 
 }
