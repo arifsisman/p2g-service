@@ -114,16 +114,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     }
 
     @Override
-    public User createUser(String id, String email, String username) {
-        User user = new User();
-        user.setId(id);
-        user.setEmail(email);
-        user.setName(username);
-
-        return create(user);
-    }
-
-    @Override
     public List<User> getUsersNameLike(String userNameQuery) {
         if (userNameQuery.length() > 2) {
             try {

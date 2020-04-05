@@ -10,10 +10,9 @@ import java.util.List;
  * @contact mustafaarifsisman@gmail.com
  */
 public interface ISpotifyUserService {
+    User getCurrentSpotifyUser();
+
     User getSpotifyUser(String spotifyAccountId);
-
-    User getCurrentSpotifyUser(String userId);
-
     List<UserDevice> getUsersAvailableDevices(String userId);
 
     boolean transferUsersPlayback(UserDevice userDevice);

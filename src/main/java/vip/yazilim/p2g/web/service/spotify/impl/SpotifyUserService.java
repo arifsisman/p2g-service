@@ -12,6 +12,7 @@ import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.Collections;
@@ -35,21 +36,18 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Override
     public User getSpotifyUser(String userId) {
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), accessToken);
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
-    public User getCurrentSpotifyUser(String userId) {
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), accessToken);
+    public User getCurrentSpotifyUser() {
+        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
     public List<UserDevice> getUsersAvailableDevices(String userId) {
         List<UserDevice> userDeviceList = new LinkedList<>();
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
-        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), accessToken);
+        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), SecurityHelper.getUserAccessToken());
 
         if (devices.length == 0) {
             String err = String.format("Can not found any active Spotify device for %s, please start Spotify first.", userId);
@@ -65,9 +63,8 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Override
     public boolean transferUsersPlayback(UserDevice userDevice) {
-        String accessToken = tokenService.getAccessTokenByUserId(userDevice.getUserId());
         JsonArray deviceJson = gson.toJsonTree(Collections.singletonList(userDevice.getId())).getAsJsonArray();
-        spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), accessToken);
+        spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
 
         return true;
     }

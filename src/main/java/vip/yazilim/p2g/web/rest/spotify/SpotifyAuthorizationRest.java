@@ -58,16 +58,14 @@ public class SpotifyAuthorizationRest {
     @GetMapping("/login")
     public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
-        Optional<User> userOpt = userService.getById(userId);
+        com.wrapper.spotify.model_objects.specification.User spotifyUser = spotifyUserService.getCurrentSpotifyUser();
 
+        Optional<User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            LOGGER.info("[{}] :: Logged in", userId);
-            updateUserAccessToken();
-
-            return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
+            return RestResponse.generateResponse(updateUser(spotifyUser, user), HttpStatus.OK, request, response);
         } else {
-            return register(request, response);
+            return RestResponse.generateResponse(updateUser(spotifyUser, new User()), HttpStatus.OK, request, response);
         }
     }
 
@@ -108,29 +106,14 @@ public class SpotifyAuthorizationRest {
         return RestResponse.generateResponse(tokenService.saveUserToken(SecurityHelper.getUserId(), accessToken), HttpStatus.OK, request, response);
     }
 
-    private RestResponse<User> register(HttpServletRequest request, HttpServletResponse response) {
-        String userId = SecurityHelper.getUserId();
-        String email = SecurityHelper.getUserEmail();
-        String userName = SecurityHelper.getUserDisplayName();
-
-        User user = userService.createUser(userId, email, userName);
-
-        LOGGER.info("[{}] :: Registered and logged in", userId);
-        updateUserAccessToken();
-
-        return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
-    }
-
-    private User updateUserSpotifyInfos(User user) {
-        String userId = user.getId();
-
-        com.wrapper.spotify.model_objects.specification.User spotifyUser = spotifyUserService.getCurrentSpotifyUser(user.getId());
-
-        String productType = spotifyUser.getProduct().getType();
-        if (!productType.equals(ProductType.PREMIUM.getType())) {
+    private User updateUser(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
+        if (!isAccountPremium(spotifyUser)) {
             throw new SpotifyException("Spotify account must be premium");
         }
 
+        String userId = SecurityHelper.getUserId();
+
+        user.setId(userId);
         user.setName(spotifyUser.getDisplayName());
         user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
@@ -160,11 +143,15 @@ public class SpotifyAuthorizationRest {
             userDeviceService.create(userDevice);
         }
 
-        return userService.update(user);
+        tokenService.saveUserToken(userId, SecurityHelper.getUserAccessToken());
+        User updatedUser = userService.update(user);
+
+        LOGGER.info("[{}] :: Logged in", userId);
+        return updatedUser;
     }
 
-    public String updateUserAccessToken() {
-        return tokenService.saveUserToken(SecurityHelper.getUserId(), SecurityHelper.getUserAccessToken());
+    private boolean isAccountPremium(com.wrapper.spotify.model_objects.specification.User spotifyUser) {
+        return spotifyUser.getProduct().getType().equals(ProductType.PREMIUM.getType());
     }
 
 }
