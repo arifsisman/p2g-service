@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.rest.spotify;
 
+import com.wrapper.spotify.enums.ProductType;
+import com.wrapper.spotify.model_objects.specification.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +12,17 @@ import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.enums.OnlineStatus;
 import vip.yazilim.p2g.web.enums.Role;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
+import vip.yazilim.p2g.web.exception.SpotifyException;
+import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
@@ -50,6 +52,9 @@ public class SpotifyAuthorizationRest {
     @Autowired
     private IRoomService roomService;
 
+    @Autowired
+    private IUserDeviceService userDeviceService;
+
     @GetMapping("/login")
     public RestResponse<User> login(HttpServletRequest request, HttpServletResponse response) {
         String userId = SecurityHelper.getUserId();
@@ -59,9 +64,6 @@ public class SpotifyAuthorizationRest {
             User user = userOpt.get();
             LOGGER.info("[{}] :: Logged in", userId);
             updateUserAccessToken();
-
-            user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
-            userService.update(user);
 
             return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
         } else {
@@ -116,14 +118,49 @@ public class SpotifyAuthorizationRest {
         LOGGER.info("[{}] :: Registered and logged in", userId);
         updateUserAccessToken();
 
-        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
-        userService.update(user);
-
         return RestResponse.generateResponse(updateUserSpotifyInfos(user), HttpStatus.OK, request, response);
     }
 
     private User updateUserSpotifyInfos(User user) {
-        return userService.setSpotifyInfo(spotifyUserService.getCurrentSpotifyUser(user.getId()), user);
+        String userId = user.getId();
+
+        com.wrapper.spotify.model_objects.specification.User spotifyUser = spotifyUserService.getCurrentSpotifyUser(user.getId());
+
+        String productType = spotifyUser.getProduct().getType();
+        if (!productType.equals(ProductType.PREMIUM.getType())) {
+            throw new SpotifyException("Spotify account must be premium");
+        }
+
+        user.setName(spotifyUser.getDisplayName());
+        user.setEmail(spotifyUser.getEmail());
+        user.setCountryCode(spotifyUser.getCountry().name());
+        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+
+        Image[] images = spotifyUser.getImages();
+        if (images.length > 0) {
+            user.setImageUrl(images[0].getUrl());
+        }
+
+        Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
+        oldUserDeviceOpt.ifPresent(userDevice -> userDeviceService.delete(userDevice));
+
+        List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
+        boolean userDeviceCreated = false;
+
+        for (UserDevice userDevice : userDeviceList) {
+            if (userDevice.getActiveFlag()) {
+                userDeviceService.create(userDevice);
+                userDeviceCreated = true;
+            }
+        }
+
+        if (!userDeviceCreated) {
+            UserDevice userDevice = userDeviceList.get(0);
+            userDevice.setActiveFlag(true);
+            userDeviceService.create(userDevice);
+        }
+
+        return userService.update(user);
     }
 
     public String updateUserAccessToken() {

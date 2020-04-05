@@ -58,7 +58,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({SpotifyException.class})
     public ResponseEntity<String> handleSpotifyAccountException(SpotifyException e) {
-        return noLog(NOT_ACCEPTABLE, e);
+        return warn(NOT_ACCEPTABLE, e);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
@@ -169,6 +169,11 @@ public class ExceptionHandlerController {
     @ExceptionHandler({UnauthorizedException.class})
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
         return error(UNAUTHORIZED, e);
+    }
+
+    private ResponseEntity<String> warn(HttpStatus status, Exception e) {
+        LOGGER.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        return ResponseEntity.status(status).body(e.getMessage());
     }
 
     private ResponseEntity<String> error(HttpStatus status, Exception e) {

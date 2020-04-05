@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import com.wrapper.spotify.enums.ProductType;
-import com.wrapper.spotify.model_objects.specification.Image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -11,19 +9,15 @@ import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.enums.OnlineStatus;
 import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
-import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IUserRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
-import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.util.LinkedList;
@@ -46,12 +40,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
     @Autowired
     private IRoomUserService roomUserService;
-
-    @Autowired
-    private ISpotifyUserService spotifyUserService;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
 
     @Autowired
     private AAuthorityProvider authorityProvider;
@@ -133,46 +121,6 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         user.setName(username);
 
         return create(user);
-    }
-
-    @Override
-    public User setSpotifyInfo(com.wrapper.spotify.model_objects.specification.User spotifyUser, User user) {
-        String userId = user.getId();
-        String productType = spotifyUser.getProduct().getType();
-
-        if (!productType.equals(ProductType.PREMIUM.getType())) {
-            throw new SpotifyException("Spotify account must be premium");
-        }
-
-        user.setName(spotifyUser.getDisplayName());
-        user.setEmail(spotifyUser.getEmail());
-        user.setCountryCode(spotifyUser.getCountry().name());
-
-        Image[] images = spotifyUser.getImages();
-        if (images.length > 0) {
-            user.setImageUrl(images[0].getUrl());
-        }
-
-        Optional<UserDevice> oldUserDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-        oldUserDeviceOpt.ifPresent(userDevice -> userDeviceService.delete(userDevice));
-
-        List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
-        boolean userDeviceCreated = false;
-
-        for (UserDevice userDevice : userDeviceList) {
-            if (userDevice.getActiveFlag()) {
-                userDeviceService.create(userDevice);
-                userDeviceCreated = true;
-            }
-        }
-
-        if (!userDeviceCreated) {
-            UserDevice userDevice = userDeviceList.get(0);
-            userDevice.setActiveFlag(true);
-            userDeviceService.create(userDevice);
-        }
-
-        return update(user);
     }
 
     @Override

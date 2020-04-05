@@ -17,7 +17,7 @@ public class RoomInvite {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_id", length = 128)
+    @Column(name = "room_id")
     private Long roomId;
 
     @Column(name = "inviter_id", updatable = false, nullable = false)
