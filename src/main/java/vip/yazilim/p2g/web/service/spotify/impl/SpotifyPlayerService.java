@@ -5,20 +5,24 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vip.yazilim.p2g.web.entity.*;
+import vip.yazilim.p2g.web.entity.OAuthToken;
+import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
-import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
-import vip.yazilim.p2g.web.service.spotify.model.PlayerModel;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
@@ -34,13 +38,13 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private ISpotifyRequestService spotifyRequest;
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
     private IUserDeviceService userDeviceService;
 
     @Autowired
     private ISongService songService;
+
+    @Autowired
+    private ISpotifyTokenService spotifyTokenService;
 
     private Gson gson = new GsonBuilder().create();
 
@@ -79,7 +83,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         songService.update(song);
 
         // Start playback
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
 
         return true;
     }
@@ -93,7 +97,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Song playing = playingOpt.get();
 
             // Pause playback
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
 
             // Update playing
             playing.setCurrentMs(getCumulativePassedMs(playing));
@@ -165,13 +169,13 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             playing.setPlayingTime(TimeHelper.getLocalDateTimeNow());
             songService.update(playing);
 
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
         } else if (pausedOpt.isPresent()) {
             Song paused = pausedOpt.get();
             paused.setCurrentMs(ms);
             songService.update(paused);
 
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
         } else {
             throw new NoSuchElementException("No playing or paused song found in the room");
         }
@@ -215,7 +219,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             repeatFlag = false;
         }
 
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.setRepeatModeOnUsersPlayback(repeatMode).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
 
         song.setRepeatFlag(repeatFlag);
         songService.update(song);
@@ -240,7 +244,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public boolean roomStop(Long roomId) {
-        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), getRoomTokenDeviceMap(roomId));
+        spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
         return true;
     }
 
@@ -296,65 +300,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             return true;
         }
         return false;
-    }
-
-    ///////////////////////
-    // Model getter methods
-    ///////////////////////
-
-    private PlayerModel getRoomPlayerModel(Long roomId) {
-        List<String> spotifyTokenList = new LinkedList<>();
-        List<String> userDeviceList = new LinkedList<>();
-
-        List<User> userList = userService.getUsersByRoomId(roomId);
-
-        for (User u : userList) {
-            String userId = u.getId();
-            Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
-
-            token.ifPresent(spotifyToken -> spotifyTokenList.add(spotifyToken.getAccessToken()));
-
-            Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-            userDeviceOpt.ifPresent(userDevice -> userDeviceList.add(userDevice.getId()));
-        }
-
-        PlayerModel playerModel = new PlayerModel();
-        playerModel.setRoomId(roomId);
-        playerModel.setSpotifyTokenList(spotifyTokenList);
-        playerModel.setUserDeviceList(userDeviceList);
-
-        return playerModel;
-    }
-
-    private Map<String, String> getRoomTokenDeviceMap(Long roomId) {
-        Map<String, String> map = new HashMap<>();
-
-        List<User> userList = userService.getUsersByRoomId(roomId);
-
-        for (User u : userList) {
-            String userId = u.getId();
-            Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
-            Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-
-            if (token.isPresent() && userDeviceOpt.isPresent()) {
-                map.put(token.get().getAccessToken(), userDeviceOpt.get().getId());
-            }
-        }
-
-        return map;
-    }
-
-    private HashMap<String, String> getUserTokenDeviceMap(String userId) {
-        HashMap<String, String> map = new HashMap<>();
-
-        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
-        Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-
-        if (token.isPresent() && userDeviceOpt.isPresent()) {
-            map.put(token.get().getAccessToken(), userDeviceOpt.get().getId());
-        }
-
-        return map;
     }
 
 }

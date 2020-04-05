@@ -3,7 +3,7 @@ package vip.yazilim.p2g.web.service.p2g;
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -12,13 +12,9 @@ import java.util.Optional;
  */
 public interface ISpotifyTokenService extends ICrudService<OAuthToken, String> {
 
-    String getAccessTokenByUserId(String userId);
-
     Optional<OAuthToken> getTokenByUserId(String userId);
-
-    OAuthToken saveUserToken(String userId, String accessToken, String refreshToken);
 
     String saveUserToken(String userId, String accessToken);
 
-    List<OAuthToken> getTokenListByRoomId(Long roomId);
+    Map<String, String> getRoomTokenDeviceMap(Long roomId);
 }

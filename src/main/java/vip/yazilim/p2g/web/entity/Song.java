@@ -19,23 +19,23 @@ public class Song implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "room_id", nullable = false, length = 128)
+    @Column(name = "room_id", nullable = false)
     private Long roomId;
 
-    @Column(name = "song_id", length = 128)
+    @Column(name = "song_id")
     private String songId;
 
-    @Column(name = "song_name", nullable = false, length = 128)
+    @Column(name = "song_name", nullable = false)
     private String songName;
 
-    @Column(name = "album_name", length = 128)
+    @Column(name = "album_name")
     private String albumName;
 
     @Column(name = "artist_names")
     @ElementCollection(targetClass = String.class)
     private List<String> artistNames;
 
-    @Column(name = "image_url", length = 128)
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Column(name = "duration_ms", nullable = false)

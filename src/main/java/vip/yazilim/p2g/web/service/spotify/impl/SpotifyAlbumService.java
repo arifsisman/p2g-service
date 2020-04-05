@@ -7,7 +7,6 @@ import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.model.SearchModel;
-import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -25,15 +24,11 @@ public class SpotifyAlbumService implements ISpotifyAlbumService {
     @Autowired
     private ISpotifyRequestService spotifyRequest;
 
-    @Autowired
-    private ISpotifyTokenService tokenService;
-
     @Override
     public List<SearchModel> getSongs(String albumId) {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        String userId = SecurityHelper.getUserId();
-        String accessToken = tokenService.getAccessTokenByUserId(userId);
+        String accessToken = SecurityHelper.getUserAccessToken();
 
         Album album = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
 

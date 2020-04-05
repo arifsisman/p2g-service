@@ -5,7 +5,7 @@ import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
-import vip.yazilim.p2g.web.service.spotify.model.RequestFunction;
+import vip.yazilim.p2g.web.service.spotify.RequestFunction;
 
 import java.util.LinkedList;
 import java.util.List;

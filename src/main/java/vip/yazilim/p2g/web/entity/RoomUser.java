@@ -29,7 +29,7 @@ public class RoomUser implements Serializable {
     @Column(name = "user_name", updatable = false, nullable = false)
     private String userName;
 
-    @Column(name = "role", length = 16)
+    @Column(name = "role", length = 31)
     private String role;
 
     @Column(name = "join_date", columnDefinition = "TIMESTAMP")

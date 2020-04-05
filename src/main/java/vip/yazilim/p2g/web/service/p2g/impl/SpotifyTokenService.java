@@ -7,13 +7,15 @@ import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.User;
+import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.ISpotifyTokenRepo;
-import vip.yazilim.p2g.web.rest.spotify.SpotifyAuthorizationRest;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
+import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,7 +32,7 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     private IUserService userService;
 
     @Autowired
-    private SpotifyAuthorizationRest spotifyAuthorizationRest;
+    private IUserDeviceService userDeviceService;
 
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {
@@ -48,42 +50,12 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public String getAccessTokenByUserId(String userId) {
-        try {
-            Optional<OAuthToken> spotifyToken = tokenRepo.findOAuthTokenByUserId(userId);
-            if (spotifyToken.isPresent()) {
-                return spotifyToken.get().getAccessToken();
-            } else {
-                return spotifyAuthorizationRest.updateUserAccessToken();
-            }
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
-        }
-    }
-
-    @Override
     public Optional<OAuthToken> getTokenByUserId(String userId) {
         try {
             return tokenRepo.findOAuthTokenByUserId(userId);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
-    }
-
-    @Override
-    public OAuthToken saveUserToken(String userId, String accessToken, String refreshToken) {
-        Optional<OAuthToken> spotifyToken = getTokenByUserId(userId);
-
-        if (spotifyToken.isPresent()) {
-            OAuthToken token = spotifyToken.get();
-            token.setAccessToken(accessToken);
-            return update(token);
-        }
-
-        OAuthToken entity = new OAuthToken();
-        entity.setUserId(userId);
-        entity.setAccessToken(accessToken);
-        return create(entity);
     }
 
     @Override
@@ -103,16 +75,21 @@ public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> im
     }
 
     @Override
-    public List<OAuthToken> getTokenListByRoomId(Long roomId) {
-        List<OAuthToken> OAuthTokenList = new LinkedList<>();
+    public Map<String, String> getRoomTokenDeviceMap(Long roomId) {
+        Map<String, String> map = new HashMap<>();
+
         List<User> userList = userService.getUsersByRoomId(roomId);
 
         for (User u : userList) {
-            Optional<OAuthToken> token = getTokenByUserId(u.getId());
-            token.ifPresent(OAuthTokenList::add);
+            String userId = u.getId();
+            Optional<OAuthToken> token = getTokenByUserId(userId);
+            Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
+
+            if (token.isPresent() && userDeviceOpt.isPresent()) {
+                map.put(token.get().getAccessToken(), userDeviceOpt.get().getId());
+            }
         }
 
-        return OAuthTokenList;
+        return map;
     }
-
 }

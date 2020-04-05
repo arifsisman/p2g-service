@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class SecurityHelper {
 
-    // With SecurityContext
     private static OAuth2Authentication getUserAuthentication() {
         return (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
     }
@@ -21,11 +20,6 @@ public class SecurityHelper {
         return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("display_name").toString();
     }
 
-    public static String getUserImageUrl() {
-        //todo fix
-        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("images").toString();
-    }
-
     public static String getUserEmail() {
         return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("email").toString();
     }
@@ -34,7 +28,6 @@ public class SecurityHelper {
         return ((OAuth2AuthenticationDetails) getUserAuthentication().getDetails()).getTokenValue();
     }
 
-    // With Authentication
     public static String getUserId(OAuth2Authentication oAuth2Authentication) {
         return ((Map) oAuth2Authentication.getUserAuthentication().getDetails()).get("id").toString();
     }

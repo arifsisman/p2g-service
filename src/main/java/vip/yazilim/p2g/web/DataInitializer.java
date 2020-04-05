@@ -44,18 +44,18 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User u1 = userService.createUser("1", "2@gmail.com", "Tobias Schulze");
-        User u2 = userService.createUser("2", "3@gmail.com", "Wendy Reynolds");
-        User u3 = userService.createUser("3", "4@gmail.com", "Melinda Gardner");
-        User u4 = userService.createUser("4", "5@gmail.com", "Clara Martin");
-        User u5 = userService.createUser("5", "6@gmail.com", "Austin Jimenez");
-        User u6 = userService.createUser("6", "7@gmail.com", "Carter Gonzales");
-        User u7 = userService.createUser("7", "8@gmail.com", "Edgar Davidson");
-        User u8 = userService.createUser("8", "9@gmail.com", "Edward Daniels");
-        User u9 = userService.createUser("9", "10@gmail.com", "Julia Kim");
-        User u10 = userService.createUser("10", "11@gmail.com", "Test User 10");
-        User arif = userService.createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
-        User emre = userService.createUser("emresen", "maemresen@gmail.com", "Emre Sen");
+        User u1 = createUser("1", "2@gmail.com", "Tobias Schulze");
+        User u2 = createUser("2", "3@gmail.com", "Wendy Reynolds");
+        User u3 = createUser("3", "4@gmail.com", "Melinda Gardner");
+        User u4 = createUser("4", "5@gmail.com", "Clara Martin");
+        User u5 = createUser("5", "6@gmail.com", "Austin Jimenez");
+        User u6 = createUser("6", "7@gmail.com", "Carter Gonzales");
+        User u7 = createUser("7", "8@gmail.com", "Edgar Davidson");
+        User u8 = createUser("8", "9@gmail.com", "Edward Daniels");
+        User u9 = createUser("9", "10@gmail.com", "Julia Kim");
+        User u10 = createUser("10", "11@gmail.com", "Test User 10");
+        User arif = createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
+        User emre = createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
         Room demoRoom = roomService.createRoom(arif.getId(), "Demo Room", null);
         Room testRoom2 = roomService.createRoom(u1.getId(), "My Private Room", "123");
@@ -163,5 +163,14 @@ public class DataInitializer implements CommandLineRunner {
         LOGGER.info("songId: {} - songName: {}", song.getId(), songName);
 
         return song;
+    }
+
+    private User createUser(String id, String email, String username) {
+        User user = new User();
+        user.setId(id);
+        user.setEmail(email);
+        user.setName(username);
+
+        return userService.create(user);
     }
 }
