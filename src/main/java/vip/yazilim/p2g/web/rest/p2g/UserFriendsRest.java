@@ -7,8 +7,7 @@ import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.Role;
-import vip.yazilim.p2g.web.model.FriendModel;
-import vip.yazilim.p2g.web.model.FriendRequestModel;
+import vip.yazilim.p2g.web.model.UserFriendModel;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
@@ -42,15 +41,9 @@ public class UserFriendsRest {
     }
 
     @HasSystemRole(role = Role.P2G_USER)
-    @GetMapping({"/me/friends/requests/model"})
-    public RestResponse<List<FriendRequestModel>> getFriendRequestModel(HttpServletRequest request, HttpServletResponse response) {
-        return RestResponse.generateResponse(friendRequestService.getFriendRequestModelByReceiverId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
-    }
-
-    @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/me/friends/model"})
-    public RestResponse<List<FriendModel>> getFriendModels(HttpServletRequest request, HttpServletResponse response) {
-        return RestResponse.generateResponse(friendRequestService.getFriendsModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
+    public RestResponse<UserFriendModel> getUserFriendModel(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(friendRequestService.getUserFriendModel(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
