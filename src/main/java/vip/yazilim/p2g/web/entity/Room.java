@@ -24,7 +24,7 @@ public class Room implements Serializable {
     @Column(name = "owner_id", unique = true, nullable = false)
     private String ownerId;
 
-    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime creationDate;
 
     @Column(name = "private_flag", nullable = false)
@@ -33,9 +33,9 @@ public class Room implements Serializable {
     @Column(length = 60)
     private String password;
 
-    @Column(name = "max_users")
+    @Column(name = "max_users", nullable = false)
     private Integer maxUsers;
 
-    @Column(name = "active_flag")
+    @Column(name = "active_flag", nullable = false)
     private Boolean activeFlag;
 }

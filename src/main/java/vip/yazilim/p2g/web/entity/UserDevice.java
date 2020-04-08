@@ -27,10 +27,10 @@ public class UserDevice {
     @Column(name = "device_name")
     private String deviceName;
 
-    @Column(name = "device_type", length = 63)
+    @Column(name = "device_type", length = 63, nullable = false)
     private String deviceType;
 
-    @Column(name = "active_flag")
+    @Column(name = "active_flag", nullable = false)
     private Boolean activeFlag;
 
 }

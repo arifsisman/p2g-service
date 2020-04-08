@@ -22,16 +22,16 @@ public class Song implements Serializable {
     @Column(name = "room_id", nullable = false)
     private Long roomId;
 
-    @Column(name = "song_id")
+    @Column(name = "song_id", nullable = false)
     private String songId;
 
     @Column(name = "song_name", nullable = false)
     private String songName;
 
-    @Column(name = "album_name")
+    @Column(name = "album_name", nullable = false)
     private String albumName;
 
-    @Column(name = "artist_names")
+    @Column(name = "artist_names", nullable = false)
     @ElementCollection(targetClass = String.class)
     private List<String> artistNames;
 
@@ -44,18 +44,19 @@ public class Song implements Serializable {
     @Column(name = "song_status", nullable = false)
     private String songStatus;
 
-    @Column(name = "queued_time", columnDefinition = "TIMESTAMP")
+    @Column(name = "queued_time", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime queuedTime;
 
     @Column(name = "playing_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime playingTime;
 
-    @Column(name = "current_ms")
+    @Column(name = "current_ms", nullable = false)
     private Integer currentMs;
 
-    @Column(name = "repeat_flag")
+    @Column(name = "repeat_flag", nullable = false)
     private Boolean repeatFlag;
 
+    @Column(name = "votes", nullable = false)
     private Integer votes;
 
     @Override

@@ -150,6 +150,8 @@ public class DataInitializer implements CommandLineRunner {
         song.setRoomId(roomId);
         song.setSongId(songId);
         song.setSongName(songName);
+        song.setAlbumName("Test");
+        song.setRepeatFlag(false);
         song.setArtistNames(artistNames);
         song.setCurrentMs(0);
         song.setDurationMs(durationMs);

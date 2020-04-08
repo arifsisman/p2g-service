@@ -227,6 +227,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             song.setSongId(s.getId());
             song.setSongName(s.getName());
             song.setAlbumName(s.getAlbumName());
+            song.setRepeatFlag(false);
             song.setArtistNames(s.getArtistNames());
             song.setImageUrl(s.getImageUrl());
             song.setCurrentMs(0);
