@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.IActiveRoomsProvider;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -31,7 +31,7 @@ public class RoomQueueScheduler {
     private Logger LOGGER = LoggerFactory.getLogger(RoomQueueScheduler.class);
 
     @Autowired
-    private IRoomService roomService;
+    private IActiveRoomsProvider activeRoomsProvider;
 
     @Autowired
     private ISongService songService;
@@ -44,7 +44,7 @@ public class RoomQueueScheduler {
 
     @Scheduled(fixedRate = 1000)
     public void checkRoomSongFinished() {
-        List<Room> roomList = roomService.getAll();
+        List<Room> roomList = activeRoomsProvider.getActiveRooms();
 
         for (Room room : roomList) {
             Long roomId = room.getId();

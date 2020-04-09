@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.DatabaseDeleteException;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -174,8 +175,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
 
-        for (Song song : songList) {
-            delete(song);
+        try {
+            for (Song song : songList) {
+                delete(song);
+            }
+        } catch (Exception exception) {
+            throw new DatabaseDeleteException(getClassOfEntity(), exception, roomId);
         }
 
         String userName = SecurityHelper.getUserDisplayName();
