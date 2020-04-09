@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ public class RoomQueueScheduler {
 
             if (!nextOpt.isPresent()) {
                 activeRoomsProvider.deactivateRoom(room);
+                webSocketController.sendToRoom("songs", roomId, new LinkedList<>());
             } else if (playingOpt.isPresent() && isSongFinished(playingOpt.get())) {
                 LOGGER.info("Song[{}] finished on Room[{}]. The next song will be played.", playingOpt.get().getSongId(), roomId);
                 spotifyPlayerService.roomNext(roomId);

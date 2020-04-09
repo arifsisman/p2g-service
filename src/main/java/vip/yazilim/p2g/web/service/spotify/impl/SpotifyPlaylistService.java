@@ -31,6 +31,7 @@ public class SpotifyPlaylistService implements ISpotifyPlaylistService {
 
         for (PlaylistTrack p : playlistTracks) {
             SearchModel searchModel = new SearchModel(p.getTrack());
+            searchModel.setAlbumName(p.getTrack().getAlbum().getName());
             searchModelList.add(searchModel);
         }
 

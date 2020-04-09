@@ -44,6 +44,7 @@ public class SpotifyAlbumService implements ISpotifyAlbumService {
         for(TrackSimplified t: tracks){
             SearchModel searchModel = new SearchModel(t);
             searchModel.setImageUrl(imageUrl);
+            searchModel.setAlbumName(album.getName());
             searchModelList.add(searchModel);
         }
 
