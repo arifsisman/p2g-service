@@ -46,7 +46,7 @@ public class ActiveRoomsProvider implements IActiveRoomsProvider {
     @Override
     public void deactivateRoom(Room room) {
         activeRooms.remove(room);
-        LOGGER.debug("Room[{}] deactivated", room.getId());
+        LOGGER.info("Room[{}] :: Deactivated", room.getId());
     }
 
 
@@ -60,7 +60,7 @@ public class ActiveRoomsProvider implements IActiveRoomsProvider {
     private void activateRoom(Room room) {
         if (!activeRooms.contains(room)) {
             activeRooms.add(room);
-            LOGGER.debug("Room[{}] activated", room.getId());
+            LOGGER.info("Room[{}] :: Activated", room.getId());
         }
     }
 }

@@ -16,6 +16,7 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
+import vip.yazilim.p2g.web.service.IActiveRoomsProvider;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.util.RoomHelper;
@@ -59,6 +60,9 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Autowired
     private ISpotifyPlayerService spotifyPlayerService;
+
+    @Autowired
+    private IActiveRoomsProvider activeRoomsProvider;
 
     @Override
     protected JpaRepository<Room, Long> getRepository() {
@@ -228,6 +232,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Delete roomInvites
         roomInviteService.deleteRoomInvites(roomId);
 
+        getById(roomId).ifPresent(activeRoomsProvider::deactivateRoom);
         webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
 
         return super.deleteById(roomId);

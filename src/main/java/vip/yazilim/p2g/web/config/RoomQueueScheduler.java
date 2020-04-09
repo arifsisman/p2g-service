@@ -49,15 +49,16 @@ public class RoomQueueScheduler {
         for (Room room : roomList) {
             Long roomId = room.getId();
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-            Optional<Song> nextOpt = songService.getNextSong(roomId);
 
-            if (!nextOpt.isPresent()) {
-                activeRoomsProvider.deactivateRoom(room);
-//                webSocketController.sendToRoom("songs", roomId, new LinkedList<>());
-            } else if (playingOpt.isPresent() && isSongFinished(playingOpt.get())) {
-                LOGGER.info("Song[{}] finished on Room[{}]. The next song will be played.", playingOpt.get().getSongId(), roomId);
-                spotifyPlayerService.roomNext(roomId);
-                webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));
+            if (playingOpt.isPresent() && isSongFinished(playingOpt.get())) {
+                Optional<Song> nextOpt = songService.getNextSong(roomId);
+                if (!nextOpt.isPresent()) {
+                    activeRoomsProvider.deactivateRoom(room);
+                } else {
+                    LOGGER.info("Room[{}] :: Song finished, next song will be played.", roomId);
+                    spotifyPlayerService.roomNext(roomId);
+                    webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));
+                }
             }
         }
     }
