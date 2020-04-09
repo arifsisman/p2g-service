@@ -35,7 +35,7 @@ public class ActiveRoomsProvider implements IActiveRoomsProvider {
     @Override
     public void activateRoom(Long roomId) {
         Optional<Room> roomOpt = roomService.getById(roomId);
-        if (roomOpt.isPresent() && !roomOpt.get().getActiveFlag()) {
+        if (roomOpt.isPresent()) {
             Room room = roomOpt.get();
             activateRoom(room);
             room.setActiveFlag(true);
@@ -45,9 +45,7 @@ public class ActiveRoomsProvider implements IActiveRoomsProvider {
 
     @Override
     public void deactivateRoom(Room room) {
-        if (room.getActiveFlag()) {
-            activeRooms.remove(room);
-        }
+        activeRooms.remove(room);
         LOGGER.debug("Room[{}] deactivated", room.getId());
     }
 
