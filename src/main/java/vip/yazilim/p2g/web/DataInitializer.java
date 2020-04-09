@@ -62,6 +62,9 @@ public class DataInitializer implements CommandLineRunner {
         Room testRoom3 = roomService.createRoom(u2.getId(), "Chill", null);
         Room testRoom4 = roomService.createRoom(u3.getId(), "Only top 50", null);
 
+        demoRoom.setActiveFlag(true);
+        roomService.update(demoRoom);
+
         Long roomId = demoRoom.getId();
         addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
         addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");

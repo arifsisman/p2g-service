@@ -42,7 +42,7 @@ public class RoomQueueScheduler {
     @Autowired
     private WebSocketController webSocketController;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedDelay = 1000, initialDelay = 10000)
     public void checkRoomSongFinished() {
         List<Room> roomList = activeRoomsProvider.getActiveRooms();
 
@@ -50,7 +50,10 @@ public class RoomQueueScheduler {
             Long roomId = room.getId();
             Optional<Song> playingOpt = songService.getPlayingSong(roomId);
             Optional<Song> nextOpt = songService.getNextSong(roomId);
-            if (playingOpt.isPresent() && nextOpt.isPresent() && isSongFinished(playingOpt.get())) {
+
+            if (!nextOpt.isPresent()) {
+                activeRoomsProvider.deactivateRoom(room);
+            } else if (playingOpt.isPresent() && isSongFinished(playingOpt.get())) {
                 LOGGER.info("Song[{}] finished on Room[{}]. The next song will be played.", playingOpt.get().getSongId(), roomId);
                 spotifyPlayerService.roomNext(roomId);
                 webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));

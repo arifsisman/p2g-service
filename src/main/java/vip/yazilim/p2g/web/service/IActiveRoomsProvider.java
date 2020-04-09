@@ -11,7 +11,7 @@ import java.util.List;
 public interface IActiveRoomsProvider {
     List<Room> getActiveRooms();
 
-    void activateRoom(Room room);
+    void activateRoom(Long roomId);
 
     void deactivateRoom(Room room);
 }

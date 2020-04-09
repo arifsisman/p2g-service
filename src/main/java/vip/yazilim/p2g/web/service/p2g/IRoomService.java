@@ -23,4 +23,6 @@ public interface IRoomService extends ICrudService<Room, Long> {
     Room createRoom(String ownerId, String roomName, String roomPassword);
 
     RoomModel getRoomModelByUserId(String userId);
+
+    List<Room> getActiveRooms();
 }

@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 09.04.2020
@@ -32,23 +33,36 @@ public class ActiveRoomsProvider implements IActiveRoomsProvider {
     }
 
     @Override
-    public void activateRoom(Room room) {
-        if (!activeRooms.contains(room)) {
-            activeRooms.add(room);
-            LOGGER.debug("Room[{}] activated", room.getId());
+    public void activateRoom(Long roomId) {
+        Optional<Room> roomOpt = roomService.getById(roomId);
+        if (roomOpt.isPresent() && !roomOpt.get().getActiveFlag()) {
+            Room room = roomOpt.get();
+            activateRoom(room);
+            room.setActiveFlag(true);
+            roomService.update(room);
         }
     }
 
     @Override
     public void deactivateRoom(Room room) {
-        activeRooms.remove(room);
+        if (room.getActiveFlag()) {
+            activeRooms.remove(room);
+        }
         LOGGER.debug("Room[{}] deactivated", room.getId());
     }
 
+
     @EventListener(ApplicationReadyEvent.class)
     public void activeCurrentRooms() {
-        for (Room room : roomService.getAll()) {
+        for (Room room : roomService.getActiveRooms()) {
             activateRoom(room);
+        }
+    }
+
+    private void activateRoom(Room room) {
+        if (!activeRooms.contains(room)) {
+            activeRooms.add(room);
+            LOGGER.debug("Room[{}] activated", room.getId());
         }
     }
 }

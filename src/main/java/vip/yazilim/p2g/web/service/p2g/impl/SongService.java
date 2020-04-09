@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
+import vip.yazilim.p2g.web.service.IActiveRoomsProvider;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
@@ -50,6 +51,9 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private WebSocketController webSocketController;
+
+    @Autowired
+    private IActiveRoomsProvider activeRoomsProvider;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -118,6 +122,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         String userName = SecurityHelper.getUserDisplayName();
         String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
         webSocketController.sendInfoToRoom(roomId, infoMessage);
+        activeRoomsProvider.activateRoom(roomId);
 
         return true;
     }
