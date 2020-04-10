@@ -38,4 +38,8 @@ public interface ISongService extends ICrudService<Song, Long> {
     int upvote(Long songId);
 
     int downvote(Long songId);
+
+    List<Song> getActiveSongs();
+
+    Song updateSongStatus(Song song, SongStatus songStatus);
 }

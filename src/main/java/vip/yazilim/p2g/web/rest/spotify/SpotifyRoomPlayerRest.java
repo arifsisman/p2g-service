@@ -11,7 +11,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 public class SpotifyRoomPlayerRest {
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @UpdateRoomSongs

@@ -8,11 +8,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.controller.WebSocketController;
-import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.service.IActiveRoomsProvider;
+import vip.yazilim.p2g.web.service.IActiveSongsProvider;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
-import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.time.temporal.ChronoUnit;
@@ -26,35 +25,33 @@ import java.util.Optional;
 @EnableScheduling
 @Component
 @Transactional
-public class RoomQueueScheduler {
+public class SongScheduler {
 
-    private Logger LOGGER = LoggerFactory.getLogger(RoomQueueScheduler.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SongScheduler.class);
 
     @Autowired
-    private IActiveRoomsProvider activeRoomsProvider;
+    private IActiveSongsProvider activeRoomsProvider;
 
     @Autowired
     private ISongService songService;
 
     @Autowired
-    private SpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Autowired
     private WebSocketController webSocketController;
 
     @Scheduled(fixedDelay = 1000, initialDelay = 10000)
     public void checkRoomSongFinished() {
-        List<Room> roomList = activeRoomsProvider.getActiveRooms();
+        List<Song> activeSongs = activeRoomsProvider.getActiveSongs();
 
-        for (Room room : roomList) {
-            Long roomId = room.getId();
-            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-
-            if (playingOpt.isPresent() && isSongFinished(playingOpt.get())) {
-                Optional<Song> nextOpt = songService.getNextSong(roomId);
+        for (Song song : activeSongs) {
+            if (isSongFinished(song)) {
+                Optional<Song> nextOpt = songService.getNextSong(song.getRoomId());
                 if (!nextOpt.isPresent()) {
-                    activeRoomsProvider.deactivateRoom(room);
+                    activeRoomsProvider.deactivateSong(song);
                 } else {
+                    Long roomId = song.getRoomId();
                     LOGGER.info("Room[{}] :: Song finished, next song will be played.", roomId);
                     spotifyPlayerService.roomNext(roomId);
                     webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));

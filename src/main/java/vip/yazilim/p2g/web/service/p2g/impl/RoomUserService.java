@@ -23,7 +23,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.service.spotify.impl.SpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -57,7 +57,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     private PasswordEncoderConfig passwordEncoderConfig;
 
     @Autowired
-    private SpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Autowired
     private IUserService userService;

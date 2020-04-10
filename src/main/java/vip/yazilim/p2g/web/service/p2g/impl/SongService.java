@@ -15,11 +15,11 @@ import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
-import vip.yazilim.p2g.web.service.IActiveRoomsProvider;
+import vip.yazilim.p2g.web.service.IActiveSongsProvider;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -47,13 +47,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private IRoomUserService roomUserService;
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Autowired
     private WebSocketController webSocketController;
 
     @Autowired
-    private IActiveRoomsProvider activeRoomsProvider;
+    private IActiveSongsProvider activeSongsProvider;
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -80,6 +80,14 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public boolean delete(Song entity) throws DatabaseDeleteException {
+        if (entity.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            activeSongsProvider.deactivateSong(entity);
+        }
+        return super.delete(entity);
+    }
+
+    @Override
     public int upvote(Long songId) {
         return updateVote(songId, true);
     }
@@ -87,6 +95,28 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public int downvote(Long songId) {
         return updateVote(songId, false);
+    }
+
+    @Override
+    public List<Song> getActiveSongs() {
+        try {
+            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception);
+        }
+    }
+
+    @Override
+    public Song updateSongStatus(Song song, SongStatus songStatus) {
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            activeSongsProvider.activateSong(song);
+        } else {
+            activeSongsProvider.deactivateSong(song);
+        }
+
+        song.setSongStatus(songStatus.getSongStatus());
+        return update(song);
     }
 
     @Override
@@ -122,7 +152,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         String userName = SecurityHelper.getUserDisplayName();
         String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
         webSocketController.sendInfoToRoom(roomId, infoMessage);
-        activeRoomsProvider.activateRoom(roomId);
 
         return true;
     }
