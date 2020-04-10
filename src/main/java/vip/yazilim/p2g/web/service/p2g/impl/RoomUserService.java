@@ -184,7 +184,6 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             }
 
             RoomUser joinedUser = create(roomUser);
-//            spotifyPlayerService.userSyncWithRoom(joinedUser);
             webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
             LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);
@@ -228,11 +227,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                     webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
-                try {
-                    spotifyPlayerService.userDeSyncWithRoom(roomUser);
-                } catch (Exception e) {
-                    LOGGER.warn("[{}] :: An error occurred when desync with Room[{}]", userId, roomUser.getRoomId());
-                }
+                spotifyPlayerService.desyncWithRoom(userId);
 
                 return status;
             }

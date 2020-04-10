@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.service.spotify;
 
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 
 /**
@@ -21,10 +20,10 @@ public interface IPlayerService {
 
     boolean roomRepeat(Long roomId);
 
-    boolean userSyncWithRoom(RoomUser roomUser);
-
     boolean roomStop(Long roomId);
 
-    void userDeSyncWithRoom(RoomUser roomUser);
+    boolean syncWithRoom(String userId);
+
+    void desyncWithRoom(String userId);
 
 }
