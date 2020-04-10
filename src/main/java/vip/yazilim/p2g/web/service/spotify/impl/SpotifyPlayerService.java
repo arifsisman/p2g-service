@@ -107,30 +107,26 @@ public class SpotifyPlayerService implements IPlayerService {
 
     @Override
     public boolean roomNext(Long roomId) {
-        songService.getNextSong(roomId).ifPresentOrElse(
-                song -> roomPlay(song, 0, true),
-                () -> {
-                    throw new NoSuchElementException("Next song is empty");
-                }
-        );
+        Optional<Song> nextOpt = songService.getNextSong(roomId);
 
-        return true;
+        if (nextOpt.isPresent()) {
+            return roomPlay(nextOpt.get(), 0, true);
+        } else {
+            throw new NoSuchElementException("Next song is empty");
+        }
     }
 
     @Override
     public boolean roomPrevious(Long roomId) {
-        songService.getPreviousSong(roomId).ifPresentOrElse(
-                song -> {
-                    songService.getPlayingSong(roomId).ifPresent(next -> songService.updateSongStatus(next, SongStatus.NEXT));
-                    songService.getPausedSong(roomId).ifPresent(played -> songService.updateSongStatus(played, SongStatus.PLAYED));
-                    roomPlay(song, 0, false);
-                },
-                () -> {
-                    throw new NoSuchElementException("Previous song is empty");
-                }
-        );
+        Optional<Song> previousOpt = songService.getPreviousSong(roomId);
 
-        return true;
+        if (previousOpt.isPresent()) {
+            songService.getPlayingSong(roomId).ifPresent(next -> songService.updateSongStatus(next, SongStatus.NEXT));
+            songService.getPausedSong(roomId).ifPresent(played -> songService.updateSongStatus(played, SongStatus.PLAYED));
+            return roomPlay(previousOpt.get(), 0, false);
+        } else {
+            throw new NoSuchElementException("Previous song is empty");
+        }
     }
 
     @Override

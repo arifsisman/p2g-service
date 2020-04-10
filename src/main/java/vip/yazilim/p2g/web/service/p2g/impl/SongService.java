@@ -3,7 +3,6 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import vip.yazilim.libs.springcore.exception.DatabaseDeleteException;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -139,16 +138,8 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public boolean removeSongFromRoom(Long songId) {
         String userId = SecurityHelper.getUserId();
-        Optional<Song> songOpt;
-        Optional<Song> nowPlayingOpt;
-        Optional<RoomUser> roomUserOpt;
-
-        try {
-            roomUserOpt = roomUserService.getRoomUserByUserId(userId);
-            songOpt = getById(songId);
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, songId);
-        }
+        Optional<Song> songOpt = getById(songId);
+        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
 
         if (!songOpt.isPresent()) {
             String err = String.format("Song[%s] not found", songId);
@@ -162,15 +153,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         Long roomId = roomUserOpt.get().getRoomId();
 
-        try {
-            nowPlayingOpt = getPlayingSong(roomId);
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, songId);
-        }
-
-        if (nowPlayingOpt.isPresent() && nowPlayingOpt.get().getId().equals(songId)) {
-            spotifyPlayerService.roomPlayPause(roomId);
-        }
+        getPlayingSong(roomId).ifPresent(song -> {
+            if (song.getId().equals(songId)) {
+                spotifyPlayerService.roomStop(roomId);
+            }
+        });
 
         String userName = SecurityHelper.getUserDisplayName();
         String infoMessage = userName + " removed '" + songOpt.get().toString() + "' from queue.";
@@ -189,13 +176,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
 
-        try {
-            for (Song song : songList) {
-                delete(song);
-            }
-        } catch (Exception exception) {
-            throw new DatabaseDeleteException(getClassOfEntity(), exception, roomId);
-        }
+        songList.forEach(this::delete);
 
         String userName = SecurityHelper.getUserDisplayName();
         String infoMessage = userName + " cleared room queue.";

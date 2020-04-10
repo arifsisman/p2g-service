@@ -104,11 +104,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             return Optional.empty();
         }
 
-        try {
-            room = getById(roomUser.getRoomId());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, userId);
-        }
+        room = getById(roomUser.getRoomId());
 
         if (!room.isPresent()) {
             throw new NoSuchElementException("Room :: Not found");
