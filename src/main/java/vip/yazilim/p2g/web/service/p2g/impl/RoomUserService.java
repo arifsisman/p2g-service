@@ -184,7 +184,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             }
 
             RoomUser joinedUser = create(roomUser);
-            spotifyPlayerService.userSyncWithRoom(joinedUser);
+//            spotifyPlayerService.userSyncWithRoom(joinedUser);
             webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
             LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);

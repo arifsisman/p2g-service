@@ -25,6 +25,7 @@ import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -106,17 +107,8 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
     }
 
-    @Override
-    public Song updateSongStatus(Song song, SongStatus songStatus) {
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
-            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            activeSongsProvider.activateSong(song);
-        } else {
-            activeSongsProvider.deactivateSong(song);
-        }
-
-        song.setSongStatus(songStatus.getSongStatus());
-        return update(song);
+    public static int getCumulativePassedMs(Song song) {
+        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
     }
 
     @Override
@@ -301,6 +293,25 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
 
         return votes;
+    }
+
+    @Override
+    public Song updateSongStatus(Song song, SongStatus songStatus) {
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            activeSongsProvider.activateSong(song);
+        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+            song.setCurrentMs(getCumulativePassedMs(song));
+            activeSongsProvider.deactivateSong(song);
+        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
+            song.setCurrentMs(0);
+            activeSongsProvider.deactivateSong(song);
+        } else {
+            activeSongsProvider.deactivateSong(song);
+        }
+
+        song.setSongStatus(songStatus.getSongStatus());
+        return update(song);
     }
 
 }
