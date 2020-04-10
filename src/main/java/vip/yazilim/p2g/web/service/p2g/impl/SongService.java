@@ -15,7 +15,6 @@ import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
-import vip.yazilim.p2g.web.service.IActiveSongsProvider;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
@@ -53,9 +52,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Autowired
     private WebSocketController webSocketController;
 
-    @Autowired
-    private IActiveSongsProvider activeSongsProvider;
-
     @Override
     protected JpaRepository<Song, Long> getRepository() {
         return songRepo;
@@ -78,14 +74,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
-    }
-
-    @Override
-    public boolean delete(Song entity) throws DatabaseDeleteException {
-        if (entity.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
-            activeSongsProvider.deactivateSong(entity);
-        }
-        return super.delete(entity);
     }
 
     @Override
@@ -299,15 +287,10 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     public Song updateSongStatus(Song song, SongStatus songStatus) {
         if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            activeSongsProvider.activateSong(song);
         } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
             song.setCurrentMs(getCumulativePassedMs(song));
-            activeSongsProvider.deactivateSong(song);
         } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
             song.setCurrentMs(0);
-            activeSongsProvider.deactivateSong(song);
-        } else {
-            activeSongsProvider.deactivateSong(song);
         }
 
         song.setSongStatus(songStatus.getSongStatus());
