@@ -10,7 +10,7 @@ import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.repository.IUserDeviceRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
     private ISpotifyUserService spotifyUserService;
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Autowired
     private IRoomUserService roomUserService;
@@ -64,7 +64,7 @@ public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> impl
             spotifyUserService.transferUsersPlayback(userDevice);
 
             Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
-            roomUserOpt.ifPresent(roomUser -> spotifyPlayerService.userSyncWithRoom(roomUser));
+            roomUserOpt.ifPresent(roomUser -> spotifyPlayerService.syncWithRoom(userId));
 
             return updatedUserDevice;
         } else {

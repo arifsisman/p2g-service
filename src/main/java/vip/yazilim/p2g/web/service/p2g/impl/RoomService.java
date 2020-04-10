@@ -17,7 +17,7 @@ import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -58,7 +58,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     private WebSocketController webSocketController;
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Override
     protected JpaRepository<Room, Long> getRepository() {
@@ -85,7 +85,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             entity.setPrivateFlag(true);
         }
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
-        entity.setActiveFlag(true);
+        entity.setActiveFlag(false);
         entity.setMaxUsers(50);
 
         return entity;
@@ -203,6 +203,15 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
+    public List<Room> getActiveRooms() {
+        try {
+            return roomRepo.findByActiveFlag(true);
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception);
+        }
+    }
+
+    @Override
     public boolean deleteById(Long roomId) {
         try {
             spotifyPlayerService.roomStop(roomId);
@@ -210,17 +219,13 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             LOGGER.warn("Room[{}] :: An error occurred when stopping playback", roomId);
         }
 
-        //delete roomUsers
+        // Delete roomUsers
         roomUserService.deleteRoomUsers(roomId);
 
-        //delete Songs
-        try {
-            songService.deleteRoomSongList(roomId);
-        } catch (Exception e) {
-            LOGGER.error("Room[{}] :: An error occurred when deleting songs", roomId);
-        }
+        // Delete Songs
+        songService.deleteRoomSongList(roomId);
 
-        //delete roomInvites
+        // Delete roomInvites
         roomInviteService.deleteRoomInvites(roomId);
 
         webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);

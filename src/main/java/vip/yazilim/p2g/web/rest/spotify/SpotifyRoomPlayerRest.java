@@ -7,11 +7,11 @@ import vip.yazilim.libs.springcore.rest.model.RestResponse;
 import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomSongs;
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 public class SpotifyRoomPlayerRest {
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @HasRoomPrivilege(privilege = Privilege.SONG_CONTROL)
     @UpdateRoomSongs
@@ -73,7 +73,7 @@ public class SpotifyRoomPlayerRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping("/sync")
-    public RestResponse<Boolean> sync(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomUser roomUser) {
-        return RestResponse.generateResponse(spotifyPlayerService.userSyncWithRoom(roomUser), HttpStatus.OK, request, response);
+    public RestResponse<Boolean> sync(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(spotifyPlayerService.syncWithRoom(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 }

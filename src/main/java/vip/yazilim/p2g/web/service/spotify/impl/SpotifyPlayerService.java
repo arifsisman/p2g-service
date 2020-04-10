@@ -6,30 +6,32 @@ import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.OAuthToken;
-import vip.yazilim.p2g.web.entity.RoomUser;
+import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.enums.SongStatus;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.ISpotifyTokenService;
 import vip.yazilim.p2g.web.service.p2g.IUserDeviceService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static vip.yazilim.p2g.web.service.p2g.impl.SongService.getCumulativePassedMs;
 
 /**
  * @author mustafaarifsisman - 28.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
 @Service
-public class SpotifyPlayerService implements ISpotifyPlayerService {
+public class SpotifyPlayerService implements IPlayerService {
 
     @Autowired
     private ISpotifyTokenService tokenService;
@@ -44,6 +46,9 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     private ISongService songService;
 
     @Autowired
+    private IRoomService roomService;
+
+    @Autowired
     private ISpotifyTokenService spotifyTokenService;
 
     private Gson gson = new GsonBuilder().create();
@@ -55,35 +60,19 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
     public boolean roomPlay(Song song, int ms, boolean skipCurrentSong) {
         Long roomId = song.getRoomId();
 
-        if (skipCurrentSong) {
-            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
-
-            if (playingOpt.isPresent()) {
-                Song playing = playingOpt.get();
-
-                playing.setCurrentMs(0);
-                playing.setSongStatus(SongStatus.PLAYED.getSongStatus());
-                songService.update(playing);
-            } else if (pausedOpt.isPresent()) {
-                Song paused = pausedOpt.get();
-
-                paused.setCurrentMs(0);
-                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
-                songService.update(paused);
-            }
-        }
-
         // JsonArray with song, because uris needs JsonArray as input
         JsonArray urisJson = gson.toJsonTree(Collections.singletonList("spotify:track:" + song.getSongId())).getAsJsonArray();
 
-        // Update playing
-        song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-        song.setSongStatus(SongStatus.PLAYING.getSongStatus());
-        songService.update(song);
-
         // Start playback
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
+
+        if (skipCurrentSong) {
+            songService.getPlayingSong(roomId).ifPresent(s -> songService.updateSongStatus(s, SongStatus.PLAYED));
+            songService.getPausedSong(roomId).ifPresent(s -> songService.updateSongStatus(s, SongStatus.PLAYED));
+        }
+
+        // Update playing
+        songService.updateSongStatus(song, SongStatus.PLAYING);
 
         return true;
     }
@@ -94,15 +83,11 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
 
         if (playingOpt.isPresent()) {
-            Song playing = playingOpt.get();
-
             // Pause playback
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
 
             // Update playing
-            playing.setCurrentMs(getCumulativePassedMs(playing));
-            playing.setSongStatus(SongStatus.PAUSED.getSongStatus());
-            songService.update(playing);
+            playingOpt.ifPresent(song -> songService.updateSongStatus(song, SongStatus.PAUSED));
         } else if (pausedOpt.isPresent()) {
             Song paused = pausedOpt.get();
             int currentMs = Math.toIntExact(paused.getCurrentMs());
@@ -111,9 +96,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             roomPlay(paused, currentMs, false);
 
             // Update paused
-            paused.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            paused.setSongStatus(SongStatus.PLAYING.getSongStatus());
-            songService.update(paused);
+            songService.updateSongStatus(paused, SongStatus.PLAYING);
         } else {
             Optional<Song> firstQueued = songService.getNextSong(roomId);
             roomPlay(firstQueued.orElseThrow(() -> new NoSuchElementException("Queue is empty")), 0, false);
@@ -124,38 +107,30 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
 
     @Override
     public boolean roomNext(Long roomId) {
-        Optional<Song> next = songService.getNextSong(roomId);
+        songService.getNextSong(roomId).ifPresentOrElse(
+                song -> roomPlay(song, 0, true),
+                () -> {
+                    throw new NoSuchElementException("Next song is empty");
+                }
+        );
 
-        if (next.isPresent()) {
-            return roomPlay(next.get(), 0, true);
-        } else {
-            throw new NoSuchElementException("Next song is empty");
-        }
+        return true;
     }
 
     @Override
     public boolean roomPrevious(Long roomId) {
-        Optional<Song> previousOpt = songService.getPreviousSong(roomId);
+        songService.getPreviousSong(roomId).ifPresentOrElse(
+                song -> {
+                    songService.getPlayingSong(roomId).ifPresent(next -> songService.updateSongStatus(next, SongStatus.NEXT));
+                    songService.getPausedSong(roomId).ifPresent(played -> songService.updateSongStatus(played, SongStatus.PLAYED));
+                    roomPlay(song, 0, false);
+                },
+                () -> {
+                    throw new NoSuchElementException("Previous song is empty");
+                }
+        );
 
-        if (previousOpt.isPresent()) {
-            Optional<Song> playingOpt = songService.getPlayingSong(roomId);
-            if (playingOpt.isPresent()) { // Set old playing as next, if present
-                Song playing = playingOpt.get();
-                playing.setSongStatus(SongStatus.NEXT.getSongStatus());
-                songService.update(playing);
-            }
-
-            Optional<Song> pausedOpt = songService.getPausedSong(roomId);
-            if (pausedOpt.isPresent()) { // Set old paused as played, if present
-                Song paused = pausedOpt.get();
-                paused.setSongStatus(SongStatus.PLAYED.getSongStatus());
-                songService.update(paused);
-            }
-
-            return roomPlay(previousOpt.get(), 0, false);
-        } else {
-            throw new NoSuchElementException("Previous song is empty");
-        }
+        return true;
     }
 
     @Override
@@ -192,8 +167,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             Song playing = playingOpt.get();
 
             playing.setCurrentMs(getCumulativePassedMs(playing));
-            playing.setSongStatus(SongStatus.PLAYING.getSongStatus());
-            songService.update(playing);
+            songService.updateSongStatus(playing, SongStatus.PLAYING);
 
             return roomRepeatHelper(roomId, playing);
         } else if (pausedOpt.isPresent()) {
@@ -201,10 +175,6 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         } else {
             throw new NoSuchElementException("Song not found for repeat");
         }
-    }
-
-    private int getCumulativePassedMs(Song song) {
-        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
     }
 
     private boolean roomRepeatHelper(Long roomId, Song song) {
@@ -227,30 +197,40 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return repeatFlag;
     }
 
-    ///////////////////////
-    // User Based
-    ///////////////////////
-
-    @Override
-    public boolean userSyncWithRoom(RoomUser roomUser) {
-        Optional<Song> playingOpt = songService.getPlayingSong(roomUser.getRoomId());
-        Optional<Song> pausedOpt = songService.getPausedSong(roomUser.getRoomId());
-
-        // seek to current ms
-        // noop
-        // play currently playing song with current ms
-        return playingOpt.map(song -> play(roomUser, song)).orElseGet(() -> pausedOpt.filter(song -> sync(roomUser, song)).isPresent());
-    }
-
     @Override
     public boolean roomStop(Long roomId) {
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.pauseUsersPlayback().device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
         return true;
     }
 
-    private boolean play(RoomUser roomUser, Song song) {
-        String userId = roomUser.getUserId();
+    @Override
+    public boolean syncWithRoom(String userId) {
+        Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
 
+        roomOpt.ifPresent(room -> {
+            Optional<Song> playingOpt = songService.getPlayingSong(room.getId());
+            Optional<Song> pausedOpt = songService.getPausedSong(room.getId());
+
+            playingOpt.map(song -> playUser(userId, song)).orElseGet(() -> pausedOpt.filter(song -> sync(userId, song)).isPresent());
+        });
+
+        return true;
+    }
+
+    @Override
+    public void desyncWithRoom(String userId) {
+        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
+        Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
+
+        if (token.isPresent() && userDeviceOpt.isPresent()) {
+            String accessToken = token.get().getAccessToken();
+            String deviceId = userDeviceOpt.get().getId();
+
+            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.pauseUsersPlayback().device_id(deviceId).build(), accessToken);
+        }
+    }
+
+    private boolean playUser(String userId, Song song) {
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
 
@@ -268,10 +248,7 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
         return false;
     }
 
-    private boolean sync(RoomUser roomUser, Song song) {
-        String userId = roomUser.getUserId();
-        int ms = Math.toIntExact(song.getCurrentMs());
-
+    private boolean sync(String userId, Song song) {
         Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
         Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
 
@@ -279,24 +256,8 @@ public class SpotifyPlayerService implements ISpotifyPlayerService {
             String accessToken = token.get().getAccessToken();
             String deviceId = userDeviceOpt.get().getId();
 
+            int ms = Math.toIntExact(song.getCurrentMs());
             spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(deviceId).build(), accessToken);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean userDeSyncWithRoom(RoomUser roomUser) {
-        String userId = roomUser.getUserId();
-
-        Optional<OAuthToken> token = tokenService.getTokenByUserId(userId);
-        Optional<UserDevice> userDeviceOpt = userDeviceService.getUsersActiveDevice(userId);
-
-        if (token.isPresent() && userDeviceOpt.isPresent()) {
-            String accessToken = token.get().getAccessToken();
-            String deviceId = userDeviceOpt.get().getId();
-
-            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.pauseUsersPlayback().device_id(deviceId).build(), accessToken);
             return true;
         }
         return false;

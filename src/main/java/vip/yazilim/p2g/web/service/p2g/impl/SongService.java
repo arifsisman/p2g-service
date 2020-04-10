@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import vip.yazilim.libs.springcore.exception.DatabaseDeleteException;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.constant.Constants;
@@ -16,13 +17,14 @@ import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
+import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
 import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -45,7 +47,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private IRoomUserService roomUserService;
 
     @Autowired
-    private ISpotifyPlayerService spotifyPlayerService;
+    private IPlayerService spotifyPlayerService;
 
     @Autowired
     private WebSocketController webSocketController;
@@ -82,6 +84,19 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public int downvote(Long songId) {
         return updateVote(songId, false);
+    }
+
+    @Override
+    public List<Song> getActiveSongs() {
+        try {
+            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception);
+        }
+    }
+
+    public static int getCumulativePassedMs(Song song) {
+        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
     }
 
     @Override
@@ -174,8 +189,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
 
-        for (Song song : songList) {
-            delete(song);
+        try {
+            for (Song song : songList) {
+                delete(song);
+            }
+        } catch (Exception exception) {
+            throw new DatabaseDeleteException(getClassOfEntity(), exception, roomId);
         }
 
         String userName = SecurityHelper.getUserDisplayName();
@@ -227,6 +246,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             song.setSongId(s.getId());
             song.setSongName(s.getName());
             song.setAlbumName(s.getAlbumName());
+            song.setRepeatFlag(false);
             song.setArtistNames(s.getArtistNames());
             song.setImageUrl(s.getImageUrl());
             song.setCurrentMs(0);
@@ -261,6 +281,20 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
 
         return votes;
+    }
+
+    @Override
+    public Song updateSongStatus(Song song, SongStatus songStatus) {
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+            song.setCurrentMs(getCumulativePassedMs(song));
+        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
+            song.setCurrentMs(0);
+        }
+
+        song.setSongStatus(songStatus.getSongStatus());
+        return update(song);
     }
 
 }

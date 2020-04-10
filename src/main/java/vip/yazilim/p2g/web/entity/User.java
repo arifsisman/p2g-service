@@ -32,7 +32,7 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false, length = 31)
     private String role;
 
-    @Column(name = "online_status", length = 31)
+    @Column(name = "online_status", length = 31, nullable = false)
     private String onlineStatus;
 
     @Column(name = "country_code", length = 7)
@@ -44,7 +44,7 @@ public class User implements Serializable {
     @Column(length = 31)
     private String anthemSongId;
 
-    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime creationDate;
 
 }

@@ -24,10 +24,10 @@ public class FriendRequest implements Serializable {
     @Column(name = "receiver_id", updatable = false, nullable = false)
     private String receiverId;
 
-    @Column(name = "request_status", length = 32)
+    @Column(name = "request_status", length = 32, nullable = false)
     private String requestStatus;
 
-    @Column(name = "request_date", columnDefinition = "TIMESTAMP")
+    @Column(name = "request_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime requestDate;
 
 }

@@ -6,6 +6,7 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
+import vip.yazilim.p2g.web.model.UserFriendModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,4 +41,5 @@ public interface IFriendRequestService extends ICrudService<FriendRequest, Long>
 
     boolean deleteFriend(String friendId);
 
+    UserFriendModel getUserFriendModel(String userId);
 }

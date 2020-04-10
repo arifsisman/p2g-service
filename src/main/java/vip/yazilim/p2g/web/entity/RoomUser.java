@@ -3,6 +3,7 @@ package vip.yazilim.p2g.web.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.util.TimeHelper;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,13 +30,13 @@ public class RoomUser implements Serializable {
     @Column(name = "user_name", updatable = false, nullable = false)
     private String userName;
 
-    @Column(name = "role", length = 31)
+    @Column(name = "role", length = 31, nullable = false)
     private String role;
 
-    @Column(name = "join_date", columnDefinition = "TIMESTAMP")
+    @Column(name = "join_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime joinDate;
 
-    @Column(name = "active_flag")
+    @Column(name = "active_flag", nullable = false)
     private Boolean activeFlag;
 
     public RoomUser(boolean isSystem) {
@@ -43,5 +44,8 @@ public class RoomUser implements Serializable {
         this.setRoomId(-1L);
         this.setUserId("p2g");
         this.setUserName("Info");
+        this.setRole("INFO");
+        this.setJoinDate(TimeHelper.getLocalDateTimeNow());
+        this.setActiveFlag(true);
     }
 }
