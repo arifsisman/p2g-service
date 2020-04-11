@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.SpotifyHelper;
 
@@ -40,6 +41,9 @@ public class SpotifySearchService implements ISpotifySearchService {
 
     @Autowired
     private IRoomService roomService;
+
+    @Autowired
+    private ISpotifyTrackService spotifyTrackService;
 
     @Override
     public List<SearchModel> search(String q, SearchType... searchTypes) {
@@ -78,15 +82,18 @@ public class SpotifySearchService implements ISpotifySearchService {
         Optional<Room> roomOpt = roomService.getRoomByUserId(SecurityHelper.getUserId());
         if (roomOpt.isPresent()) {
             Long roomId = roomOpt.get().getId();
-            Optional<Song> playingOrPaused = songService.getPlayingOrPausedSong(roomId);
+            Optional<Song> playingOrPausedOrPlayed = songService.getPlayingOrPausedOrNextOrPlayedSong(roomId);
 
-            if (playingOrPaused.isPresent()) {
-                Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPaused.get().getSongId()).limit(15).build(), accessToken);
+            if (playingOrPausedOrPlayed.isPresent()) {
+                Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPausedOrPlayed.get().getSongId()).limit(15).build(), accessToken);
                 TrackSimplified[] recommendationsTrackList = recommendations.getTracks();
+                List<String> trackSimplifiedIds = new LinkedList<>();
 
                 for (TrackSimplified trackSimplified : recommendationsTrackList) {
-                    recommendationsList.add(new SearchModel(trackSimplified));
+                    trackSimplifiedIds.add(trackSimplified.getId());
                 }
+
+                return spotifyTrackService.getSeveralTracks(trackSimplifiedIds.toArray(new String[0]));
             } else {
                 Paging<AlbumSimplified> newReleases = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getListOfNewReleases().limit(15).build(), accessToken);
                 AlbumSimplified[] albumSimplifiedList = newReleases.getItems();
@@ -94,8 +101,9 @@ public class SpotifySearchService implements ISpotifySearchService {
                 for (AlbumSimplified albumSimplified : albumSimplifiedList) {
                     recommendationsList.add(new SearchModel(albumSimplified));
                 }
+
+                return recommendationsList;
             }
-            return recommendationsList;
         } else {
             throw new NoSuchElementException("User not in any room.");
         }

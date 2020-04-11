@@ -27,14 +27,14 @@ public class SearchModel implements Serializable {
     private String imageUrl;
 
     public SearchModel(AbstractModelObject object) {
-        if (object instanceof TrackSimplified) {
-            init((TrackSimplified) object);
-        } else if (object instanceof Track) {
+        if (object instanceof Track) {
             init((Track) object);
-        } else if (object instanceof PlaylistSimplified) {
-            init((PlaylistSimplified) object);
         } else if (object instanceof AlbumSimplified) {
             init((AlbumSimplified) object);
+        } else if (object instanceof PlaylistSimplified) {
+            init((PlaylistSimplified) object);
+        } else if (object instanceof TrackSimplified) {
+            init((TrackSimplified) object);
         }
     }
 

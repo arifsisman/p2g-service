@@ -219,6 +219,20 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
+        Optional<Song> playingOrPaused = getPlayingOrPausedSong(roomId);
+        Optional<Song> next = getNextSong(roomId);
+
+        if (playingOrPaused.isPresent()) {
+            return playingOrPaused;
+        } else if (next.isPresent()) {
+            return next;
+        } else {
+            return getPreviousSong(roomId);
+        }
+    }
+
+    @Override
     public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
         return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }

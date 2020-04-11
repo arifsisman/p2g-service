@@ -27,6 +27,8 @@ public interface ISongService extends ICrudService<Song, Long> {
 
     Optional<Song> getPlayingOrPausedSong(Long roomId);
 
+    Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId);
+
     Optional<Song> getNextSong(Long roomId);
 
     Optional<Song> getPreviousSong(Long roomId);
