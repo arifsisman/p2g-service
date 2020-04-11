@@ -122,12 +122,17 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         List<Song> queuedList = new LinkedList<>();
 
+        Song created = null;
         for (Song s : songList) {
             if (remainingSongCount > 0) {
                 try {
-                    queuedList.add(create(s));
+                    created = create(s);
                 } catch (Exception e) {
                     LOGGER.warn("Song :: Create error from SearchModel");
+                }
+
+                if (created != null) {
+                    queuedList.add(created);
                 }
                 remainingSongCount--;
             } else {
