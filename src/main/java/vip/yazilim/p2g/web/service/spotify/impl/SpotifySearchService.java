@@ -1,10 +1,18 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.wrapper.spotify.model_objects.special.SearchResult;
+import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.Recommendations;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.entity.Room;
+import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.model.SearchModel;
+import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -12,6 +20,8 @@ import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static vip.yazilim.p2g.web.enums.SearchType.SONG;
 
@@ -24,6 +34,12 @@ public class SpotifySearchService implements ISpotifySearchService {
 
     @Autowired
     private ISpotifyRequestService spotifyRequest;
+
+    @Autowired
+    private ISongService songService;
+
+    @Autowired
+    private IRoomService roomService;
 
     @Override
     public List<SearchModel> search(String q, SearchType... searchTypes) {
@@ -51,17 +67,38 @@ public class SpotifySearchService implements ISpotifySearchService {
         return searchModelList;
     }
 
+    /**
+     * @return if room queue is empty getRecommendations based on new releases else get recommendations based on playing song
+     */
     @Override
     public List<SearchModel> getRecommendations() {
-//        List<SearchModel> recomme
-//
-//        Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().limit(15).build(), SecurityHelper.getUserAccessToken());
-//        TrackSimplified[] recommendationsTracks = recommendations.getTracks();
-//
-//        for(TrackSimplified trackSimplified:recommendationsTracks){
-//
-//        }
-        return null;
+        List<SearchModel> recommendationsList = new LinkedList<>();
+        String accessToken = SecurityHelper.getUserAccessToken();
+
+        Optional<Room> roomOpt = roomService.getRoomByUserId(SecurityHelper.getUserId());
+        if (roomOpt.isPresent()) {
+            Long roomId = roomOpt.get().getId();
+            Optional<Song> playingOrPaused = songService.getPlayingOrPausedSong(roomId);
+
+            if (playingOrPaused.isPresent()) {
+                Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPaused.get().getSongId()).limit(15).build(), accessToken);
+                TrackSimplified[] recommendationsTrackList = recommendations.getTracks();
+
+                for (TrackSimplified trackSimplified : recommendationsTrackList) {
+                    recommendationsList.add(new SearchModel(trackSimplified));
+                }
+            } else {
+                Paging<AlbumSimplified> newReleases = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getListOfNewReleases().limit(15).build(), accessToken);
+                AlbumSimplified[] albumSimplifiedList = newReleases.getItems();
+
+                for (AlbumSimplified albumSimplified : albumSimplifiedList) {
+                    recommendationsList.add(new SearchModel(albumSimplified));
+                }
+            }
+            return recommendationsList;
+        } else {
+            throw new NoSuchElementException("User not in any room.");
+        }
     }
 
 

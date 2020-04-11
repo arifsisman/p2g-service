@@ -51,6 +51,11 @@ public class SpotifySearchRest {
                         HttpStatus.OK, request, response);
     }
 
+    @GetMapping("/recommendations")
+    public RestResponse<List<SearchModel>> getRecommendations(HttpServletRequest request, HttpServletResponse response) {
+        return RestResponse.generateResponse(spotifySearchService.getRecommendations(), HttpStatus.OK, request, response);
+    }
+
     @HasRoomPrivilege(privilege = Privilege.SONG_SEARCH)
     @GetMapping("/song/{id}")
     public RestResponse<SearchModel> getSong(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {

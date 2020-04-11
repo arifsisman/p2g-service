@@ -212,6 +212,13 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
+        Optional<Song> playing = getPlayingSong(roomId);
+        if (playing.isPresent()) return playing;
+        else return getPausedSong(roomId);
+    }
+
+    @Override
     public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
         return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }
@@ -273,7 +280,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Song updateSongStatus(Song song, SongStatus songStatus) {
+    public void updateSongStatus(Song song, SongStatus songStatus) {
         if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
@@ -283,7 +290,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
 
         song.setSongStatus(songStatus.getSongStatus());
-        return update(song);
+        update(song);
     }
 
 }
