@@ -1,9 +1,9 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.wrapper.spotify.model_objects.special.SearchResult;
-import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Recommendations;
+import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +72,8 @@ public class SpotifySearchService implements ISpotifySearchService {
     }
 
     /**
-     * @return if room queue is empty getRecommendations based on new releases else get recommendations based on playing song
+     * @return if room queue is empty getRecommendations based users top tracks
+     * else get recommendations based on last song (playing, paused, next, previous)
      */
     @Override
     public List<SearchModel> getRecommendations() {
@@ -95,11 +96,11 @@ public class SpotifySearchService implements ISpotifySearchService {
 
                 return spotifyTrackService.getSeveralTracks(trackSimplifiedIds.toArray(new String[0]));
             } else {
-                Paging<AlbumSimplified> newReleases = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getListOfNewReleases().limit(15).build(), accessToken);
-                AlbumSimplified[] albumSimplifiedList = newReleases.getItems();
+                Paging<Track> trackPaging = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getUsersTopTracks().limit(15).build(), accessToken);
+                Track[] tracks = trackPaging.getItems();
 
-                for (AlbumSimplified albumSimplified : albumSimplifiedList) {
-                    recommendationsList.add(new SearchModel(albumSimplified));
+                for (Track track : tracks) {
+                    recommendationsList.add(new SearchModel(track));
                 }
 
                 return recommendationsList;
