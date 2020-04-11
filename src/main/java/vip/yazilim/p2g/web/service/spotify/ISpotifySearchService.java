@@ -14,4 +14,6 @@ public interface ISpotifySearchService {
 
     List<SearchModel> search(String q, SearchType... searchTypes);
 
+    List<SearchModel> getRecommendations();
+
 }

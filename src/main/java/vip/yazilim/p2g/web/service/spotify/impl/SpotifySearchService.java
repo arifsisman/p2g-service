@@ -50,4 +50,19 @@ public class SpotifySearchService implements ISpotifySearchService {
 
         return searchModelList;
     }
+
+    @Override
+    public List<SearchModel> getRecommendations() {
+//        List<SearchModel> recomme
+//
+//        Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().limit(15).build(), SecurityHelper.getUserAccessToken());
+//        TrackSimplified[] recommendationsTracks = recommendations.getTracks();
+//
+//        for(TrackSimplified trackSimplified:recommendationsTracks){
+//
+//        }
+        return null;
+    }
+
+
 }
