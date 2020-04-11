@@ -1,5 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,8 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Autowired
     private WebSocketController webSocketController;
+
+    private Logger LOGGER = LoggerFactory.getLogger(SongService.class);
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -120,7 +124,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         for (Song s : songList) {
             if (remainingSongCount > 0) {
-                queuedList.add(create(s));
+                try {
+                    queuedList.add(create(s));
+                } catch (Exception e) {
+                    LOGGER.warn("Song :: Create error from SearchModel");
+                }
                 remainingSongCount--;
             } else {
                 String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
@@ -204,6 +212,27 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
+    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
+        Optional<Song> playing = getPlayingSong(roomId);
+        if (playing.isPresent()) return playing;
+        else return getPausedSong(roomId);
+    }
+
+    @Override
+    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
+        Optional<Song> playingOrPaused = getPlayingOrPausedSong(roomId);
+        Optional<Song> next = getNextSong(roomId);
+
+        if (playingOrPaused.isPresent()) {
+            return playingOrPaused;
+        } else if (next.isPresent()) {
+            return next;
+        } else {
+            return getPreviousSong(roomId);
+        }
+    }
+
+    @Override
     public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
         return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }
@@ -265,7 +294,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Song updateSongStatus(Song song, SongStatus songStatus) {
+    public void updateSongStatus(Song song, SongStatus songStatus) {
         if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
@@ -275,7 +304,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
 
         song.setSongStatus(songStatus.getSongStatus());
-        return update(song);
+        update(song);
     }
 
 }
