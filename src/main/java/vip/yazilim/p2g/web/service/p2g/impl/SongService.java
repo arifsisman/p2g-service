@@ -88,11 +88,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
     }
 
-    @Override
-    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
-    }
-
     /**
      * @param roomId     roomId
      * @param songStatus songStatus
@@ -106,6 +101,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
         }
+    }
+
+    @Override
+    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
 
         if (!roomUserOpt.isPresent()) {
-            String err = String.format("RoomUser not found with UserId[%s]", userId);
+            String err = String.format("User[%s] not in any room", userId);
             throw new NoSuchElementException(err);
         }
 
@@ -257,7 +257,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             String infoMessage = SecurityHelper.getUserDisplayName() + " cleared room queue.";
             webSocketController.sendInfoToRoom(roomId, infoMessage);
         } catch (Exception ignored) {
-            webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "SYSTEM :: Due inactivity."));
+            webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "SYSTEM :: Room closed due inactivity."));
         }
 
         return spotifyPlayerService.roomStop(roomId);
@@ -352,25 +352,32 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     private Song getSafeSong(Long songId) {
         Optional<Song> songOpt = getById(songId);
-        return songOpt.orElseThrow(() -> new NoSuchElementException("Song not found"));
+        return songOpt.orElseThrow(() -> new NoSuchElementException("Song[" + songId + "] :: Not found"));
     }
 
     private int updateVote(Long songId, boolean upvote) {
-        Song song = getSafeSong(songId);
-        int votes = song.getVotes();
-        String operation;
+        Optional<Song> songOpt = getById(songId);
+        if (songOpt.isPresent()) {
+            Song song = songOpt.get();
 
-        votes = (upvote) ? votes + 1 : votes - 1;
-        operation = (upvote) ? " upvoted " : " downvoted ";
+            int votes = song.getVotes();
+            String operation;
 
-        song.setVotes(votes);
-        update(song);
+            votes = (upvote) ? votes + 1 : votes - 1;
+            operation = (upvote) ? " upvoted " : " downvoted ";
 
-        String userName = SecurityHelper.getUserDisplayName();
-        String infoMessage = userName + operation + "'" + song.toString() + "'";
-        webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
+            song.setVotes(votes);
+            update(song);
 
-        return votes;
+            String userName = SecurityHelper.getUserDisplayName();
+            String infoMessage = userName + operation + "'" + song.toString() + "'";
+            webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
+
+            return votes;
+        } else {
+            String msg = String.format("Song[%s] :: Not found", songId);
+            throw new NoSuchElementException(msg);
+        }
     }
 
     private String getQueuedSongNames(List<Song> songs) {

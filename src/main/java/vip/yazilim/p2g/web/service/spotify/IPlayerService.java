@@ -14,6 +14,8 @@ public interface IPlayerService {
 
     boolean roomNext(Long roomId);
 
+    boolean roomNext(Song song);
+
     boolean roomPrevious(Long roomId);
 
     boolean roomSeek(Long roomId, Integer ms);
