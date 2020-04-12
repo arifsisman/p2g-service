@@ -15,10 +15,12 @@ import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomStatusModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.util.RoomHelper;
+import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.util.LinkedList;
@@ -235,7 +237,10 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         // Delete roomInvites
         roomInviteService.deleteRoomInvites(roomId);
 
-        webSocketController.sendToRoom("status", roomId, RoomStatus.CLOSED);
+        try {
+            webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "Room closed by :: " + SecurityHelper.getUserDisplayName()));
+        } catch (Exception ignored) {
+        }
 
         return super.deleteById(roomId);
     }

@@ -11,9 +11,11 @@ import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.RoomStatusModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
@@ -196,7 +198,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             String infoMessage = userName + " cleared room queue.";
             webSocketController.sendInfoToRoom(roomId, infoMessage);
         } catch (Exception ignored) {
-
+            webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "SYSTEM :: Due inactivity."));
         }
 
         return spotifyPlayerService.roomStop(roomId);
