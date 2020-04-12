@@ -69,11 +69,11 @@ public class SongScheduler {
 
                         if (owner.getOnlineStatus().equals(OnlineStatus.OFFLINE.getOnlineStatus())) {
                             roomService.deleteById(roomId);
+                        } else {
+                            LOGGER.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
+                            songService.updateSongStatus(song, SongStatus.PLAYED);
+                            webSocketController.sendToRoom("songs", roomId, emptySongList);
                         }
-                    } else {
-                        LOGGER.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
-                        songService.updateSongStatus(song, SongStatus.PLAYED);
-                        webSocketController.sendToRoom("songs", roomId, emptySongList);
                     }
                 }
             }

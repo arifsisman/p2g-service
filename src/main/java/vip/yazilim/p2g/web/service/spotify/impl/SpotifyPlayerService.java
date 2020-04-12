@@ -133,6 +133,7 @@ public class SpotifyPlayerService implements IPlayerService {
     public boolean roomSeek(Long roomId, Integer ms) {
         Optional<Song> playingOpt = songService.getPlayingSong(roomId);
         Optional<Song> pausedOpt = songService.getPausedSong(roomId);
+        Optional<Song> nextOpt = songService.getNextSong(roomId);
 
         if (playingOpt.isPresent()) {
             Song playing = playingOpt.get();
@@ -145,6 +146,14 @@ public class SpotifyPlayerService implements IPlayerService {
             Song paused = pausedOpt.get();
             paused.setCurrentMs(ms);
             songService.update(paused);
+
+            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
+        } else if (nextOpt.isPresent()) {
+            Song next = nextOpt.get();
+            next.setCurrentMs(ms);
+            next.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            songService.updateSongStatus(next, SongStatus.PAUSED);
+            songService.update(next);
 
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
         } else {
