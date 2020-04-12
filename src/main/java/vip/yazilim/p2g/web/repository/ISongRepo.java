@@ -16,7 +16,10 @@ public interface ISongRepo extends JpaRepository<Song, Long> {
 
     List<Song> findBySongStatus(String songStatus);
 
+    List<Song> findByRoomIdOrderByVotesDescQueuedTime(Long roomId);
+
     List<Song> findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(Long roomId, String songStatus);
+
     Optional<Song> findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(Long roomId, String queueStatus);
 
 }

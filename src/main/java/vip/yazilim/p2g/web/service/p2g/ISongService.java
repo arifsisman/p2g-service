@@ -17,21 +17,27 @@ public interface ISongService extends ICrudService<Song, Long> {
      * @param roomId roomId
      * @return songList order by playing status, votes and queued time. Not includes played songs.
      */
-    List<Song> getSongListByRoomId(Long roomId);
-
-    Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus);
-
-    Optional<Song> getPausedSong(Long roomId);
+    List<Song> getSongListByRoomId(Long roomId, boolean includePlayedSongs);
 
     Optional<Song> getPlayingSong(Long roomId);
 
-    Optional<Song> getPlayingOrPausedSong(Long roomId);
-
-    Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId);
+    Optional<Song> getPausedSong(Long roomId);
 
     Optional<Song> getNextSong(Long roomId);
 
     Optional<Song> getPreviousSong(Long roomId);
+
+    Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus);
+
+    Optional<Song> getPlayingSong(List<Song> songList);
+
+    Optional<Song> getPausedSong(List<Song> songList);
+
+    Optional<Song> getNextSong(List<Song> songList);
+
+    Optional<Song> getPlayingOrPausedSong(Long roomId);
+
+    Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId);
 
     boolean addSongToRoom(Long roomId, List<SearchModel> searchModelList);
 
@@ -46,4 +52,6 @@ public interface ISongService extends ICrudService<Song, Long> {
     List<Song> getActiveSongs();
 
     void updateSongStatus(Song song, SongStatus songStatus);
+
+    Song getRoomCurrentSong(Long roomId);
 }

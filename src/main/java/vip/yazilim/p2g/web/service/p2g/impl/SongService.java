@@ -23,7 +23,6 @@ import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
-import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -72,41 +71,102 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return Song.class;
     }
 
+    public static int getCumulativePassedMs(Song song) {
+        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
+    }
+
     @Override
-    public List<Song> getSongListByRoomId(Long roomId) {
+    public List<Song> getSongListByRoomId(Long roomId, boolean includePlayedSongs) {
         try {
-            return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
+            if (includePlayedSongs) {
+                return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
+            } else {
+                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
+            }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
     }
 
     @Override
-    public int upvote(Long songId) {
-        return updateVote(songId, true);
+    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
     }
 
+    /**
+     * @param roomId     roomId
+     * @param songStatus songStatus
+     * @return getSongByRoomIdAndStatus not including played songs
+     * @throws DatabaseReadException DatabaseReadException
+     */
     @Override
-    public int downvote(Long songId) {
-        return updateVote(songId, false);
-    }
-
-    @Override
-    public List<Song> getActiveSongs() {
+    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
         try {
-            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
+            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
         } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception);
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
         }
     }
 
-    public static int getCumulativePassedMs(Song song) {
-        return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
+    @Override
+    public Optional<Song> getPlayingSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
+    }
+
+    @Override
+    public Optional<Song> getPausedSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
+    }
+
+    @Override
+    public Optional<Song> getNextSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
+        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.getSongStatus());
+    }
+
+    @Override
+    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
+        List<Song> songList = getSongListByRoomId(roomId, false);
+
+        Optional<Song> playing = getPlayingSong(songList);
+        Optional<Song> paused = getPausedSong(songList);
+
+        if (playing.isPresent()) return playing;
+        else return paused;
+    }
+
+    @Override
+    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
+        List<Song> songList = getSongListByRoomId(roomId, true);
+
+        Optional<Song> playing = getPlayingSong(songList);
+        Optional<Song> paused = getPausedSong(songList);
+        Optional<Song> next = getNextSong(songList);
+        Optional<Song> previous = getPreviousSong(roomId);
+
+        if (playing.isPresent()) return playing;
+        else if (paused.isPresent()) return paused;
+        else if (next.isPresent()) return next;
+        else return previous;
     }
 
     @Override
     public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) {
-        List<Song> currentList = getSongListByRoomId(roomId);
+        List<Song> currentList = getSongListByRoomId(roomId, false);
         int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
 
         List<Song> songList = new LinkedList<>();
@@ -144,7 +204,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
 
         String userName = SecurityHelper.getUserDisplayName();
-        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
+        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + getQueuedSongNames(queuedList);
         webSocketController.sendInfoToRoom(roomId, infoMessage);
 
         return true;
@@ -204,57 +264,67 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
+    public int upvote(Long songId) {
+        return updateVote(songId, true);
+    }
+
+    @Override
+    public int downvote(Long songId) {
+        return updateVote(songId, false);
+    }
+
+    @Override
+    public void updateSongStatus(Song song, SongStatus songStatus) {
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+            song.setCurrentMs(getCumulativePassedMs(song));
+        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
+            song.setCurrentMs(0);
+        }
+
+        song.setSongStatus(songStatus.getSongStatus());
+        update(song);
+    }
+
+    @Override
+    public List<Song> getActiveSongs() {
         try {
-            if (songStatus.equals(SongStatus.PLAYED)) {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, songStatus.getSongStatus());
-            } else {
-                return getSongListByRoomId(roomId).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
-            }
+            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
         } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
+            throw new DatabaseReadException(getClassOfEntity(), exception);
         }
     }
 
     @Override
-    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
-    }
+    public Song getRoomCurrentSong(Long roomId) {
+        List<Song> songList = getSongListByRoomId(roomId, true);
 
-    @Override
-    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
-        Optional<Song> playing = getPlayingSong(roomId);
-        if (playing.isPresent()) return playing;
-        else return getPausedSong(roomId);
-    }
-
-    @Override
-    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
-        Optional<Song> playingOrPaused = getPlayingOrPausedSong(roomId);
-        Optional<Song> next = getNextSong(roomId);
-
-        if (playingOrPaused.isPresent()) {
-            return playingOrPaused;
-        } else if (next.isPresent()) {
-            return next;
+        if (songList.isEmpty()) {
+            return null;
         } else {
-            return getPreviousSong(roomId);
+            Song playing = null;
+            Song paused = null;
+            Song next = null;
+
+            for (Song s : songList) {
+                if (s.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+                    playing = s;
+                } else if (s.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+                    paused = s;
+                } else if (s.getSongStatus().equals(SongStatus.NEXT.getSongStatus())) {
+                    if (next == null) {
+                        next = s;
+                    }
+                }
+            }
+
+            if (playing != null) {
+                return playing;
+            } else if (paused != null) {
+                return paused;
+            } else return next;
         }
-    }
-
-    @Override
-    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
-    }
-
-    @Override
-    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYED);
-    }
-
-    @Override
-    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
     private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) {
@@ -303,18 +373,14 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return votes;
     }
 
-    @Override
-    public void updateSongStatus(Song song, SongStatus songStatus) {
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
-            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
-            song.setCurrentMs(getCumulativePassedMs(song));
-        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
-            song.setCurrentMs(0);
+    private String getQueuedSongNames(List<Song> songs) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Song s : songs) {
+            stringBuilder.append("\n").append(s);
         }
 
-        song.setSongStatus(songStatus.getSongStatus());
-        update(song);
+        return stringBuilder.toString();
     }
 
 }

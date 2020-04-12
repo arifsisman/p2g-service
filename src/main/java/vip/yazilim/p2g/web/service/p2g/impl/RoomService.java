@@ -11,7 +11,6 @@ import vip.yazilim.p2g.web.config.security.PasswordEncoderConfig;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.model.RoomModel;
@@ -19,7 +18,6 @@ import vip.yazilim.p2g.web.model.RoomStatusModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
-import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -149,7 +147,8 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     private RoomModel getRoomModelSimplifiedBase(RoomModel roomModel) {
-        Long roomId = roomModel.getRoom().getId();
+        Room room = roomModel.getRoom();
+        Long roomId = room.getId();
 
         // Set owner
         Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
@@ -158,9 +157,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             roomModel.setOwner(roomUser.orElseThrow(() -> new NoSuchElementException("Room owner not found")));
         }
 
-        // Set song list
-        List<Song> songList = songService.getSongListByRoomId(roomId);
-        roomModel.setSong(RoomHelper.getRoomCurrentSong(songList));
+        roomModel.setSong(songService.getRoomCurrentSong(room.getId()));
 
         // Set user count
         Integer userCount = roomUserService.getRoomUserCountByRoomId(roomId);

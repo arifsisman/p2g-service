@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.entity.FriendRequest;
-import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.Song;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
@@ -20,7 +18,6 @@ import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
-import vip.yazilim.p2g.web.util.RoomHelper;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -86,11 +83,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
                 fm.setUserModel(userService.getUserModelByUserId(queryId));
 
-                Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
-                if (roomOpt.isPresent()) {
-                    List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
-                    fm.setSong(RoomHelper.getRoomCurrentSong(songList));
-                }
+                roomService.getRoomByUserId(queryId).ifPresent(room -> fm.setSong(songService.getRoomCurrentSong(room.getId())));
 
                 friendModels.add(fm);
             }
@@ -167,12 +160,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
             //To determine who is friend
             String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
-            Optional<Room> roomOpt = roomService.getRoomByUserId(queryId);
 
-            if (roomOpt.isPresent()) {
-                List<Song> songList = songService.getSongListByRoomId(roomOpt.get().getId());
-                frm.setSong(RoomHelper.getRoomCurrentSong(songList));
-            }
+            roomService.getRoomByUserId(queryId).ifPresent(room -> frm.setSong(songService.getRoomCurrentSong(room.getId())));
 
             UserModel userModel = userService.getUserModelByUserId(fr.getSenderId());
             frm.setFriendRequestUserModel(userModel);

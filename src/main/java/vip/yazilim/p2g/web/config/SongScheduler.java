@@ -60,7 +60,7 @@ public class SongScheduler {
                 if (nextOpt.isPresent()) {
                     LOGGER.info("Room[{}] :: Song[{}] finished, next Song[{}] is playing.", roomId, song.getSongId(), nextOpt.get().getSongId());
                     spotifyPlayerService.roomNext(roomId);
-                    webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId));
+                    webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId, false));
                 } else {
                     Optional<User> userOpt = roomService.getRoomOwner(roomId);
 
