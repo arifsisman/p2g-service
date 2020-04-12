@@ -208,6 +208,17 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
+    public Optional<User> getRoomOwner(Long roomId) {
+        Optional<Room> roomOpt = getById(roomId);
+
+        if (roomOpt.isPresent()) {
+            return userService.getById(roomOpt.get().getOwnerId());
+        } else {
+            throw new NoSuchElementException("Room not found");
+        }
+    }
+
+    @Override
     public boolean deleteById(Long roomId) {
         try {
             spotifyPlayerService.roomStop(roomId);
