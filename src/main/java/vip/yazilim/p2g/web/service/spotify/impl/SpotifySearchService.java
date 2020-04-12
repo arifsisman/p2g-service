@@ -47,20 +47,20 @@ public class SpotifySearchService implements ISpotifySearchService {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         if (searchTypes.length == 0) {
-            SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
+            SearchResult songSearchResult = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.searchItem(q, SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
             searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             return searchModelList;
         }
 
         for (SearchType s : searchTypes) {
             if (s == SearchType.SONG) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
+                SearchResult songSearchResult = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.searchItem(q, SearchType.SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
                 searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.ALBUM) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
+                SearchResult songSearchResult = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
                 searchModelList.addAll(Arrays.stream(songSearchResult.getAlbums().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.PLAYLIST) {
-                SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
+                SearchResult songSearchResult = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
                 searchModelList.addAll(Arrays.stream(songSearchResult.getPlaylists().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             }
         }
@@ -83,7 +83,7 @@ public class SpotifySearchService implements ISpotifySearchService {
             Optional<Song> playingOrPausedOrPlayed = songService.getPlayingOrPausedOrNextOrPlayedSong(roomId);
 
             if (playingOrPausedOrPlayed.isPresent()) {
-                Recommendations recommendations = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPausedOrPlayed.get().getSongId()).limit(15).build(), accessToken);
+                Recommendations recommendations = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPausedOrPlayed.get().getSongId()).limit(15).build(), accessToken);
                 TrackSimplified[] recommendationsTrackList = recommendations.getTracks();
                 List<String> trackSimplifiedIds = new LinkedList<>();
 
@@ -93,7 +93,7 @@ public class SpotifySearchService implements ISpotifySearchService {
 
                 return spotifyTrackService.getSeveralTracks(trackSimplifiedIds.toArray(new String[0]));
             } else {
-                Paging<Track> trackPaging = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getUsersTopTracks().limit(15).build(), accessToken);
+                Paging<Track> trackPaging = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getUsersTopTracks().limit(15).build(), accessToken);
                 Track[] tracks = trackPaging.getItems();
 
                 for (Track track : tracks) {

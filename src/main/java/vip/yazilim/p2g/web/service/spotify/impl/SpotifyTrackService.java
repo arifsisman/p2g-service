@@ -24,12 +24,12 @@ public class SpotifyTrackService implements ISpotifyTrackService {
 
     @Override
     public SearchModel getTrack(String id) {
-        return new SearchModel(spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getTrack(id).build(), SecurityHelper.getUserAccessToken()));
+        return new SearchModel(spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getTrack(id).build(), SecurityHelper.getUserAccessToken()));
     }
 
     @Override
     public List<SearchModel> getSeveralTracks(String[] ids) {
-        Track[] tracks = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getSeveralTracks(ids).build(), SecurityHelper.getUserAccessToken());
+        Track[] tracks = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getSeveralTracks(ids).build(), SecurityHelper.getUserAccessToken());
         return Arrays.stream(tracks).map(SearchModel::new).collect(Collectors.toList());
     }
 }

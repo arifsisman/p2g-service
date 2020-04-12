@@ -26,7 +26,7 @@ public class SpotifyPlaylistService implements ISpotifyPlaylistService {
     public List<SearchModel> getSongs(String playlistId) {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build(), SecurityHelper.getUserAccessToken());
+        Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build(), SecurityHelper.getUserAccessToken());
         PlaylistTrack[] playlistTracks = dataRequest.getItems();
 
         for (PlaylistTrack p : playlistTracks) {

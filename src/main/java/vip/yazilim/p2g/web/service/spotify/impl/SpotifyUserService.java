@@ -31,18 +31,18 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Override
     public User getSpotifyUser(String userId) {
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), SecurityHelper.getUserAccessToken());
+        return spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
     public User getCurrentSpotifyUser() {
-        return spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), SecurityHelper.getUserAccessToken());
+        return spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
     public List<UserDevice> getUsersAvailableDevices(String userId) {
         List<UserDevice> userDeviceList = new LinkedList<>();
-        Device[] devices = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), SecurityHelper.getUserAccessToken());
+        Device[] devices = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), SecurityHelper.getUserAccessToken());
 
         if (devices.length == 0) {
             throw new SpotifyException("Can not found any active Spotify device, please start Spotify first.");
@@ -58,7 +58,7 @@ public class SpotifyUserService implements ISpotifyUserService {
     @Override
     public boolean transferUsersPlayback(UserDevice userDevice) {
         JsonArray deviceJson = gson.toJsonTree(Collections.singletonList(userDevice.getId())).getAsJsonArray();
-        spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
+        spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
 
         return true;
     }

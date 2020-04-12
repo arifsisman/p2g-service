@@ -10,6 +10,7 @@ import vip.yazilim.p2g.web.service.spotify.RequestFunction;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -32,19 +33,21 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
+    @Deprecated
     public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
         return execRequest(dataRequestBuilder.apply(spotifyApi), false);
     }
 
     @Override
-    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
+    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
-        execRequest(dataRequestBuilder.apply(spotifyApi), true);
+        return execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //------------------------------------------------------
     @Override
+    @Deprecated
     public <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) {
         execRequestList(dataRequestBuilder, tokenDeviceMap, false);
     }
@@ -70,8 +73,8 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     @SneakyThrows
     private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) {
         if (async) {
-            abstractDataRequest.executeAsync();
-            return null;
+            CompletableFuture<R> response = abstractDataRequest.executeAsync();
+            return response.join();
         } else {
             return abstractDataRequest.execute();
         }

@@ -30,9 +30,9 @@ public class SpotifyAlbumService implements ISpotifyAlbumService {
 
         String accessToken = SecurityHelper.getUserAccessToken();
 
-        Album album = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
+        Album album = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
 
-        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
+        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
         TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 
         String imageUrl = null;
