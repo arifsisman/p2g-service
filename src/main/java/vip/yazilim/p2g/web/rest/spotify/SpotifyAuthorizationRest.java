@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
+import vip.yazilim.p2g.web.config.OnlineStatusScheduler;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
@@ -56,6 +57,9 @@ public class SpotifyAuthorizationRest {
 
     @Autowired
     private IUserDeviceService userDeviceService;
+
+    @Autowired
+    private OnlineStatusScheduler onlineStatusScheduler;
 
     @GetMapping("/login")
     @Transactional
@@ -151,12 +155,25 @@ public class SpotifyAuthorizationRest {
         tokenService.saveUserToken(userId, SecurityHelper.getUserAccessToken());
         User savedUser = userService.save(user);
 
+        goOfflineAfterOneHour(userId);
         LOGGER.info("[{}] :: Logged in", userId);
+
         return savedUser;
     }
 
     private boolean isAccountPremium(com.wrapper.spotify.model_objects.specification.User spotifyUser) {
         return spotifyUser.getProduct().getType().equals(ProductType.PREMIUM.getType());
+    }
+
+    private void goOfflineAfterOneHour(String userId) {
+        int delayMs = 60 * 60 * 1000;
+
+        onlineStatusScheduler.getScheduler()
+                .scheduleWithFixedDelay(() -> userService.getById(userId).ifPresent(user -> {
+                    user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+                    userService.update(user);
+                    LOGGER.info("[{}] :: Logged out :: SYSTEM)", userId);
+                }), TimeHelper.getDatePostponed(delayMs), Long.MAX_VALUE);
     }
 
 }
