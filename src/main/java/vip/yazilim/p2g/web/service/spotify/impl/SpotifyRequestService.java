@@ -4,6 +4,7 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.RequestFunction;
 
@@ -36,13 +37,13 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     @Deprecated
     public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
-        return execRequest(dataRequestBuilder.apply(spotifyApi), false);
+        return execRequest(dataRequestBuilder.apply(spotifyApi), false, true);
     }
 
     @Override
     public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
-        return execRequest(dataRequestBuilder.apply(spotifyApi), true);
+        return execRequest(dataRequestBuilder.apply(spotifyApi), true, true);
     }
 
     //------------------------------------------------------
@@ -65,18 +66,26 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
         // execute requests
         for (AbstractDataRequest<R> r : abstractDataRequests) {
-            execRequest(r, async);
+            execRequest(r, async, false);
         }
     }
 
     //------------------------------------------------------
     @SneakyThrows
-    private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) {
+    private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async, boolean safe) {
+        R response;
+
         if (async) {
-            CompletableFuture<R> response = abstractDataRequest.executeAsync();
-            return response.join();
+            CompletableFuture<R> completableFuture = abstractDataRequest.executeAsync();
+            response = completableFuture.join();
         } else {
-            return abstractDataRequest.execute();
+            response = abstractDataRequest.execute();
+        }
+
+        if (safe && response == null) {
+            throw new SpotifyException("Spotify request failed.");
+        } else {
+            return response;
         }
     }
 }
