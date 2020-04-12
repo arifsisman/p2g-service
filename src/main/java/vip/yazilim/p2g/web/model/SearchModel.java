@@ -5,9 +5,9 @@ import com.wrapper.spotify.model_objects.specification.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import vip.yazilim.p2g.web.enums.SearchType;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,7 +41,7 @@ public class SearchModel implements Serializable {
     private void init(Track track) {
         this.type = SearchType.SONG;
         this.name = track.getName();
-        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(track.getArtists());
+        this.artistNames = convertArtistsToArtistNameList(track.getArtists());
         this.albumName = track.getAlbum().getName();
         this.id = track.getId();
         this.uri = track.getUri();
@@ -56,7 +56,7 @@ public class SearchModel implements Serializable {
     private void init(TrackSimplified trackSimplified) {
         this.type = SearchType.SONG;
         this.name = trackSimplified.getName();
-        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(trackSimplified.getArtists());
+        this.artistNames = convertArtistsToArtistNameList(trackSimplified.getArtists());
         this.id = trackSimplified.getId();
         this.uri = trackSimplified.getUri();
         this.durationMs = trackSimplified.getDurationMs();
@@ -77,7 +77,7 @@ public class SearchModel implements Serializable {
     private void init(AlbumSimplified albumSimplified) {
         this.type = SearchType.ALBUM;
         this.name = albumSimplified.getName();
-        this.artistNames = SpotifyHelper.convertArtistsToArtistNameList(albumSimplified.getArtists());
+        this.artistNames = convertArtistsToArtistNameList(albumSimplified.getArtists());
         this.id = albumSimplified.getId();
         this.uri = albumSimplified.getUri();
 
@@ -85,6 +85,14 @@ public class SearchModel implements Serializable {
         if (images.length > 0) {
             this.imageUrl = images[0].getUrl();
         }
+    }
+
+    private List<String> convertArtistsToArtistNameList(ArtistSimplified[] artists) {
+        List<String> artistList = new LinkedList<>();
+        for (ArtistSimplified artist : artists) {
+            artistList.add(artist.getName());
+        }
+        return artistList;
     }
 
 }

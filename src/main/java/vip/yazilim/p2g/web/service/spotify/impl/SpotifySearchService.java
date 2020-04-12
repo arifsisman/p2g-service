@@ -17,12 +17,9 @@ import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static vip.yazilim.p2g.web.enums.SearchType.SONG;
 
@@ -51,20 +48,20 @@ public class SpotifySearchService implements ISpotifySearchService {
 
         if (searchTypes.length == 0) {
             SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
-            searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
+            searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             return searchModelList;
         }
 
         for (SearchType s : searchTypes) {
             if (s == SearchType.SONG) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.SONG.getType()).limit(15).build(), SecurityHelper.getUserAccessToken());
-                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getTracks().getItems()));
+                searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.ALBUM) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
-                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getAlbums().getItems()));
+                searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.PLAYLIST) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
-                searchModelList.addAll(SpotifyHelper.convertAbstractModelObjectToSearchModelList(songSearchResult.getPlaylists().getItems()));
+                searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             }
         }
 
