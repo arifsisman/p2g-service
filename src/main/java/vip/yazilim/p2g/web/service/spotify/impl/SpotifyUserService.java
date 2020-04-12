@@ -12,7 +12,6 @@ import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -50,7 +49,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         }
 
         for (Device d : devices) {
-            userDeviceList.add(SpotifyHelper.convertDeviceToUserDevice(userId, d));
+            userDeviceList.add(convertDeviceToUserDevice(userId, d));
         }
 
         return userDeviceList;
@@ -62,6 +61,18 @@ public class SpotifyUserService implements ISpotifyUserService {
         spotifyRequest.execRequestSync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
 
         return true;
+    }
+
+    private UserDevice convertDeviceToUserDevice(String userId, Device device) {
+        UserDevice userDevice = new UserDevice();
+
+        userDevice.setUserId(userId);
+        userDevice.setId(device.getId());
+        userDevice.setDeviceName(device.getName());
+        userDevice.setDeviceType(device.getType());
+        userDevice.setActiveFlag(device.getIs_active());
+
+        return userDevice;
     }
 
 }

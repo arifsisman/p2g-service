@@ -7,9 +7,10 @@ import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyTrackService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
-import vip.yazilim.p2g.web.util.SpotifyHelper;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 29.11.2019
@@ -29,6 +30,6 @@ public class SpotifyTrackService implements ISpotifyTrackService {
     @Override
     public List<SearchModel> getSeveralTracks(String[] ids) {
         Track[] tracks = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.getSeveralTracks(ids).build(), SecurityHelper.getUserAccessToken());
-        return SpotifyHelper.convertAbstractModelObjectToSearchModelList(tracks);
+        return Arrays.stream(tracks).map(SearchModel::new).collect(Collectors.toList());
     }
 }
