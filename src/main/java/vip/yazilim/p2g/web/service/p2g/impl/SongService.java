@@ -194,8 +194,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         songList.forEach(this::delete);
 
         try {
-            String userName = SecurityHelper.getUserDisplayName();
-            String infoMessage = userName + " cleared room queue.";
+            String infoMessage = SecurityHelper.getUserDisplayName() + " cleared room queue.";
             webSocketController.sendInfoToRoom(roomId, infoMessage);
         } catch (Exception ignored) {
             webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "SYSTEM :: Due inactivity."));

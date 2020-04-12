@@ -47,4 +47,7 @@ public class User implements Serializable {
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime creationDate;
 
+    @Column(name = "last_login", columnDefinition = "TIMESTAMP")
+    private LocalDateTime lastLogin;
+
 }

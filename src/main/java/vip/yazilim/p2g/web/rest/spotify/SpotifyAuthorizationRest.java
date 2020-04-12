@@ -25,6 +25,7 @@ import vip.yazilim.p2g.web.util.TimeHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,6 +128,7 @@ public class SpotifyAuthorizationRest {
         user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
         user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+        user.setLastLogin(TimeHelper.getLocalDateTimeNow());
 
         Image[] images = spotifyUser.getImages();
         if (images.length > 0) {
@@ -170,9 +172,11 @@ public class SpotifyAuthorizationRest {
 
         onlineStatusScheduler.getScheduler()
                 .scheduleWithFixedDelay(() -> userService.getById(userId).ifPresent(user -> {
-                    user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
-                    userService.update(user);
-                    LOGGER.info("[{}] :: Logged out :: SYSTEM)", userId);
+                    if (ChronoUnit.MILLIS.between(user.getLastLogin(), TimeHelper.getLocalDateTimeNow()) >= delayMs) {
+                        user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+                        userService.update(user);
+                        LOGGER.info("[{}] :: Logged out :: SYSTEM)", userId);
+                    }
                 }), TimeHelper.getDatePostponed(delayMs), Long.MAX_VALUE);
     }
 
