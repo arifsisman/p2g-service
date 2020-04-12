@@ -58,10 +58,10 @@ public class SpotifySearchService implements ISpotifySearchService {
                 searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.ALBUM) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.ALBUM.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
-                searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
+                searchModelList.addAll(Arrays.stream(songSearchResult.getAlbums().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             } else if (s == SearchType.PLAYLIST) {
                 SearchResult songSearchResult = spotifyRequest.execRequestSync(spotifyApi -> spotifyApi.searchItem(q, SearchType.PLAYLIST.getType()).limit(5).build(), SecurityHelper.getUserAccessToken());
-                searchModelList.addAll(Arrays.stream(songSearchResult.getTracks().getItems()).map(SearchModel::new).collect(Collectors.toList()));
+                searchModelList.addAll(Arrays.stream(songSearchResult.getPlaylists().getItems()).map(SearchModel::new).collect(Collectors.toList()));
             }
         }
 
