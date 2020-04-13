@@ -21,8 +21,7 @@ import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
+import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
@@ -40,10 +39,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private ISongRepo songRepo;
 
     @Autowired
-    private ISpotifyAlbumService spotifyAlbumService;
-
-    @Autowired
-    private ISpotifyPlaylistService spotifyPlaylistService;
+    private ISpotifySearchService spotifySearchService;
 
     @Autowired
     private IRoomUserService roomUserService;
@@ -150,7 +146,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
+    public Optional<Song> getRecentSong(Long roomId) {
         List<Song> songList = getSongListByRoomId(roomId, true);
 
         Optional<Song> playing = getPlayingSong(songList);
@@ -165,22 +161,25 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) {
-        List<Song> currentList = getSongListByRoomId(roomId, false);
-        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
-
-        List<Song> songList = new LinkedList<>();
-        for (SearchModel s : searchModel) {
+    public List<Song> addSongWithSearchModels(Long roomId, List<SearchModel> searchModels) {
+        for (SearchModel s : searchModels) {
             if (s.getType() == SearchType.SONG) {
-                songList.addAll(getSongListFromSearchModelList(roomId, Collections.singletonList(s)));
+                return addSongToRoom(roomId, Collections.singletonList(getSongFromSearchModel(roomId, s)));
             } else if (s.getType() == SearchType.ALBUM) {
-                List<SearchModel> searchModelList = spotifyAlbumService.getSongs(s.getId());
-                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
+                List<SearchModel> albumSearchModels = spotifySearchService.getByAlbumId(s.getId());
+                return addSongToRoom(roomId, getSongListFromSearchModelList(roomId, albumSearchModels));
             } else if (s.getType() == SearchType.PLAYLIST) {
-                List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(s.getId());
-                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
+                List<SearchModel> playlistSearchModels = spotifySearchService.getByPlaylistId(s.getId());
+                return addSongToRoom(roomId, getSongListFromSearchModelList(roomId, playlistSearchModels));
             }
         }
+
+        return new LinkedList<>();
+    }
+
+    private List<Song> addSongToRoom(Long roomId, List<Song> songList) {
+        List<Song> currentList = getSongListByRoomId(roomId, false);
+        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
 
         List<Song> queuedList = new LinkedList<>();
 
@@ -198,8 +197,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 }
                 remainingSongCount--;
             } else {
-                String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
-                throw new ConstraintViolationException(err);
+                throw new ConstraintViolationException("Max song limit is " + Constants.ROOM_SONG_LIMIT);
             }
         }
 
@@ -207,7 +205,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + getQueuedSongNames(queuedList);
         webSocketController.sendInfoToRoom(roomId, infoMessage);
 
-        return true;
+        return queuedList;
     }
 
     @Override
@@ -331,28 +329,28 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         List<Song> songList = new LinkedList<>();
 
         for (SearchModel s : searchModelList) {
-            Song song = new Song();
-            song.setRoomId(roomId);
-            song.setSongId(s.getId());
-            song.setSongName(s.getName());
-            song.setAlbumName(s.getAlbumName());
-            song.setRepeatFlag(false);
-            song.setArtistNames(s.getArtistNames());
-            song.setImageUrl(s.getImageUrl());
-            song.setCurrentMs(0);
-            song.setDurationMs(s.getDurationMs());
-            song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-            song.setVotes(0);
-            song.setSongStatus(SongStatus.NEXT.getSongStatus());
-            songList.add(song);
+            songList.add(getSongFromSearchModel(roomId, s));
         }
 
         return songList;
     }
 
-    private Song getSafeSong(Long songId) {
-        Optional<Song> songOpt = getById(songId);
-        return songOpt.orElseThrow(() -> new NoSuchElementException("Song[" + songId + "] :: Not found"));
+    private Song getSongFromSearchModel(Long roomId, SearchModel searchModel) {
+        Song song = new Song();
+        song.setRoomId(roomId);
+        song.setSongId(searchModel.getId());
+        song.setSongName(searchModel.getName());
+        song.setAlbumName(searchModel.getAlbumName());
+        song.setRepeatFlag(false);
+        song.setArtistNames(searchModel.getArtistNames());
+        song.setImageUrl(searchModel.getImageUrl());
+        song.setCurrentMs(0);
+        song.setDurationMs(searchModel.getDurationMs());
+        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
+        song.setVotes(0);
+        song.setSongStatus(SongStatus.NEXT.getSongStatus());
+
+        return song;
     }
 
     private int updateVote(Long songId, boolean upvote) {
