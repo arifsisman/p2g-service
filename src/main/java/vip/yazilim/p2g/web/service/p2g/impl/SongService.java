@@ -356,24 +356,33 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     private int updateVote(Long songId, boolean upvote) {
+        String userId = SecurityHelper.getUserId();
+
         Optional<Song> songOpt = getById(songId);
         if (songOpt.isPresent()) {
             Song song = songOpt.get();
 
-            int votes = song.getVotes();
-            String operation;
+            List<String> voters = song.getVoters();
+            if (voters.contains(userId)) {
+                throw new ConstraintViolationException(song.getSongName() + " :: Voted before");
+            } else {
+                int votes = song.getVotes();
+                String operation;
 
-            votes = (upvote) ? votes + 1 : votes - 1;
-            operation = (upvote) ? " upvoted " : " downvoted ";
+                votes = (upvote) ? votes + 1 : votes - 1;
+                operation = (upvote) ? " upvoted " : " downvoted ";
 
-            song.setVotes(votes);
-            update(song);
+                voters.add(userId);
+                song.setVoters(voters);
+                song.setVotes(votes);
+                update(song);
 
-            String userName = SecurityHelper.getUserDisplayName();
-            String infoMessage = userName + operation + "'" + song.toString() + "'";
-            webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
+                String userName = SecurityHelper.getUserDisplayName();
+                String infoMessage = userName + operation + "'" + song.toString() + "'";
+                webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
 
-            return votes;
+                return votes;
+            }
         } else {
             String msg = String.format("Song[%s] :: Not found", songId);
             throw new NoSuchElementException(msg);

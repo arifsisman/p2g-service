@@ -59,6 +59,10 @@ public class Song implements Serializable {
     @Column(name = "votes", nullable = false)
     private Integer votes;
 
+    @Column(name = "voters")
+    @ElementCollection(targetClass = String.class)
+    private List<String> voters;
+
     @Override
     public String toString() {
         return (getSongName() + " - " + getArtistNames()).replace("[", "").replace("]", "");
