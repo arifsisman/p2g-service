@@ -3,6 +3,8 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.RequestFunction;
@@ -18,6 +20,8 @@ import java.util.function.Function;
  */
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
+
+    private Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
 
     @Override
     public SpotifyApi initAuthorizedApi(String accessToken) {
@@ -64,7 +68,11 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
         // execute requests
         for (AbstractDataRequest<R> r : abstractDataRequests) {
-            execRequest(r, async);
+            try {
+                execRequest(r, async);
+            } catch (Exception e) {
+                LOGGER.warn("Spotify Exception :: " + e.getMessage());
+            }
         }
     }
 

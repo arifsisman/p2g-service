@@ -5,15 +5,10 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.controller.WebSocketController;
-import vip.yazilim.p2g.web.entity.RoomUser;
-import vip.yazilim.p2g.web.enums.Privilege;
-import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.exception.ForbiddenException;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
@@ -21,8 +16,6 @@ import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Optional;
 
 /**
  * @author mustafaarifsisman - 16.12.2019
@@ -33,7 +26,6 @@ import java.util.Optional;
 public class RestAspect {
 
     private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.rest.*.*.*(..))";
-    private final Logger LOGGER = LoggerFactory.getLogger(RestAspect.class);
 
     @Autowired
     private IRoomUserService roomUserService;
@@ -55,10 +47,7 @@ public class RestAspect {
      */
     @Before(ASPECT_PACKAGE_PATTERN)
     public void before(JoinPoint jpoint) {
-
-        MethodSignature signature = (MethodSignature) jpoint.getSignature();
-        Method method = signature.getMethod();
-        for (Annotation annotation : method.getDeclaredAnnotations()) {
+        for (Annotation annotation : ((MethodSignature) jpoint.getSignature()).getMethod().getDeclaredAnnotations()) {
             if (annotation instanceof HasRoomPrivilege) {
                 handle((HasRoomPrivilege) annotation);
             } else if (annotation instanceof HasSystemRole) {
@@ -79,9 +68,7 @@ public class RestAspect {
      */
     @After(ASPECT_PACKAGE_PATTERN)
     public void after(JoinPoint jpoint) {
-        MethodSignature signature = (MethodSignature) jpoint.getSignature();
-        Method method = signature.getMethod();
-        for (Annotation annotation : method.getDeclaredAnnotations()) {
+        for (Annotation annotation : ((MethodSignature) jpoint.getSignature()).getMethod().getDeclaredAnnotations()) {
             if (annotation instanceof UpdateRoomSongs) {
                 handleUpdateRoomSongs();
             } else if (annotation instanceof UpdateRoomUsers) {
@@ -93,62 +80,42 @@ public class RestAspect {
 
     // Handle by Privileges
     private void handle(HasRoomPrivilege hasRoomPrivilege) {
-        Privilege privilege = hasRoomPrivilege.privilege();
-        String userId = SecurityHelper.getUserId();
-
-        if (!roomUserService.hasRoomPrivilege(userId, privilege)) {
-            throw new ForbiddenException("Insufficient Privileges");
+        if (!roomUserService.hasRoomPrivilege(SecurityHelper.getUserId(), hasRoomPrivilege.privilege())) {
+            throw new ForbiddenException("Insufficient Room Privileges");
         }
     }
 
     private void handle(HasSystemPrivilege hasRoomPrivilege) {
-        Privilege privilege = hasRoomPrivilege.privilege();
-        String userId = SecurityHelper.getUserId();
-
-        if (!userService.hasSystemPrivilege(userId, privilege)) {
-            throw new ForbiddenException("Insufficient Privileges");
+        if (!userService.hasSystemPrivilege(SecurityHelper.getUserId(), hasRoomPrivilege.privilege())) {
+            throw new ForbiddenException("Insufficient System Privileges");
         }
     }
 
 
     // Handle by Roles
     private void handle(HasRoomRole hasRoomRole) {
-        Role role = hasRoomRole.role();
-        String userId = SecurityHelper.getUserId();
-
-        if (!roomUserService.hasRoomRole(userId, role)) {
-            throw new ForbiddenException("Insufficient Privileges");
+        if (!roomUserService.hasRoomRole(SecurityHelper.getUserId(), hasRoomRole.role())) {
+            throw new ForbiddenException("Insufficient Room Role");
         }
     }
 
     private void handle(HasSystemRole hasSystemRole) {
-        Role role = hasSystemRole.role();
-        String userId = SecurityHelper.getUserId();
-
-        if (!userService.hasSystemRole(userId, role)) {
-            throw new ForbiddenException("Insufficient Privileges");
+        if (!userService.hasSystemRole(SecurityHelper.getUserId(), hasSystemRole.role())) {
+            throw new ForbiddenException("Insufficient System Role");
         }
     }
 
 
     // Handle room events
     private void handleUpdateRoomSongs() {
-        String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
-
-        if (roomUserOpt.isPresent()) {
-            Long roomId = roomUserOpt.get().getRoomId();
-            webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId, false));
-        }
+        roomUserService.getRoomUserByUserId(SecurityHelper.getUserId())
+                .ifPresent(roomUser -> webSocketController.sendToRoom("songs", roomUser.getRoomId(),
+                        songService.getSongListByRoomId(roomUser.getRoomId(), false)));
     }
 
     private void handleUpdateRoomUsers() {
-        String userId = SecurityHelper.getUserId();
-        Optional<RoomUser> roomUserOpt = roomUserService.getRoomUserByUserId(userId);
-
-        if (roomUserOpt.isPresent()) {
-            Long roomId = roomUserOpt.get().getRoomId();
-            webSocketController.sendToRoom("users", roomId, roomUserService.getRoomUserModelsByRoomId(roomId));
-        }
+        roomUserService.getRoomUserByUserId(SecurityHelper.getUserId())
+                .ifPresent(roomUser -> webSocketController.sendToRoom("users", roomUser.getRoomId(),
+                        roomUserService.getRoomUserModelsByRoomId(roomUser.getRoomId())));
     }
 }
