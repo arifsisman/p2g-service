@@ -27,6 +27,7 @@ import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -160,24 +161,21 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         else return previous;
     }
 
-    @Override
-    public List<Song> addSongWithSearchModels(Long roomId, List<SearchModel> searchModels) {
-        for (SearchModel s : searchModels) {
-            if (s.getType() == SearchType.SONG) {
-                return addSongToRoom(roomId, Collections.singletonList(getSongFromSearchModel(roomId, s)));
-            } else if (s.getType() == SearchType.ALBUM) {
-                List<SearchModel> albumSearchModels = spotifySearchService.getByAlbumId(s.getId());
-                return addSongToRoom(roomId, getSongListFromSearchModelList(roomId, albumSearchModels));
-            } else if (s.getType() == SearchType.PLAYLIST) {
-                List<SearchModel> playlistSearchModels = spotifySearchService.getByPlaylistId(s.getId());
-                return addSongToRoom(roomId, getSongListFromSearchModelList(roomId, playlistSearchModels));
-            }
+    public List<Song> addSongWithSearchModel(Long roomId, SearchModel searchModel) {
+        if (searchModel.getType() == SearchType.SONG) {
+            return addSongListToRoom(roomId, Collections.singletonList(new Song(roomId, searchModel)));
+        } else if (searchModel.getType() == SearchType.ALBUM) {
+            return addSongListToRoom(roomId,
+                    spotifySearchService.getByAlbumId(searchModel.getId()).stream().map(sm -> new Song(roomId, sm)).collect(Collectors.toList()));
+        } else if (searchModel.getType() == SearchType.PLAYLIST) {
+            return addSongListToRoom(roomId,
+                    spotifySearchService.getByPlaylistId(searchModel.getId()).stream().map(sm -> new Song(roomId, sm)).collect(Collectors.toList()));
         }
 
         return new LinkedList<>();
     }
 
-    private List<Song> addSongToRoom(Long roomId, List<Song> songList) {
+    private List<Song> addSongListToRoom(Long roomId, List<Song> songList) {
         List<Song> currentList = getSongListByRoomId(roomId, false);
         int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
 
@@ -323,34 +321,6 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 return paused;
             } else return next;
         }
-    }
-
-    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) {
-        List<Song> songList = new LinkedList<>();
-
-        for (SearchModel s : searchModelList) {
-            songList.add(getSongFromSearchModel(roomId, s));
-        }
-
-        return songList;
-    }
-
-    private Song getSongFromSearchModel(Long roomId, SearchModel searchModel) {
-        Song song = new Song();
-        song.setRoomId(roomId);
-        song.setSongId(searchModel.getId());
-        song.setSongName(searchModel.getName());
-        song.setAlbumName(searchModel.getAlbumName());
-        song.setRepeatFlag(false);
-        song.setArtistNames(searchModel.getArtistNames());
-        song.setImageUrl(searchModel.getImageUrl());
-        song.setCurrentMs(0);
-        song.setDurationMs(searchModel.getDurationMs());
-        song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setVotes(0);
-        song.setSongStatus(SongStatus.NEXT.getSongStatus());
-
-        return song;
     }
 
     private int updateVote(Long songId, boolean upvote) {

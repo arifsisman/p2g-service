@@ -37,8 +37,8 @@ public class RoomQueueRest {
     @HasRoomPrivilege(privilege = Privilege.SONG_ADD_AND_REMOVE)
     @UpdateRoomSongs
     @PostMapping("/{roomId}/queue")
-    public RestResponse<List<Song>> addSongWithSearchModels(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody List<SearchModel> searchModelList) {
-        return RestResponse.generateResponse(songService.addSongWithSearchModels(roomId, searchModelList), HttpStatus.OK, request, response);
+    public RestResponse<List<Song>> addSongWithSearchModels(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody SearchModel searchModel) {
+        return RestResponse.generateResponse(songService.addSongWithSearchModel(roomId, searchModel), HttpStatus.OK, request, response);
     }
 
     @HasRoomPrivilege(privilege = Privilege.ROOM_CLEAR_QUEUE)

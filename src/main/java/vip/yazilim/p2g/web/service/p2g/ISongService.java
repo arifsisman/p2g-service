@@ -39,7 +39,7 @@ public interface ISongService extends ICrudService<Song, Long> {
 
     Optional<Song> getRecentSong(Long roomId);
 
-    List<Song> addSongWithSearchModels(Long roomId, List<SearchModel> searchModels);
+    List<Song> addSongWithSearchModel(Long roomId, SearchModel searchModel);
 
     boolean removeSongFromRoom(Long songId);
 
