@@ -10,6 +10,6 @@ import java.util.List;
  */
 @Data
 public class UserFriendModel {
-    List<FriendRequestModel> requests;
-    List<UserModel> friends;
+    List<FriendRequestModel> requestModels;
+    List<UserModel> friendModels;
 }

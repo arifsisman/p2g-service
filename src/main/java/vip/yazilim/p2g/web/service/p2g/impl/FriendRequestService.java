@@ -154,7 +154,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
             //To determine who is friend
             String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
-            frm.setFriendRequestUserModel(userService.getUserModelByUserId(queryId));
+            frm.setUserModel(userService.getUserModelByUserId(queryId));
 
             friendRequestModels.add(frm);
         }
@@ -236,8 +236,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public UserFriendModel getUserFriendModel(String userId) {
         UserFriendModel userFriendModel = new UserFriendModel();
-        userFriendModel.setRequests(getFriendRequestModelByReceiverId(userId));
-        userFriendModel.setFriends(getFriendsModelByUserId(userId));
+        userFriendModel.setRequestModels(getFriendRequestModelByReceiverId(userId));
+        userFriendModel.setFriendModels(getFriendsModelByUserId(userId));
 
         return userFriendModel;
     }

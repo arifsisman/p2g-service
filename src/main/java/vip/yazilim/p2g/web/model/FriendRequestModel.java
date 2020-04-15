@@ -10,5 +10,5 @@ import vip.yazilim.p2g.web.entity.FriendRequest;
 @Data
 public class FriendRequestModel {
     private FriendRequest friendRequest;
-    private UserModel friendRequestUserModel;
+    private UserModel userModel;
 }
