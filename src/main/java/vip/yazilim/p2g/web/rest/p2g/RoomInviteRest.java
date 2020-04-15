@@ -8,10 +8,10 @@ import vip.yazilim.p2g.web.config.annotation.HasRoomPrivilege;
 import vip.yazilim.p2g.web.config.annotation.HasSystemRole;
 import vip.yazilim.p2g.web.config.annotation.UpdateRoomUsers;
 import vip.yazilim.p2g.web.entity.RoomInvite;
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
@@ -41,7 +41,7 @@ public class RoomInviteRest {
     @HasSystemRole(role = Role.P2G_USER)
     @UpdateRoomUsers
     @PostMapping("/invite/accept")
-    public RestResponse<RoomUser> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
+    public RestResponse<RoomUserModel> accept(HttpServletRequest request, HttpServletResponse response, @RequestBody RoomInvite roomInvite) {
         return RestResponse.generateResponse(roomInviteService.accept(roomInvite), HttpStatus.OK, request, response);
     }
 

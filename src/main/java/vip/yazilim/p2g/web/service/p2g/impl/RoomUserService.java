@@ -118,15 +118,21 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
     @Override
     public RoomUserModel getRoomUserModelMe(String userId) {
-        Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
-        if (roomUserOpt.isPresent()) {
-            RoomUserModel roomUserModel = new RoomUserModel();
-            roomUserModel.setRoomUser(roomUserOpt.get());
-            userService.getById(userId).ifPresent(roomUserModel::setUser);
-            return roomUserModel;
+        Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
+
+        if (roomOpt.isPresent()) {
+            Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
+            if (roomUserOpt.isPresent()) {
+                RoomUserModel roomUserModel = new RoomUserModel();
+                roomUserModel.setRoomUser(roomUserOpt.get());
+                userService.getById(userId).ifPresent(roomUserModel::setUser);
+                return roomUserModel;
+            } else {
+                String msg = String.format("[%s] :: Not in any room", userId);
+                throw new NoSuchElementException(msg);
+            }
         } else {
-            String msg = String.format("[%s] :: Not in any room", userId);
-            throw new NoSuchElementException(msg);
+            throw new NoSuchElementException("Room :: Not found");
         }
     }
 
@@ -142,7 +148,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public Optional<RoomUser> getRoomOwner(Long roomId) {
         try {
-            return roomUserRepo.findRoomUserByRoomIdAndRole(roomId, Role.ROOM_OWNER.role);
+            return roomUserRepo.findRoomUserByRoomIdAndRoomRole(roomId, Role.ROOM_OWNER.role);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
@@ -158,11 +164,16 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
      * @return RoomUser
      */
     @Override
-    public RoomUser joinRoom(Long roomId, String userId, String password, Role role) {
+    public RoomUserModel joinRoom(Long roomId, String userId, String password, Role role) {
         Optional<Room> roomOpt = roomService.getById(roomId);
+        Optional<User> userOpt = userService.getById(userId);
+
         if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] :: Not found", roomId);
-            throw new IllegalArgumentException(err);
+            throw new NoSuchElementException(err);
+        } else if (!userOpt.isPresent()) {
+            String err = String.format("User[%s] :: Not found", userId);
+            throw new NoSuchElementException(err);
         } else {
             // Any room exists check
             Optional<RoomUser> existingUserOpt = getRoomUserByUserId(userId);
@@ -171,36 +182,43 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             }
 
             // Normal condition
+            RoomUserModel roomUserModel = new RoomUserModel();
+
             Room room = roomOpt.get();
             RoomUser roomUser = new RoomUser();
 
             if (room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
                 roomUser.setRoomId(roomId);
                 roomUser.setUserId(userId);
-                roomUser.setRole(role.getRole());
+                roomUser.setRoomRole(role.getRole());
                 roomUser.setActiveFlag(true);
             } else {
                 throw new IllegalArgumentException("Wrong password");
             }
 
             RoomUser joinedUser = create(roomUser);
-            webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
 
+            roomUserModel.setRoom(room);
+            roomUserModel.setUser(userOpt.get());
+            roomUserModel.setRoomUser(joinedUser);
+
+            webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
             LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);
-            return joinedUser;
+
+            return roomUserModel;
         }
     }
 
     @Override
-    public void joinRoomOwner(Long roomId, String userId) {
+    public RoomUser joinRoomOwner(Long roomId, String userId) {
         RoomUser roomUser = new RoomUser();
 
         roomUser.setRoomId(roomId);
         roomUser.setUserId(userId);
-        roomUser.setRole(Role.ROOM_OWNER.getRole());
+        roomUser.setRoomRole(Role.ROOM_OWNER.getRole());
         roomUser.setActiveFlag(true);
 
-        super.create(roomUser);
+        return super.create(roomUser);
     }
 
     @Override
@@ -210,7 +228,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
-            if (roomUserOpt.get().getRole().equals(Role.ROOM_OWNER.getRole())) {
+            if (roomUserOpt.get().getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
                 boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
                     LOGGER.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
@@ -250,16 +268,16 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         roomUserModels.sort((o1, o2) -> {
-            if (o1.getRoomUser().getRole().equals(Role.ROOM_OWNER.role)) {
+            if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_OWNER.role)) {
                 return 3;
-            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_ADMIN.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_ADMIN.role)) {
                 return 2;
-            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_DJ.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_DJ.role)) {
                 return 1;
-            } else if (o1.getRoomUser().getRole().equals(Role.ROOM_USER.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_USER.role)) {
                 return 0;
             } else {
-                return o1.getRoomUser().getRole().compareTo(o2.getRoomUser().getRole());
+                return o1.getRoomUser().getRoomRole().compareTo(o2.getRoomUser().getRoomRole());
             }
         });
 
@@ -267,29 +285,53 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public RoomUser acceptRoomInvite(RoomInvite roomInvite) {
+    public RoomUserModel acceptRoomInvite(RoomInvite roomInvite) {
         if (!roomInviteService.existsById(roomInvite.getId())) {
             String err = String.format("Room Invite[%s] not found", roomInvite.getId());
             throw new NoSuchElementException(err);
         } else {
+            String userId = SecurityHelper.getUserId();
+            Long roomId = roomInvite.getRoomId();
+
             // Any room exists check
             Optional<RoomUser> existingUserOpt = getRoomUserByUserId(roomInvite.getReceiverId());
             if (existingUserOpt.isPresent()) {
                 leaveRoom();
             }
 
+            RoomUserModel roomUserModel = new RoomUserModel();
+
+            Optional<User> userOpt = userService.getById(userId);
+            Optional<Room> roomOpt = roomService.getById(roomId);
+
+            if (userOpt.isPresent()) {
+                roomUserModel.setUser(userOpt.get());
+            } else {
+                String msg = String.format("User[%s] :: Not found", userId);
+                throw new NoSuchElementException(msg);
+            }
+
+            if (roomOpt.isPresent()) {
+                roomUserModel.setRoom(roomOpt.get());
+            } else {
+                String msg = String.format("Room[%s] :: Not found", roomId);
+                throw new NoSuchElementException(msg);
+            }
+
             RoomUser roomUser = new RoomUser();
 
             roomUser.setRoomId(roomInvite.getRoomId());
             roomUser.setUserId(roomInvite.getReceiverId());
-            roomUser.setRole(Role.ROOM_USER.getRole());
+            roomUser.setRoomRole(Role.ROOM_USER.getRole());
             roomUser.setActiveFlag(true);
 
             RoomUser createdRoomUser = create(roomUser);
             roomInviteService.delete(roomInvite);
-
             LOGGER.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
-            return createdRoomUser;
+
+            roomUserModel.setRoomUser(createdRoomUser);
+
+            return roomUserModel;
         }
     }
 
@@ -324,20 +366,20 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (changingUser.getUserId().equals(SecurityHelper.getUserId())) {
             throw new ConstraintViolationException("You can not change your own role.");
-        } else if (changingUser.getRole().equals(Role.ROOM_OWNER.role)) {
+        } else if (changingUser.getRoomRole().equals(Role.ROOM_OWNER.role)) {
             throw new ConstraintViolationException(Role.ROOM_OWNER.role + " role can not changed.");
-        } else if (changingUser.getRole().equals(changer.getRole())) {
+        } else if (changingUser.getRoomRole().equals(changer.getRoomRole())) {
             throw new ConstraintViolationException("You can not change the role of users who have the same role as you.");
         }
 
-        Role oldRole = Role.getRole(changingUser.getRole());
+        Role oldRole = Role.getRole(changingUser.getRoomRole());
 
         if (oldRole.equals(Role.getRole(roleName))) {
             return changingUser;
         } else if (Role.getRole(roleName).equals(Role.ROOM_OWNER)) {
             return changeRoomOwner(roomUserId);
         } else {
-            changingUser.setRole(Role.getRole(roleName).getRole());
+            changingUser.setRoomRole(Role.getRole(roleName).getRole());
             RoomUser updatedRoomUser = update(changingUser);
 
             String userName = SecurityHelper.getUserDisplayName();
@@ -361,8 +403,8 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomOpt.isPresent()) {
                 Room room = roomOpt.get();
 
-                oldRoomOwner.setRole(Role.ROOM_ADMIN.getRole());
-                newRoomOwner.setRole(Role.ROOM_OWNER.getRole());
+                oldRoomOwner.setRoomRole(Role.ROOM_ADMIN.getRole());
+                newRoomOwner.setRoomRole(Role.ROOM_OWNER.getRole());
                 room.setOwnerId(newRoomOwner.getUserId());
 
                 update(oldRoomOwner);
@@ -387,13 +429,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public boolean hasRoomPrivilege(String userId, Privilege privilege) {
         Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRoomRole(), privilege);
     }
 
     @Override
     public boolean hasRoomRole(String userId, Role role) {
         Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
-        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRole()));
+        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoomRole()));
     }
 
     @Override

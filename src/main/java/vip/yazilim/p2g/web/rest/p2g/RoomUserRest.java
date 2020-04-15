@@ -34,7 +34,7 @@ public class RoomUserRest {
     @HasSystemRole(role = Role.P2G_USER)
     @UpdateRoomUsers
     @PostMapping("/{roomId}/join")
-    public RestResponse<RoomUser> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody String password) {
+    public RestResponse<RoomUserModel> joinRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId, @RequestBody String password) {
         return RestResponse.generateResponse(roomUserService.joinRoom(roomId, SecurityHelper.getUserId(), password, Role.ROOM_USER), HttpStatus.OK, request, response);
     }
 

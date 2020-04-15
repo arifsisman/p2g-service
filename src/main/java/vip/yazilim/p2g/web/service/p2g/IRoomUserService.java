@@ -26,15 +26,15 @@ public interface IRoomUserService extends ICrudService<RoomUser, Long> {
 
     Optional<RoomUser> getRoomOwner(Long roomId);
 
-    RoomUser joinRoom(Long roomId, String userId, String password, Role role);
+    RoomUserModel joinRoom(Long roomId, String userId, String password, Role role);
 
-    void joinRoomOwner(Long roomId, String userId);
+    RoomUser joinRoomOwner(Long roomId, String userId);
 
     boolean leaveRoom();
 
     List<RoomUserModel> getRoomUserModelsByRoomId(Long roomId);
 
-    RoomUser acceptRoomInvite(RoomInvite roomInvite);
+    RoomUserModel acceptRoomInvite(RoomInvite roomInvite);
 
     void deleteRoomUsers(Long roomId);
 

@@ -4,6 +4,7 @@ import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface IRoomService extends ICrudService<Room, Long> {
 
     RoomModel getRoomModelWithRoom(Room room);
 
-    Room createRoom(String ownerId, String roomName, String roomPassword);
+    RoomUserModel createRoom(String ownerId, String roomName, String roomPassword);
 
     RoomModel getRoomModelByUserId(String userId);
 

@@ -15,6 +15,7 @@ import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.model.RoomModel;
 import vip.yazilim.p2g.web.model.RoomStatusModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.repository.IRoomRepo;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
@@ -167,23 +168,33 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     }
 
     @Override
-    public Room createRoom(String ownerId, String roomName, String roomPassword) {
+    public RoomUserModel createRoom(String ownerId, String roomName, String roomPassword) {
         // Any room exists check
         Optional<RoomUser> existingUserOpt = roomUserService.getRoomUserByUserId(ownerId);
         if (existingUserOpt.isPresent()) {
             roomUserService.leaveRoom();
         }
 
-        Room room = new Room();
-        room.setOwnerId(ownerId);
-        room.setName(roomName);
-        room.setPassword(roomPassword);
+        RoomUserModel roomUserModel = new RoomUserModel();
+        Optional<User> ownerOpt = userService.getById(ownerId);
+        if (ownerOpt.isPresent()) {
+            Room room = new Room();
+            room.setOwnerId(ownerId);
+            room.setName(roomName);
+            room.setPassword(roomPassword);
 
-        Room createdRoom = create(room);
-        roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
+            Room createdRoom = create(room);
+            RoomUser joinedRoomOwner = roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
 
-        LOGGER.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
-        return createdRoom;
+            LOGGER.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
+
+            roomUserModel.setRoom(createdRoom);
+            roomUserModel.setRoomUser(joinedRoomOwner);
+
+            return roomUserModel;
+        } else {
+            throw new NoSuchElementException("User :: Not found");
+        }
     }
 
     @Override

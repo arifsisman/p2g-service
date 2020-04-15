@@ -18,4 +18,5 @@ public class UserModel implements Serializable {
     private RoomUser roomUser;
     private String roomOwnerName;
     private int roomUserCount;
+    //todo merge with roomModel
 }

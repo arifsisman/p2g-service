@@ -10,6 +10,7 @@ import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.enums.Privilege;
 import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 
@@ -32,7 +33,7 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping({"/create/{roomName}"})
-    public RestResponse<Room> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody(required = false) String roomPassword) {
+    public RestResponse<RoomUserModel> createRoom(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestBody(required = false) String roomPassword) {
         return RestResponse.generateResponse(roomService.createRoom(SecurityHelper.getUserId(), roomName, roomPassword), HttpStatus.OK, request, response);
     }
 

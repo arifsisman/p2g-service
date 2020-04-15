@@ -2,9 +2,9 @@ package vip.yazilim.p2g.web.service.p2g;
 
 import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.RoomInvite;
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public interface IRoomInviteService extends ICrudService<RoomInvite, Long> {
 
     RoomInvite invite(Long roomId, String userId);
 
-    RoomUser accept(RoomInvite roomInvite);
+    RoomUserModel accept(RoomInvite roomInvite);
 
     boolean reject(Long roomInviteId);
 

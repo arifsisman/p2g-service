@@ -62,7 +62,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     protected User preInsert(User entity) {
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
-        entity.setRole(Role.P2G_USER.getRole());
+        entity.setSystemRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         return entity;
     }
@@ -135,12 +135,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public boolean hasSystemRole(String userId, Role role) {
         Optional<User> userOpt = getById(userId);
-        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getSystemRole()));
     }
 
     @Override
     public boolean hasSystemPrivilege(String userId, Privilege privilege) {
         Optional<User> roomUserOpt = getById(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getSystemRole(), privilege);
     }
 }

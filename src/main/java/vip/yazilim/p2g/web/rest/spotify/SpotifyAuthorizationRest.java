@@ -74,7 +74,7 @@ public class SpotifyAuthorizationRest {
         } else {
             User newUser = new User();
             newUser.setCreationDate(TimeHelper.getLocalDateTimeNow());
-            newUser.setRole(Role.P2G_USER.getRole());
+            newUser.setSystemRole(Role.P2G_USER.getRole());
             return RestResponse.generateResponse(saveUser(spotifyUser, newUser), HttpStatus.OK, request, response);
         }
     }

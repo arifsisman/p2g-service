@@ -30,8 +30,8 @@ public class RoomUser implements Serializable {
     @Column(name = "user_name", updatable = false, nullable = false)
     private String userName;
 
-    @Column(name = "role", length = 31, nullable = false)
-    private String role;
+    @Column(name = "room_role", length = 31, nullable = false)
+    private String roomRole;
 
     @Column(name = "join_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime joinDate;
@@ -44,7 +44,7 @@ public class RoomUser implements Serializable {
         this.setRoomId(-1L);
         this.setUserId("p2g");
         this.setUserName("Info");
-        this.setRole("INFO");
+        this.setRoomRole("INFO");
         this.setJoinDate(TimeHelper.getLocalDateTimeNow());
         this.setActiveFlag(true);
     }
