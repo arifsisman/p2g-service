@@ -160,7 +160,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         roomModel.setSong(songService.getRoomCurrentSong(room.getId()));
 
         // Set user count
-        Integer userCount = roomUserService.getRoomUserCountByRoomId(roomId);
+        int userCount = roomUserService.getRoomUserCountByRoomId(roomId);
         roomModel.setUserCount(userCount);
 
         return roomModel;

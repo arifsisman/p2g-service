@@ -66,10 +66,13 @@ public class DataInitializer implements CommandLineRunner {
         roomService.update(demoRoom);
 
         Long roomId = demoRoom.getId();
-        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
-        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");
-        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400");
-        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4");
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.NEXT);
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.NEXT);
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 0, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400", SongStatus.NEXT);
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4", SongStatus.NEXT);
+
+        addSongToRoom(testRoom2.getId(), "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.PLAYING);
+        addSongToRoom(testRoom3.getId(), "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 0, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400", SongStatus.PLAYING);
 
         u1.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         u1.setCountryCode("DE");
@@ -148,7 +151,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, Integer currentMs, int votes, String imageUrl, SongStatus songStatus) {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
@@ -156,12 +159,16 @@ public class DataInitializer implements CommandLineRunner {
         song.setAlbumName("Test");
         song.setRepeatFlag(false);
         song.setArtistNames(artistNames);
-        song.setCurrentMs(0);
+        song.setCurrentMs(currentMs);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setSongStatus(SongStatus.NEXT.getSongStatus());
+        song.setSongStatus(songStatus.getSongStatus());
         song.setVotes(votes);
         song.setImageUrl(imageUrl);
+
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+        }
 
         song = songService.create(song);
 

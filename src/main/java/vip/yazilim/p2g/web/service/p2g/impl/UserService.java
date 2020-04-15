@@ -95,6 +95,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
 
             roomUser = roomUserService.getRoomUserByUserId(roomId, userId);
             roomUser.ifPresent(userModel::setRoomUser);
+
+            Optional<User> roomOwner = getById(roomOpt.get().getOwnerId());
+            roomOwner.ifPresent(user -> userModel.setRoomOwnerName(user.getName()));
+
+            int userCount = roomUserService.getRoomUserCountByRoomId(roomId);
+            userModel.setRoomUserCount(userCount);
         }
 
         return userModel;

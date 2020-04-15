@@ -16,4 +16,6 @@ public class UserModel implements Serializable {
     private User user;
     private Room room;
     private RoomUser roomUser;
+    private String roomOwnerName;
+    private int roomUserCount;
 }
