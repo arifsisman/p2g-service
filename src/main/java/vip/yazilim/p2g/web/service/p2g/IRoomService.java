@@ -18,13 +18,13 @@ public interface IRoomService extends ICrudService<Room, Long> {
 
     List<RoomModel> getRoomModels();
 
-    RoomModel getRoomModelByRoomId(Long roomId);
+    Optional<RoomModel> getRoomModelByRoomId(Long roomId);
+
+    Optional<RoomModel> getRoomModelByUserId(String userId);
 
     RoomModel getRoomModelWithRoom(Room room);
 
     RoomUserModel createRoom(String ownerId, String roomName, String roomPassword);
-
-    RoomModel getRoomModelByUserId(String userId);
 
     List<Room> getActiveRooms();
 

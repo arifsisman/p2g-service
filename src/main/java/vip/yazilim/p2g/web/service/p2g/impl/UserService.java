@@ -73,7 +73,7 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         if (userOpt.isPresent()) {
             UserModel userModel = new UserModel();
             userModel.setUser(userOpt.get());
-            userModel.setRoomModel(roomService.getRoomModelByUserId(userId));
+            roomService.getRoomModelByUserId(userId).ifPresent(userModel::setRoomModel);
             return userModel;
         } else {
             String msg = String.format("User[%s] not found", userId);

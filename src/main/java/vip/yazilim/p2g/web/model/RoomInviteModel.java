@@ -12,5 +12,5 @@ import vip.yazilim.p2g.web.entity.RoomInvite;
 @AllArgsConstructor
 public class RoomInviteModel {
     private RoomInvite roomInvite;
-    private UserModel inviteModel;
+    private UserModel userModel;
 }

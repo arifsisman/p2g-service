@@ -27,6 +27,7 @@ import vip.yazilim.p2g.web.util.SecurityHelper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 
 import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 
@@ -64,13 +65,13 @@ public class RoomRest {
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/{roomId}")
-    public RestResponse<RoomModel> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
+    public RestResponse<Optional<RoomModel>> getRoomModel(HttpServletRequest request, HttpServletResponse response, @PathVariable Long roomId) {
         return RestResponse.generateResponse(roomService.getRoomModelByRoomId(roomId), HttpStatus.OK, request, response);
     }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping("/model/me")
-    public RestResponse<RoomModel> getRoomModelMe(HttpServletRequest request, HttpServletResponse response) {
+    public RestResponse<Optional<RoomModel>> getRoomModelMe(HttpServletRequest request, HttpServletResponse response) {
         return RestResponse.generateResponse(roomService.getRoomModelByUserId(SecurityHelper.getUserId()), HttpStatus.OK, request, response);
     }
 
