@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
 import vip.yazilim.p2g.web.entity.FriendRequest;
-import vip.yazilim.p2g.web.entity.Song;
 
 /**
  * @author mustafaarifsisman - 02.02.2020
@@ -11,6 +10,5 @@ import vip.yazilim.p2g.web.entity.Song;
 @Data
 public class FriendRequestModel {
     private FriendRequest friendRequest;
-    private UserModel friendRequestUserModel;
-    private Song song;
+    private UserModel userModel;
 }

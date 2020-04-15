@@ -4,9 +4,9 @@ import vip.yazilim.libs.springcore.service.ICrudService;
 import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.FriendRequestStatus;
-import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.model.UserFriendModel;
+import vip.yazilim.p2g.web.model.UserModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public interface IFriendRequestService extends ICrudService<FriendRequest, Long>
 
     List<FriendRequest> getFriendRequestsByReceiverId(String userId);
 
-    List<FriendModel> getFriendsModelByUserId(String userId);
+    List<UserModel> getFriendsModelByUserId(String userId);
 
     List<User> getFriendsByUserId(String userId);
 

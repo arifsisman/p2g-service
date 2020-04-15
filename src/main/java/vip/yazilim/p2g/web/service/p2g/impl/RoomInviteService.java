@@ -7,12 +7,12 @@ import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomInvite;
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.WebSocketDestinations;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
 import vip.yazilim.p2g.web.model.RoomInviteModel;
-import vip.yazilim.p2g.web.model.RoomModel;
+import vip.yazilim.p2g.web.model.RoomUserModel;
+import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
@@ -98,10 +98,8 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
         List<RoomInvite> roomInvites = getRoomInvitesByUserId(userId);
 
         for (RoomInvite ri : roomInvites) {
-            RoomModel rm = roomService.getRoomModelByRoomId(ri.getRoomId());
-            Optional<User> inviter = userService.getById(ri.getInviterId());
-
-            roomInviteModelList.add(new RoomInviteModel(ri, rm, inviter.orElse(null)));
+            UserModel inviterModel = userService.getUserModelByUserId(ri.getInviterId());
+            roomInviteModelList.add(new RoomInviteModel(ri, inviterModel));
         }
 
         return roomInviteModelList;
@@ -127,10 +125,9 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
             roomInvite.setInvitationDate(TimeHelper.getLocalDateTimeNow());
 
             RoomInvite createdRoomInvite = create(roomInvite);
-            RoomModel roomModel = roomService.getRoomModelByRoomId(roomId);
-            Optional<User> inviter = userService.getById(inviterId);
+            UserModel inviterModel = userService.getUserModelByUserId(inviterId);
 
-            RoomInviteModel roomInviteModel = new RoomInviteModel(createdRoomInvite, roomModel, inviter.orElse(null));
+            RoomInviteModel roomInviteModel = new RoomInviteModel(createdRoomInvite, inviterModel);
 
             webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, roomInviteModel);
             return createdRoomInvite;
@@ -138,7 +135,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public RoomUser accept(RoomInvite roomInvite) {
+    public RoomUserModel accept(RoomInvite roomInvite) {
         return roomUserService.acceptRoomInvite(roomInvite);
     }
 

@@ -13,27 +13,22 @@ public class SecurityHelper {
     }
 
     public static String getUserId() {
-        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("id").toString();
+        return getAuthorizedMap().get("id").toString();
     }
 
     public static String getUserDisplayName() {
-        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("display_name").toString();
+        return getAuthorizedMap().get("display_name").toString();
     }
 
     public static String getUserEmail() {
-        return ((Map) getUserAuthentication().getUserAuthentication().getDetails()).get("email").toString();
+        return getAuthorizedMap().get("email").toString();
     }
 
     public static String getUserAccessToken() {
         return ((OAuth2AuthenticationDetails) getUserAuthentication().getDetails()).getTokenValue();
     }
 
-    public static String getUserId(OAuth2Authentication oAuth2Authentication) {
-        return ((Map) oAuth2Authentication.getUserAuthentication().getDetails()).get("id").toString();
+    public static Map<String, Object> getAuthorizedMap() {
+        return (Map<String, Object>) getUserAuthentication().getUserAuthentication().getDetails();
     }
-
-    public static String getUserDisplayName(OAuth2Authentication oAuth2Authentication) {
-        return ((Map) oAuth2Authentication.getUserAuthentication().getDetails()).get("display_name").toString();
-    }
-
 }

@@ -11,22 +11,23 @@ import vip.yazilim.p2g.web.constant.Constants;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.Song;
+import vip.yazilim.p2g.web.enums.RoomStatus;
 import vip.yazilim.p2g.web.enums.SearchType;
 import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
+import vip.yazilim.p2g.web.model.RoomStatusModel;
 import vip.yazilim.p2g.web.model.SearchModel;
 import vip.yazilim.p2g.web.repository.ISongRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.spotify.IPlayerService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyAlbumService;
-import vip.yazilim.p2g.web.service.spotify.ISpotifyPlaylistService;
-import vip.yazilim.p2g.web.util.RoomHelper;
+import vip.yazilim.p2g.web.service.spotify.ISpotifySearchService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author mustafaarifsisman - 1.11.2019
@@ -39,10 +40,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     private ISongRepo songRepo;
 
     @Autowired
-    private ISpotifyAlbumService spotifyAlbumService;
-
-    @Autowired
-    private ISpotifyPlaylistService spotifyPlaylistService;
+    private ISpotifySearchService spotifySearchService;
 
     @Autowired
     private IRoomUserService roomUserService;
@@ -70,55 +68,117 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         return Song.class;
     }
 
-    @Override
-    public List<Song> getSongListByRoomId(Long roomId) {
-        try {
-            return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
-        }
-    }
-
-    @Override
-    public int upvote(Long songId) {
-        return updateVote(songId, true);
-    }
-
-    @Override
-    public int downvote(Long songId) {
-        return updateVote(songId, false);
-    }
-
-    @Override
-    public List<Song> getActiveSongs() {
-        try {
-            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception);
-        }
-    }
-
     public static int getCumulativePassedMs(Song song) {
         return (int) (ChronoUnit.MILLIS.between(song.getPlayingTime(), TimeHelper.getLocalDateTimeNow()) + song.getCurrentMs());
     }
 
     @Override
-    public boolean addSongToRoom(Long roomId, List<SearchModel> searchModel) {
-        List<Song> currentList = getSongListByRoomId(roomId);
-        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
-
-        List<Song> songList = new LinkedList<>();
-        for (SearchModel s : searchModel) {
-            if (s.getType() == SearchType.SONG) {
-                songList.addAll(getSongListFromSearchModelList(roomId, Collections.singletonList(s)));
-            } else if (s.getType() == SearchType.ALBUM) {
-                List<SearchModel> searchModelList = spotifyAlbumService.getSongs(s.getId());
-                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
-            } else if (s.getType() == SearchType.PLAYLIST) {
-                List<SearchModel> searchModelList = spotifyPlaylistService.getSongs(s.getId());
-                songList.addAll(getSongListFromSearchModelList(roomId, searchModelList));
+    public List<Song> getSongListByRoomId(Long roomId, boolean includePlayedSongs) {
+        try {
+            if (includePlayedSongs) {
+                return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
+            } else {
+                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
             }
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
+    }
+
+    /**
+     * @param roomId     roomId
+     * @param songStatus songStatus
+     * @return getSongByRoomIdAndStatus not including played songs
+     * @throws DatabaseReadException DatabaseReadException
+     */
+    @Override
+    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
+        try {
+            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
+        }
+    }
+
+    @Override
+    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
+    }
+
+    @Override
+    public Optional<Song> getPlayingSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
+    }
+
+    @Override
+    public Optional<Song> getPausedSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
+        return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
+    }
+
+    @Override
+    public Optional<Song> getNextSong(List<Song> songList) {
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.getSongStatus())).findFirst();
+    }
+
+    @Override
+    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
+        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.getSongStatus());
+    }
+
+    @Override
+    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
+        List<Song> songList = getSongListByRoomId(roomId, false);
+
+        Optional<Song> playing = getPlayingSong(songList);
+        Optional<Song> paused = getPausedSong(songList);
+
+        if (playing.isPresent()) return playing;
+        else return paused;
+    }
+
+    @Override
+    public Optional<Song> getRecentSong(Long roomId, boolean includeLastPlayed) {
+        List<Song> songList = getSongListByRoomId(roomId, true);
+
+        Optional<Song> playing = getPlayingSong(songList);
+        Optional<Song> paused = getPausedSong(songList);
+        Optional<Song> next = getNextSong(songList);
+        Optional<Song> previous = getPreviousSong(roomId);
+
+        if (playing.isPresent()) return playing;
+        else if (paused.isPresent()) return paused;
+        else if (next.isPresent()) return next;
+        else if (previous.isPresent() && includeLastPlayed) return previous;
+        else return Optional.empty();
+    }
+
+    public List<Song> addSongWithSearchModel(Long roomId, SearchModel searchModel) {
+        if (searchModel.getType() == SearchType.SONG) {
+            return addSongListToRoom(roomId, Collections.singletonList(new Song(roomId, searchModel)));
+        } else if (searchModel.getType() == SearchType.ALBUM) {
+            return addSongListToRoom(roomId,
+                    spotifySearchService.getByAlbumId(searchModel.getId()).stream().map(sm -> new Song(roomId, sm)).collect(Collectors.toList()));
+        } else if (searchModel.getType() == SearchType.PLAYLIST) {
+            return addSongListToRoom(roomId,
+                    spotifySearchService.getByPlaylistId(searchModel.getId()).stream().map(sm -> new Song(roomId, sm)).collect(Collectors.toList()));
+        }
+
+        return new LinkedList<>();
+    }
+
+    private List<Song> addSongListToRoom(Long roomId, List<Song> songList) {
+        List<Song> currentList = getSongListByRoomId(roomId, false);
+        int remainingSongCount = Constants.ROOM_SONG_LIMIT - currentList.size();
 
         List<Song> queuedList = new LinkedList<>();
 
@@ -136,16 +196,15 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 }
                 remainingSongCount--;
             } else {
-                String err = String.format("Max song limit is %s for rooms.", Constants.ROOM_SONG_LIMIT);
-                throw new ConstraintViolationException(err);
+                throw new ConstraintViolationException("Max song limit is " + Constants.ROOM_SONG_LIMIT);
             }
         }
 
         String userName = SecurityHelper.getUserDisplayName();
-        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + RoomHelper.getQueuedSongNames(queuedList);
+        String infoMessage = userName + " queued " + queuedList.size() + " songs.\n" + getQueuedSongNames(queuedList);
         webSocketController.sendInfoToRoom(roomId, infoMessage);
 
-        return true;
+        return queuedList;
     }
 
     @Override
@@ -160,7 +219,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         }
 
         if (!roomUserOpt.isPresent()) {
-            String err = String.format("RoomUser not found with UserId[%s]", userId);
+            String err = String.format("User[%s] not in any room", userId);
             throw new NoSuchElementException(err);
         }
 
@@ -191,111 +250,24 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         songList.forEach(this::delete);
 
-        String userName = SecurityHelper.getUserDisplayName();
-        String infoMessage = userName + " cleared room queue.";
-        webSocketController.sendInfoToRoom(roomId, infoMessage);
+        try {
+            String infoMessage = SecurityHelper.getUserDisplayName() + " cleared room queue.";
+            webSocketController.sendInfoToRoom(roomId, infoMessage);
+        } catch (Exception ignored) {
+            webSocketController.sendToRoom("status", roomId, new RoomStatusModel(RoomStatus.CLOSED, "SYSTEM :: Room closed due inactivity."));
+        }
 
         return spotifyPlayerService.roomStop(roomId);
     }
 
     @Override
-    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
-        try {
-            if (songStatus.equals(SongStatus.PLAYED)) {
-                return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, songStatus.getSongStatus());
-            } else {
-                return getSongListByRoomId(roomId).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
-            }
-        } catch (Exception exception) {
-            throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
-        }
+    public int upvote(Long songId) {
+        return updateVote(songId, true);
     }
 
     @Override
-    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
-    }
-
-    @Override
-    public Optional<Song> getPlayingOrPausedSong(Long roomId) {
-        Optional<Song> playing = getPlayingSong(roomId);
-        if (playing.isPresent()) return playing;
-        else return getPausedSong(roomId);
-    }
-
-    @Override
-    public Optional<Song> getPlayingOrPausedOrNextOrPlayedSong(Long roomId) {
-        Optional<Song> playingOrPaused = getPlayingOrPausedSong(roomId);
-        Optional<Song> next = getNextSong(roomId);
-
-        if (playingOrPaused.isPresent()) {
-            return playingOrPaused;
-        } else if (next.isPresent()) {
-            return next;
-        } else {
-            return getPreviousSong(roomId);
-        }
-    }
-
-    @Override
-    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
-    }
-
-    @Override
-    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYED);
-    }
-
-    @Override
-    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
-        return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
-    }
-
-    private List<Song> getSongListFromSearchModelList(Long roomId, List<SearchModel> searchModelList) {
-        List<Song> songList = new LinkedList<>();
-
-        for (SearchModel s : searchModelList) {
-            Song song = new Song();
-            song.setRoomId(roomId);
-            song.setSongId(s.getId());
-            song.setSongName(s.getName());
-            song.setAlbumName(s.getAlbumName());
-            song.setRepeatFlag(false);
-            song.setArtistNames(s.getArtistNames());
-            song.setImageUrl(s.getImageUrl());
-            song.setCurrentMs(0);
-            song.setDurationMs(s.getDurationMs());
-            song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-            song.setVotes(0);
-            song.setSongStatus(SongStatus.NEXT.getSongStatus());
-            songList.add(song);
-        }
-
-        return songList;
-    }
-
-    private Song getSafeSong(Long songId) {
-        Optional<Song> songOpt = getById(songId);
-        return songOpt.orElseThrow(() -> new NoSuchElementException("Song not found"));
-    }
-
-    private int updateVote(Long songId, boolean upvote) {
-        Song song = getSafeSong(songId);
-        int votes = song.getVotes();
-        String operation;
-
-        votes = (upvote) ? votes + 1 : votes - 1;
-        operation = (upvote) ? " upvoted " : " downvoted ";
-
-        song.setVotes(votes);
-        update(song);
-
-        String userName = SecurityHelper.getUserDisplayName();
-        String infoMessage = userName + operation + "'" + song.toString() + "'";
-        webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
-
-        return votes;
+    public int downvote(Long songId) {
+        return updateVote(songId, false);
     }
 
     @Override
@@ -310,6 +282,59 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
         song.setSongStatus(songStatus.getSongStatus());
         update(song);
+    }
+
+    @Override
+    public List<Song> getActiveSongs() {
+        try {
+            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
+        } catch (Exception exception) {
+            throw new DatabaseReadException(getClassOfEntity(), exception);
+        }
+    }
+
+    private int updateVote(Long songId, boolean upvote) {
+        String userId = SecurityHelper.getUserId();
+
+        Optional<Song> songOpt = getById(songId);
+        if (songOpt.isPresent()) {
+            Song song = songOpt.get();
+
+            List<String> voters = song.getVoters();
+            if (voters.contains(userId)) {
+                throw new ConstraintViolationException(song.getSongName() + " :: Voted before");
+            } else {
+                int votes = song.getVotes();
+                String operation;
+
+                votes = (upvote) ? votes + 1 : votes - 1;
+                operation = (upvote) ? " upvoted " : " downvoted ";
+
+                voters.add(userId);
+                song.setVoters(voters);
+                song.setVotes(votes);
+                update(song);
+
+                String userName = SecurityHelper.getUserDisplayName();
+                String infoMessage = userName + operation + "'" + song.toString() + "'";
+                webSocketController.sendInfoToRoom(song.getRoomId(), infoMessage);
+
+                return votes;
+            }
+        } else {
+            String msg = String.format("Song[%s] :: Not found", songId);
+            throw new NoSuchElementException(msg);
+        }
+    }
+
+    private String getQueuedSongNames(List<Song> songs) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Song s : songs) {
+            stringBuilder.append("\n").append(s);
+        }
+
+        return stringBuilder.toString();
     }
 
 }

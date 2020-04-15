@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
 import vip.yazilim.libs.springcore.service.ACrudServiceImpl;
 import vip.yazilim.p2g.web.config.security.authority.AAuthorityProvider;
-import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.OnlineStatus;
@@ -62,42 +61,24 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     protected User preInsert(User entity) {
         entity.setCreationDate(TimeHelper.getLocalDateTimeNow());
-        entity.setRole(Role.P2G_USER.getRole());
+        entity.setSystemRole(Role.P2G_USER.getRole());
         entity.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         return entity;
     }
 
     @Override
     public UserModel getUserModelByUserId(String userId) {
-        UserModel userModel = new UserModel();
+        Optional<User> userOpt = getById(userId);
 
-        Optional<User> userOpt;
-        Optional<Room> roomOpt;
-        Optional<RoomUser> roomUser;
-
-        // Set User
-        userOpt = getById(userId);
-        if (!userOpt.isPresent()) {
-            throw new NoSuchElementException("User not found");
-        } else {
+        if (userOpt.isPresent()) {
+            UserModel userModel = new UserModel();
             userModel.setUser(userOpt.get());
+            roomService.getRoomModelByUserId(userId).ifPresent(userModel::setRoomModel);
+            return userModel;
+        } else {
+            String msg = String.format("User[%s] not found", userId);
+            throw new NoSuchElementException(msg);
         }
-
-        // Set Room & Role
-        roomOpt = roomService.getRoomByUserId(userId);
-
-        // If user joined a room, user has got a room and role
-        // Else user is not in a room, user hasn't got a room and role
-        if (roomOpt.isPresent()) {
-            userModel.setRoom(roomOpt.get());
-
-            Long roomId = roomOpt.get().getId();
-
-            roomUser = roomUserService.getRoomUserByUserId(roomId, userId);
-            roomUser.ifPresent(userModel::setRoomUser);
-        }
-
-        return userModel;
     }
 
     @Override
@@ -129,12 +110,12 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
     @Override
     public boolean hasSystemRole(String userId, Role role) {
         Optional<User> userOpt = getById(userId);
-        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getRole()));
+        return userOpt.isPresent() && role.equals(Role.getRole(userOpt.get().getSystemRole()));
     }
 
     @Override
     public boolean hasSystemPrivilege(String userId, Privilege privilege) {
         Optional<User> roomUserOpt = getById(userId);
-        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getRole(), privilege);
+        return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getSystemRole(), privilege);
     }
 }

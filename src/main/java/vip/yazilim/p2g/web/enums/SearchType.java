@@ -27,6 +27,10 @@ public enum SearchType {
         return this.type;
     }
 
+    public static String getAllTypes() {
+        return SONG.type + "," + ALBUM.type + "," + PLAYLIST.type;
+    }
+
     static {
         for (SearchType searchType : values()) {
             map.put(searchType.type, searchType);

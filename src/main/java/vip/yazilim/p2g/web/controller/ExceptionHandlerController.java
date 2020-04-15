@@ -1,5 +1,6 @@
 package vip.yazilim.p2g.web.controller;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.exceptions.detailed.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({MessageDeliveryException.class})
     public ResponseEntity<String> handleMessageDeliveryException(MessageDeliveryException e) {
-        return error(FORBIDDEN, e);
+        return noLog(FORBIDDEN, e);
     }
 
     @ExceptionHandler({AccessDeniedException.class})
@@ -84,6 +85,10 @@ public class ExceptionHandlerController {
         return noLog(UNAUTHORIZED, e);
     }
 
+    @ExceptionHandler({IOException.class})
+    public ResponseEntity<String> handleIOException(IOException e) {
+        return error(BAD_REQUEST, e);
+    }
 
     /////////////////////////////
     // Spring Core Lib Exceptions
@@ -129,53 +134,58 @@ public class ExceptionHandlerController {
     // Spotify Web Api Exceptions
     /////////////////////////////
 
-    @ExceptionHandler({IOException.class})
-    public ResponseEntity<String> handleIOException(IOException e) {
-        return error(BAD_REQUEST, e);
-    }
-
     @ExceptionHandler({BadGatewayException.class})
     public ResponseEntity<String> handleBadGatewayException(BadGatewayException e) {
-        return error(BAD_GATEWAY, e);
+        return spotifyWarn(BAD_GATEWAY, e);
     }
 
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<String> handleBadRequestException(BadRequestException e) {
-        return error(BAD_REQUEST, e);
+        return spotifyWarn(BAD_REQUEST, e);
+    }
+
+    @ExceptionHandler({SpotifyWebApiException.class})
+    public ResponseEntity<String> handleSpotifyWebApiException(SpotifyWebApiException e) {
+        return spotifyWarn(INTERNAL_SERVER_ERROR, e);
     }
 
     @ExceptionHandler({com.wrapper.spotify.exceptions.detailed.ForbiddenException.class})
     public ResponseEntity<String> handleForbiddenException(com.wrapper.spotify.exceptions.detailed.ForbiddenException e) {
-        return error(FORBIDDEN, e);
+        return spotifyWarn(FORBIDDEN, e);
     }
 
     @ExceptionHandler({InternalServerErrorException.class})
     public ResponseEntity<String> handleInternalServerErrorException(InternalServerErrorException e) {
-        return error(SERVICE_UNAVAILABLE, e);
+        return spotifyWarn(SERVICE_UNAVAILABLE, e);
     }
 
     @ExceptionHandler({com.wrapper.spotify.exceptions.detailed.NotFoundException.class})
     public ResponseEntity<String> handleNotFoundException(com.wrapper.spotify.exceptions.detailed.NotFoundException e) {
-        return error(NOT_FOUND, e);
+        return spotifyWarn(NOT_FOUND, e);
     }
 
     @ExceptionHandler({ServiceUnavailableException.class})
     public ResponseEntity<String> handleServiceUnavailableException(ServiceUnavailableException e) {
-        return error(SERVICE_UNAVAILABLE, e);
+        return spotifyWarn(SERVICE_UNAVAILABLE, e);
     }
 
     @ExceptionHandler({TooManyRequestsException.class})
     public ResponseEntity<String> handleTooManyRequestsException(TooManyRequestsException e) {
-        return error(TOO_MANY_REQUESTS, e);
+        return spotifyWarn(TOO_MANY_REQUESTS, e);
     }
 
     @ExceptionHandler({UnauthorizedException.class})
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
-        return error(UNAUTHORIZED, e);
+        return spotifyWarn(UNAUTHORIZED, e);
     }
 
     private ResponseEntity<String> warn(HttpStatus status, Exception e) {
         LOGGER.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        return ResponseEntity.status(status).body(e.getMessage());
+    }
+
+    private ResponseEntity<String> spotifyWarn(HttpStatus status, Exception e) {
+        LOGGER.warn("[{}] :: Spotify Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 

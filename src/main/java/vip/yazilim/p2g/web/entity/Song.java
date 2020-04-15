@@ -1,7 +1,11 @@
 package vip.yazilim.p2g.web.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vip.yazilim.p2g.web.constant.Constants;
+import vip.yazilim.p2g.web.enums.SongStatus;
+import vip.yazilim.p2g.web.model.SearchModel;
+import vip.yazilim.p2g.web.util.TimeHelper;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = Constants.TABLE_PREFIX + "song")
 @Data
+@NoArgsConstructor
 public class Song implements Serializable {
 
     @Id
@@ -59,8 +64,27 @@ public class Song implements Serializable {
     @Column(name = "votes", nullable = false)
     private Integer votes;
 
+    @Column(name = "voters")
+    @ElementCollection(targetClass = String.class)
+    private List<String> voters;
+
     @Override
     public String toString() {
         return (getSongName() + " - " + getArtistNames()).replace("[", "").replace("]", "");
+    }
+
+    public Song(Long roomId, SearchModel searchModel) {
+        this.setRoomId(roomId);
+        this.setSongId(searchModel.getId());
+        this.setSongName(searchModel.getName());
+        this.setAlbumName(searchModel.getAlbumName());
+        this.setRepeatFlag(false);
+        this.setArtistNames(searchModel.getArtistNames());
+        this.setImageUrl(searchModel.getImageUrl());
+        this.setCurrentMs(0);
+        this.setDurationMs(searchModel.getDurationMs());
+        this.setQueuedTime(TimeHelper.getLocalDateTimeNow());
+        this.setVotes(0);
+        this.setSongStatus(SongStatus.NEXT.getSongStatus());
     }
 }

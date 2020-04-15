@@ -11,6 +11,7 @@ import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.enums.OnlineStatus;
 import vip.yazilim.p2g.web.enums.Role;
 import vip.yazilim.p2g.web.enums.SongStatus;
+import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -57,19 +58,27 @@ public class DataInitializer implements CommandLineRunner {
         User arif = createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
-        Room demoRoom = roomService.createRoom(arif.getId(), "Demo Room", null);
-        Room testRoom2 = roomService.createRoom(u1.getId(), "My Private Room", "123");
-        Room testRoom3 = roomService.createRoom(u2.getId(), "Chill", null);
-        Room testRoom4 = roomService.createRoom(u3.getId(), "Only top 50", null);
+        RoomUserModel demoRoomUserModel = roomService.createRoom(arif.getId(), "Demo Room", null);
+        RoomUserModel testRoom2UserModel = roomService.createRoom(u1.getId(), "My Private Room", "123");
+        RoomUserModel testRoom3UserModel = roomService.createRoom(u2.getId(), "Chill", null);
+        RoomUserModel testRoom4UserModel = roomService.createRoom(u3.getId(), "Only top 50", null);
+
+        Room demoRoom = demoRoomUserModel.getRoom();
+        Room testRoom2 = testRoom2UserModel.getRoom();
+        Room testRoom3 = testRoom3UserModel.getRoom();
+        Room testRoom4 = testRoom4UserModel.getRoom();
 
         demoRoom.setActiveFlag(true);
         roomService.update(demoRoom);
 
         Long roomId = demoRoom.getId();
-        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2");
-        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9");
-        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400");
-        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4");
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.NEXT);
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.NEXT);
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 0, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400", SongStatus.NEXT);
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4", SongStatus.NEXT);
+
+        addSongToRoom(testRoom2.getId(), "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.PLAYING);
+        addSongToRoom(testRoom3.getId(), "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, 2, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.PLAYING);
 
         u1.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         u1.setCountryCode("DE");
@@ -120,13 +129,16 @@ public class DataInitializer implements CommandLineRunner {
         roomUserService.joinRoom(testRoom2.getId(), u5.getId(), "123", Role.ROOM_USER);
         roomUserService.joinRoom(testRoom2.getId(), u6.getId(), "123", Role.ROOM_USER);
 
-        RoomUser r3u8 = roomUserService.joinRoom(testRoom3.getId(), u7.getId(), null, Role.ROOM_USER);
-        RoomUser r3u5 = roomUserService.joinRoom(testRoom3.getId(), u4.getId(), null, Role.ROOM_USER);
+        RoomUserModel r3u8UserModel = roomUserService.joinRoom(testRoom3.getId(), u7.getId(), null, Role.ROOM_USER);
+        RoomUserModel r3u5UserModel = roomUserService.joinRoom(testRoom3.getId(), u4.getId(), null, Role.ROOM_USER);
 
-        r3u8.setRole(Role.ROOM_ADMIN.role);
+        RoomUser r3u8 = r3u8UserModel.getRoomUser();
+        RoomUser r3u5 = r3u5UserModel.getRoomUser();
+
+        r3u8.setRoomRole(Role.ROOM_ADMIN.role);
         roomUserService.update(r3u8);
 
-        r3u5.setRole(Role.ROOM_DJ.role);
+        r3u5.setRoomRole(Role.ROOM_DJ.role);
         roomUserService.update(r3u5);
     }
 
@@ -148,7 +160,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl) {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, Integer currentMs, int votes, String imageUrl, SongStatus songStatus) {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
@@ -156,12 +168,16 @@ public class DataInitializer implements CommandLineRunner {
         song.setAlbumName("Test");
         song.setRepeatFlag(false);
         song.setArtistNames(artistNames);
-        song.setCurrentMs(0);
+        song.setCurrentMs(currentMs);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setSongStatus(SongStatus.NEXT.getSongStatus());
+        song.setSongStatus(songStatus.getSongStatus());
         song.setVotes(votes);
         song.setImageUrl(imageUrl);
+
+        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+            song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+        }
 
         song = songService.create(song);
 

@@ -1,8 +1,6 @@
 package vip.yazilim.p2g.web.model;
 
 import lombok.Data;
-import vip.yazilim.p2g.web.entity.Room;
-import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 
 import java.io.Serializable;
@@ -14,6 +12,5 @@ import java.io.Serializable;
 @Data
 public class UserModel implements Serializable {
     private User user;
-    private Room room;
-    private RoomUser roomUser;
+    private RoomModel roomModel;
 }

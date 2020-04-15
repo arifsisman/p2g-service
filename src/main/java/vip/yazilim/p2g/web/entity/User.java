@@ -29,8 +29,8 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "role", nullable = false, length = 31)
-    private String role;
+    @Column(name = "system_role", nullable = false, length = 31)
+    private String systemRole;
 
     @Column(name = "online_status", length = 31, nullable = false)
     private String onlineStatus;
@@ -41,10 +41,10 @@ public class User implements Serializable {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(length = 31)
-    private String anthemSongId;
-
     @Column(name = "creation_date", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime creationDate;
+
+    @Column(name = "last_login", columnDefinition = "TIMESTAMP")
+    private LocalDateTime lastLogin;
 
 }

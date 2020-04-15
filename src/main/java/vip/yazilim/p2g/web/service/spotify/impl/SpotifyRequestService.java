@@ -3,6 +3,8 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
 import vip.yazilim.p2g.web.service.spotify.RequestFunction;
@@ -19,6 +21,8 @@ import java.util.function.Function;
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
 
+    private Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
+
     @Override
     public SpotifyApi initAuthorizedApi(String accessToken) {
         return new SpotifyApi.Builder()
@@ -32,19 +36,21 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
     //------------------------------------------------------
     @Override
+    @Deprecated
     public <R> R execRequestSync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
         return execRequest(dataRequestBuilder.apply(spotifyApi), false);
     }
 
     @Override
-    public <R> void execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
+    public <R> R execRequestAsync(Function<SpotifyApi, AbstractDataRequest<R>> dataRequestBuilder, String accessToken) {
         SpotifyApi spotifyApi = initAuthorizedApi(accessToken);
-        execRequest(dataRequestBuilder.apply(spotifyApi), true);
+        return execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
     //------------------------------------------------------
     @Override
+    @Deprecated
     public <R> void execRequestListSync(RequestFunction<SpotifyApi, String, AbstractDataRequest<R>> dataRequestBuilder, Map<String, String> tokenDeviceMap) {
         execRequestList(dataRequestBuilder, tokenDeviceMap, false);
     }
@@ -62,16 +68,18 @@ public class SpotifyRequestService implements ISpotifyRequestService {
 
         // execute requests
         for (AbstractDataRequest<R> r : abstractDataRequests) {
-            execRequest(r, async);
+            try {
+                execRequest(r, async);
+            } catch (Exception e) {
+                LOGGER.warn("Spotify Exception :: " + e.getMessage());
+            }
         }
     }
 
-    //------------------------------------------------------
     @SneakyThrows
     private <R> R execRequest(AbstractDataRequest<R> abstractDataRequest, boolean async) {
         if (async) {
-            abstractDataRequest.executeAsync();
-            return null;
+            return abstractDataRequest.executeAsync().join();
         } else {
             return abstractDataRequest.execute();
         }
