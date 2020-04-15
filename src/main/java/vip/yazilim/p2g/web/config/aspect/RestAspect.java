@@ -25,7 +25,7 @@ import java.lang.annotation.Annotation;
 @Aspect
 public class RestAspect {
 
-    private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.rest.*.*.*(..))";
+    private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.rest.*.*(..))";
 
     @Autowired
     private IRoomUserService roomUserService;
