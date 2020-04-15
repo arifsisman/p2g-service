@@ -52,6 +52,4 @@ public interface ISongService extends ICrudService<Song, Long> {
     List<Song> getActiveSongs();
 
     void updateSongStatus(Song song, SongStatus songStatus);
-
-    Song getRoomCurrentSong(Long roomId);
 }

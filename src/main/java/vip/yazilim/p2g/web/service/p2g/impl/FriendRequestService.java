@@ -9,7 +9,6 @@ import vip.yazilim.p2g.web.entity.FriendRequest;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.enums.FriendRequestStatus;
 import vip.yazilim.p2g.web.exception.ConstraintViolationException;
-import vip.yazilim.p2g.web.model.FriendModel;
 import vip.yazilim.p2g.web.model.FriendRequestModel;
 import vip.yazilim.p2g.web.model.UserFriendModel;
 import vip.yazilim.p2g.web.model.UserModel;
@@ -61,9 +60,9 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public List<FriendModel> getFriendsModelByUserId(String userId) {
+    public List<UserModel> getFriendsModelByUserId(String userId) {
         List<FriendRequest> friendRequestList;
-        List<FriendModel> friendModels = new LinkedList<>();
+        List<UserModel> userModels = new LinkedList<>();
 
         try {
             // Does not matter who sent friend request
@@ -74,22 +73,17 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         for (FriendRequest fr : friendRequestList) {
             if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
-                FriendModel fm = new FriendModel();
+                UserModel fm = new UserModel();
                 String senderId = fr.getSenderId();
                 String receiverId = fr.getReceiverId();
 
                 //To determine who is friend
                 String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
-
-                fm.setUserModel(userService.getUserModelByUserId(queryId));
-
-                roomService.getRoomByUserId(queryId).ifPresent(room -> fm.setSong(songService.getRoomCurrentSong(room.getId())));
-
-                friendModels.add(fm);
+                userModels.add(userService.getUserModelByUserId(queryId));
             }
         }
 
-        return friendModels;
+        return userModels;
     }
 
     @Override
@@ -160,11 +154,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
             //To determine who is friend
             String queryId = senderId.equals(SecurityHelper.getUserId()) ? receiverId : senderId;
-
-            roomService.getRoomByUserId(queryId).ifPresent(room -> frm.setSong(songService.getRoomCurrentSong(room.getId())));
-
-            UserModel userModel = userService.getUserModelByUserId(fr.getSenderId());
-            frm.setFriendRequestUserModel(userModel);
+            frm.setFriendRequestUserModel(userService.getUserModelByUserId(queryId));
 
             friendRequestModels.add(frm);
         }
@@ -246,8 +236,8 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public UserFriendModel getUserFriendModel(String userId) {
         UserFriendModel userFriendModel = new UserFriendModel();
-        userFriendModel.setFriendRequestModelList(getFriendRequestModelByReceiverId(userId));
-        userFriendModel.setFriendModelList(getFriendsModelByUserId(userId));
+        userFriendModel.setRequests(getFriendRequestModelByReceiverId(userId));
+        userFriendModel.setFriends(getFriendsModelByUserId(userId));
 
         return userFriendModel;
     }

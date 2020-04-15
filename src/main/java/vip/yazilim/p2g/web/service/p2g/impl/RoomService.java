@@ -129,13 +129,16 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
     @Override
     public RoomModel getRoomModelByRoomId(Long roomId) {
         // Set Room
-        Optional<Room> room = getById(roomId);
-        if (!room.isPresent()) {
+        Optional<Room> roomOpt = getById(roomId);
+        if (!roomOpt.isPresent()) {
             String err = String.format("Room[%s] :: Not found", roomId);
             throw new NoSuchElementException(err);
         } else {
+            Room room = roomOpt.get();
+
             RoomModel roomModel = new RoomModel();
-            roomModel.setRoom(room.get());
+            roomModel.setRoom(room);
+
             return getRoomModelSimplifiedBase(roomModel);
         }
     }
@@ -152,17 +155,16 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
         Long roomId = room.getId();
 
         // Set owner
-        Optional<RoomUser> roomOwnerOpt = roomUserService.getRoomOwner(roomId);
-        if (roomOwnerOpt.isPresent()) {
-            Optional<User> roomUser = userService.getById(roomOwnerOpt.get().getUserId());
-            roomModel.setOwner(roomUser.orElseThrow(() -> new NoSuchElementException("Room owner not found")));
+        Optional<User> ownerOpt = userService.getById(room.getOwnerId());
+
+        if (ownerOpt.isPresent()) {
+            roomModel.setOwner(ownerOpt.get());
+        } else {
+            throw new NoSuchElementException("Room owner not found");
         }
 
-        roomModel.setSong(songService.getRoomCurrentSong(room.getId()));
-
-        // Set user count
-        int userCount = roomUserService.getRoomUserCountByRoomId(roomId);
-        roomModel.setUserCount(userCount);
+        songService.getRecentSong(room.getId()).ifPresent(roomModel::setSong);
+        roomModel.setUserCount(roomUserService.getRoomUserCountByRoomId(roomId));
 
         return roomModel;
     }

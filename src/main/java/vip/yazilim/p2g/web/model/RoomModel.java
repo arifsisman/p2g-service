@@ -17,5 +17,4 @@ public class RoomModel implements Serializable {
     private User owner;
     private Song song;
     private Integer userCount;
-    //todo merge with userModel
 }
