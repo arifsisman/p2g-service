@@ -152,7 +152,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
         if (ownerOpt.isPresent()) {
             roomModel.setOwner(ownerOpt.get());
-            songService.getRecentSong(room.getId()).ifPresent(roomModel::setSong);
+            songService.getRecentSong(room.getId(), false).ifPresent(roomModel::setSong);
             roomModel.setUserCount(roomUserService.getRoomUserCountByRoomId(roomId));
 
             return Optional.of(roomModel);

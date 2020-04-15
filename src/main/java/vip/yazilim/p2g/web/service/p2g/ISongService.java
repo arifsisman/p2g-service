@@ -37,7 +37,7 @@ public interface ISongService extends ICrudService<Song, Long> {
 
     Optional<Song> getPlayingOrPausedSong(Long roomId);
 
-    Optional<Song> getRecentSong(Long roomId);
+    Optional<Song> getRecentSong(Long roomId, boolean includeLastPlayed);
 
     List<Song> addSongWithSearchModel(Long roomId, SearchModel searchModel);
 

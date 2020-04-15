@@ -59,7 +59,7 @@ public class SpotifySearchService implements ISpotifySearchService {
         Optional<Room> roomOpt = roomService.getRoomByUserId(SecurityHelper.getUserId());
         if (roomOpt.isPresent()) {
             Long roomId = roomOpt.get().getId();
-            Optional<Song> playingOrPausedOrPlayed = songService.getRecentSong(roomId);
+            Optional<Song> playingOrPausedOrPlayed = songService.getRecentSong(roomId, true);
 
             if (playingOrPausedOrPlayed.isPresent()) {
                 Recommendations recommendations = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getRecommendations().seed_tracks(playingOrPausedOrPlayed.get().getSongId()).limit(20).build(), accessToken);

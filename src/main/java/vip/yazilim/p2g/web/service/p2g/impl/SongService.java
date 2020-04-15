@@ -147,7 +147,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getRecentSong(Long roomId) {
+    public Optional<Song> getRecentSong(Long roomId, boolean includeLastPlayed) {
         List<Song> songList = getSongListByRoomId(roomId, true);
 
         Optional<Song> playing = getPlayingSong(songList);
@@ -158,7 +158,8 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
         if (playing.isPresent()) return playing;
         else if (paused.isPresent()) return paused;
         else if (next.isPresent()) return next;
-        else return previous;
+        else if (previous.isPresent() && includeLastPlayed) return previous;
+        else return Optional.empty();
     }
 
     public List<Song> addSongWithSearchModel(Long roomId, SearchModel searchModel) {
