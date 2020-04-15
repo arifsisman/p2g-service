@@ -228,7 +228,9 @@ public class SpotifyPlayerService implements IPlayerService {
     public boolean syncWithRoom(String userId) {
         Optional<Room> roomOpt = roomService.getRoomByUserId(userId);
 
-        roomOpt.ifPresent(room -> {
+        if (roomOpt.isPresent()) {
+            Room room = roomOpt.get();
+
             Long roomId = room.getId();
             List<Song> songList = songService.getSongListByRoomId(roomId, false);
 
@@ -236,9 +238,11 @@ public class SpotifyPlayerService implements IPlayerService {
             Optional<Song> pausedOpt = songService.getPausedSong(songList);
 
             playingOpt.map(song -> playUser(userId, song)).orElseGet(() -> pausedOpt.filter(song -> sync(userId, song)).isPresent());
-        });
 
-        return true;
+            return true;
+        } else {
+            throw new NoSuchElementException("Room :: Not found");
+        }
     }
 
     @Override

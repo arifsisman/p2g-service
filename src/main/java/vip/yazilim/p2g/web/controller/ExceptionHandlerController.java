@@ -72,7 +72,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({MessageDeliveryException.class})
     public ResponseEntity<String> handleMessageDeliveryException(MessageDeliveryException e) {
-        return error(FORBIDDEN, e);
+        return noLog(FORBIDDEN, e);
     }
 
     @ExceptionHandler({AccessDeniedException.class})
