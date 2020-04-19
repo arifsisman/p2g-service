@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://142.93.239.61:5432/p2g_db
+    url: jdbc:postgresql://p2g.yazilim.vip:5432/p2g_db
     username: postgres
     password: -$aSpOW$gUd$epO2O5p6
     initialization-mode: always
