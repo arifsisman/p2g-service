@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @HasRole(isRoom = false)
 public @interface HasSystemRole {
-    @AliasFor(
-            annotation = HasRole.class
-    )
+    @AliasFor(annotation = HasRole.class)
     Role role();
 }
