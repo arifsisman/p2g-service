@@ -121,12 +121,13 @@ public class SpotifySearchService implements ISpotifySearchService {
     public List<SearchModel> getByPlaylistId(String playlistId) {
         List<SearchModel> searchModelList = new LinkedList<>();
 
-        Paging<PlaylistTrack> dataRequest = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getPlaylistsTracks(playlistId).build(), SecurityHelper.getUserAccessToken());
-        PlaylistTrack[] playlistTracks = dataRequest.getItems();
+        Playlist playlist = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getPlaylist(playlistId).build(), SecurityHelper.getUserAccessToken());
+        PlaylistTrack[] playlistTracks = playlist.getTracks().getItems();
 
         for (PlaylistTrack p : playlistTracks) {
-            SearchModel searchModel = new SearchModel(p.getTrack());
-            searchModel.setAlbumName(p.getTrack().getAlbum().getName());
+            SearchModel searchModel = new SearchModel(p);
+            //TODO: searchModel albumName changed to playlistName
+            searchModel.setAlbumName(playlist.getName());
             searchModelList.add(searchModel);
         }
 
