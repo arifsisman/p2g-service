@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @HasPrivilege(isRoom = true)
 public @interface HasRoomPrivilege {
-    @AliasFor(
-            annotation = HasPrivilege.class
-    )
+    @AliasFor(annotation = HasPrivilege.class)
     Privilege privilege();
 }
