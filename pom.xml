@@ -43,6 +43,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <active.profile>test</active.profile>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -59,8 +65,6 @@
             <groupId>vip.yazilim.spring</groupId>
             <artifactId>spring-core</artifactId>
             <version>2.3.00.220</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spring-core-2.3.00.220.jar</systemPath>
         </dependency>
 
 
@@ -132,17 +136,17 @@
 
 
         <!-- Unit Test -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.security</groupId>-->
-        <!--            <artifactId>spring-security-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
 
         <!-- WebSocket -->
