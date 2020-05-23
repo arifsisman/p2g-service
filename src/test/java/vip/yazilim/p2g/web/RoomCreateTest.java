@@ -14,6 +14,7 @@ import vip.yazilim.p2g.web.entity.RoomUser;
 import vip.yazilim.p2g.web.entity.User;
 import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
+import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 
 @SpringBootTest
@@ -26,7 +27,10 @@ public class RoomCreateTest {
 
     @MockBean
     private IUserService userService;
+    @MockBean
+    private IRoomUserService roomUserService;
 
+    
     @Autowired
     private IRoomService roomService;
 
@@ -51,6 +55,18 @@ public class RoomCreateTest {
 
     @Test
     public void case2_userAlreadyCreatedRoom(){
+        
+        // 3 => melinda 
+        String userId  = "3";
+        Mockito.when(userService.getById("3")).thenReturn(
+            Optional.of(
+                createUser(userId, "4@gmail.com", "Melinda Gardner")
+            )
+        );
+
+        Mockito.when(roomUserService.leaveRoom()).thenReturn(true);
+        
+        
         
         
     }
