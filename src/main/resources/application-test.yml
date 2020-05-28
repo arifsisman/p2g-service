@@ -1,27 +1,8 @@
-# Configures the port that Eureka Server will be running
-server:
-  port: 8097
+DB_IP: p2g.yazilim.vip
+DB_PORT: 5432
+DB_NAME: p2g_test
+DB_USERNAME: postgres
+DB_PASSWORD: -$aSpOW$gUd$epO2O5p6
 
-# Configure active spring profile
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/p2g_local_db
-    username: postgres
-    password: pos
-    initialization-mode: always
-  jpa:
-    hibernate.ddl-auto: create
-    database: postgresql
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
-        jdbc.lob.non_contextual_creation: true
-
-security:
-  oauth2:
-    resource:
-      user-info-uri: https://api.spotify.com/v1/me
-
+JPA_HIBERNATE_MODE: create
 DATA_INIT_FLAG: false

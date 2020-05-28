@@ -65,6 +65,8 @@
             <groupId>vip.yazilim.spring</groupId>
             <artifactId>spring-core</artifactId>
             <version>2.3.00.220</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spring-core-2.3.00.220.jar</systemPath>
         </dependency>
 
 
@@ -120,12 +122,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-security</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!-- Developer Tools -->

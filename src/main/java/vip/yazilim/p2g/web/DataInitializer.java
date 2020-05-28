@@ -45,16 +45,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User u1 = createUser("1", "2@gmail.com", "Tobias Schulze");
-        User u2 = createUser("2", "3@gmail.com", "Wendy Reynolds");
-        User u3 = createUser("3", "4@gmail.com", "Melinda Gardner");
-        User u4 = createUser("4", "5@gmail.com", "Clara Martin");
-        User u5 = createUser("5", "6@gmail.com", "Austin Jimenez");
-        User u6 = createUser("6", "7@gmail.com", "Carter Gonzales");
-        User u7 = createUser("7", "8@gmail.com", "Edgar Davidson");
-        User u8 = createUser("8", "9@gmail.com", "Edward Daniels");
-        User u9 = createUser("9", "10@gmail.com", "Julia Kim");
-        User u10 = createUser("10", "11@gmail.com", "Test User 10");
+        User u1 = createUser("tobias", "tobias@mail.com", "Tobias Schulze");
+        User u2 = createUser("wendy", "wendy@mail.com", "Wendy Reynolds");
+        User u3 = createUser("melinda", "melinda@mail.com", "Melinda Gardner");
+        User u4 = createUser("clara", "clara@mail.com", "Clara Martin");
+        User u5 = createUser("austin", "austin@mail.com", "Austin Jimenez");
+        User u6 = createUser("carter", "carter@mail.com", "Carter Gonzales");
+        User u7 = createUser("edgar", "edgar@mail.com", "Edgar Davidson");
+        User u8 = createUser("edward", "edward@mail.com", "Edward Daniels");
+        User u9 = createUser("julia", "julia@mail.com", "Julia Kim");
         User arif = createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
