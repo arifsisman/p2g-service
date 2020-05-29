@@ -1,10 +1,9 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.GsonConfig;
 import vip.yazilim.p2g.web.entity.OAuthToken;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
@@ -33,25 +32,23 @@ import static vip.yazilim.p2g.web.service.p2g.impl.SongService.getCumulativePass
 @Service
 public class SpotifyPlayerService implements IPlayerService {
 
-    @Autowired
-    private ISpotifyTokenService tokenService;
+    private final ISpotifyTokenService tokenService;
+    private final ISpotifyRequestService spotifyRequest;
+    private final IUserDeviceService userDeviceService;
+    private final ISongService songService;
+    private final IRoomService roomService;
+    private final ISpotifyTokenService spotifyTokenService;
+    private final GsonConfig gsonConfig;
 
-    @Autowired
-    private ISpotifyRequestService spotifyRequest;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
-
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private ISpotifyTokenService spotifyTokenService;
-
-    private Gson gson = new GsonBuilder().create();
+    public SpotifyPlayerService(ISpotifyTokenService tokenService, ISpotifyRequestService spotifyRequest, IUserDeviceService userDeviceService, ISongService songService, @Lazy IRoomService roomService, ISpotifyTokenService spotifyTokenService, GsonConfig gsonConfig) {
+        this.tokenService = tokenService;
+        this.spotifyRequest = spotifyRequest;
+        this.userDeviceService = userDeviceService;
+        this.songService = songService;
+        this.roomService = roomService;
+        this.spotifyTokenService = spotifyTokenService;
+        this.gsonConfig = gsonConfig;
+    }
 
     ///////////////////////
     // Room Based
@@ -61,7 +58,7 @@ public class SpotifyPlayerService implements IPlayerService {
         Long roomId = song.getRoomId();
 
         // JsonArray with song, because uris needs JsonArray as input
-        JsonArray urisJson = gson.toJsonTree(Collections.singletonList("spotify:track:" + song.getSongId())).getAsJsonArray();
+        JsonArray urisJson = gsonConfig.getGson().toJsonTree(Collections.singletonList("spotify:track:" + song.getSongId())).getAsJsonArray();
 
         // Start playback
         spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
@@ -267,7 +264,7 @@ public class SpotifyPlayerService implements IPlayerService {
             String deviceId = userDeviceOpt.get().getId();
 
             List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
-            JsonArray urisJson = new GsonBuilder().create().toJsonTree(songList).getAsJsonArray();
+            JsonArray urisJson = gsonConfig.getGson().toJsonTree(songList).getAsJsonArray();
 
             spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(getCumulativePassedMs(song)).device_id(deviceId).build(), accessToken);
             return true;

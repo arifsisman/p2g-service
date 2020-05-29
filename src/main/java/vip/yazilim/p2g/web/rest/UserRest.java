@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
@@ -31,11 +30,13 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 @RequestMapping(API_P2G + "/user")
 public class UserRest {
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
+    private final IFriendRequestService friendRequestService;
 
-    @Autowired
-    private IFriendRequestService friendRequestService;
+    public UserRest(IUserService userService, IFriendRequestService friendRequestService) {
+        this.userService = userService;
+        this.friendRequestService = friendRequestService;
+    }
 
     @HasSystemRole(role = Role.P2G_USER)
     @GetMapping({"/{userId}"})

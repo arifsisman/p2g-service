@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vip.yazilim.libs.springcore.rest.model.RestResponse;
@@ -39,17 +38,17 @@ import static vip.yazilim.p2g.web.constant.Constants.API_P2G;
 @RequestMapping(API_P2G + "/room")
 public class RoomRest {
 
-    @Autowired
-    private IRoomService roomService;
+    private final IRoomService roomService;
+    private final IRoomUserService roomUserService;
+    private final ISongService songService;
+    private final IRoomInviteService roomInviteService;
 
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
+    public RoomRest(IRoomService roomService, IRoomUserService roomUserService, ISongService songService, IRoomInviteService roomInviteService) {
+        this.roomService = roomService;
+        this.roomUserService = roomUserService;
+        this.songService = songService;
+        this.roomInviteService = roomInviteService;
+    }
 
     @HasSystemRole(role = Role.P2G_USER)
     @PostMapping({"/create/{roomName}"})

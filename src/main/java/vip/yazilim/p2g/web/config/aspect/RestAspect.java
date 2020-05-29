@@ -5,7 +5,6 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import vip.yazilim.p2g.web.config.annotation.*;
 import vip.yazilim.p2g.web.controller.WebSocketController;
@@ -27,17 +26,17 @@ public class RestAspect {
 
     private static final String ASPECT_PACKAGE_PATTERN = "execution(* vip.yazilim.p2g.web.rest.*.*(..))";
 
-    @Autowired
-    private IRoomUserService roomUserService;
+    private final IRoomUserService roomUserService;
+    private final IUserService userService;
+    private final ISongService songService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private WebSocketController webSocketController;
+    public RestAspect(IRoomUserService roomUserService, IUserService userService, ISongService songService, WebSocketController webSocketController) {
+        this.roomUserService = roomUserService;
+        this.userService = userService;
+        this.songService = songService;
+        this.webSocketController = webSocketController;
+    }
 
     /**
      * to be executed before invoking methods which matches given pattern before

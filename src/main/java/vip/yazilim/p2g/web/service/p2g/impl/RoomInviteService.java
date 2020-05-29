@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -15,7 +15,6 @@ import vip.yazilim.p2g.web.model.RoomUserModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IRoomInviteRepo;
 import vip.yazilim.p2g.web.service.p2g.IRoomInviteService;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.IRoomUserService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
@@ -33,20 +32,17 @@ import java.util.Optional;
 @Service
 public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implements IRoomInviteService {
 
-    @Autowired
-    private IRoomInviteRepo roomInviteRepo;
+    private final IRoomInviteRepo roomInviteRepo;
+    private final IUserService userService;
+    private final IRoomUserService roomUserService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private WebSocketController webSocketController;
+    public RoomInviteService(IRoomInviteRepo roomInviteRepo, @Lazy IUserService userService, @Lazy IRoomUserService roomUserService, WebSocketController webSocketController) {
+        this.roomInviteRepo = roomInviteRepo;
+        this.userService = userService;
+        this.roomUserService = roomUserService;
+        this.webSocketController = webSocketController;
+    }
 
     @Override
     protected JpaRepository<RoomInvite, Long> getRepository() {

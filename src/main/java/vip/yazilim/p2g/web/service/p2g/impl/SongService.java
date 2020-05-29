@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -36,22 +36,21 @@ import java.util.stream.Collectors;
 @Service
 public class SongService extends ACrudServiceImpl<Song, Long> implements ISongService {
 
-    @Autowired
-    private ISongRepo songRepo;
+    private final Logger logger = LoggerFactory.getLogger(SongService.class);
 
-    @Autowired
-    private ISpotifySearchService spotifySearchService;
+    private final ISongRepo songRepo;
+    private final ISpotifySearchService spotifySearchService;
+    private final IRoomUserService roomUserService;
+    private final IPlayerService spotifyPlayerService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
-
-    @Autowired
-    private WebSocketController webSocketController;
-
-    private Logger LOGGER = LoggerFactory.getLogger(SongService.class);
+    public SongService(ISongRepo songRepo, @Lazy ISpotifySearchService spotifySearchService, IRoomUserService roomUserService, @Lazy IPlayerService spotifyPlayerService, WebSocketController webSocketController) {
+        this.songRepo = songRepo;
+        this.spotifySearchService = spotifySearchService;
+        this.roomUserService = roomUserService;
+        this.spotifyPlayerService = spotifyPlayerService;
+        this.webSocketController = webSocketController;
+    }
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -188,7 +187,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 try {
                     created = create(s);
                 } catch (Exception e) {
-                    LOGGER.warn("Song :: Create error from SearchModel");
+                    logger.warn("Song :: Create error from SearchModel");
                 }
 
                 if (created != null) {

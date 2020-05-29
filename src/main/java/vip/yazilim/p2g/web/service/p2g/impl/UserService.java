@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -31,17 +30,17 @@ import java.util.Optional;
 @Service
 public class UserService extends ACrudServiceImpl<User, String> implements IUserService {
 
-    @Autowired
-    private IUserRepo userRepo;
+    private final IUserRepo userRepo;
+    private final IRoomService roomService;
+    private final IRoomUserService roomUserService;
+    private final AAuthorityProvider authorityProvider;
 
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private AAuthorityProvider authorityProvider;
+    public UserService(IUserRepo userRepo, IRoomService roomService, IRoomUserService roomUserService, AAuthorityProvider authorityProvider) {
+        this.userRepo = userRepo;
+        this.roomService = roomService;
+        this.roomUserService = roomUserService;
+        this.authorityProvider = authorityProvider;
+    }
 
     @Override
     protected JpaRepository<User, String> getRepository() {
@@ -119,3 +118,4 @@ public class UserService extends ACrudServiceImpl<User, String> implements IUser
         return roomUserOpt.isPresent() && authorityProvider.hasPrivilege(roomUserOpt.get().getSystemRole(), privilege);
     }
 }
+

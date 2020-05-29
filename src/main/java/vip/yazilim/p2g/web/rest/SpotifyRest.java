@@ -4,7 +4,6 @@ import com.wrapper.spotify.enums.ProductType;
 import com.wrapper.spotify.model_objects.specification.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -42,34 +41,28 @@ import static vip.yazilim.p2g.web.constant.Constants.API_SPOTIFY;
 @RequestMapping(API_SPOTIFY)
 public class SpotifyRest {
 
-    private Logger LOGGER = LoggerFactory.getLogger(SpotifyRest.class);
+    private final ISpotifyTokenService tokenService;
+    private final IUserService userService;
+    private final ISpotifyUserService spotifyUserService;
+    private final IRoomUserService roomUserService;
+    private final IRoomService roomService;
+    private final IUserDeviceService userDeviceService;
+    private final OnlineStatusScheduler onlineStatusScheduler;
+    private final ISpotifySearchService spotifySearchService;
+    private final IPlayerService spotifyPlayerService;
+    private Logger logger = LoggerFactory.getLogger(SpotifyRest.class);
 
-    @Autowired
-    private ISpotifyTokenService tokenService;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private ISpotifyUserService spotifyUserService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
-
-    @Autowired
-    private OnlineStatusScheduler onlineStatusScheduler;
-
-    @Autowired
-    private ISpotifySearchService spotifySearchService;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
+    public SpotifyRest(ISpotifyTokenService tokenService, IUserService userService, ISpotifyUserService spotifyUserService, IRoomUserService roomUserService, IRoomService roomService, IUserDeviceService userDeviceService, OnlineStatusScheduler onlineStatusScheduler, ISpotifySearchService spotifySearchService, IPlayerService spotifyPlayerService) {
+        this.tokenService = tokenService;
+        this.userService = userService;
+        this.spotifyUserService = spotifyUserService;
+        this.roomUserService = roomUserService;
+        this.roomService = roomService;
+        this.userDeviceService = userDeviceService;
+        this.onlineStatusScheduler = onlineStatusScheduler;
+        this.spotifySearchService = spotifySearchService;
+        this.spotifyPlayerService = spotifyPlayerService;
+    }
 
     @GetMapping("/login")
     @Transactional
@@ -101,7 +94,7 @@ public class SpotifyRest {
             userService.update(user);
         }
 
-        LOGGER.info("[{}] :: Logged out", userId);
+        logger.info("[{}] :: Logged out", userId);
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
@@ -167,7 +160,7 @@ public class SpotifyRest {
         User savedUser = userService.save(user);
 
         goOfflineAfterOneHour(userId);
-        LOGGER.info("[{}] :: Logged in", userId);
+        logger.info("[{}] :: Logged in", userId);
 
         return savedUser;
     }
@@ -184,7 +177,7 @@ public class SpotifyRest {
                     if (ChronoUnit.MILLIS.between(user.getLastLogin(), TimeHelper.getLocalDateTimeNow()) >= delayMs) {
                         user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
                         userService.update(user);
-                        LOGGER.info("[{}] :: Logged out :: SYSTEM)", userId);
+                        logger.info("[{}] :: Logged out :: SYSTEM)", userId);
                     }
                 }), TimeHelper.getDatePostponed(delayMs), Long.MAX_VALUE);
     }

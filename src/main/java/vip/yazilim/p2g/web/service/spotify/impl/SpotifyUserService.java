@@ -1,12 +1,10 @@
 package vip.yazilim.p2g.web.service.spotify.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vip.yazilim.p2g.web.config.GsonConfig;
 import vip.yazilim.p2g.web.entity.UserDevice;
 import vip.yazilim.p2g.web.exception.SpotifyException;
 import vip.yazilim.p2g.web.service.spotify.ISpotifyRequestService;
@@ -24,25 +22,28 @@ import java.util.List;
 @Service
 public class SpotifyUserService implements ISpotifyUserService {
 
-    @Autowired
-    private ISpotifyRequestService spotifyRequest;
+    private final ISpotifyRequestService spotifyRequest;
+    private final GsonConfig gsonConfig;
 
-    private Gson gson = new GsonBuilder().create();
+    public SpotifyUserService(ISpotifyRequestService spotifyRequest, GsonConfig gsonConfig) {
+        this.spotifyRequest = spotifyRequest;
+        this.gsonConfig = gsonConfig;
+    }
 
     @Override
     public User getSpotifyUser(String userId) {
-        return spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getUsersProfile(userId).build(), SecurityHelper.getUserAccessToken());
+        return spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getUsersProfile(userId).build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
     public User getCurrentSpotifyUser() {
-        return spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getCurrentUsersProfile().build(), SecurityHelper.getUserAccessToken());
+        return spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getCurrentUsersProfile().build(), SecurityHelper.getUserAccessToken());
     }
 
     @Override
     public List<UserDevice> getUsersAvailableDevices(String userId) {
         List<UserDevice> userDeviceList = new LinkedList<>();
-        Device[] devices = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getUsersAvailableDevices().build(), SecurityHelper.getUserAccessToken());
+        Device[] devices = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getUsersAvailableDevices().build(), SecurityHelper.getUserAccessToken());
 
         if (devices.length == 0) {
             throw new SpotifyException("Can not found any active Spotify device, please start Spotify first.");
@@ -57,8 +58,8 @@ public class SpotifyUserService implements ISpotifyUserService {
 
     @Override
     public boolean transferUsersPlayback(UserDevice userDevice) {
-        JsonArray deviceJson = gson.toJsonTree(Collections.singletonList(userDevice.getId())).getAsJsonArray();
-        spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
+        JsonArray deviceJson = gsonConfig.getGson().toJsonTree(Collections.singletonList(userDevice.getId())).getAsJsonArray();
+        spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.transferUsersPlayback(deviceJson).build(), SecurityHelper.getUserAccessToken());
 
         return true;
     }

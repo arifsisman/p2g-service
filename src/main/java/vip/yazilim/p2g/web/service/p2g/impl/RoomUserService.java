@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.service.p2g.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -39,31 +39,27 @@ import java.util.Optional;
 @Service
 public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements IRoomUserService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(RoomUserService.class);
+    private final Logger logger = LoggerFactory.getLogger(RoomUserService.class);
 
-    @Autowired
-    private IRoomUserRepo roomUserRepo;
+    private final IRoomUserRepo roomUserRepo;
+    private final IRoomService roomService;
+    private final IRoomInviteService roomInviteService;
+    private final AAuthorityProvider authorityProvider;
+    private final PasswordEncoderConfig passwordEncoderConfig;
+    private final IPlayerService spotifyPlayerService;
+    private final IUserService userService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private AAuthorityProvider authorityProvider;
-
-    @Autowired
-    private PasswordEncoderConfig passwordEncoderConfig;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private WebSocketController webSocketController;
+    public RoomUserService(IRoomUserRepo roomUserRepo, @Lazy IRoomService roomService, IRoomInviteService roomInviteService, AAuthorityProvider authorityProvider, PasswordEncoderConfig passwordEncoderConfig, @Lazy IPlayerService spotifyPlayerService, @Lazy IUserService userService, WebSocketController webSocketController) {
+        this.roomUserRepo = roomUserRepo;
+        this.roomService = roomService;
+        this.roomInviteService = roomInviteService;
+        this.authorityProvider = authorityProvider;
+        this.passwordEncoderConfig = passwordEncoderConfig;
+        this.spotifyPlayerService = spotifyPlayerService;
+        this.userService = userService;
+        this.webSocketController = webSocketController;
+    }
 
     @Override
     protected JpaRepository<RoomUser, Long> getRepository() {
@@ -203,7 +199,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             roomUserModel.setRoomUser(joinedUser);
 
             webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
-            LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);
+            logger.info("[{}] :: Joined Room[{}]", userId, roomId);
 
             return roomUserModel;
         }
@@ -231,7 +227,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomUserOpt.get().getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
                 boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
-                    LOGGER.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
+                    logger.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
                 }
                 return status;
             } else {
@@ -241,7 +237,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 boolean status = delete(roomUser);
                 if (status) {
                     Long roomId = roomUser.getRoomId();
-                    LOGGER.info("[{}] :: Leaved Room[{}]", userId, roomId);
+                    logger.info("[{}] :: Leaved Room[{}]", userId, roomId);
                     webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
@@ -327,7 +323,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             RoomUser createdRoomUser = create(roomUser);
             roomInviteService.delete(roomInvite);
-            LOGGER.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
+            logger.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
 
             roomUserModel.setRoomUser(createdRoomUser);
 

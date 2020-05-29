@@ -33,7 +33,7 @@ import static org.springframework.http.HttpStatus.*;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionHandlerController {
 
-    private Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);
+    private Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<String> handleException(Exception e) {
@@ -180,17 +180,17 @@ public class ExceptionHandlerController {
     }
 
     private ResponseEntity<String> warn(HttpStatus status, Exception e) {
-        LOGGER.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        logger.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 
     private ResponseEntity<String> spotifyWarn(HttpStatus status, Exception e) {
-        LOGGER.warn("[{}] :: Spotify Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        logger.warn("[{}] :: Spotify Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 
     private ResponseEntity<String> error(HttpStatus status, Exception e) {
-        LOGGER.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        logger.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 

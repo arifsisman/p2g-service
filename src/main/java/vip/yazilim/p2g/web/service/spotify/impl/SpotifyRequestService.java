@@ -21,7 +21,7 @@ import java.util.function.Function;
 @Service
 public class SpotifyRequestService implements ISpotifyRequestService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(SpotifyRequestService.class);
+    private final Logger logger = LoggerFactory.getLogger(SpotifyRequestService.class);
 
     @Override
     public SpotifyApi initAuthorizedApi(String accessToken) {
@@ -71,7 +71,7 @@ public class SpotifyRequestService implements ISpotifyRequestService {
             try {
                 execRequest(r, async);
             } catch (Exception e) {
-                LOGGER.warn("Spotify Exception :: " + e.getMessage());
+                logger.warn("Spotify Exception :: " + e.getMessage());
             }
         }
     }
