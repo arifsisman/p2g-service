@@ -140,38 +140,26 @@ public class SpotifyPlayerService implements IPlayerService {
 
     @Override
     public boolean roomSeek(Long roomId, Integer ms) {
-        List<Song> songList = songService.getSongListByRoomId(roomId, false);
+        Optional<Song> recentOpt = songService.getRecentSong(roomId, false);
 
-        Optional<Song> playingOpt = songService.getPlayingSong(songList);
-        Optional<Song> pausedOpt = songService.getPausedSong(songList);
-        Optional<Song> nextOpt = songService.getNextSong(songList);
+        if (recentOpt.isPresent()) {
+            Song recent = recentOpt.get();
 
-        if (playingOpt.isPresent()) {
-            Song playing = playingOpt.get();
-            playing.setCurrentMs(ms);
-            playing.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            songService.update(playing);
+            if (recent.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+                recent.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+            } else if (recent.getSongStatus().equals(SongStatus.NEXT.getSongStatus())) {
+                recent.setPlayingTime(TimeHelper.getLocalDateTimeNow());
+                songService.updateSongStatus(recent, SongStatus.PAUSED);
+            }
 
+            recent.setCurrentMs(ms);
+            songService.update(recent);
             spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
-        } else if (pausedOpt.isPresent()) {
-            Song paused = pausedOpt.get();
-            paused.setCurrentMs(ms);
-            songService.update(paused);
 
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
-        } else if (nextOpt.isPresent()) {
-            Song next = nextOpt.get();
-            next.setCurrentMs(ms);
-            next.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            songService.updateSongStatus(next, SongStatus.PAUSED);
-            songService.update(next);
-
-            spotifyRequest.execRequestListAsync((spotifyApi, device) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(device).build(), spotifyTokenService.getRoomTokenDeviceMap(roomId));
+            return true;
         } else {
-            throw new NoSuchElementException("No playing or paused song found in the room");
+            throw new NoSuchElementException("No songs found in the room");
         }
-
-        return true;
     }
 
     @Override
@@ -234,9 +222,7 @@ public class SpotifyPlayerService implements IPlayerService {
             Optional<Song> playingOpt = songService.getPlayingSong(songList);
             Optional<Song> pausedOpt = songService.getPausedSong(songList);
 
-            playingOpt.map(song -> playUser(userId, song)).orElseGet(() -> pausedOpt.filter(song -> sync(userId, song)).isPresent());
-
-            return true;
+            return playingOpt.map(song -> playUser(userId, song)).orElseGet(() -> pausedOpt.filter(song -> sync(userId, song)).isPresent());
         } else {
             throw new NoSuchElementException("Room :: Not found");
         }
@@ -251,7 +237,7 @@ public class SpotifyPlayerService implements IPlayerService {
             String accessToken = token.get().getAccessToken();
             String deviceId = userDeviceOpt.get().getId();
 
-            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.pauseUsersPlayback().device_id(deviceId).build(), accessToken);
+            spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.pauseUsersPlayback().device_id(deviceId).build(), accessToken);
         }
     }
 
@@ -266,7 +252,7 @@ public class SpotifyPlayerService implements IPlayerService {
             List<String> songList = Collections.singletonList("spotify:track:" + song.getSongId());
             JsonArray urisJson = gsonConfig.getGson().toJsonTree(songList).getAsJsonArray();
 
-            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(getCumulativePassedMs(song)).device_id(deviceId).build(), accessToken);
+            spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.startResumeUsersPlayback().uris(urisJson).position_ms(getCumulativePassedMs(song)).device_id(deviceId).build(), accessToken);
             return true;
         }
 
@@ -282,7 +268,7 @@ public class SpotifyPlayerService implements IPlayerService {
             String deviceId = userDeviceOpt.get().getId();
 
             int ms = Math.toIntExact(song.getCurrentMs());
-            spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(deviceId).build(), accessToken);
+            spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.seekToPositionInCurrentlyPlayingTrack(ms).device_id(deviceId).build(), accessToken);
             return true;
         }
         return false;
