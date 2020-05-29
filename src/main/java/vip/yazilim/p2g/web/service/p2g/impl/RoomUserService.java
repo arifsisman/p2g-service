@@ -144,7 +144,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public Optional<RoomUser> getRoomOwner(Long roomId) {
         try {
-            return roomUserRepo.findRoomUserByRoomIdAndRoomRole(roomId, Role.ROOM_OWNER.role);
+            return roomUserRepo.findRoomUserByRoomIdAndRoomRole(roomId, Role.ROOM_OWNER.roleName);
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
@@ -186,7 +186,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (room.getPassword() == null || passwordEncoderConfig.passwordEncoder().matches(password, room.getPassword())) {
                 roomUser.setRoomId(roomId);
                 roomUser.setUserId(userId);
-                roomUser.setRoomRole(role.getRole());
+                roomUser.setRoomRole(role.getRoleName());
                 roomUser.setActiveFlag(true);
             } else {
                 throw new IllegalArgumentException("Wrong password");
@@ -211,7 +211,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         roomUser.setRoomId(roomId);
         roomUser.setUserId(userId);
-        roomUser.setRoomRole(Role.ROOM_OWNER.getRole());
+        roomUser.setRoomRole(Role.ROOM_OWNER.getRoleName());
         roomUser.setActiveFlag(true);
 
         return super.create(roomUser);
@@ -224,7 +224,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (roomUserOpt.isPresent()) {
             RoomUser roomUser = roomUserOpt.get();
-            if (roomUserOpt.get().getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
+            if (roomUserOpt.get().getRoomRole().equals(Role.ROOM_OWNER.getRoleName())) {
                 boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
                     logger.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
@@ -264,13 +264,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         roomUserModels.sort((o1, o2) -> {
-            if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_OWNER.role)) {
+            if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_OWNER.roleName)) {
                 return 3;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_ADMIN.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_ADMIN.roleName)) {
                 return 2;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_DJ.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_DJ.roleName)) {
                 return 1;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_USER.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_USER.roleName)) {
                 return 0;
             } else {
                 return o1.getRoomUser().getRoomRole().compareTo(o2.getRoomUser().getRoomRole());
@@ -318,7 +318,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             roomUser.setRoomId(roomInvite.getRoomId());
             roomUser.setUserId(roomInvite.getReceiverId());
-            roomUser.setRoomRole(Role.ROOM_USER.getRole());
+            roomUser.setRoomRole(Role.ROOM_USER.getRoleName());
             roomUser.setActiveFlag(true);
 
             RoomUser createdRoomUser = create(roomUser);
@@ -362,20 +362,20 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (changingUser.getUserId().equals(SecurityHelper.getUserId())) {
             throw new ConstraintViolationException("You can not change your own role.");
-        } else if (changingUser.getRoomRole().equals(Role.ROOM_OWNER.role)) {
-            throw new ConstraintViolationException(Role.ROOM_OWNER.role + " role can not changed.");
+        } else if (changingUser.getRoomRole().equals(Role.ROOM_OWNER.roleName)) {
+            throw new ConstraintViolationException(Role.ROOM_OWNER.roleName + " role can not changed.");
         } else if (changingUser.getRoomRole().equals(changer.getRoomRole())) {
             throw new ConstraintViolationException("You can not change the role of users who have the same role as you.");
         }
 
-        Role oldRole = Role.getRole(changingUser.getRoomRole());
+        Role oldRole = Role.valueOf(changingUser.getRoomRole());
 
-        if (oldRole.equals(Role.getRole(roleName))) {
+        if (oldRole.equals(Role.valueOf(roleName))) {
             return changingUser;
-        } else if (Role.getRole(roleName).equals(Role.ROOM_OWNER)) {
+        } else if (Role.valueOf(roleName).equals(Role.ROOM_OWNER)) {
             return changeRoomOwner(roomUserId);
         } else {
-            changingUser.setRoomRole(Role.getRole(roleName).getRole());
+            changingUser.setRoomRole(Role.valueOf(roleName).getRoleName());
             RoomUser updatedRoomUser = update(changingUser);
 
             String userName = SecurityHelper.getUserDisplayName();
@@ -399,8 +399,8 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomOpt.isPresent()) {
                 Room room = roomOpt.get();
 
-                oldRoomOwner.setRoomRole(Role.ROOM_ADMIN.getRole());
-                newRoomOwner.setRoomRole(Role.ROOM_OWNER.getRole());
+                oldRoomOwner.setRoomRole(Role.ROOM_ADMIN.getRoleName());
+                newRoomOwner.setRoomRole(Role.ROOM_OWNER.getRoleName());
                 room.setOwnerId(newRoomOwner.getUserId());
 
                 update(oldRoomOwner);
@@ -408,7 +408,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 roomService.update(room);
 
                 String userName = SecurityHelper.getUserDisplayName();
-                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.role;
+                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.roleName;
                 webSocketController.sendInfoToRoom(newRoomOwner.getRoomId(), infoMessage);
 
                 return newRoomOwner;
@@ -431,7 +431,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public boolean hasRoomRole(String userId, Role role) {
         Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
-        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoomRole()));
+        return roomUserOpt.isPresent() && role.equals(Role.valueOf(roomUserOpt.get().getRoomRole()));
     }
 
     @Override

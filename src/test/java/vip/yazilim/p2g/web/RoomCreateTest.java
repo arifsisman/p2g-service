@@ -57,12 +57,11 @@ public class RoomCreateTest {
         Assertions.assertThat(room).isSameAs(roomFromService);
     }
 
-    /**
-     * Test Case -> First create room for user, then create another room for user without leaving the current room.
-     * Check whether the user leaved the room on roomUserService.leaveRoom() triggered.
-     */
-    @Test
-    public void case2_userAlreadyCreatedRoom() {
-//        Mockito.when(roomUserService.leaveRoom()).thenReturn(true);
-    }
+//    /**
+//     * Test Case -> First create room for user, then create another room for user without leaving the current room.
+//     * Check whether the user leaved the room on roomUserService.leaveRoom() triggered.
+//     */
+//    @Test
+//    public void case2_userAlreadyCreatedRoom() {
+//    }
 }

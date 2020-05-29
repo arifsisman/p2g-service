@@ -76,7 +76,7 @@ public class SpotifyRest {
         } else {
             User newUser = new User();
             newUser.setCreationDate(TimeHelper.getLocalDateTimeNow());
-            newUser.setSystemRole(Role.P2G_USER.getRole());
+            newUser.setSystemRole(Role.P2G_USER.getRoleName());
             return RestResponse.generateResponse(saveUser(spotifyUser, newUser), HttpStatus.OK, request, response);
         }
     }
@@ -90,7 +90,7 @@ public class SpotifyRest {
         Optional<User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+            user.setOnlineStatus(OnlineStatus.OFFLINE.name());
             userService.update(user);
         }
 
@@ -129,7 +129,7 @@ public class SpotifyRest {
         user.setName(spotifyUser.getDisplayName());
         user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
-        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
+        user.setOnlineStatus(OnlineStatus.ONLINE.name());
         user.setLastLogin(TimeHelper.getLocalDateTimeNow());
 
         Image[] images = spotifyUser.getImages();
@@ -138,7 +138,7 @@ public class SpotifyRest {
         }
 
         // delete old or inactive device if present
-        userDeviceService.getUsersActiveDevice(userId).ifPresent(userDevice -> userDeviceService.delete(userDevice));
+        userDeviceService.getUsersActiveDevice(userId).ifPresent(userDeviceService::delete);
 
         List<UserDevice> userDeviceList = spotifyUserService.getUsersAvailableDevices(userId);
         boolean userDeviceCreated = false;
@@ -175,7 +175,7 @@ public class SpotifyRest {
         onlineStatusScheduler.getScheduler()
                 .scheduleWithFixedDelay(() -> userService.getById(userId).ifPresent(user -> {
                     if (ChronoUnit.MILLIS.between(user.getLastLogin(), TimeHelper.getLocalDateTimeNow()) >= delayMs) {
-                        user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+                        user.setOnlineStatus(OnlineStatus.OFFLINE.name());
                         userService.update(user);
                         logger.info("[{}] :: Logged out :: SYSTEM)", userId);
                     }

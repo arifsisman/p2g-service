@@ -97,14 +97,14 @@ public class DataInitializer {
         u8.setImageUrl("https://randomuser.me/api/portraits/women/82.jpg");
         userService.update(u8);
 
-        u3.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
+        u3.setOnlineStatus(OnlineStatus.AWAY.name());
         u3.setCountryCode("TR");
         userService.update(u3);
 
-        u4.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
+        u4.setOnlineStatus(OnlineStatus.OFFLINE.name());
         userService.update(u4);
 
-        emre.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
+        emre.setOnlineStatus(OnlineStatus.AWAY.name());
         userService.update(emre);
 
         createRoomInvite(u1, arif, testRoom2);
@@ -129,10 +129,10 @@ public class DataInitializer {
         RoomUser r3u8 = r3u8UserModel.getRoomUser();
         RoomUser r3u5 = r3u5UserModel.getRoomUser();
 
-        r3u8.setRoomRole(Role.ROOM_ADMIN.role);
+        r3u8.setRoomRole(Role.ROOM_ADMIN.roleName);
         roomUserService.update(r3u8);
 
-        r3u5.setRoomRole(Role.ROOM_DJ.role);
+        r3u5.setRoomRole(Role.ROOM_DJ.roleName);
         roomUserService.update(r3u5);
     }
 
@@ -149,7 +149,7 @@ public class DataInitializer {
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setSenderId(sender.getId());
         friendRequest.setReceiverId(receiver.getId());
-        friendRequest.setRequestStatus(status.getFriendRequestStatus());
+        friendRequest.setRequestStatus(status.name());
         friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
         friendRequestService.create(friendRequest);
     }
@@ -165,11 +165,11 @@ public class DataInitializer {
         song.setCurrentMs(0);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
-        song.setSongStatus(songStatus.getSongStatus());
+        song.setSongStatus(songStatus.name());
         song.setVotes(votes);
         song.setImageUrl(imageUrl);
 
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+        if (songStatus.equals(SongStatus.PLAYING)) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         }
 

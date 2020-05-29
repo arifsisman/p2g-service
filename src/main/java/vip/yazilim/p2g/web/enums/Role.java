@@ -1,7 +1,5 @@
 package vip.yazilim.p2g.web.enums;
 
-import java.util.HashMap;
-
 public enum Role {
     UNDEFINED("Undefined"),
     P2G_USER("P2G_User"),
@@ -10,25 +8,14 @@ public enum Role {
     ROOM_ADMIN("Admin"),
     ROOM_OWNER("Owner");
 
-    private static final HashMap<String, Role> map = new HashMap<>();
-    public final String role;
+    public final String roleName;
 
-    Role(String role) {
-        this.role = role;
+    Role(String roleName) {
+        this.roleName = roleName;
     }
 
-    public static Role getRole(String role) {
-        return map.get(role);
-    }
-
-    public String getRole() {
-        return this.role;
-    }
-
-    static {
-        for (Role role : values()) {
-            map.put(role.role, role);
-        }
+    public String getRoleName() {
+        return this.roleName;
     }
 }
 

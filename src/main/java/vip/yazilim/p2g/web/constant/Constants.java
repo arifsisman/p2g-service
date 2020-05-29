@@ -1,6 +1,12 @@
 package vip.yazilim.p2g.web.constant;
 
-public class Constants {
+public final class Constants {
+
+    /**
+     * Utility class
+     */
+    private Constants() {
+    }
 
     public static final String API = "/api";
     public static final String API_P2G = API;

@@ -125,7 +125,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
 
             RoomInviteModel roomInviteModel = new RoomInviteModel(createdRoomInvite, inviterModel);
 
-            webSocketController.sendToUser(WebSocketDestinations.USER_INVITE.getDestination(), userId, roomInviteModel);
+            webSocketController.sendToUser(WebSocketDestinations.INVITES.toString(), userId, roomInviteModel);
             return createdRoomInvite;
         }
     }
@@ -158,7 +158,7 @@ public class RoomInviteService extends ACrudServiceImpl<RoomInvite, Long> implem
     }
 
     @Override
-    public boolean existsById(Long roomInviteId) throws DatabaseReadException {
+    public boolean existsById(Long roomInviteId) {
         try {
             return roomInviteRepo.existsById(roomInviteId);
         } catch (Exception exception) {

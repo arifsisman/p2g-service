@@ -85,6 +85,6 @@ public class Song implements Serializable {
         this.setDurationMs(searchModel.getDurationMs());
         this.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         this.setVotes(0);
-        this.setSongStatus(SongStatus.NEXT.getSongStatus());
+        this.setSongStatus(SongStatus.NEXT.name());
     }
 }

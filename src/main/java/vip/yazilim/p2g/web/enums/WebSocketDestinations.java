@@ -5,15 +5,10 @@ package vip.yazilim.p2g.web.enums;
  * @contact mustafaarifsisman@gmail.com
  */
 public enum WebSocketDestinations {
-    USER_INVITE("invites");
+    INVITES;
 
-    private final String destination;
-
-    WebSocketDestinations(String destination) {
-        this.destination = destination;
-    }
-
-    public String getDestination() {
-        return this.destination;
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
 }

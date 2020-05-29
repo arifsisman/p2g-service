@@ -77,7 +77,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             if (includePlayedSongs) {
                 return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
             } else {
-                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
+                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.name());
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
@@ -93,7 +93,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
         try {
-            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
+            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.name())).findFirst();
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
         }
@@ -106,7 +106,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getPlayingSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.name())).findFirst();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getPausedSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.name())).findFirst();
     }
 
     @Override
@@ -126,12 +126,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getNextSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.getSongStatus())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.name())).findFirst();
     }
 
     @Override
     public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
-        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.getSongStatus());
+        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.name());
     }
 
     @Override
@@ -271,22 +271,22 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public void updateSongStatus(Song song, SongStatus songStatus) {
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+        if (songStatus.equals(SongStatus.PLAYING)) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+        } else if (songStatus.equals(SongStatus.PAUSED)) {
             song.setCurrentMs(getCumulativePassedMs(song));
-        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
+        } else if (songStatus.equals(SongStatus.PLAYED)) {
             song.setCurrentMs(0);
         }
 
-        song.setSongStatus(songStatus.getSongStatus());
+        song.setSongStatus(songStatus.name());
         update(song);
     }
 
     @Override
     public List<Song> getActiveSongs() {
         try {
-            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
+            return songRepo.findBySongStatus(SongStatus.PLAYING.name());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception);
         }

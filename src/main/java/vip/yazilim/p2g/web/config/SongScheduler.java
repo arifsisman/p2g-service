@@ -61,7 +61,7 @@ public class SongScheduler {
                     if (userOpt.isPresent()) {
                         User owner = userOpt.get();
 
-                        if (owner.getOnlineStatus().equals(OnlineStatus.OFFLINE.getOnlineStatus())) {
+                        if (owner.getOnlineStatus().equals(OnlineStatus.OFFLINE.name())) {
                             roomService.deleteById(roomId);
                         } else {
                             logger.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
