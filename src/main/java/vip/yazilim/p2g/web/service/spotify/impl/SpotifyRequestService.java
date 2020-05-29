@@ -34,6 +34,13 @@ public class SpotifyRequestService implements ISpotifyRequestService {
     // Token
     //////////////////////////////////////////
 
+    /**
+     * @param dataRequestBuilder dataRequestBuilder
+     * @param accessToken        accessToken
+     * @param <R>                Generic object type
+     * @return Generic object
+     * Use execRequestAsync
+     */
     //------------------------------------------------------
     @Override
     @Deprecated
@@ -48,6 +55,12 @@ public class SpotifyRequestService implements ISpotifyRequestService {
         return execRequest(dataRequestBuilder.apply(spotifyApi), true);
     }
 
+    /**
+     * @param dataRequestBuilder dataRequestBuilder
+     * @param tokenDeviceMap     tokenDeviceMap of the room
+     * @param <R>                Generic object
+     *                           Use execRequestListAsync
+     */
     //------------------------------------------------------
     @Override
     @Deprecated

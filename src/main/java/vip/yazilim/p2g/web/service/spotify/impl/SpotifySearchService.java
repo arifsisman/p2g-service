@@ -96,9 +96,9 @@ public class SpotifySearchService implements ISpotifySearchService {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         String accessToken = SecurityHelper.getUserAccessToken();
-        Album album = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
+        Album album = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getAlbum(albumId).build(), accessToken);
 
-        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
+        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
         TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 
         String imageUrl = null;
@@ -126,7 +126,6 @@ public class SpotifySearchService implements ISpotifySearchService {
 
         for (PlaylistTrack p : playlistTracks) {
             SearchModel searchModel = new SearchModel(p);
-            //TODO: searchModel albumName changed to playlistName
             searchModel.setAlbumName(playlist.getName());
             searchModelList.add(searchModel);
         }

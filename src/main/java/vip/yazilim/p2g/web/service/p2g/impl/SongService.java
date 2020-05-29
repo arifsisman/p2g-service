@@ -91,7 +91,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
      * @throws DatabaseReadException DatabaseReadException
      */
     @Override
-    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
+    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) {
         try {
             return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.name())).findFirst();
         } catch (Exception exception) {
@@ -100,7 +100,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPlayingSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
     }
 
@@ -110,7 +110,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPausedSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
@@ -120,7 +120,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getNextSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }
 
@@ -130,7 +130,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPreviousSong(Long roomId) {
         return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.name());
     }
 

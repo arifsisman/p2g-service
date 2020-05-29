@@ -435,7 +435,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     }
 
     @Override
-    public int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException {
+    public int getRoomUserCountByRoomId(Long roomId) {
         try {
             return roomUserRepo.countRoomUsersByRoomId(roomId);
         } catch (Exception exception) {
@@ -458,27 +458,5 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
         roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
         webSocketController.sendToRoom("users", roomId, roomUserModels);
-    }
-
-    private Role getNewRole(Role oldRole, boolean promoteFlag) {
-        switch (oldRole) {
-            case ROOM_USER:
-                if (promoteFlag)
-                    return Role.ROOM_DJ;
-                else
-                    return Role.ROOM_USER;
-            case ROOM_DJ:
-                if (promoteFlag)
-                    return Role.ROOM_ADMIN;
-                else
-                    return Role.ROOM_USER;
-            case ROOM_ADMIN:
-                if (promoteFlag)
-                    return Role.ROOM_ADMIN;
-                else
-                    return Role.ROOM_DJ;
-            default:
-                return oldRole;
-        }
     }
 }
