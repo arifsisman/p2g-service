@@ -151,9 +151,9 @@ public class SpotifyPlayerService implements IPlayerService {
         if (recentOpt.isPresent()) {
             Song recent = recentOpt.get();
 
-            if (SongStatus.valueOf(recent.getSongStatus()).equals(SongStatus.PLAYING)) {
+            if (recent.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
                 recent.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-            } else if (SongStatus.valueOf(recent.getSongStatus()).equals(SongStatus.NEXT)) {
+            } else if (recent.getSongStatus().equals(SongStatus.NEXT.getSongStatus())) {
                 recent.setPlayingTime(TimeHelper.getLocalDateTimeNow());
                 songService.updateSongStatus(recent, SongStatus.PAUSED);
             }

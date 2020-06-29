@@ -75,7 +75,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             if (includePlayedSongs) {
                 return songRepo.findByRoomIdOrderByVotesDescQueuedTime(roomId);
             } else {
-                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.name());
+                return songRepo.findByRoomIdAndSongStatusNotOrderBySongStatusDescVotesDescQueuedTime(roomId, SongStatus.PLAYED.getSongStatus());
             }
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
@@ -91,7 +91,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     @Override
     public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) {
         try {
-            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.name())).findFirst();
+            return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId, songStatus);
         }
@@ -104,7 +104,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getPlayingSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.name())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())).findFirst();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getPausedSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.name())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())).findFirst();
     }
 
     @Override
@@ -124,12 +124,12 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public Optional<Song> getNextSong(List<Song> songList) {
-        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.name())).findFirst();
+        return songList.stream().filter(song -> song.getSongStatus().equals(SongStatus.NEXT.getSongStatus())).findFirst();
     }
 
     @Override
     public Optional<Song> getPreviousSong(Long roomId) {
-        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.name());
+        return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.getSongStatus());
     }
 
     @Override
@@ -277,14 +277,14 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
             song.setCurrentMs(0);
         }
 
-        song.setSongStatus(songStatus.name());
+        song.setSongStatus(songStatus.getSongStatus());
         update(song);
     }
 
     @Override
     public List<Song> getActiveSongs() {
         try {
-            return songRepo.findBySongStatus(SongStatus.PLAYING.name());
+            return songRepo.findBySongStatus(SongStatus.PLAYING.getSongStatus());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception);
         }

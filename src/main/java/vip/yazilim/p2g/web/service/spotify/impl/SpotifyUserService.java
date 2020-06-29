@@ -107,7 +107,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         } else {
             vip.yazilim.p2g.web.entity.User newUser = new vip.yazilim.p2g.web.entity.User();
             newUser.setCreationDate(TimeHelper.getLocalDateTimeNow());
-            newUser.setSystemRole(Role.P2G_USER.getRoleName());
+            newUser.setSystemRole(Role.P2G_USER.getRole());
             return saveUser(spotifyUser, newUser);
         }
     }
@@ -120,7 +120,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         Optional<vip.yazilim.p2g.web.entity.User> userOpt = userService.getById(userId);
         if (userOpt.isPresent()) {
             vip.yazilim.p2g.web.entity.User user = userOpt.get();
-            user.setOnlineStatus(OnlineStatus.OFFLINE.name());
+            user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
             userService.update(user);
         }
 
@@ -154,7 +154,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         user.setName(spotifyUser.getDisplayName());
         user.setEmail(spotifyUser.getEmail());
         user.setCountryCode(spotifyUser.getCountry().name());
-        user.setOnlineStatus(OnlineStatus.ONLINE.name());
+        user.setOnlineStatus(OnlineStatus.ONLINE.getOnlineStatus());
         user.setLastLogin(TimeHelper.getLocalDateTimeNow());
 
         Image[] images = spotifyUser.getImages();
@@ -169,7 +169,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         boolean userDeviceCreated = false;
 
         for (UserDevice userDevice : userDeviceList) {
-            if (userDevice.getActiveFlag()) {
+            if (userDevice.getActiveFlag() != null && userDevice.getActiveFlag()) {
                 userDeviceService.create(userDevice);
                 userDeviceCreated = true;
             }
@@ -212,7 +212,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         onlineStatusScheduler.getScheduler()
                 .scheduleWithFixedDelay(() -> userService.getById(userId).ifPresent(user -> {
                     if (ChronoUnit.MILLIS.between(user.getLastLogin(), TimeHelper.getLocalDateTimeNow()) >= delayMs) {
-                        user.setOnlineStatus(OnlineStatus.OFFLINE.name());
+                        user.setOnlineStatus(OnlineStatus.OFFLINE.getOnlineStatus());
                         userService.update(user);
                         log.info("[{}] :: Logged out :: SYSTEM)", userId);
                     }

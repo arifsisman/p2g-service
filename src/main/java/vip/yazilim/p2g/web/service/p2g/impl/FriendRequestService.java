@@ -65,7 +65,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         for (FriendRequest fr : friendRequestList) {
-            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.name())) {
+            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                 String senderId = fr.getSenderId();
                 String receiverId = fr.getReceiverId();
 
@@ -91,7 +91,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         }
 
         for (FriendRequest fr : friendRequestList) {
-            if (FriendRequestStatus.valueOf(fr.getRequestStatus()).equals(FriendRequestStatus.ACCEPTED)) {
+            if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                 Optional<User> userOpt;
                 String senderId = fr.getSenderId();
                 String receiverId = fr.getReceiverId();
@@ -112,7 +112,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         try {
             List<FriendRequest> friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);
             for (FriendRequest fr : friendRequestList) {
-                if (FriendRequestStatus.valueOf(fr.getRequestStatus()).equals(FriendRequestStatus.ACCEPTED)) {
+                if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
                     count++;
                 }
             }
@@ -126,7 +126,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public List<FriendRequest> getFriendRequestsByReceiverId(String userId) {
         try {
-            return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.name());
+            return friendRequestRepo.findByReceiverIdAndRequestStatusNot(userId, FriendRequestStatus.ACCEPTED.getFriendRequestStatus());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, userId);
         }
@@ -166,7 +166,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     @Override
     public Optional<FriendRequest> getFriendRequestBySenderIdAndReceiverIdAndRequestStatus(String senderId, String receiverId, FriendRequestStatus requestStatus) {
         try {
-            return friendRequestRepo.findBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, requestStatus.name());
+            return friendRequestRepo.findBySenderIdAndReceiverIdAndRequestStatus(senderId, receiverId, requestStatus.getFriendRequestStatus());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, senderId, receiverId);
         }
@@ -187,7 +187,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
             friendRequest.setSenderId(senderId);
             friendRequest.setReceiverId(receiverId);
-            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.name());
+            friendRequest.setRequestStatus(FriendRequestStatus.WAITING.getFriendRequestStatus());
             friendRequest.setRequestDate(TimeHelper.getLocalDateTimeNow());
 
             create(friendRequest);
@@ -238,7 +238,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
         FriendRequest friendRequest = getById(friendRequestId).orElseThrow(() -> new NoSuchElementException("Friend request can not found"));
 
         if (status == FriendRequestStatus.ACCEPTED) {
-            friendRequest.setRequestStatus(status.name());
+            friendRequest.setRequestStatus(status.getFriendRequestStatus());
             update(friendRequest);
         } else {
             delete(friendRequest);
