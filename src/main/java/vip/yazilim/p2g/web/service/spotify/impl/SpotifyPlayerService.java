@@ -191,7 +191,7 @@ public class SpotifyPlayerService implements IPlayerService {
 
     private boolean roomRepeatHelper(Long roomId, Song song) {
         String repeatMode;
-        boolean repeatFlag = song.isRepeatFlag();
+        boolean repeatFlag = song.getRepeatFlag();
 
         if (!repeatFlag) {
             repeatMode = SearchType.SONG.getType();

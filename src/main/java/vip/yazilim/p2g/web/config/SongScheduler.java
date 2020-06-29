@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vip.yazilim.p2g.web.controller.WebSocketController;
 import vip.yazilim.p2g.web.entity.Song;
-import vip.yazilim.p2g.web.entity.User;
-import vip.yazilim.p2g.web.enums.OnlineStatus;
 import vip.yazilim.p2g.web.enums.SongStatus;
 import vip.yazilim.p2g.web.service.p2g.IRoomService;
 import vip.yazilim.p2g.web.service.p2g.ISongService;
@@ -36,6 +34,8 @@ public class SongScheduler {
     private final IPlayerService spotifyPlayerService;
     private final WebSocketController webSocketController;
 
+    private static final int DELAY_MS = 240 * 60 * 1000;
+
     public SongScheduler(ISongService songService, IRoomService roomService, IPlayerService spotifyPlayerService, WebSocketController webSocketController) {
         this.songService = songService;
         this.roomService = roomService;
@@ -55,19 +55,15 @@ public class SongScheduler {
                     spotifyPlayerService.roomNext(nextOpt.get());
                     webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId, false));
                 } else {
-                    Optional<User> userOpt = roomService.getRoomOwner(roomId);
+                    log.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
+                    songService.updateSongStatus(song, SongStatus.PLAYED);
+                    webSocketController.sendToRoom("songs", roomId, emptySongList);
 
-                    if (userOpt.isPresent()) {
-                        User owner = userOpt.get();
-
-                        if (owner.getOnlineStatus().equals(OnlineStatus.OFFLINE.name())) {
-                            roomService.deleteById(roomId);
-                        } else {
-                            log.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
-                            songService.updateSongStatus(song, SongStatus.PLAYED);
-                            webSocketController.sendToRoom("songs", roomId, emptySongList);
-                        }
-                    }
+//                    roomService.getById(roomId).ifPresent(room -> {
+//                        if(ChronoUnit.MILLIS.between(room.getCreationDate(), TimeHelper.getLocalDateTimeNow()) >= DELAY_MS){
+//                            roomService.deleteById(roomId);
+//                        }
+//                    });
                 }
             }
         }

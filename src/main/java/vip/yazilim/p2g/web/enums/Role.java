@@ -2,7 +2,7 @@ package vip.yazilim.p2g.web.enums;
 
 public enum Role {
     UNDEFINED("Undefined"),
-    P2G_USER("P2G_User"),
+    P2G_USER("P2G_USER"),
     ROOM_USER("User"),
     ROOM_DJ("DJ"),
     ROOM_ADMIN("Admin"),

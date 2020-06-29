@@ -169,7 +169,7 @@ public class SpotifyUserService implements ISpotifyUserService {
         boolean userDeviceCreated = false;
 
         for (UserDevice userDevice : userDeviceList) {
-            if (userDevice.isActiveFlag()) {
+            if (userDevice.getActiveFlag()) {
                 userDeviceService.create(userDevice);
                 userDeviceCreated = true;
             }

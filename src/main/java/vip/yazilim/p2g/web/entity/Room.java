@@ -28,14 +28,14 @@ public class Room implements Serializable {
     private LocalDateTime creationDate;
 
     @Column(name = "private_flag", nullable = false)
-    private boolean privateFlag;
+    private Boolean privateFlag;
 
     @Column(length = 60)
     private String password;
 
     @Column(name = "max_users", nullable = false)
-    private int maxUsers;
+    private Integer maxUsers;
 
     @Column(name = "active_flag", nullable = false)
-    private boolean activeFlag;
+    private Boolean activeFlag;
 }
