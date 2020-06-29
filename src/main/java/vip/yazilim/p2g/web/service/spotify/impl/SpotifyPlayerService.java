@@ -40,7 +40,13 @@ public class SpotifyPlayerService implements IPlayerService {
     private final ISpotifyTokenService spotifyTokenService;
     private final GsonConfig gsonConfig;
 
-    public SpotifyPlayerService(ISpotifyTokenService tokenService, ISpotifyRequestService spotifyRequest, IUserDeviceService userDeviceService, ISongService songService, @Lazy IRoomService roomService, ISpotifyTokenService spotifyTokenService, GsonConfig gsonConfig) {
+    public SpotifyPlayerService(ISpotifyTokenService tokenService,
+                                ISpotifyRequestService spotifyRequest,
+                                IUserDeviceService userDeviceService,
+                                ISongService songService,
+                                @Lazy IRoomService roomService,
+                                ISpotifyTokenService spotifyTokenService,
+                                GsonConfig gsonConfig) {
         this.tokenService = tokenService;
         this.spotifyRequest = spotifyRequest;
         this.userDeviceService = userDeviceService;
@@ -139,7 +145,7 @@ public class SpotifyPlayerService implements IPlayerService {
     }
 
     @Override
-    public boolean roomSeek(Long roomId, Integer ms) {
+    public boolean roomSeek(Long roomId, int ms) {
         Optional<Song> recentOpt = songService.getRecentSong(roomId, false);
 
         if (recentOpt.isPresent()) {
@@ -185,9 +191,9 @@ public class SpotifyPlayerService implements IPlayerService {
 
     private boolean roomRepeatHelper(Long roomId, Song song) {
         String repeatMode;
-        Boolean repeatFlag = song.getRepeatFlag();
+        boolean repeatFlag = song.isRepeatFlag();
 
-        if (repeatFlag == null || !repeatFlag) {
+        if (!repeatFlag) {
             repeatMode = SearchType.SONG.getType();
             repeatFlag = true;
         } else {

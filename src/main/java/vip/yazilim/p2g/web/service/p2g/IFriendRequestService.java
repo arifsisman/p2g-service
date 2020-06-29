@@ -23,7 +23,7 @@ public interface IFriendRequestService extends ICrudService<FriendRequest, Long>
 
     List<User> getFriendsByUserId(String userId);
 
-    Integer getFriendsCountByUserId(String userId);
+    int getFriendsCountByUserId(String userId);
 
     List<FriendRequestModel> getFriendRequestModelByReceiverId(String userId);
 

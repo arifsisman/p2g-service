@@ -31,6 +31,6 @@ public class UserDevice {
     private String deviceType;
 
     @Column(name = "active_flag", nullable = false)
-    private Boolean activeFlag;
+    private boolean activeFlag;
 
 }

@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -32,10 +31,9 @@ import java.util.stream.Collectors;
  *
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Service
 public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
-
-    private final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
     private final IRoomRepo roomRepo;
     private final IRoomUserService roomUserService;
@@ -176,7 +174,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             Room createdRoom = create(room);
             RoomUser joinedRoomOwner = roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
 
-            logger.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
+            log.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
 
             roomUserModel.setRoom(createdRoom);
             roomUserModel.setRoomUser(joinedRoomOwner);
@@ -220,10 +218,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public boolean deleteById(Long roomId) {
+
         try {
             spotifyPlayerService.roomStop(roomId);
         } catch (Exception e) {
-            logger.warn("Room[{}] :: An error occurred when stopping playback", roomId);
+            log.warn("Room[{}] :: An error occurred when stopping playback", roomId);
         }
 
         // Delete roomUsers

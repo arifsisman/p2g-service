@@ -23,7 +23,7 @@ public class SearchModel implements Serializable {
     private String albumName;
     private String id;
     private String uri;
-    private Integer durationMs;
+    private int durationMs;
     private String imageUrl;
 
     public SearchModel(AbstractModelObject object) {

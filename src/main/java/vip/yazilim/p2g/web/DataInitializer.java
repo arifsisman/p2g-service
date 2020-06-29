@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.entity.*;
@@ -18,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Component
 @ConditionalOnProperty(value = "DATA_INIT_FLAG", havingValue = "true")
 public class DataInitializer {
@@ -28,7 +28,6 @@ public class DataInitializer {
     private final IRoomInviteService roomInviteService;
     private final FriendRequestService friendRequestService;
     private final ISongService songService;
-    private Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     public DataInitializer(IUserService userService, IRoomService roomService, IRoomUserService roomUserService, IRoomInviteService roomInviteService, FriendRequestService friendRequestService, ISongService songService) {
         this.userService = userService;
@@ -154,7 +153,7 @@ public class DataInitializer {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, int votes, String imageUrl, SongStatus songStatus) {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, int durationMs, int votes, String imageUrl, SongStatus songStatus) {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
@@ -175,7 +174,7 @@ public class DataInitializer {
 
         song = songService.create(song);
 
-        logger.info("songId: {} - songName: {}", song.getId(), songName);
+        log.info("songId: {} - songName: {}", song.getId(), songName);
 
         return song;
     }

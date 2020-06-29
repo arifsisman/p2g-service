@@ -13,8 +13,14 @@ public interface ISpotifyUserService {
     User getCurrentSpotifyUser();
 
     User getSpotifyUser(String spotifyAccountId);
+
     List<UserDevice> getUsersAvailableDevices(String userId);
 
-    boolean transferUsersPlayback(UserDevice userDevice);
+    void transferUsersPlayback(UserDevice userDevice);
 
+    vip.yazilim.p2g.web.entity.User login();
+
+    boolean logout();
+
+    vip.yazilim.p2g.web.entity.User saveUser(User spotifyUser, vip.yazilim.p2g.web.entity.User user);
 }

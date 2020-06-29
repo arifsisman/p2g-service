@@ -37,7 +37,7 @@ public class RoomUser implements Serializable {
     private LocalDateTime joinDate;
 
     @Column(name = "active_flag", nullable = false)
-    private Boolean activeFlag;
+    private boolean activeFlag;
 
     public RoomUser(boolean isSystem) {
         this.setId(-1L);

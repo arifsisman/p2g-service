@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -33,10 +32,9 @@ import java.util.stream.Collectors;
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Service
 public class SongService extends ACrudServiceImpl<Song, Long> implements ISongService {
-
-    private final Logger logger = LoggerFactory.getLogger(SongService.class);
 
     private final ISongRepo songRepo;
     private final ISpotifySearchService spotifySearchService;
@@ -187,7 +185,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 try {
                     created = create(s);
                 } catch (Exception e) {
-                    logger.warn("Song :: Create error from SearchModel");
+                    log.warn("Song :: Create error from SearchModel");
                 }
 
                 if (created != null) {

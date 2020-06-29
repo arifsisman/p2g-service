@@ -18,7 +18,7 @@ public interface IPlayerService {
 
     boolean roomPrevious(Long roomId);
 
-    boolean roomSeek(Long roomId, Integer ms);
+    boolean roomSeek(Long roomId, int ms);
 
     boolean roomRepeat(Long roomId);
 

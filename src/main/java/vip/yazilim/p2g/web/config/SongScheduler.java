@@ -1,7 +1,6 @@
 package vip.yazilim.p2g.web.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,17 +24,17 @@ import java.util.Optional;
  * @author mustafaarifsisman - 09.04.2020
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @EnableScheduling
 @Component
 @Transactional
 public class SongScheduler {
 
     private final ISongService songService;
-    private LinkedList<Song> emptySongList = new LinkedList<>();
+    private final LinkedList<Song> emptySongList = new LinkedList<>();
     private final IRoomService roomService;
     private final IPlayerService spotifyPlayerService;
     private final WebSocketController webSocketController;
-    private Logger logger = LoggerFactory.getLogger(SongScheduler.class);
 
     public SongScheduler(ISongService songService, IRoomService roomService, IPlayerService spotifyPlayerService, WebSocketController webSocketController) {
         this.songService = songService;
@@ -52,7 +51,7 @@ public class SongScheduler {
                 Long roomId = song.getRoomId();
                 Optional<Song> nextOpt = songService.getNextSong(song.getRoomId());
                 if (nextOpt.isPresent()) {
-                    logger.info("Room[{}] :: Song[{}] finished, next Song[{}] is playing.", roomId, song.getSongId(), nextOpt.get().getSongId());
+                    log.info("Room[{}] :: Song[{}] finished, next Song[{}] is playing.", roomId, song.getSongId(), nextOpt.get().getSongId());
                     spotifyPlayerService.roomNext(nextOpt.get());
                     webSocketController.sendToRoom("songs", roomId, songService.getSongListByRoomId(roomId, false));
                 } else {
@@ -64,7 +63,7 @@ public class SongScheduler {
                         if (owner.getOnlineStatus().equals(OnlineStatus.OFFLINE.name())) {
                             roomService.deleteById(roomId);
                         } else {
-                            logger.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
+                            log.info("Room[{}] :: Song[{}] finished, queue is empty.", roomId, song.getSongId());
                             songService.updateSongStatus(song, SongStatus.PLAYED);
                             webSocketController.sendToRoom("songs", roomId, emptySongList);
                         }

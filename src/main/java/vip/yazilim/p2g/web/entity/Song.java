@@ -44,7 +44,7 @@ public class Song implements Serializable {
     private String imageUrl;
 
     @Column(name = "duration_ms", nullable = false)
-    private Integer durationMs;
+    private int durationMs;
 
     @Column(name = "song_status", nullable = false)
     private String songStatus;
@@ -56,13 +56,13 @@ public class Song implements Serializable {
     private LocalDateTime playingTime;
 
     @Column(name = "current_ms", nullable = false)
-    private Integer currentMs;
+    private int currentMs;
 
     @Column(name = "repeat_flag", nullable = false)
-    private Boolean repeatFlag;
+    private boolean repeatFlag;
 
     @Column(name = "votes", nullable = false)
-    private Integer votes;
+    private int votes;
 
     @Column(name = "voters")
     @ElementCollection(targetClass = String.class)

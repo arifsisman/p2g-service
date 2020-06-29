@@ -107,7 +107,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Integer getFriendsCountByUserId(String userId) {
+    public int getFriendsCountByUserId(String userId) {
         int count = 0;
         try {
             List<FriendRequest> friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);

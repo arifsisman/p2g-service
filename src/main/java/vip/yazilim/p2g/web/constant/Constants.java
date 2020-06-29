@@ -14,9 +14,9 @@ public final class Constants {
 
     public static final String TABLE_PREFIX = "p2g_";
 
-    public static final Integer WEBSOCKET_THREAD_POOL_SIZE = 100;
-    public static final Integer WEBSOCKET_THREAD_POOL_SIZE_MAX = 1000;
+    public static final int WEBSOCKET_THREAD_POOL_SIZE = 100;
+    public static final int WEBSOCKET_THREAD_POOL_SIZE_MAX = 1000;
 
-    public static final Integer ROOM_SONG_LIMIT = 50;
+    public static final int ROOM_SONG_LIMIT = 50;
 
 }
