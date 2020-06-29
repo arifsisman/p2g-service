@@ -5,11 +5,11 @@
 
     <groupId>vip.yazilim.p2g</groupId>
     <artifactId>p2g-web</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Senior Design Web Service</description>
+    <description>Play2Gether Web Service</description>
 
 
     <parent>
