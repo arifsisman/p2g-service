@@ -7,6 +7,8 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import java.util.Map;
 
 public class SecurityHelper {
+    private SecurityHelper() {
+    }
 
     private static OAuth2Authentication getUserAuthentication() {
         return (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();

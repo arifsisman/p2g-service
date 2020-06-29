@@ -7,26 +7,26 @@ public enum OnlineStatus {
     OFFLINE("offline"),
     AWAY("away");
 
+    private static final HashMap<String, OnlineStatus> map = new HashMap<>();
+
+    static {
+        for (OnlineStatus status : values()) {
+            map.put(status.onlineStatus, status);
+        }
+    }
+
     private final String onlineStatus;
 
     OnlineStatus(String onlineStatus) {
         this.onlineStatus = onlineStatus;
     }
 
-    public String getOnlineStatus() {
-        return this.onlineStatus;
-    }
-
-    private static final HashMap<String, OnlineStatus> map = new HashMap<>();
-
     public static Object keyOf(String type) {
         return map.get(type);
     }
 
-    static {
-        for (OnlineStatus status : values()) {
-            map.put(status.onlineStatus, status);
-        }
+    public String getOnlineStatus() {
+        return this.onlineStatus;
     }
 
 }

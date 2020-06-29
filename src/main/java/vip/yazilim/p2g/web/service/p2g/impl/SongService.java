@@ -1,8 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -33,25 +32,23 @@ import java.util.stream.Collectors;
  * @author mustafaarifsisman - 1.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Service
 public class SongService extends ACrudServiceImpl<Song, Long> implements ISongService {
 
-    @Autowired
-    private ISongRepo songRepo;
+    private final ISongRepo songRepo;
+    private final ISpotifySearchService spotifySearchService;
+    private final IRoomUserService roomUserService;
+    private final IPlayerService spotifyPlayerService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private ISpotifySearchService spotifySearchService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
-
-    @Autowired
-    private WebSocketController webSocketController;
-
-    private Logger LOGGER = LoggerFactory.getLogger(SongService.class);
+    public SongService(ISongRepo songRepo, @Lazy ISpotifySearchService spotifySearchService, IRoomUserService roomUserService, @Lazy IPlayerService spotifyPlayerService, WebSocketController webSocketController) {
+        this.songRepo = songRepo;
+        this.spotifySearchService = spotifySearchService;
+        this.roomUserService = roomUserService;
+        this.spotifyPlayerService = spotifyPlayerService;
+        this.webSocketController = webSocketController;
+    }
 
     @Override
     protected JpaRepository<Song, Long> getRepository() {
@@ -92,7 +89,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
      * @throws DatabaseReadException DatabaseReadException
      */
     @Override
-    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) throws DatabaseReadException {
+    public Optional<Song> getSongByRoomIdAndStatus(Long roomId, SongStatus songStatus) {
         try {
             return getSongListByRoomId(roomId, false).stream().filter(song -> song.getSongStatus().equals(songStatus.getSongStatus())).findFirst();
         } catch (Exception exception) {
@@ -101,7 +98,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPlayingSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPlayingSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.PLAYING);
     }
 
@@ -111,7 +108,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPausedSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPausedSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.PAUSED);
     }
 
@@ -121,7 +118,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getNextSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getNextSong(Long roomId) {
         return getSongByRoomIdAndStatus(roomId, SongStatus.NEXT);
     }
 
@@ -131,7 +128,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
     }
 
     @Override
-    public Optional<Song> getPreviousSong(Long roomId) throws DatabaseReadException {
+    public Optional<Song> getPreviousSong(Long roomId) {
         return songRepo.findFirstByRoomIdAndSongStatusOrderByPlayingTimeDesc(roomId, SongStatus.PLAYED.getSongStatus());
     }
 
@@ -188,7 +185,7 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
                 try {
                     created = create(s);
                 } catch (Exception e) {
-                    LOGGER.warn("Song :: Create error from SearchModel");
+                    log.warn("Song :: Create error from SearchModel");
                 }
 
                 if (created != null) {
@@ -272,11 +269,11 @@ public class SongService extends ACrudServiceImpl<Song, Long> implements ISongSe
 
     @Override
     public void updateSongStatus(Song song, SongStatus songStatus) {
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+        if (songStatus.equals(SongStatus.PLAYING)) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
-        } else if (songStatus.getSongStatus().equals(SongStatus.PAUSED.getSongStatus())) {
+        } else if (songStatus.equals(SongStatus.PAUSED)) {
             song.setCurrentMs(getCumulativePassedMs(song));
-        } else if (songStatus.getSongStatus().equals(SongStatus.PLAYED.getSongStatus())) {
+        } else if (songStatus.equals(SongStatus.PLAYED)) {
             song.setCurrentMs(0);
         }
 

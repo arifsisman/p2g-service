@@ -1,9 +1,6 @@
 package vip.yazilim.p2g.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import vip.yazilim.p2g.web.entity.*;
@@ -16,45 +13,41 @@ import vip.yazilim.p2g.web.service.p2g.*;
 import vip.yazilim.p2g.web.service.p2g.impl.FriendRequestService;
 import vip.yazilim.p2g.web.util.TimeHelper;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Component
 @ConditionalOnProperty(value = "DATA_INIT_FLAG", havingValue = "true")
-public class DataInitializer implements CommandLineRunner {
+public class DataInitializer {
 
-    private Logger LOGGER = LoggerFactory.getLogger(DataInitializer.class);
+    private final IUserService userService;
+    private final IRoomService roomService;
+    private final IRoomUserService roomUserService;
+    private final IRoomInviteService roomInviteService;
+    private final FriendRequestService friendRequestService;
+    private final ISongService songService;
 
-    @Autowired
-    private IUserService userService;
+    public DataInitializer(IUserService userService, IRoomService roomService, IRoomUserService roomUserService, IRoomInviteService roomInviteService, FriendRequestService friendRequestService, ISongService songService) {
+        this.userService = userService;
+        this.roomService = roomService;
+        this.roomUserService = roomUserService;
+        this.roomInviteService = roomInviteService;
+        this.friendRequestService = friendRequestService;
+        this.songService = songService;
+    }
 
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private FriendRequestService friendRequestService;
-
-    @Autowired
-    private ISongService songService;
-
-    @Override
-    public void run(String... args) {
-        User u1 = createUser("1", "2@gmail.com", "Tobias Schulze");
-        User u2 = createUser("2", "3@gmail.com", "Wendy Reynolds");
-        User u3 = createUser("3", "4@gmail.com", "Melinda Gardner");
-        User u4 = createUser("4", "5@gmail.com", "Clara Martin");
-        User u5 = createUser("5", "6@gmail.com", "Austin Jimenez");
-        User u6 = createUser("6", "7@gmail.com", "Carter Gonzales");
-        User u7 = createUser("7", "8@gmail.com", "Edgar Davidson");
-        User u8 = createUser("8", "9@gmail.com", "Edward Daniels");
-        User u9 = createUser("9", "10@gmail.com", "Julia Kim");
-        User u10 = createUser("10", "11@gmail.com", "Test User 10");
+    @PostConstruct
+    public void init() {
+        User u1 = createUser("tobias", "tobias@mail.com", "Tobias Schulze");
+        User u2 = createUser("wendy", "wendy@mail.com", "Wendy Reynolds");
+        User u3 = createUser("melinda", "melinda@mail.com", "Melinda Gardner");
+        User u4 = createUser("clara", "clara@mail.com", "Clara Martin");
+        User u5 = createUser("austin", "austin@mail.com", "Austin Jimenez");
+        User u6 = createUser("carter", "carter@mail.com", "Carter Gonzales");
+        User u7 = createUser("edgar", "edgar@mail.com", "Edgar Davidson");
+        User u8 = createUser("julia", "julia@mail.com", "Julia Kim");
         User arif = createUser("mustafaarifsisman", "mustafaarifsisman@gmail.com", "Mustafa Arif Sisman");
         User emre = createUser("emresen", "maemresen@gmail.com", "Emre Sen");
 
@@ -72,13 +65,13 @@ public class DataInitializer implements CommandLineRunner {
         roomService.update(demoRoom);
 
         Long roomId = demoRoom.getId();
-        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.NEXT);
-        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.NEXT);
-        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 0, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400", SongStatus.NEXT);
-        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4", SongStatus.NEXT);
+        addSongToRoom(roomId, "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.NEXT);
+        addSongToRoom(roomId, "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.NEXT);
+        addSongToRoom(roomId, "7ouMYWpwJ422jRcDASZB7P", "Knights of Cydonia", Collections.singletonList("Muse"), 366213, 2, "https://i.scdn.co/image/ab67616d0000b27328933b808bfb4cbbd0385400", SongStatus.NEXT);
+        addSongToRoom(roomId, "2takcwOaAZWiXQijPHIx7B", "Time Is Running Out", Collections.singletonList("Muse"), 237039, 0, "https://i.scdn.co/image/ab67616d0000b2738cb690f962092fd44bbe2bf4", SongStatus.NEXT);
 
-        addSongToRoom(testRoom2.getId(), "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 0, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.PLAYING);
-        addSongToRoom(testRoom3.getId(), "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 0, 2, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.PLAYING);
+        addSongToRoom(testRoom2.getId(), "0c4IEciLCDdXEhhKxj4ThA", "Madness", Collections.singletonList("Muse"), 281040, 1, "https://i.scdn.co/image/ab67616d0000b273fc192c54d1823a04ffb6c8c9", SongStatus.PLAYING);
+        addSongToRoom(testRoom3.getId(), "4VqPOruhp5EdPBeR92t6lQ", "Uprising", Collections.singletonList("Muse"), 304840, 2, "https://i.scdn.co/image/ab67616d0000b273b6d4566db0d12894a1a3b7a2", SongStatus.PLAYING);
 
         u1.setImageUrl("https://randomuser.me/api/portraits/men/47.jpg");
         u1.setCountryCode("DE");
@@ -100,8 +93,8 @@ public class DataInitializer implements CommandLineRunner {
         u6.setImageUrl("https://randomuser.me/api/portraits/men/17.jpg");
         userService.update(u6);
 
-        u9.setImageUrl("https://randomuser.me/api/portraits/women/82.jpg");
-        userService.update(u9);
+        u8.setImageUrl("https://randomuser.me/api/portraits/women/82.jpg");
+        userService.update(u8);
 
         u3.setOnlineStatus(OnlineStatus.AWAY.getOnlineStatus());
         u3.setCountryCode("TR");
@@ -135,10 +128,10 @@ public class DataInitializer implements CommandLineRunner {
         RoomUser r3u8 = r3u8UserModel.getRoomUser();
         RoomUser r3u5 = r3u5UserModel.getRoomUser();
 
-        r3u8.setRoomRole(Role.ROOM_ADMIN.role);
+        r3u8.setRoomRole(Role.ROOM_ADMIN.getRole());
         roomUserService.update(r3u8);
 
-        r3u5.setRoomRole(Role.ROOM_DJ.role);
+        r3u5.setRoomRole(Role.ROOM_DJ.getRole());
         roomUserService.update(r3u5);
     }
 
@@ -160,7 +153,7 @@ public class DataInitializer implements CommandLineRunner {
         friendRequestService.create(friendRequest);
     }
 
-    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, Integer durationMs, Integer currentMs, int votes, String imageUrl, SongStatus songStatus) {
+    private Song addSongToRoom(Long roomId, String songId, String songName, List<String> artistNames, int durationMs, int votes, String imageUrl, SongStatus songStatus) {
         Song song = new Song();
         song.setRoomId(roomId);
         song.setSongId(songId);
@@ -168,20 +161,20 @@ public class DataInitializer implements CommandLineRunner {
         song.setAlbumName("Test");
         song.setRepeatFlag(false);
         song.setArtistNames(artistNames);
-        song.setCurrentMs(currentMs);
+        song.setCurrentMs(0);
         song.setDurationMs(durationMs);
         song.setQueuedTime(TimeHelper.getLocalDateTimeNow());
         song.setSongStatus(songStatus.getSongStatus());
         song.setVotes(votes);
         song.setImageUrl(imageUrl);
 
-        if (songStatus.getSongStatus().equals(SongStatus.PLAYING.getSongStatus())) {
+        if (songStatus.equals(SongStatus.PLAYING)) {
             song.setPlayingTime(TimeHelper.getLocalDateTimeNow());
         }
 
         song = songService.create(song);
 
-        LOGGER.info("songId: {} - songName: {}", song.getId(), songName);
+        log.info("songId: {} - songName: {}", song.getId(), songName);
 
         return song;
     }

@@ -10,6 +10,13 @@ public enum Platform {
     SPOTIFY("spotify");
 
     private static final HashMap<String, Platform> map = new HashMap<>();
+
+    static {
+        for (Platform platform : values()) {
+            map.put(platform.name, platform);
+        }
+    }
+
     public final String name;
 
     Platform(String name) {
@@ -18,11 +25,5 @@ public enum Platform {
 
     public String getName() {
         return this.name;
-    }
-
-    static {
-        for (Platform platform : values()) {
-            map.put(platform.name, platform);
-        }
     }
 }

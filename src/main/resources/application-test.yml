@@ -1,8 +1,8 @@
 DB_IP: p2g.yazilim.vip
 DB_PORT: 5432
-DB_NAME: p2g_db
+DB_NAME: p2g_test
 DB_USERNAME: postgres
 DB_PASSWORD: -$aSpOW$gUd$epO2O5p6
 
-JPA_HIBERNATE_MODE: update
+JPA_HIBERNATE_MODE: create
 DATA_INIT_FLAG: false

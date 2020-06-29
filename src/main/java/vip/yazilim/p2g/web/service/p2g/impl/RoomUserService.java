@@ -1,8 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -36,34 +35,29 @@ import java.util.Optional;
  * @author mustafaarifsisman - 2.11.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Service
 public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements IRoomUserService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(RoomUserService.class);
+    private final IRoomUserRepo roomUserRepo;
+    private final IRoomService roomService;
+    private final IRoomInviteService roomInviteService;
+    private final AAuthorityProvider authorityProvider;
+    private final PasswordEncoderConfig passwordEncoderConfig;
+    private final IPlayerService spotifyPlayerService;
+    private final IUserService userService;
+    private final WebSocketController webSocketController;
 
-    @Autowired
-    private IRoomUserRepo roomUserRepo;
-
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private AAuthorityProvider authorityProvider;
-
-    @Autowired
-    private PasswordEncoderConfig passwordEncoderConfig;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private WebSocketController webSocketController;
+    public RoomUserService(IRoomUserRepo roomUserRepo, @Lazy IRoomService roomService, IRoomInviteService roomInviteService, AAuthorityProvider authorityProvider, PasswordEncoderConfig passwordEncoderConfig, @Lazy IPlayerService spotifyPlayerService, @Lazy IUserService userService, WebSocketController webSocketController) {
+        this.roomUserRepo = roomUserRepo;
+        this.roomService = roomService;
+        this.roomInviteService = roomInviteService;
+        this.authorityProvider = authorityProvider;
+        this.passwordEncoderConfig = passwordEncoderConfig;
+        this.spotifyPlayerService = spotifyPlayerService;
+        this.userService = userService;
+        this.webSocketController = webSocketController;
+    }
 
     @Override
     protected JpaRepository<RoomUser, Long> getRepository() {
@@ -148,7 +142,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public Optional<RoomUser> getRoomOwner(Long roomId) {
         try {
-            return roomUserRepo.findRoomUserByRoomIdAndRoomRole(roomId, Role.ROOM_OWNER.role);
+            return roomUserRepo.findRoomUserByRoomIdAndRoomRole(roomId, Role.ROOM_OWNER.getRole());
         } catch (Exception exception) {
             throw new DatabaseReadException(getClassOfEntity(), exception, roomId);
         }
@@ -203,7 +197,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             roomUserModel.setRoomUser(joinedUser);
 
             webSocketController.sendInfoToRoom(roomId, joinedUser.getUserName() + " joined room!");
-            LOGGER.info("[{}] :: Joined Room[{}]", userId, roomId);
+            log.info("[{}] :: Joined Room[{}]", userId, roomId);
 
             return roomUserModel;
         }
@@ -231,7 +225,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
             if (roomUserOpt.get().getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
                 boolean status = roomService.deleteById(roomUser.getRoomId());
                 if (status) {
-                    LOGGER.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
+                    log.info("[{}] :: Closed Room[{}]", userId, roomUser.getRoomId());
                 }
                 return status;
             } else {
@@ -241,7 +235,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 boolean status = delete(roomUser);
                 if (status) {
                     Long roomId = roomUser.getRoomId();
-                    LOGGER.info("[{}] :: Leaved Room[{}]", userId, roomId);
+                    log.info("[{}] :: Leaved Room[{}]", userId, roomId);
                     webSocketController.sendInfoToRoom(roomId, roomUser.getUserName() + " leaved room.");
                 }
 
@@ -268,13 +262,13 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         }
 
         roomUserModels.sort((o1, o2) -> {
-            if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_OWNER.role)) {
+            if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
                 return 3;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_ADMIN.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_ADMIN.getRole())) {
                 return 2;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_DJ.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_DJ.getRole())) {
                 return 1;
-            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_USER.role)) {
+            } else if (o1.getRoomUser().getRoomRole().equals(Role.ROOM_USER.getRole())) {
                 return 0;
             } else {
                 return o1.getRoomUser().getRoomRole().compareTo(o2.getRoomUser().getRoomRole());
@@ -327,7 +321,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
             RoomUser createdRoomUser = create(roomUser);
             roomInviteService.delete(roomInvite);
-            LOGGER.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
+            log.info("[{}] :: Accepted Room[{}] invite from [{}]", roomInvite.getReceiverId(), roomInvite.getRoomId(), roomInvite.getInviterId());
 
             roomUserModel.setRoomUser(createdRoomUser);
 
@@ -366,20 +360,20 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
 
         if (changingUser.getUserId().equals(SecurityHelper.getUserId())) {
             throw new ConstraintViolationException("You can not change your own role.");
-        } else if (changingUser.getRoomRole().equals(Role.ROOM_OWNER.role)) {
-            throw new ConstraintViolationException(Role.ROOM_OWNER.role + " role can not changed.");
+        } else if (changingUser.getRoomRole().equals(Role.ROOM_OWNER.getRole())) {
+            throw new ConstraintViolationException(Role.ROOM_OWNER.getRole() + " role can not changed.");
         } else if (changingUser.getRoomRole().equals(changer.getRoomRole())) {
             throw new ConstraintViolationException("You can not change the role of users who have the same role as you.");
         }
 
-        Role oldRole = Role.getRole(changingUser.getRoomRole());
+        String oldRole = changingUser.getRoomRole();
 
-        if (oldRole.equals(Role.getRole(roleName))) {
+        if (oldRole.equals(roleName)) {
             return changingUser;
-        } else if (Role.getRole(roleName).equals(Role.ROOM_OWNER)) {
+        } else if (roleName.equals(Role.ROOM_OWNER.getRole())) {
             return changeRoomOwner(roomUserId);
         } else {
-            changingUser.setRoomRole(Role.getRole(roleName).getRole());
+            changingUser.setRoomRole(roleName);
             RoomUser updatedRoomUser = update(changingUser);
 
             String userName = SecurityHelper.getUserDisplayName();
@@ -412,7 +406,7 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
                 roomService.update(room);
 
                 String userName = SecurityHelper.getUserDisplayName();
-                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.role;
+                String infoMessage = userName + "promoted" + newRoomOwner.getUserName() + "'s role to " + Role.ROOM_OWNER.getRole();
                 webSocketController.sendInfoToRoom(newRoomOwner.getRoomId(), infoMessage);
 
                 return newRoomOwner;
@@ -435,11 +429,11 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
     @Override
     public boolean hasRoomRole(String userId, Role role) {
         Optional<RoomUser> roomUserOpt = getRoomUserByUserId(userId);
-        return roomUserOpt.isPresent() && role.equals(Role.getRole(roomUserOpt.get().getRoomRole()));
+        return roomUserOpt.isPresent() && role.getRole().equals(roomUserOpt.get().getRoomRole());
     }
 
     @Override
-    public int getRoomUserCountByRoomId(Long roomId) throws DatabaseReadException {
+    public int getRoomUserCountByRoomId(Long roomId) {
         try {
             return roomUserRepo.countRoomUsersByRoomId(roomId);
         } catch (Exception exception) {
@@ -462,27 +456,5 @@ public class RoomUserService extends ACrudServiceImpl<RoomUser, Long> implements
         List<RoomUserModel> roomUserModels = getRoomUserModelsByRoomId(roomId);
         roomUserModels.removeIf(roomUserModel -> roomUserModel.getRoomUser() == roomUser);
         webSocketController.sendToRoom("users", roomId, roomUserModels);
-    }
-
-    private Role getNewRole(Role oldRole, boolean promoteFlag) {
-        switch (oldRole) {
-            case ROOM_USER:
-                if (promoteFlag)
-                    return Role.ROOM_DJ;
-                else
-                    return Role.ROOM_USER;
-            case ROOM_DJ:
-                if (promoteFlag)
-                    return Role.ROOM_ADMIN;
-                else
-                    return Role.ROOM_USER;
-            case ROOM_ADMIN:
-                if (promoteFlag)
-                    return Role.ROOM_ADMIN;
-                else
-                    return Role.ROOM_DJ;
-            default:
-                return oldRole;
-        }
     }
 }

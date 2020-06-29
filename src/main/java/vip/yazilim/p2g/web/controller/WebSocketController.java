@@ -1,8 +1,6 @@
 package vip.yazilim.p2g.web.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -15,21 +13,22 @@ import vip.yazilim.p2g.web.model.ChatMessage;
  * @author mustafaarifsisman - 24.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Controller
 public class WebSocketController {
 
-    private Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
+    private final SimpMessagingTemplate messagingTemplate;
+    private final RoomInfoMessageConfig roomInfoMessageConfig;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
-    private RoomInfoMessageConfig roomInfoMessageConfig;
+    public WebSocketController(SimpMessagingTemplate messagingTemplate, RoomInfoMessageConfig roomInfoMessageConfig) {
+        this.messagingTemplate = messagingTemplate;
+        this.roomInfoMessageConfig = roomInfoMessageConfig;
+    }
 
     @MessageMapping("/p2g/room/{roomId}/send")
     public void chatMessageMapping(@PathVariable ChatMessage chatMessage) {
         RoomUser roomUser = chatMessage.getRoomUser();
-        LOGGER.debug("[{}] sending message to Room[{}]: {}", roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
+        log.debug("[{}] sending message to Room[{}]: {}", roomUser.getUserId(), roomUser.getRoomId(), chatMessage.getMessage());
         sendToRoom("messages", roomUser.getRoomId(), chatMessage);
     }
 

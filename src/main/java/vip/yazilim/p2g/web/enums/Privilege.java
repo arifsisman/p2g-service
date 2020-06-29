@@ -20,25 +20,25 @@ public enum Privilege {
     SONG_ADD_AND_REMOVE("song_add_and_remove"),
     ROOM_CLEAR_QUEUE("room_clear_queue");
 
+    private static final HashMap<String, Privilege> map = new HashMap<>();
+
+    static {
+        for (Privilege privilege : values()) {
+            map.put(privilege.getPrivilegeName(), privilege);
+        }
+    }
+
     private final String privilegeName;
 
     Privilege(String privilegeName) {
         this.privilegeName = privilegeName;
     }
 
-    public String getPrivilegeName() {
-        return this.privilegeName;
-    }
-
-    private static final HashMap<String, Privilege> map = new HashMap<>();
-
     public static Privilege keyOf(String type) {
         return map.get(type);
     }
 
-    static {
-        for (Privilege privilege : values()) {
-            map.put(privilege.getPrivilegeName(), privilege);
-        }
+    public String getPrivilegeName() {
+        return this.privilegeName;
     }
 }

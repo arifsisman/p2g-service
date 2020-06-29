@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -25,14 +25,15 @@ import java.util.Optional;
 @Service
 public class SpotifyTokenService extends ACrudServiceImpl<OAuthToken, String> implements ISpotifyTokenService {
 
-    @Autowired
-    private ISpotifyTokenRepo tokenRepo;
+    private final ISpotifyTokenRepo tokenRepo;
+    private final IUserService userService;
+    private final IUserDeviceService userDeviceService;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IUserDeviceService userDeviceService;
+    public SpotifyTokenService(ISpotifyTokenRepo tokenRepo, @Lazy IUserService userService, IUserDeviceService userDeviceService) {
+        this.tokenRepo = tokenRepo;
+        this.userService = userService;
+        this.userDeviceService = userDeviceService;
+    }
 
     @Override
     protected JpaRepository<OAuthToken, String> getRepository() {

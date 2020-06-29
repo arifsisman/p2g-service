@@ -1,6 +1,5 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -14,8 +13,6 @@ import vip.yazilim.p2g.web.model.UserFriendModel;
 import vip.yazilim.p2g.web.model.UserModel;
 import vip.yazilim.p2g.web.repository.IFriendRequestRepo;
 import vip.yazilim.p2g.web.service.p2g.IFriendRequestService;
-import vip.yazilim.p2g.web.service.p2g.IRoomService;
-import vip.yazilim.p2g.web.service.p2g.ISongService;
 import vip.yazilim.p2g.web.service.p2g.IUserService;
 import vip.yazilim.p2g.web.util.SecurityHelper;
 import vip.yazilim.p2g.web.util.TimeHelper;
@@ -32,17 +29,13 @@ import java.util.Optional;
 @Service
 public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> implements IFriendRequestService {
 
-    @Autowired
-    private IFriendRequestRepo friendRequestRepo;
+    private final IFriendRequestRepo friendRequestRepo;
+    private final IUserService userService;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IRoomService roomService;
-
-    @Autowired
-    private ISongService songService;
+    public FriendRequestService(IFriendRequestRepo friendRequestRepo, IUserService userService) {
+        this.friendRequestRepo = friendRequestRepo;
+        this.userService = userService;
+    }
 
     @Override
     protected JpaRepository<FriendRequest, Long> getRepository() {
@@ -73,7 +66,6 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
 
         for (FriendRequest fr : friendRequestList) {
             if (fr.getRequestStatus().equals(FriendRequestStatus.ACCEPTED.getFriendRequestStatus())) {
-                UserModel fm = new UserModel();
                 String senderId = fr.getSenderId();
                 String receiverId = fr.getReceiverId();
 
@@ -115,7 +107,7 @@ public class FriendRequestService extends ACrudServiceImpl<FriendRequest, Long> 
     }
 
     @Override
-    public Integer getFriendsCountByUserId(String userId) {
+    public int getFriendsCountByUserId(String userId) {
         int count = 0;
         try {
             List<FriendRequest> friendRequestList = friendRequestRepo.findBySenderIdOrReceiverId(userId, userId);

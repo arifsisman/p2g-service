@@ -18,7 +18,7 @@ public class TimeHelper {
         return new Date();
     }
 
-    public static Date getDatePostponed(Integer delayMs) {
+    public static Date getDatePostponed(int delayMs) {
         return new Date(getDateNow().getTime() + delayMs);
     }
 

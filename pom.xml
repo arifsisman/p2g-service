@@ -5,11 +5,11 @@
 
     <groupId>vip.yazilim.p2g</groupId>
     <artifactId>p2g-web</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Senior Design Web Service</description>
+    <description>Play2Gether Web Service</description>
 
 
     <parent>
@@ -27,23 +27,6 @@
         <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <active.profile>dev</active.profile>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <active.profile>prod</active.profile>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-    </profiles>
 
     <dependencies>
 
@@ -118,12 +101,6 @@
             <artifactId>spring-cloud-starter-security</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Developer Tools -->
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.boot</groupId>-->
@@ -132,17 +109,17 @@
 
 
         <!-- Unit Test -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.security</groupId>-->
-        <!--            <artifactId>spring-security-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
 
         <!-- WebSocket -->

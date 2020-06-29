@@ -1,8 +1,7 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -32,34 +31,29 @@ import java.util.stream.Collectors;
  *
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @Service
 public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(RoomService.class);
+    private final IRoomRepo roomRepo;
+    private final IRoomUserService roomUserService;
+    private final IUserService userService;
+    private final IRoomInviteService roomInviteService;
+    private final ISongService songService;
+    private final PasswordEncoderConfig passwordEncoderConfig;
+    private final WebSocketController webSocketController;
+    private final IPlayerService spotifyPlayerService;
 
-    @Autowired
-    private IRoomRepo roomRepo;
-
-    @Autowired
-    private IRoomUserService roomUserService;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IRoomInviteService roomInviteService;
-
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private PasswordEncoderConfig passwordEncoderConfig;
-
-    @Autowired
-    private WebSocketController webSocketController;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
+    public RoomService(IRoomRepo roomRepo, IRoomUserService roomUserService, @Lazy IUserService userService, @Lazy IRoomInviteService roomInviteService, @Lazy ISongService songService, PasswordEncoderConfig passwordEncoderConfig, WebSocketController webSocketController, IPlayerService spotifyPlayerService) {
+        this.roomRepo = roomRepo;
+        this.roomUserService = roomUserService;
+        this.userService = userService;
+        this.roomInviteService = roomInviteService;
+        this.songService = songService;
+        this.passwordEncoderConfig = passwordEncoderConfig;
+        this.webSocketController = webSocketController;
+        this.spotifyPlayerService = spotifyPlayerService;
+    }
 
     @Override
     protected JpaRepository<Room, Long> getRepository() {
@@ -180,7 +174,7 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
             Room createdRoom = create(room);
             RoomUser joinedRoomOwner = roomUserService.joinRoomOwner(createdRoom.getId(), createdRoom.getOwnerId());
 
-            LOGGER.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
+            log.info("[{}] :: Created Room[{}]", ownerId, createdRoom.getId());
 
             roomUserModel.setRoom(createdRoom);
             roomUserModel.setRoomUser(joinedRoomOwner);
@@ -224,10 +218,11 @@ public class RoomService extends ACrudServiceImpl<Room, Long> implements IRoomSe
 
     @Override
     public boolean deleteById(Long roomId) {
+
         try {
             spotifyPlayerService.roomStop(roomId);
         } catch (Exception e) {
-            LOGGER.warn("Room[{}] :: An error occurred when stopping playback", roomId);
+            log.warn("Room[{}] :: An error occurred when stopping playback", roomId);
         }
 
         // Delete roomUsers

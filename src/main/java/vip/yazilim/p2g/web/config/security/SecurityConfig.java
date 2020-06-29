@@ -14,6 +14,7 @@ import org.springframework.web.context.request.RequestContextListener;
 @Configuration
 @EnableOAuth2Sso
 public class SecurityConfig extends ResourceServerConfigurerAdapter {
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
@@ -26,4 +27,5 @@ public class SecurityConfig extends ResourceServerConfigurerAdapter {
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
+
 }

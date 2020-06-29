@@ -19,8 +19,10 @@ public enum SearchType {
         this.type = type;
     }
 
-    public static Object keyOf(String type) {
-        return map.get(type);
+    static {
+        for (SearchType searchType : values()) {
+            map.put(searchType.type, searchType);
+        }
     }
 
     public String getType() {
@@ -31,9 +33,7 @@ public enum SearchType {
         return SONG.type + "," + ALBUM.type + "," + PLAYLIST.type;
     }
 
-    static {
-        for (SearchType searchType : values()) {
-            map.put(searchType.type, searchType);
-        }
+    public static Object keyOf(String type) {
+        return map.get(type);
     }
 }

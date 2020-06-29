@@ -2,8 +2,7 @@ package vip.yazilim.p2g.web.controller;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.exceptions.detailed.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -29,11 +28,10 @@ import static org.springframework.http.HttpStatus.*;
  * @author mustafaarifsisman - 09.12.2019
  * @contact mustafaarifsisman@gmail.com
  */
+@Slf4j
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionHandlerController {
-
-    private Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<String> handleException(Exception e) {
@@ -180,17 +178,17 @@ public class ExceptionHandlerController {
     }
 
     private ResponseEntity<String> warn(HttpStatus status, Exception e) {
-        LOGGER.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        log.warn("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 
     private ResponseEntity<String> spotifyWarn(HttpStatus status, Exception e) {
-        LOGGER.warn("[{}] :: Spotify Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        log.warn("[{}] :: Spotify Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 
     private ResponseEntity<String> error(HttpStatus status, Exception e) {
-        LOGGER.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
+        log.error("[{}] :: Exception :: {}", SecurityHelper.getUserId(), e.getMessage());
         return ResponseEntity.status(status).body(e.getMessage());
     }
 

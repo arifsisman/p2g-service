@@ -2,7 +2,6 @@ package vip.yazilim.p2g.web.service.spotify.impl;
 
 import com.wrapper.spotify.model_objects.special.SearchResult;
 import com.wrapper.spotify.model_objects.specification.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vip.yazilim.p2g.web.entity.Room;
 import vip.yazilim.p2g.web.entity.Song;
@@ -24,14 +23,15 @@ import java.util.stream.Collectors;
 @Service
 public class SpotifySearchService implements ISpotifySearchService {
 
-    @Autowired
-    private ISpotifyRequestService spotifyRequest;
+    private final ISpotifyRequestService spotifyRequest;
+    private final ISongService songService;
+    private final IRoomService roomService;
 
-    @Autowired
-    private ISongService songService;
-
-    @Autowired
-    private IRoomService roomService;
+    public SpotifySearchService(ISpotifyRequestService spotifyRequest, ISongService songService, IRoomService roomService) {
+        this.spotifyRequest = spotifyRequest;
+        this.songService = songService;
+        this.roomService = roomService;
+    }
 
     @Override
     public List<SearchModel> search(String query) {
@@ -96,9 +96,9 @@ public class SpotifySearchService implements ISpotifySearchService {
         List<SearchModel> searchModelList = new LinkedList<>();
 
         String accessToken = SecurityHelper.getUserAccessToken();
-        Album album = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbum(albumId).build(), accessToken);
+        Album album = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getAlbum(albumId).build(), accessToken);
 
-        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestAsync((spotifyApi) -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
+        Paging<TrackSimplified> trackSimplifiedPaging = spotifyRequest.execRequestAsync(spotifyApi -> spotifyApi.getAlbumsTracks(albumId).build(), accessToken);
         TrackSimplified[] tracks = trackSimplifiedPaging.getItems();
 
         String imageUrl = null;
@@ -126,7 +126,6 @@ public class SpotifySearchService implements ISpotifySearchService {
 
         for (PlaylistTrack p : playlistTracks) {
             SearchModel searchModel = new SearchModel(p);
-            //TODO: searchModel albumName changed to playlistName
             searchModel.setAlbumName(playlist.getName());
             searchModelList.add(searchModel);
         }

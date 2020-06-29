@@ -41,11 +41,11 @@ public class Authorities extends AAuthorityProvider {
         roomOwnerPrivileges.add(Privilege.ROOM_UPDATE);
 
         // Set HashMap
-        rolePrivilegesMap.put(Role.P2G_USER.role, p2gUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_USER.role, roomUserPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_DJ.role, roomDjPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_ADMIN.role, roomAdminPrivileges);
-        rolePrivilegesMap.put(Role.ROOM_OWNER.role, roomOwnerPrivileges);
+        rolePrivilegesMap.put(Role.P2G_USER.getRole(), p2gUserPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_USER.getRole(), roomUserPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_DJ.getRole(), roomDjPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_ADMIN.getRole(), roomAdminPrivileges);
+        rolePrivilegesMap.put(Role.ROOM_OWNER.getRole(), roomOwnerPrivileges);
 
         return rolePrivilegesMap;
     }

@@ -1,6 +1,6 @@
 package vip.yazilim.p2g.web.service.p2g.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import vip.yazilim.libs.springcore.exception.DatabaseReadException;
@@ -22,17 +22,17 @@ import java.util.Optional;
 @Service
 public class UserDeviceService extends ACrudServiceImpl<UserDevice, String> implements IUserDeviceService {
 
-    @Autowired
-    private IUserDeviceRepo userDeviceRepo;
+    private final IUserDeviceRepo userDeviceRepo;
+    private final ISpotifyUserService spotifyUserService;
+    private final IPlayerService spotifyPlayerService;
+    private final IRoomUserService roomUserService;
 
-    @Autowired
-    private ISpotifyUserService spotifyUserService;
-
-    @Autowired
-    private IPlayerService spotifyPlayerService;
-
-    @Autowired
-    private IRoomUserService roomUserService;
+    public UserDeviceService(IUserDeviceRepo userDeviceRepo, ISpotifyUserService spotifyUserService, @Lazy IPlayerService spotifyPlayerService, IRoomUserService roomUserService) {
+        this.userDeviceRepo = userDeviceRepo;
+        this.spotifyUserService = spotifyUserService;
+        this.spotifyPlayerService = spotifyPlayerService;
+        this.roomUserService = roomUserService;
+    }
 
     @Override
     public Optional<UserDevice> getUsersActiveDevice(String userId) {
